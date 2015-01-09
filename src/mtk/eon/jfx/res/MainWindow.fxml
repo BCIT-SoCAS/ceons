@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import mtk.eon.jfx.*?>
+
+<GridPane gridLinesVisible="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" stylesheets="/mtk/eon/jfx/res/application.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mtk.eon.jfx.FXMLController">
+  <columnConstraints>
+    <ColumnConstraints hgrow="SOMETIMES" />
+    <ColumnConstraints minWidth="200.0" prefWidth="200.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <GridPane>
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="100.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints vgrow="SOMETIMES" />
+          <RowConstraints minHeight="150.0" prefHeight="150.0" />
+          <RowConstraints minHeight="0.0" prefHeight="20.0" />
+        </rowConstraints>
+         <children>
+         	<BorderPane id="borderPane">
+         		<children>
+            		<ResizableCanvas id="graph" width="${borderPane.width}" height="${borderPane.height}" />
+            	</children>
+         	</BorderPane>
+            <TextArea id="console" editable="false" wrapText="true" GridPane.rowIndex="1" />
+            <TextField id="input" GridPane.rowIndex="2" />
+         </children>
+      </GridPane>
+      <Accordion GridPane.columnIndex="1">
+        <panes>
+          <TitledPane id="menu1" animated="true" style="-fx-border-color: #8645b3; -fx-font-weight: bold;" stylesheets="/mtk/eon/jfx/res/application.css" text="Network">
+            <content>
+              <VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" alignment="TOP_CENTER">
+              	<children>
+              		<Button text="Load" onAction="#loadNetworkAction" />
+              	</children>
+              </VBox>
+            </content>
+          </TitledPane>
+          <TitledPane animated="true" text="Simulation">
+            <content>
+              <VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              	<children>
+              		<Button text="Start Simulation" />
+              	</children>
+              </VBox>
+            </content>
+          </TitledPane>
+          <TitledPane animated="true" text="Settings">
+            <content>
+              <VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              	<children>
+              		<Button id="toggleInput" text="Toggle Input" />
+              	</children>
+              </VBox>
+            </content>
+          </TitledPane>
+        </panes>
+      </Accordion>
+   </children>
+</GridPane>
