@@ -14,6 +14,11 @@ import mtk.eon.net.PartedPath.PathPart;
 public class AlgorithmA extends Algorithm {
 
 	@Override
+	public String getName() {
+		return "A";
+	}
+	
+	@Override
 	public DemandAllocationResult allocateDemand(Demand demand, Network network) {
 		ArrayList<PartedPath> candidatePaths = demand.getCandidatePaths(network);
 		int volume = (int) Math.ceil(demand.getVolume() / 10) - 1;

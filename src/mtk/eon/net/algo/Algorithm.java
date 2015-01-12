@@ -1,7 +1,6 @@
 package mtk.eon.net.algo;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import mtk.eon.net.Demand;
 import mtk.eon.net.DemandAllocationResult;
@@ -9,7 +8,7 @@ import mtk.eon.net.Network;
 
 public abstract class Algorithm {
 	
-	static List<Algorithm> registeredAlgorithms;
+	static ArrayList<Algorithm> registeredAlgorithms;
 	
 	static {
 		registeredAlgorithms = new ArrayList<Algorithm>();
@@ -24,6 +23,17 @@ public abstract class Algorithm {
 	public static Algorithm getAlgorithmByID(int algorithmID) {
 		return registeredAlgorithms.get(algorithmID);
 	}
+	
+	public static ArrayList<Algorithm> getRegisteredAlgorithms() {
+		return new ArrayList<Algorithm>(registeredAlgorithms);
+	}
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
+	
+	public abstract String getName();
 	
 	public abstract DemandAllocationResult allocateDemand(Demand demand, Network network);
 }
