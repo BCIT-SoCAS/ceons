@@ -3,10 +3,10 @@ package mtk.eon.io.legacy;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import mtk.eon.net.NetworkLink;
 import mtk.eon.net.Network;
-import mtk.eon.net.NetworkPath;
+import mtk.eon.net.NetworkLink;
 import mtk.eon.net.NetworkNode;
+import mtk.eon.net.NetworkPath;
 
 public class LegacyLoader {
 	
@@ -45,13 +45,7 @@ public class LegacyLoader {
 	}
 	
 	public void addLink(int source, int destination, int distance) {
-		NetworkLink link = network.getLink(nodes.get(source), nodes.get(destination));
-		
-		if (link == null) {
-			link = new NetworkLink(distance);
-			network.putLink(nodes.get(source), nodes.get(destination), link);
-		}
-		
+		if (!network.containsLink(nodes.get(source), nodes.get(destination))) network.putLink(nodes.get(source), nodes.get(destination), new NetworkLink(distance));
 		links.put(freeLinkID, new Pair(nodes.get(source), nodes.get(destination)));
 		freeLinkID++;
 	}
@@ -77,6 +71,8 @@ public class LegacyLoader {
 					path.add(node);
 					length += network.getLink(node, other).getLength();
 					node = other;
+					links.remove(j);
+					j--;
 					continue outer;
 				}
 			}

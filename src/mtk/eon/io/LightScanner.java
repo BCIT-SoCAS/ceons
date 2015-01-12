@@ -27,7 +27,6 @@ public class LightScanner {
 			try {
 				length = in.read(buffer, 0, BUFFER_SIZE);
 			} catch (IOException e) {
-				e.printStackTrace();
 				throw new RuntimeException("Error while reading file", e);
 			}
 			counter = 0;
@@ -36,20 +35,13 @@ public class LightScanner {
 	}
 	
 	public boolean isEOF() {
-		for (int i = counter; i < length; i++)
-			if (!Character.isWhitespace(buffer[i]))
-				return false;
+		if (length < BUFFER_SIZE && counter >= length) return true;
 		try {
-			if (in.available() > 0) {
-				length = in.read(buffer, 0, BUFFER_SIZE);
-				counter = 0;
-				return isEOF();
-			} else
-				return true;
+			if (counter >= BUFFER_SIZE && in.available() == 0) return true;
 		} catch (IOException e) {
-			e.printStackTrace();
-			throw new RuntimeException("Error while reading file", e);
+			throw new RuntimeException("Error while reading file...", e);
 		}
+		return false;
 	}
 	
 	public int nextInt() {
@@ -65,23 +57,32 @@ public class LightScanner {
 	}
 	
 	public String nextLine() {
-		return nextString('\n');
+		return nextString(System.getProperty("line.separator"));
 	}
 	
-	public String nextString(char delimiter) {
+	public String nextString(String delimiter) {
 		StringBuilder stringBuilder = new StringBuilder();
-		char c;
 		do {
-			c = (char) read();
-			if (c == delimiter) return stringBuilder.toString();
-			stringBuilder.append(c);
-		} while (!isEOF());
-		return stringBuilder.toString();
+			stringBuilder.append((char) read());
+			if (isEOF()) return stringBuilder.toString();
+		} while (!stringBuilder.substring(Math.max(0, stringBuilder.length() - delimiter.length())).equals(delimiter));
+		return stringBuilder.substring(0, stringBuilder.length() - delimiter.length());
 	}
 	
 	public void skipInt() {
 		while (!Character.isDigit(read()));
 		while (Character.isDigit(read()));
+	}
+	
+	public void skipLine() {
+		
+	}
+	
+	public void skipString(String delimiter) {
+		StringBuffer buffer = new StringBuffer(delimiter.length());
+//		for (int i = 0; i < delimiter.length() && !)
+//		buffer.
+		//TODO finish light scanner
 	}
 	
 	public void close() {

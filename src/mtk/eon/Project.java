@@ -1,11 +1,12 @@
 package mtk.eon;
 
 import java.io.File;
-import java.nio.file.NoSuchFileException;
+import java.io.FileNotFoundException;
 
 import mtk.eon.io.FileFormat;
 import mtk.eon.io.InvalidExtensionException;
 import mtk.eon.io.LightScanner;
+import mtk.eon.io.Logger;
 import mtk.eon.io.legacy.CostFileFormat;
 import mtk.eon.io.legacy.EnergyFileFormat;
 import mtk.eon.io.legacy.LegacyLoader;
@@ -22,20 +23,28 @@ public class Project {
 	File projectDirectory;
 	Network network;
 	
-	public Project(File projectInfo) throws NoSuchFileException, InvalidExtensionException {
+	public Project(File projectInfo) throws FileNotFoundException, InvalidExtensionException {
 		projectDirectory = projectInfo.getParentFile();
 		LegacyLoader loader = new LegacyLoader();
 		LightScanner scanner = new LightScanner(projectInfo);
 		try {
 			FileFormat.constructor(NetworkFileFormat.class, new File(projectDirectory, scanner.nextLine())).loadWithData(loader);
+			Logger.debug("Topology loaded...");
 			FileFormat.constructor(PathFileFormat.class, new File(projectDirectory, scanner.nextLine())).loadWithData(loader);
+			Logger.debug("Paths loaded...");
 			FileFormat.constructor(ModulationDistancesFileFormat.class, new File(projectDirectory, scanner.nextLine())).loadWithData(loader);
+			Logger.debug("Modulation distances loaded...");
 			FileFormat.constructor(RegeneratorsFileFormat.class, new File(projectDirectory, scanner.nextLine())).loadWithData(loader);
+			Logger.debug("Regenerators loaded...");
 			FileFormat.constructor(SlicesConsumptionFileFormat.class, new File(projectDirectory, scanner.nextLine())).loadWithData(loader);
+			Logger.debug("Slices consumption loaded...");
 			FileFormat.constructor(EnergyFileFormat.class, new File(projectDirectory, scanner.nextLine())).loadWithData(loader);
+			Logger.debug("Energy consumption loaded...");
 			FileFormat.constructor(CostFileFormat.class, new File(projectDirectory, scanner.nextLine())).loadWithData(loader);
+			Logger.debug("Costs loaded...");
 			FileFormat.constructor(ReplicasFileFormat.class, new File(projectDirectory, scanner.nextLine())).loadWithData(loader);
-		} catch (NoSuchFileException | InvalidExtensionException e) {
+			Logger.debug("Replicas loaded...");
+		} catch (FileNotFoundException | InvalidExtensionException e) {
 			scanner.close();
 			throw e;
 		}

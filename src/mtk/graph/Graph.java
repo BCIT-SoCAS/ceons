@@ -3,6 +3,7 @@ package mtk.graph;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import mtk.eon.io.Logger;
 import mtk.general.HashArray;
 import mtk.general.Identifiable;
 import mtk.general.IdentifiableSet;
@@ -25,27 +26,30 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 		return nodes.contains(node);
 	}
 	
-	void addNode(N node) {
-		nodes.add(node);
+	protected boolean addNode(N node) {
+		if (nodes.add(node) == null) return false;
 		relations.resize(relationsSize());
 		for (N n : nodes)
 			if (node != n) {
 				Relation<N, L, P> relation = new Relation<N, L, P>(n, node);
 				relations.add(relation);
 			}
+		return true;
 	}
 	
 	public Iterator<N> getNodesIterator() {
 		return nodes.iterator();
 	}
 	
-	public void removeNode(N node) {
+	public boolean removeNode(N node) {
+		if (!contains(node)) return false;
 		for (N n : nodes)
 			if (n != node)
 				relations.remove(Relation.hash(n.hashCode(), node.hashCode()));
 		nodes.remove(node);
 		relations.rehash();
 		relations.resize(relationsSize());
+		return true;
 	}
 	
 	public int getNodesCount() {
@@ -62,32 +66,29 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 	}
 	
 	public boolean containsLink(N nodeA, N nodeB) {
-		return relations.get(Relation.hash(nodeA.hashCode(), nodeB.hashCode())).link != null;
+		if (!contains(nodeA) || !contains(nodeB)) return false;
+		return getLink(nodeA, nodeB) != null;
 	}
 	
 	public L getLink(N nodeA, N nodeB) {
-		return relations.get(Relation.hash(nodeA.hashCode(), nodeB.hashCode())).link;
+		Relation<N, L, P> relation = relations.get(Relation.hash(nodeA.hashCode(), nodeB.hashCode()));
+		if (relation == null) return null;
+		return relation.link;
 	}
 	
 	public L removeLink(N nodeA, N nodeB) {
 		Relation<N, L, P> relation = relations.get(Relation.hash(nodeA.hashCode(), nodeB.hashCode()));
 		L oldLink = relation.link;
 		relation.link = null;
+		if (getConnectedLinks(nodeA).size() == 0) removeNode(nodeA);
+		if (getConnectedLinks(nodeB).size() == 0) removeNode(nodeB);
 		return oldLink;
 	}
 	
-	/**
-	 * 
-	 * @deprecated This method stinks and should not be there...
-	 */
-	@Deprecated
-	public N getNodeByID(int id) {
-		if (!nodes.contains(id)) return null;
-		return nodes.get(id);
-	}
-	
 	public ArrayList<P> getPaths(N nodeA, N nodeB) {
-		return relations.get(Relation.hash(nodeA.hashCode(), nodeB.hashCode())).paths;
+		Relation<N, L, P> relation = relations.get(Relation.hash(nodeA.hashCode(), nodeB.hashCode()));
+		if (relation == null) return null;
+		return relation.paths;
 	}
 	
 	public ArrayList<L> getConnectedLinks(N node) {

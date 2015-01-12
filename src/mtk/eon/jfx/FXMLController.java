@@ -1,16 +1,14 @@
 package mtk.eon.jfx;
 
 import java.io.File;
-import java.nio.file.NoSuchFileException;
+import java.io.FileNotFoundException;
 
 import javafx.event.ActionEvent;
 import javafx.stage.FileChooser;
-
-import javax.swing.JOptionPane;
-
 import mtk.eon.ApplicationResources;
 import mtk.eon.Project;
 import mtk.eon.io.InvalidExtensionException;
+import mtk.eon.io.Logger;
 
 public class FXMLController {
 	
@@ -25,11 +23,13 @@ public class FXMLController {
 			Project project;
 			try {
 				project = new Project(file);
-			} catch (NoSuchFileException | InvalidExtensionException exc) {
-				JOptionPane.showMessageDialog(null, exc.getMessage());
+			} catch (FileNotFoundException | InvalidExtensionException exc) {
+				Logger.debug(exc.toString());
+				Logger.info("Failed to load project...");
 				return;
 			}
 			ApplicationResources.project = project;
+			Logger.info("Project loaded successfully.");
 		}
 	}
 }

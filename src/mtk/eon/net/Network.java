@@ -1,6 +1,7 @@
 package mtk.eon.net;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import mtk.eon.net.DemandAllocationResult.Type;
@@ -10,6 +11,7 @@ import mtk.graph.Graph;
 
 public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Network> {
 	
+	HashMap<String, NetworkNode> nodes = new HashMap<String, NetworkNode>();
 	ArrayList<NetworkNode> replicas = new ArrayList<NetworkNode>();
 
 	List<Modulation> modulations = new ArrayList<Modulation>();
@@ -73,6 +75,10 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	
 	// NODES
 	
+	public NetworkNode getNode(String name) {
+		return nodes.get(name);
+	}
+	
 	public boolean addReplica(NetworkNode node) {
 		if (!contains(node) || replicas.contains(node)) return false;
 		replicas.add(node);
@@ -89,6 +95,20 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	
 	public ArrayList<NetworkNode> getReplicas() {
 		return replicas;
+	}
+	
+	@Override
+	protected boolean addNode(NetworkNode node) {
+		boolean result = super.addNode(node);
+		if (result) nodes.put(node.getName(), node);
+		return result;
+	}
+	
+	@Override
+	public boolean removeNode(NetworkNode node) {
+		boolean result = super.removeNode(node);
+		if (result) nodes.remove(node.getName());
+		return result;
 	}
 	
 	// LINKS

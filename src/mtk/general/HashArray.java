@@ -14,11 +14,12 @@ public class HashArray<E> implements Iterable<E> {
 	}
 	
 	public boolean contains(E element) {
+		if (element == null) return false;
 		return contains(element.hashCode());
 	}
 	
 	public boolean contains(int hashCode) {
-		if (hashCode() == -1) return false;
+		if (hashCode == -1 || hashCode >= array.length) return false;
 		return array[hashCode] != null;
 	}
 	

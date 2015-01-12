@@ -2,8 +2,8 @@ package mtk.eon.io.legacy;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.NotDirectoryException;
 import java.util.ArrayList;
 
@@ -31,9 +31,9 @@ public class DemandLoader {
 	
 	private static final DemandFileFilter DEMAND_FILE_FILTER = new DemandFileFilter();
 	
-	public DemandLoader(String demandDirectoryPath, Network network) throws NoSuchFileException, NotDirectoryException {
+	public DemandLoader(String demandDirectoryPath, Network network) throws FileNotFoundException, NotDirectoryException {
 		File demandDirectory = new File(demandDirectoryPath);
-		if (!demandDirectory.exists()) throw new NoSuchFileException(demandDirectoryPath, null, "Demand directory could not have been found!");
+		if (!demandDirectory.exists()) throw new FileNotFoundException(demandDirectoryPath);
 		if (!demandDirectory.isDirectory()) throw new NotDirectoryException("Given demand directory path: \"" + demandDirectoryPath + "\" does not lead to a directory!");
 		
 		try {

@@ -13,19 +13,13 @@ public class HashArrayIterator<E> implements Iterator<E> {
 	
 	@Override
 	public boolean hasNext() {
-		while (hashArray.get(hashCode) == null) {
-			hashCode++;
-			if (hashCode == hashArray.capacity()) return false;
-		}
-		return true;
+		for (; hashCode < hashArray.capacity(); hashCode++) if (hashArray.contains(hashCode)) return true;
+		return false;
 	}
 
 	@Override
 	public E next() {
-		if (hasNext())
-			return hashArray.get(hashCode);
-		else
-			return null;
-	}
-	
+		if (hasNext()) return hashArray.get(hashCode++);
+		else return null;
+	}	
 }

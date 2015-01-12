@@ -26,9 +26,9 @@ public class DemandFileFormat extends FileFormat<DemandLoader> {
 		for (int i = 0; i < demandsCount; i++) {
 			int demandType = scanner.nextInt();
 			if (demandType == 1)
-				handleDemand(new UnicastDemand(loader.getNetwork().getNodeByID(scanner.nextInt()), loader.getNetwork().getNodeByID(scanner.nextInt()), roundVolume(scanner.nextInt()), scanner.nextInt()), loader);
+				handleDemand(new UnicastDemand(loader.getNetwork().getNode("Node_" + scanner.nextInt()), loader.getNetwork().getNode("Node_" + scanner.nextInt()), roundVolume(scanner.nextInt()), scanner.nextInt()), loader);
 			else if (demandType == 2) {
-				NetworkNode client = loader.getNetwork().getNodeByID(scanner.nextInt());
+				NetworkNode client = loader.getNetwork().getNode("Node_" + scanner.nextInt());
 				if (client.isReplica()) {
 					scanner.skipInt();
 					scanner.skipInt();

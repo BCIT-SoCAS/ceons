@@ -16,16 +16,12 @@ public class IdentifiableSet<E extends Identifiable> extends HashArray<E> {
 
 	@Override
 	public E add(E element) {
+		if (element.id != -1) return null;
 		if (freeID == capacity()) resize(capacity() + 8);
 		element.id = freeID;
-		E old = super.add(element);
+		super.add(element);
 		freeID++;
-		return old;
-	}
-	
-	@Override
-	public E get(int id) {
-		return super.get(id);
+		return element;
 	}
 
 	@Override

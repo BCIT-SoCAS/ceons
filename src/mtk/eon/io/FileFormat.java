@@ -1,10 +1,7 @@
 package mtk.eon.io;
 
 import java.io.File;
-import java.nio.file.NoSuchFileException;
-
-import com.sun.corba.se.spi.legacy.connection.GetEndPointInfoAgainException;
-import com.sun.media.sound.InvalidFormatException;
+import java.io.FileNotFoundException;
 
 public abstract class FileFormat<T> {
 
@@ -22,11 +19,11 @@ public abstract class FileFormat<T> {
 	
 	public abstract boolean loadWithData(T dataContainer);
 	
-	public static <T extends FileFormat<?>> T constructor(Class<T> fileFormatType, String path) throws NoSuchFileException, InvalidExtensionException {
+	public static <T extends FileFormat<?>> T constructor(Class<T> fileFormatType, String path) throws FileNotFoundException, InvalidExtensionException {
 		return constructor(fileFormatType, new File(path));
 	}
 	
-	public static <T extends FileFormat<?>> T constructor(Class<T> fileFormatType, File file) throws NoSuchFileException, InvalidExtensionException {
+	public static <T extends FileFormat<?>> T constructor(Class<T> fileFormatType, File file) throws FileNotFoundException, InvalidExtensionException {
 		T fileFormat;
 		
 		try {
@@ -36,7 +33,7 @@ public abstract class FileFormat<T> {
 			return null;
 		}
 		
-		if (!file.exists()) throw new NoSuchFileException(file.getAbsolutePath());
+		if (!file.exists()) throw new FileNotFoundException(file.getAbsolutePath());
 		if (!file.getAbsolutePath().endsWith("." + fileFormat.getExtension())) throw new InvalidExtensionException(file.getAbsolutePath(), fileFormat.getExtension());
 		
 		fileFormat.file = file;
