@@ -41,8 +41,8 @@ public class Main extends Application {
 		canvas.getGraphicsContext2D().fillRect(10, 10, 20, 20);
 		canvas.setOnMouseDragged(e -> { canvas.getGraphicsContext2D().fillRect(e.getX(), e.getY(), 10, 10); });
 		((Button) scene.lookup("#toggleInput")).setOnAction(e -> { scene.lookup("#input").setVisible(!scene.lookup("#input").isVisible()); });
-//		System.setOut(new PrintStream(new ConsoleOutputStream((TextArea) scene.lookup("#console"))));
-//		System.setIn(new ConsoleInputStream((TextField) scene.lookup("#input")));
+		System.setOut(new PrintStream(new ConsoleOutputStream((TextArea) scene.lookup("#console"))));
+		System.setIn(new ConsoleInputStream((TextField) scene.lookup("#input")));
 		
 //		Scanner s = new Scanner(System.in);
 //		for (int i = 0; i < 5; i++) {

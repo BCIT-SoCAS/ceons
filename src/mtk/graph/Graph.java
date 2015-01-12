@@ -3,7 +3,6 @@ package mtk.graph;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import mtk.eon.io.Logger;
 import mtk.general.HashArray;
 import mtk.general.Identifiable;
 import mtk.general.IdentifiableSet;
