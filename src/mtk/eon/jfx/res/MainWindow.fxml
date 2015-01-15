@@ -53,7 +53,7 @@
               	<children>
               		<Button text="Start Simulation" />
                         <Label text="Algorithm" />
-                        <ComboBox promptText="Choose algorithm..." />
+                        <ComboBox promptText="Choose algorithm... " />
                         <TitledPane animated="false" expanded="false" text="Modulation">
                           <content>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="143.0" prefWidth="200.0">
