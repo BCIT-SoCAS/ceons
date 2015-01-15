@@ -11,7 +11,7 @@
 <GridPane gridLinesVisible="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" stylesheets="/mtk/eon/jfx/res/application.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mtk.eon.jfx.FXMLController">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" />
-    <ColumnConstraints minWidth="200.0" prefWidth="200.0" />
+    <ColumnConstraints maxWidth="-Infinity" prefWidth="250.0" />
   </columnConstraints>
   <rowConstraints>
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -29,7 +29,7 @@
          <children>
          	<BorderPane id="borderPane">
          		<children>
-            		<ResizableCanvas id="graph" width="${borderPane.width}" height="${borderPane.height}" />
+            		<ResizableCanvas id="graph" height="${borderPane.height}" width="${borderPane.width}" />
             	</children>
          	</BorderPane>
             <TextArea id="console" editable="false" wrapText="true" GridPane.rowIndex="1" />
@@ -40,18 +40,52 @@
         <panes>
           <TitledPane id="menu1" animated="true" style="-fx-border-color: #8645b3; -fx-font-weight: bold;" stylesheets="/mtk/eon/jfx/res/application.css" text="Network">
             <content>
-              <VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" alignment="TOP_CENTER">
+              <VBox alignment="TOP_CENTER" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               	<children>
-              		<Button text="Load" onAction="#loadNetworkAction" />
+              		<Button onAction="#loadNetworkAction" text="Load" />
               	</children>
               </VBox>
             </content>
           </TitledPane>
           <TitledPane animated="true" text="Simulation">
             <content>
-              <VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" spacing="10.0">
               	<children>
               		<Button text="Start Simulation" />
+                        <Label text="Algorithm" />
+                        <ComboBox promptText="Choose algorithm..." />
+                        <TitledPane animated="false" expanded="false" text="Modulation">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="143.0" prefWidth="200.0">
+                                 <children>
+                                    <CheckBox mnemonicParsing="false" text="ModulationExample" />
+                                 </children>
+                              </AnchorPane>
+                          </content>
+                        </TitledPane>
+                        <CheckBox mnemonicParsing="false" text="Allow..." />
+                        <Label text="Best paths" />
+                        <TextField />
+                        <TitledPane animated="false" expanded="false" text="Modulation metric">
+                           <content>
+                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="127.0" prefWidth="200.0">
+                                 <children>
+                                    <RadioButton layoutY="5.0" mnemonicParsing="false" text="RadioButton" />
+                                 </children>
+                              </AnchorPane>
+                           </content>
+                        </TitledPane>
+                        <TitledPane animated="false" expanded="false" layoutX="20.0" layoutY="333.0" text="Regenerators metric">
+                           <content>
+                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <RadioButton layoutY="5.0" mnemonicParsing="false" text="RadioButton" />
+                                 </children>
+                              </AnchorPane>
+                           </content>
+                        </TitledPane>
+                        <Label text="Regenerator metric value" />
+                        <TextField />
               	</children>
               </VBox>
             </content>
