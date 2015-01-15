@@ -63,7 +63,7 @@
                               </AnchorPane>
                           </content>
                         </TitledPane>
-                        <CheckBox mnemonicParsing="false" text="Allow..." />
+                        <CheckBox mnemonicParsing="false" text="Allow ..." />
                         <Label text="Best paths" />
                         <TextField />
                         <TitledPane animated="false" expanded="false" text="Modulation metric">
