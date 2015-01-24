@@ -28,10 +28,9 @@ public class Main extends Application {
 		GridPane root = (GridPane)loader.load();
 		Scene scene = new Scene(root);
 		primaryStage.setScene(scene);
-		primaryStage.setMinWidth(800);
-		primaryStage.setMinHeight(600);
 		primaryStage.show();
-		ApplicationResources.primaryStage = primaryStage;
+		primaryStage.setMinWidth(primaryStage.getWidth());
+		primaryStage.setMinHeight(primaryStage.getHeight());
 		
 		final Canvas canvas = (Canvas) scene.lookup("#graph");
 		BorderPane pane = (BorderPane) scene.lookup("#borderPane");

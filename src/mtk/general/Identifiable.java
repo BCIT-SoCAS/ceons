@@ -10,7 +10,7 @@ public abstract class Identifiable {
 	
 	@Override
 	public final int hashCode() {
-		return getID();
+		return id;
 	}
 	
 	@Override

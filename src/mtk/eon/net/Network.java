@@ -166,7 +166,7 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	}
 	
 	public List<Modulation> getAllowedModulations() {
-		return modulations;
+		return new ArrayList<Modulation>(modulations);
 	}
 	
 	// REGENERATORS

@@ -51,4 +51,8 @@ public class Project {
 		scanner.close();
 		network = loader.getNetwork();
 	}
+	
+	public Network getNetwork() {
+		return network;
+	}
 }

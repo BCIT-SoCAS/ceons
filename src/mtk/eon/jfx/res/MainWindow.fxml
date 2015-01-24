@@ -7,99 +7,131 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import mtk.eon.jfx.*?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.control.ToolBar?>
 
-<GridPane gridLinesVisible="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" stylesheets="/mtk/eon/jfx/res/application.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mtk.eon.jfx.FXMLController">
-  <columnConstraints>
-    <ColumnConstraints hgrow="SOMETIMES" />
-    <ColumnConstraints maxWidth="-Infinity" prefWidth="250.0" />
-  </columnConstraints>
-  <rowConstraints>
-    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-  </rowConstraints>
-   <children>
-      <GridPane>
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="100.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints vgrow="SOMETIMES" />
-          <RowConstraints minHeight="150.0" prefHeight="150.0" />
-          <RowConstraints minHeight="0.0" prefHeight="20.0" />
-        </rowConstraints>
-         <children>
-         	<BorderPane id="borderPane">
-         		<children>
-            		<ResizableCanvas id="graph" height="${borderPane.height}" width="${borderPane.width}" />
-            	</children>
-         	</BorderPane>
-            <TextArea id="console" editable="false" wrapText="true" GridPane.rowIndex="1" />
-            <TextField id="input" GridPane.rowIndex="2" />
-         </children>
-      </GridPane>
-      <Accordion GridPane.columnIndex="1">
-        <panes>
-          <TitledPane id="menu1" animated="true" style="-fx-border-color: #8645b3; -fx-font-weight: bold;" stylesheets="/mtk/eon/jfx/res/application.css" text="Network">
-            <content>
-              <VBox alignment="TOP_CENTER" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-              	<children>
-              		<Button onAction="#loadNetworkAction" text="Load" />
-              	</children>
-              </VBox>
-            </content>
-          </TitledPane>
-          <TitledPane animated="true" text="Simulation">
-            <content>
-              <VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" spacing="10.0">
-              	<children>
-              		<Button text="Start Simulation" />
-                        <Label text="Algorithm" />
-                        <ComboBox promptText="Choose algorithm... " />
-                        <TitledPane animated="false" expanded="false" text="Modulation">
-                          <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="143.0" prefWidth="200.0">
-                                 <children>
-                                    <CheckBox mnemonicParsing="false" text="ModulationExample" />
-                                 </children>
-                              </AnchorPane>
-                          </content>
-                        </TitledPane>
-                        <CheckBox mnemonicParsing="false" text="Allow ..." />
-                        <Label text="Best paths" />
-                        <TextField />
-                        <TitledPane animated="false" expanded="false" text="Modulation metric">
-                           <content>
-                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="127.0" prefWidth="200.0">
-                                 <children>
-                                    <RadioButton layoutY="5.0" mnemonicParsing="false" text="RadioButton" />
-                                 </children>
-                              </AnchorPane>
-                           </content>
-                        </TitledPane>
-                        <TitledPane animated="false" expanded="false" layoutX="20.0" layoutY="333.0" text="Regenerators metric">
-                           <content>
-                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                 <children>
-                                    <RadioButton layoutY="5.0" mnemonicParsing="false" text="RadioButton" />
-                                 </children>
-                              </AnchorPane>
-                           </content>
-                        </TitledPane>
-                        <Label text="Regenerator metric value" />
-                        <TextField />
-              	</children>
-              </VBox>
-            </content>
-          </TitledPane>
-          <TitledPane animated="true" text="Settings">
-            <content>
-              <VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-              	<children>
-              		<Button id="toggleInput" text="Toggle Input" />
-              	</children>
-              </VBox>
-            </content>
-          </TitledPane>
-        </panes>
-      </Accordion>
-   </children>
+<GridPane gridLinesVisible="true" prefWidth="800.0" prefHeight="600.0" stylesheets="/mtk/eon/jfx/res/application.cssext" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mtk.eon.jfx.FXMLController">
+	<columnConstraints>
+		<ColumnConstraints hgrow="SOMETIMES" />
+		<ColumnConstraints maxWidth="-Infinity" prefWidth="250.0" />
+	</columnConstraints>
+	<rowConstraints>
+		<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+	</rowConstraints>
+	<children>
+		<GridPane>
+			<columnConstraints>
+				<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
+					percentWidth="100.0" prefWidth="100.0" />
+			</columnConstraints>
+			<rowConstraints>
+				<RowConstraints vgrow="SOMETIMES" />
+				<RowConstraints minHeight="150.0" prefHeight="150.0" />
+				<RowConstraints minHeight="0.0" prefHeight="20.0" />
+			</rowConstraints>
+			<children>
+				<BorderPane id="borderPane">
+					<children>
+						<ResizableCanvas id="graph" height="${borderPane.height}"
+							width="${borderPane.width}" />
+					</children>
+				</BorderPane>
+				<TextArea id="console" editable="false" wrapText="true"
+					GridPane.rowIndex="1" />
+				<TextField id="input" GridPane.rowIndex="2" />
+			</children>
+		</GridPane>
+		<Accordion GridPane.columnIndex="1">
+			<panes>
+				<TitledPane animated="true" text="Network">
+					<content>
+						<VBox alignment="TOP_CENTER" minHeight="0.0" minWidth="0.0"
+							prefHeight="180.0" prefWidth="200.0">
+							<children>
+								<Button onAction="#loadNetworkAction" text="Load" />
+							</children>
+						</VBox>
+					</content>
+				</TitledPane>
+				<TitledPane animated="true" text="Simulation">
+					<content>
+						<VBox fx:id="settings" spacing="8.0">
+							<children>
+								<Label text="Algorithm" />
+								<ComboBox promptText="Choose algorithm... " />
+								<Separator />
+								<CheckBox text="Allow changing modulation on path?" />
+								<Label text="Allowed Modulations" />
+								<GridPane>
+									<columnConstraints>
+										<ColumnConstraints percentWidth="50" />
+										<ColumnConstraints percentWidth="50" />
+									</columnConstraints>
+									<children>
+										<CheckBox id="modulation0" text="BPSK" />
+										<CheckBox id="modulation1" text="QPSK" GridPane.rowIndex="1" />
+										<CheckBox id="modulation2" text="8QAM" GridPane.rowIndex="2" />
+										<CheckBox id="modulation3" text="16QAM" GridPane.columnIndex="1" />
+										<CheckBox id="modulation4" text="32QAM" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+										<CheckBox id="modulation5" text="64QAM" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+									</children>
+								</GridPane>
+								<Separator />
+								<Label text="Best paths" />
+								<TextField text="0" onKeyTyped="#textFieldUIntFilter" />
+								<Separator />
+								<Label text="Modulation metric" />
+								<GridPane>
+									<columnConstraints>
+										<ColumnConstraints percentWidth="50" />
+										<ColumnConstraints percentWidth="50" />
+									</columnConstraints>
+									<fx:define>
+										<ToggleGroup fx:id="modulationMetric" />
+									</fx:define>
+									<children>
+										<RadioButton text="Static" toggleGroup="$modulationMetric" selected="true" />
+										<RadioButton text="Dynamic" toggleGroup="$modulationMetric" GridPane.columnIndex="1" />
+									</children>
+								</GridPane>
+								<Separator />
+								<Label text="Regenerator metric value" />
+								<TextField />
+								<Label text="Regenerators metric" />
+								<GridPane>
+									<columnConstraints>
+										<ColumnConstraints percentWidth="50" />
+										<ColumnConstraints percentWidth="50" />
+									</columnConstraints>
+									<fx:define>
+										<ToggleGroup fx:id="regeneratorsMetric" />
+									</fx:define>
+									<children>
+										<RadioButton text="Static" toggleGroup="$regeneratorsMetric" selected="true" />
+										<RadioButton text="Dynamic" toggleGroup="$regeneratorsMetric" GridPane.columnIndex="1" />
+									</children>
+								</GridPane>
+								<Separator />
+								<Button text="Start Simulation" onAction="#startSimulationAction" />
+							</children>
+						</VBox>
+					</content>
+				</TitledPane>
+				<TitledPane animated="true" text="Settings">
+					<content>
+						<VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0"	prefWidth="200.0">
+							<children>
+								<Button id="toggleInput" text="Toggle Input" />
+							</children>
+						</VBox>
+					</content>
+				</TitledPane>
+			</panes>
+		</Accordion>
+	</children>
 </GridPane>

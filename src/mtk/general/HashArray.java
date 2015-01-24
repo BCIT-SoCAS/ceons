@@ -10,6 +10,7 @@ public class HashArray<E> implements Iterable<E> {
 	int size;
 	
 	public HashArray(int initialCapacity) {
+		if (initialCapacity < 1) throw new HashArrayException("Cannot initialize HashArray with capacity %d", initialCapacity);
 		array = new Object[initialCapacity];
 	}
 	
@@ -19,12 +20,13 @@ public class HashArray<E> implements Iterable<E> {
 	}
 	
 	public boolean contains(int hashCode) {
-		if (hashCode == -1 || hashCode >= array.length) return false;
-		return array[hashCode] != null;
+		if (!Utils.checkArrayIndex(array.length, hashCode)) return false;
+		else return array[hashCode] != null;
 	}
 	
 	@SuppressWarnings("unchecked")
 	public E add(E element) {
+		if (element == null) throw new HashArrayException("Cannot add null element to HashArray!");
 		E old = (E) array[element.hashCode()];
 		array[element.hashCode()] = element;
 		if (old == null) size++;
@@ -33,11 +35,13 @@ public class HashArray<E> implements Iterable<E> {
 	
 	@SuppressWarnings("unchecked")
 	public E get(int hashCode) {
+		if (!Utils.checkArrayIndex(array.length, hashCode)) throw new HashArrayException("Hash code: '%d' is out of bounds!", hashCode());
 		return (E) array[hashCode];
 	}
 	
 	@SuppressWarnings("unchecked")
 	public E remove(int hashCode) {
+		if (!Utils.checkArrayIndex(array.length, hashCode)) throw new HashArrayException("Hash code: '%d' is out of bounds!", hashCode());
 		E old = (E) array[hashCode];
 		array[hashCode] = null;
 		if (old != null) size--;
@@ -45,6 +49,7 @@ public class HashArray<E> implements Iterable<E> {
 	}
 	
 	public E remove(E element) {
+		if (element == null) throw new HashArrayException("Cannot remove null element from HashArray!");
 		return remove(element.hashCode());
 	}
 	
