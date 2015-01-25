@@ -26,11 +26,13 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<mtk.eon.net.
 		}
 		
 		public PathPart merge(PathPart other) {
-			if (destination != other.destination)
-				throw new NetworkException("Cannot merge PathParts that are not adjacent!");
 			if (modulation != other.modulation)
 				throw new NetworkException("Cannot merge PathParts with different modulation!");
-			destination = other.destination;
+			if (destination == other.source)
+				destination = other.destination;
+			else if (source == other.destination)
+				source = other.source;
+			else throw new NetworkException("Cannot merge PathParts that are not adjacent!");
 			length += other.length;
 			slices.addAll(other.slices);
 			return this;

@@ -23,6 +23,6 @@ public class AnycastDemand extends Demand {
 			for (NetworkNode replica : network.getReplicas()) for (NetworkPath path : network.getPaths(replica, client)) paths.add(new PartedPath(network, path, path.get(0) == replica));
 		paths.sort(PartedPath.LENGTH_COMPARATOR);
 		
-		return null;
+		return paths;
 	}
 }

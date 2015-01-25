@@ -2,6 +2,7 @@ package mtk.eon.io.legacy;
 
 import mtk.eon.io.FileFormat;
 import mtk.eon.io.LightScanner;
+import mtk.eon.io.Logger;
 import mtk.eon.net.AnycastDemand;
 import mtk.eon.net.Demand;
 import mtk.eon.net.DemandAllocationResult;
@@ -43,6 +44,7 @@ public class DemandFileFormat extends FileFormat<DemandLoader> {
 			}
 			
 			loader.getNetwork().update();
+			loader.task.updateProgress(i, demandsCount);
 		}
 		
 		scanner.close();

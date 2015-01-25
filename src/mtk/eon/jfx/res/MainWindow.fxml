@@ -14,6 +14,9 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.control.ToolBar?>
+<?import mtk.eon.jfx.components.UIntField?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.layout.StackPane?>
 
 <GridPane gridLinesVisible="true" prefWidth="800.0" prefHeight="600.0" stylesheets="/mtk/eon/jfx/res/application.cssext" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mtk.eon.jfx.FXMLController">
 	<columnConstraints>
@@ -41,9 +44,13 @@
 							width="${borderPane.width}" />
 					</children>
 				</BorderPane>
-				<TextArea id="console" editable="false" wrapText="true"
-					GridPane.rowIndex="1" />
-				<TextField id="input" GridPane.rowIndex="2" />
+				<TextArea id="console" editable="false" wrapText="true" GridPane.rowIndex="1" />
+				<StackPane id="bottomPane" GridPane.rowIndex="2">
+					<children>
+						<TextField id="input" />
+						<ProgressBar fx:id="simulationProgress" visible="false" minWidth="${bottomPane.width}" minHeight="${bottomPane.height}" />
+					</children>
+				</StackPane>
 			</children>
 		</GridPane>
 		<Accordion GridPane.columnIndex="1">
@@ -63,9 +70,9 @@
 						<VBox fx:id="settings" spacing="8.0">
 							<children>
 								<Label text="Algorithm" />
-								<ComboBox promptText="Choose algorithm... " />
+								<ComboBox fx:id="algorithms" promptText="Choose algorithm... " />
 								<Separator />
-								<CheckBox text="Allow changing modulation on path?" />
+								<CheckBox fx:id="allowModulationChange" text="Allow changing modulation on path?" />
 								<Label text="Allowed Modulations" />
 								<GridPane>
 									<columnConstraints>
@@ -83,7 +90,7 @@
 								</GridPane>
 								<Separator />
 								<Label text="Best paths" />
-								<TextField text="0" onKeyTyped="#textFieldUIntFilter" />
+								<UIntField fx:id="bestPaths" />
 								<Separator />
 								<Label text="Modulation metric" />
 								<GridPane>
@@ -101,7 +108,7 @@
 								</GridPane>
 								<Separator />
 								<Label text="Regenerator metric value" />
-								<TextField />
+								<UIntField fx:id="regeneratorsMetricValue" />
 								<Label text="Regenerators metric" />
 								<GridPane>
 									<columnConstraints>
