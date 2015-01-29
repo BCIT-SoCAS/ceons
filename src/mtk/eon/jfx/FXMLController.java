@@ -10,7 +10,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
@@ -19,6 +18,7 @@ import javafx.stage.FileChooser;
 import mtk.eon.ApplicationResources;
 import mtk.eon.io.Logger;
 import mtk.eon.jfx.components.Console;
+import mtk.eon.jfx.components.TaskReadyProgressBar;
 import mtk.eon.jfx.components.UIntField;
 import mtk.eon.jfx.tasks.ProjectLoadingTask;
 import mtk.eon.jfx.tasks.SimulationTask;
@@ -35,7 +35,7 @@ public class FXMLController {
 	
 	@FXML private Console console;
 	
-	@FXML private ProgressBar simulationProgress;
+	@FXML private TaskReadyProgressBar progressBar;
 	@FXML private Label progressLabel;
 	
 	@FXML private VBox settings;
@@ -68,8 +68,6 @@ public class FXMLController {
 		modulations = new CheckBox[Modulation.values().length];
 		for (Modulation modulation : Modulation.values())
 			modulations[modulation.ordinal()] = ((CheckBox) settings.lookup("#modulation" + modulation.ordinal()));
-		
-		simulationProgress.prefWidthProperty().bind(console.widthProperty());
 	}
 	
 	@FXML public void loadNetworkAction(ActionEvent e) {
@@ -106,16 +104,12 @@ public class FXMLController {
 		
 		settings.disableProperty().set(true);
 		SimulationTask task = new SimulationTask();
-		simulationProgress.setVisible(true);
-		simulationProgress.progressProperty().bind(task.progressProperty());
-		progressLabel.textProperty().bind(task.messageProperty());
-		Thread thread = new Thread(task);
-		thread.start();
+		progressBar.runTask(task, true);
 	}
 
 	int i;
 	@FXML public void testButton(ActionEvent e) {
-		Task<Void> t = new Task<Void>() {
+		Task<Void> task = new Task<Void>() {
 
 			@Override
 			protected Void call() throws Exception {
@@ -138,8 +132,6 @@ public class FXMLController {
 			
 			
 		};
-		simulationProgress.setVisible(true);
-		simulationProgress.progressProperty().bind(t.progressProperty());
-		new Thread(t).start();
+		progressBar.runTask(task, true);
 	}
 }

@@ -2,6 +2,7 @@ package mtk.graph;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import mtk.general.HashArray;
 import mtk.general.Identifiable;
@@ -84,10 +85,10 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 		return oldLink;
 	}
 	
-	public ArrayList<P> getPaths(N nodeA, N nodeB) {
+	public List<P> getPaths(N nodeA, N nodeB) {
 		Relation<N, L, P> relation = relations.get(Relation.hash(nodeA.hashCode(), nodeB.hashCode()));
 		if (relation == null) return null;
-		return new ArrayList<P>(relation.paths);
+		return relation.paths;
 	}
 	
 	public ArrayList<L> getConnectedLinks(N node) {
@@ -161,7 +162,6 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 				for (int i = 0; relations.get(i) != relation; i++) relations.get(i).paths = relation.paths.subList(0, maxPathsPerPair);
 			} else relation.paths = relation.paths.subList(0, maxPathsPerPair);
 			progressUpdate.run();
-			System.out.println(relation.nodeA + " :: " + relation.nodeB + " - Paths: " + relation.paths.size());
 		}
 		return maxPathsPerPair;
 	}

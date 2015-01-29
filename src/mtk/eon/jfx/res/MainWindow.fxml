@@ -19,6 +19,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import mtk.eon.jfx.components.Console?>
 <?import javafx.scene.control.Label?>
+<?import mtk.eon.jfx.components.TaskReadyProgressBar?>
 
 <GridPane gridLinesVisible="true" prefWidth="800.0" prefHeight="600.0" stylesheets="/mtk/eon/jfx/res/application.cssext" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mtk.eon.jfx.FXMLController">
 	<columnConstraints>
@@ -45,18 +46,14 @@
 					</children>
 				</BorderPane>
 				<Console fx:id="console" wrapText="true" GridPane.rowIndex="1" />
-				<StackPane id="progressPane" GridPane.rowIndex="2">
-					<ProgressBar fx:id="simulationProgress" visible="false" prefWidth="${progressPane.width}" prefHeight="${progressPane.height}" />
-					<Label fx:id="progressLabel" />
-				</StackPane>
+				<TaskReadyProgressBar fx:id="progressBar" GridPane.rowIndex="2" />
 			</children>
 		</GridPane>
 		<Accordion GridPane.columnIndex="1">
 			<panes>
 				<TitledPane animated="true" text="Network">
 					<content>
-						<VBox alignment="TOP_CENTER" minHeight="0.0" minWidth="0.0"
-							prefHeight="180.0" prefWidth="200.0">
+						<VBox alignment="TOP_CENTER" spacing="8.0">
 							<children>
 								<Button onAction="#loadNetworkAction" text="Load" />
 								<Button onAction="#testButton" text="Test Button" />

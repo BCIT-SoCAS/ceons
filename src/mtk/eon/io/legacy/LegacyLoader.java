@@ -2,6 +2,7 @@ package mtk.eon.io.legacy;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import mtk.eon.net.Network;
 import mtk.eon.net.NetworkLink;
@@ -81,7 +82,7 @@ public class LegacyLoader {
 				new NetworkNode[path.size()]), length));
 	}
 	
-	public ArrayList<NetworkPath> getPaths(int source, int destination) {
+	public List<NetworkPath> getPaths(int source, int destination) {
 		return network.getPaths(nodes.get(source), nodes.get(destination));
 	}
 	

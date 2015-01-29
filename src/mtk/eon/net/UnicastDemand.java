@@ -17,6 +17,7 @@ public class UnicastDemand extends Demand {
 		ArrayList<PartedPath> paths = new ArrayList<PartedPath>();
 		
 		for (NetworkPath path : network.getPaths(source, destination)) paths.add(new PartedPath(network, path, source == path.get(0)));
+		while (paths.size() > network.getBestPathsCount()) paths.remove(network.getBestPathsCount());
 		
 		return paths;
 	}

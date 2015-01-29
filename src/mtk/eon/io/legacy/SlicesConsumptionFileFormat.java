@@ -1,6 +1,6 @@
 package mtk.eon.io.legacy;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import mtk.eon.io.FileFormat;
 import mtk.eon.io.LightScanner;
@@ -16,7 +16,7 @@ public class SlicesConsumptionFileFormat extends FileFormat<LegacyLoader> {
 	@Override
 	public boolean loadWithData(LegacyLoader loader) {
 		LightScanner scanner = getStream();
-		ArrayList<NetworkPath> paths;
+		List<NetworkPath> paths;
 		
 		for (int idA = 0; idA < loader.getNodesCount(); idA++)
 			for (int idB = 0; idB < loader.getNodesCount(); idB++)
