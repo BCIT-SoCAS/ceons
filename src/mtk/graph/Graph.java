@@ -143,6 +143,10 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 	}
 	
 	public int calculatePaths(Runnable progressUpdate) {
+		return calculatePaths(progressUpdate, Integer.MAX_VALUE);
+	}
+	
+	public int calculatePaths(Runnable progressUpdate, int maxPathsPerPair) {
 		for (Relation<N, L, P> relation : relations) {
 			relation.paths.clear();
 			currentRelation = relation;
@@ -151,14 +155,14 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 			pathBuilder.addNode(relation.nodeA);
 			depthFirstSearch(relation.nodeA);
 			Collections.sort(relation.paths);
+			if (Runtime.getRuntime().maxMemory() - Runtime.getRuntime().totalMemory() < 1024 * 1024 * 100) relation.paths = relation.paths.subList(0, maxPathsPerPair - 1);
+			if (maxPathsPerPair > relation.paths.size()) {
+				maxPathsPerPair = relation.paths.size();
+				for (int i = 0; relations.get(i) != relation; i++) relations.get(i).paths = relation.paths.subList(0, maxPathsPerPair);
+			} else relation.paths = relation.paths.subList(0, maxPathsPerPair);
 			progressUpdate.run();
+			System.out.println(relation.nodeA + " :: " + relation.nodeB + " - Paths: " + relation.paths.size());
 		}
-		int minPathsCount = Integer.MAX_VALUE;
-		for (Relation<N, L, P> relation : relations)
-			if (relation.paths.size() < minPathsCount)
-				minPathsCount = relation.paths.size();
-		for (Relation<N, L, P> relation : relations)
-			relation.paths = relation.paths.subList(0, minPathsCount);
-		return minPathsCount;
+		return maxPathsPerPair;
 	}
 }
