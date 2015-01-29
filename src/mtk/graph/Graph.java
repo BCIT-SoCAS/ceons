@@ -1,7 +1,7 @@
 package mtk.graph;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collections;
 
 import mtk.general.HashArray;
 import mtk.general.Identifiable;
@@ -36,8 +36,8 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 		return true;
 	}
 	
-	public Iterator<N> getNodesIterator() {
-		return nodes.iterator();
+	public Iterable<N> getNodes() {
+		return nodes;
 	}
 	
 	public boolean removeNode(N node) {
@@ -87,7 +87,7 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 	public ArrayList<P> getPaths(N nodeA, N nodeB) {
 		Relation<N, L, P> relation = relations.get(Relation.hash(nodeA.hashCode(), nodeB.hashCode()));
 		if (relation == null) return null;
-		return relation.paths;
+		return new ArrayList<P>(relation.paths);
 	}
 	
 	public ArrayList<L> getConnectedLinks(N node) {
@@ -114,7 +114,51 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 		return nodes;
 	}
 	
-	int relationsSize() {
+	public int relationsSize() { // TODO only for testing
 		return nodes.size() * (nodes.size() - 1) / 2;
+	}
+	
+	// Pathfinding
+	
+	private N finishNode;
+	private Relation<N, L, P> currentRelation;
+	
+	private void depthFirstSearch(N currentNode) {
+		ArrayList<N> adjacentNodes = getAdjacentNodes(currentNode);
+		for (N node : adjacentNodes) {
+			if (pathBuilder.contains(node)) continue;
+			if (node.equals(finishNode)) {
+				pathBuilder.addNode(node);
+				currentRelation.paths.add(pathBuilder.getPath());
+				pathBuilder.removeTail();
+				break;
+			}
+		}
+		for (N node : adjacentNodes) {
+			if (pathBuilder.contains(node) || node.equals(finishNode)) continue;
+			pathBuilder.addNode(node);
+			depthFirstSearch(node);
+			pathBuilder.removeTail();
+		}
+	}
+	
+	public int calculatePaths(Runnable progressUpdate) {
+		for (Relation<N, L, P> relation : relations) {
+			relation.paths.clear();
+			currentRelation = relation;
+			finishNode = relation.nodeB;
+			pathBuilder.init();
+			pathBuilder.addNode(relation.nodeA);
+			depthFirstSearch(relation.nodeA);
+			Collections.sort(relation.paths);
+			progressUpdate.run();
+		}
+		int minPathsCount = Integer.MAX_VALUE;
+		for (Relation<N, L, P> relation : relations)
+			if (relation.paths.size() < minPathsCount)
+				minPathsCount = relation.paths.size();
+		for (Relation<N, L, P> relation : relations)
+			relation.paths = relation.paths.subList(0, minPathsCount);
+		return minPathsCount;
 	}
 }

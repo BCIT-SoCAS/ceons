@@ -31,7 +31,15 @@ public class LightScanner {
 	
 	public boolean isEOF() {
 		try {
-			return in.available() == 0;
+			char c;
+			while (in.available() > 0) {
+				in.mark(1);
+				c = (char) in.read();
+				in.reset();
+				if (!Character.isWhitespace(c)) return false;
+				in.read();
+			}
+			return true;
 		} catch (IOException e) {
 			throw new RuntimeException("Error while reading file...", e);
 		}
@@ -61,8 +69,8 @@ public class LightScanner {
 		try {
 			StringBuilder stringBuilder = new StringBuilder();
 			do {
+				if (in.available() == 0) return stringBuilder.toString();
 				stringBuilder.append((char) in.read());
-				if (isEOF()) return stringBuilder.toString();
 			} while (!stringBuilder.substring(Math.max(0, stringBuilder.length() - delimiter.length())).equals(delimiter));
 			return stringBuilder.substring(0, stringBuilder.length() - delimiter.length());
 		} catch(IOException e) {

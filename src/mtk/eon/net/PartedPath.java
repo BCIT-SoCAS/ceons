@@ -4,76 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 
-public class PartedPath implements Comparable<PartedPath>, Iterable<mtk.eon.net.PartedPath.PathPart> {
-	
-	public static class PathPart {
-		NetworkNode source;
-		NetworkNode destination;
-		int length;
-		
-		ArrayList<Slices> slices = new ArrayList<Slices>();
-		int index;
-		int slicesCount;
-		
-		Modulation modulation;
-		int metric = Integer.MAX_VALUE;
-		
-		public PathPart(NetworkNode source, NetworkNode destination, int length, Slices... slices) {
-			this.source = source;
-			this.destination = destination;
-			this.length = length;
-			for (Slices s : slices) this.slices.add(s);
-		}
-		
-		public PathPart merge(PathPart other) {
-			if (modulation != other.modulation)
-				throw new NetworkException("Cannot merge PathParts with different modulation!");
-			if (destination == other.source)
-				destination = other.destination;
-			else if (source == other.destination)
-				source = other.source;
-			else throw new NetworkException("Cannot merge PathParts that are not adjacent!");
-			length += other.length;
-			slices.addAll(other.slices);
-			return this;
-		}
-		
-		public NetworkNode getSource() {
-			return source;
-		}
-		
-		public NetworkNode getDestination() {
-			return destination;
-		}
-		
-		public int getLength() {
-			return length;
-		}
-		
-		public double getOccupiedSlicesPercentage() {
-			double result = 0.0;
-			for (Slices s : slices) result += s.getOccupiedSlices();
-			result /= (slices.size() * NetworkLink.NUMBER_OF_SLICES);
-			return result;
-		}
-		
-		public Slices getSlices() {
-			Slices result = new Slices(NetworkLink.NUMBER_OF_SLICES);
-			for (Slices slices : this.slices) result.merge(slices);
-			return result;
-		}
-		
-		public void setModulationIfBetter(Modulation modulation, int metric) {
-			if (metric < this.metric) {
-				this.metric = metric;
-				this.modulation = modulation;
-			}
-		}
-		
-		public Modulation getModulation() {
-			return modulation;
-		}
-	}
+public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 	
 	ArrayList<PathPart> parts = new ArrayList<PathPart>();
 	NetworkPath path;
@@ -128,6 +59,15 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<mtk.eon.net.
 				parts.remove(i);
 				i--;
 			}
+	}
+	
+	public Modulation getModulationFromLongestPart() {
+		PathPart longestPart = parts.get(0), part;
+		for (int i = 1; i < parts.size(); i++) {
+			part = parts.get(i);
+			if (longestPart.getLength() < part.getLength()) longestPart = part;
+		}
+		return longestPart.getModulation();
 	}
 	
 	public double getOccupiedRegeneratorsPercentage() {

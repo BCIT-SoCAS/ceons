@@ -1,13 +1,11 @@
 package mtk.eon.jfx.tasks;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import mtk.eon.ApplicationResources;
 import mtk.eon.Project;
-import mtk.eon.io.InvalidExtensionException;
 import mtk.eon.io.Logger;
 
 public class ProjectLoadingTask extends Task<Void> {
@@ -26,8 +24,8 @@ public class ProjectLoadingTask extends Task<Void> {
 				Project project = new Project(file);
 				Logger.info("Project loaded successfully.");
 				Platform.runLater(() -> ApplicationResources.setProject(project));
-			} catch (FileNotFoundException | InvalidExtensionException exc) {
-				Logger.debug(exc.toString());
+			} catch (Exception e) {
+				Logger.debug(e.toString());
 				Logger.info("Failed to load project...");
 				return null;
 			}

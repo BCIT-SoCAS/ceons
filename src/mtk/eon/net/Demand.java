@@ -2,8 +2,6 @@ package mtk.eon.net;
 
 import java.util.ArrayList;
 
-import mtk.eon.net.PartedPath.PathPart;
-
 public abstract class Demand {
 
 	int volume;

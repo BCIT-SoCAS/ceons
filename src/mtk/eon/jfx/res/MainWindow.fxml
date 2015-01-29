@@ -17,6 +17,8 @@
 <?import mtk.eon.jfx.components.UIntField?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.layout.StackPane?>
+<?import mtk.eon.jfx.components.Console?>
+<?import javafx.scene.control.Label?>
 
 <GridPane gridLinesVisible="true" prefWidth="800.0" prefHeight="600.0" stylesheets="/mtk/eon/jfx/res/application.cssext" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mtk.eon.jfx.FXMLController">
 	<columnConstraints>
@@ -29,8 +31,7 @@
 	<children>
 		<GridPane>
 			<columnConstraints>
-				<ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"
-					percentWidth="100.0" prefWidth="100.0" />
+				<ColumnConstraints hgrow="ALWAYS" percentWidth="100.0" prefWidth="100.0" />
 			</columnConstraints>
 			<rowConstraints>
 				<RowConstraints vgrow="SOMETIMES" />
@@ -40,16 +41,13 @@
 			<children>
 				<BorderPane id="borderPane">
 					<children>
-						<ResizableCanvas id="graph" height="${borderPane.height}"
-							width="${borderPane.width}" />
+						<ResizableCanvas id="graph" height="${borderPane.height}" width="${borderPane.width}" />
 					</children>
 				</BorderPane>
-				<TextArea id="console" editable="false" wrapText="true" GridPane.rowIndex="1" />
-				<StackPane id="bottomPane" GridPane.rowIndex="2">
-					<children>
-						<TextField id="input" />
-						<ProgressBar fx:id="simulationProgress" visible="false" minWidth="${bottomPane.width}" minHeight="${bottomPane.height}" />
-					</children>
+				<Console fx:id="console" wrapText="true" GridPane.rowIndex="1" />
+				<StackPane id="progressPane" GridPane.rowIndex="2">
+					<ProgressBar fx:id="simulationProgress" visible="false" prefWidth="${progressPane.width}" prefHeight="${progressPane.height}" />
+					<Label fx:id="progressLabel" />
 				</StackPane>
 			</children>
 		</GridPane>
@@ -61,6 +59,7 @@
 							prefHeight="180.0" prefWidth="200.0">
 							<children>
 								<Button onAction="#loadNetworkAction" text="Load" />
+								<Button onAction="#testButton" text="Test Button" />
 							</children>
 						</VBox>
 					</content>

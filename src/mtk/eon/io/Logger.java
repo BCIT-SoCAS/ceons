@@ -1,6 +1,6 @@
 package mtk.eon.io;
 
-import javafx.application.Platform;
+import mtk.eon.jfx.components.Console;
 
 public class Logger {
 
@@ -11,13 +11,10 @@ public class Logger {
 	public static LoggerLevel loggerLevel = LoggerLevel.DEBUG;
 	
 	public static void debug(String message) {
-		if (loggerLevel == LoggerLevel.DEBUG)
-			if (Platform.isFxApplicationThread()) System.out.println(message);
-			else Platform.runLater(() -> System.out.println(message));
+		if (loggerLevel == LoggerLevel.DEBUG) Console.cout.println(message);
 	}
 	
 	public static void info(String message) {
-		if (Platform.isFxApplicationThread()) System.out.println(message);
-		else Platform.runLater(() -> System.out.println(message));
+		Console.cout.println(message);
 	}
 }

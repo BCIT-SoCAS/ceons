@@ -1,6 +1,7 @@
 package mtk.graph;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class Relation<N, L, P extends Path<N>> {
@@ -8,7 +9,7 @@ public class Relation<N, L, P extends Path<N>> {
 	final N nodeA;
 	final N nodeB;
 	L link;
-	ArrayList<P> paths = new ArrayList<P>();
+	List<P> paths = new ArrayList<P>();
 	
 	Relation(N nodeA, N nodeB) {
 		if (nodeA.equals(nodeB)) throw new GraphException("A node cannot have a relation with itself!");

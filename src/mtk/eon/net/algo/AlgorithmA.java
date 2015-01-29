@@ -9,7 +9,7 @@ import mtk.eon.net.MetricType;
 import mtk.eon.net.Modulation;
 import mtk.eon.net.Network;
 import mtk.eon.net.PartedPath;
-import mtk.eon.net.PartedPath.PathPart;
+import mtk.eon.net.PathPart;
 
 public class AlgorithmA extends Algorithm {
 
@@ -30,25 +30,7 @@ public class AlgorithmA extends Algorithm {
 			for (PathPart part : path) {
 				for (Modulation modulation : network.getAllowedModulations())
 					if (network.getModulationDistance(modulation, volume) >= part.getLength()) {
-						int metric;
-						if (network.getModualtionMetricType() == MetricType.STATIC)
-							metric = network.getStaticModulationMetric(modulation);
-						else {
-							double slicesOccupationPercentage = part.getOccupiedSlicesPercentage() * 100;
-							int slicesOccupationMetric;
-							if (slicesOccupationPercentage <= 90)
-								if (slicesOccupationPercentage <= 75)
-									if (slicesOccupationPercentage <= 60)
-										if (slicesOccupationPercentage <= 40)
-											if (slicesOccupationPercentage <= 20) slicesOccupationMetric = 0;
-											else slicesOccupationMetric = 1;
-										else slicesOccupationMetric = 2;
-									else slicesOccupationMetric = 3;
-								else slicesOccupationMetric = 4;
-							else slicesOccupationMetric = 5;
-							metric = network.getDynamicModulationMetric(modulation, slicesOccupationMetric);
-						}
-						part.setModulationIfBetter(modulation, metric);
+						part.setModulationIfBetter(modulation, calculateModulationMetric(network, part, modulation));
 					}
 				
 				if (part.getModulation() == null) continue pathLoop;
@@ -58,7 +40,10 @@ public class AlgorithmA extends Algorithm {
 
 			// Unify modulations if needed
 			if (!network.canSwitchModulation()) {
-				//TODO
+				Modulation modulation = path.getModulationFromLongestPart();
+				for (PathPart part : path)
+					part.setModulation(modulation, calculateModulationMetric(network, part, modulation));
+				path.calculateMetricFromParts();
 			}
 			
 			// Update metrics
@@ -81,5 +66,27 @@ public class AlgorithmA extends Algorithm {
 		}
 		
 		return result;
+	}
+	
+	public int calculateModulationMetric(Network network, PathPart part, Modulation modulation) {
+		int metric;
+		if (network.getModualtionMetricType() == MetricType.STATIC)
+			metric = network.getStaticModulationMetric(modulation);
+		else {
+			double slicesOccupationPercentage = part.getOccupiedSlicesPercentage() * 100;
+			int slicesOccupationMetric;
+			if (slicesOccupationPercentage <= 90)
+				if (slicesOccupationPercentage <= 75)
+					if (slicesOccupationPercentage <= 60)
+						if (slicesOccupationPercentage <= 40)
+							if (slicesOccupationPercentage <= 20) slicesOccupationMetric = 0;
+							else slicesOccupationMetric = 1;
+						else slicesOccupationMetric = 2;
+					else slicesOccupationMetric = 3;
+				else slicesOccupationMetric = 4;
+			else slicesOccupationMetric = 5;
+			metric = network.getDynamicModulationMetric(modulation, slicesOccupationMetric);
+		}
+		return metric;
 	}
 }

@@ -4,10 +4,12 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Toggle;
@@ -16,19 +18,25 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import mtk.eon.ApplicationResources;
 import mtk.eon.io.Logger;
+import mtk.eon.jfx.components.Console;
 import mtk.eon.jfx.components.UIntField;
 import mtk.eon.jfx.tasks.ProjectLoadingTask;
 import mtk.eon.jfx.tasks.SimulationTask;
 import mtk.eon.net.MetricType;
 import mtk.eon.net.Modulation;
 import mtk.eon.net.Network;
+import mtk.eon.net.NetworkNode;
 import mtk.eon.net.algo.Algorithm;
+import mtk.general.Utils;
 
 import com.sun.javafx.collections.ObservableListWrapper;
 
 public class FXMLController {
 	
+	@FXML private Console console;
+	
 	@FXML private ProgressBar simulationProgress;
+	@FXML private Label progressLabel;
 	
 	@FXML private VBox settings;
 	@FXML private ComboBox<Algorithm> algorithms;
@@ -47,11 +55,21 @@ public class FXMLController {
 				throw new RuntimeException(e);
 			}
 		
+		try {
+			Utils.setStaticFinal(Console.class, "cout", console.out);
+			Utils.setStaticFinal(Console.class, "cin", console.in);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		
+		
 		algorithms.setItems(new ObservableListWrapper<Algorithm>(new ArrayList<Algorithm>(Algorithm.getRegisteredAlgorithms())));
 		
 		modulations = new CheckBox[Modulation.values().length];
 		for (Modulation modulation : Modulation.values())
 			modulations[modulation.ordinal()] = ((CheckBox) settings.lookup("#modulation" + modulation.ordinal()));
+		
+		simulationProgress.prefWidthProperty().bind(console.widthProperty());
 	}
 	
 	@FXML public void loadNetworkAction(ActionEvent e) {
@@ -90,7 +108,38 @@ public class FXMLController {
 		SimulationTask task = new SimulationTask();
 		simulationProgress.setVisible(true);
 		simulationProgress.progressProperty().bind(task.progressProperty());
+		progressLabel.textProperty().bind(task.messageProperty());
 		Thread thread = new Thread(task);
 		thread.start();
+	}
+
+	int i;
+	@FXML public void testButton(ActionEvent e) {
+		Task<Void> t = new Task<Void>() {
+
+			@Override
+			protected Void call() throws Exception {
+				Network network = ApplicationResources.getProject().getNetwork();
+				
+				for (NetworkNode node : network.getNodes()) {
+					Console.cout.println(node.getName() + " - " + node.getID() + " - " + (node.isReplica() ? "Is replica" : "Isn't replica") + " - Free regs: " + node.getFreeRegenerators());
+				}
+				i = 1;
+				int p = 0;
+				try {
+					p = network.calculatePaths(() -> updateProgress(i++, network.relationsSize()));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				Console.cout.println("Max best paths count: " + p);
+				
+				return null;
+			}
+			
+			
+		};
+		simulationProgress.setVisible(true);
+		simulationProgress.progressProperty().bind(t.progressProperty());
+		new Thread(t).start();
 	}
 }

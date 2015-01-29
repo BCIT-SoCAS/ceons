@@ -21,7 +21,15 @@ public class NetworkPathBuilder extends PathBuilder<NetworkNode, NetworkPath, Ne
 	@Override
 	public void addNode(NetworkNode node) {
 		path.add(node);
-		length += getGraph().getLink(node, path.get(path.size())).getLength();
+		if (path.size() > 1)
+			length += getGraph().getLink(node, path.get(path.size() - 2)).getLength();
+	}
+
+	@Override
+	public void removeTail() {
+		NetworkNode node = path.remove(path.size() - 1);
+		if (path.size() > 0)
+			length -= getGraph().getLink(node, path.get(path.size() - 1)).getLength();
 	}
 
 	@Override
