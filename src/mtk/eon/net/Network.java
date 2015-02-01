@@ -7,6 +7,7 @@ import java.util.List;
 import mtk.eon.net.DemandAllocationResult.Type;
 import mtk.eon.net.algo.Algorithm;
 import mtk.graph.Graph;
+import mtk.graph.positioned.NodeCluster;
 
 
 public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Network> {
@@ -109,9 +110,6 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 		boolean result = super.removeNode(node);
 		if (result) nodes.remove(node.getName());
 		return result;
-	}
-	
-	public void guessNodesPositions() {
 	}
 	
 	// LINKS

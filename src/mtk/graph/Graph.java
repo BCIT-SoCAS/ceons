@@ -27,7 +27,7 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 	}
 	
 	protected boolean addNode(N node) {
-		if (nodes.add(node) == null) return false;
+		if (!nodes.add(node)) return false;
 		relations.resize(relationsSize());
 		for (N n : nodes)
 			if (node != n) {

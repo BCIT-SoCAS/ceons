@@ -1,13 +1,10 @@
 package mtk.eon.net;
 
-import java.awt.geom.Point2D;
+import mtk.graph.positioned.PositionedNode;
 
-import mtk.general.Identifiable;
-
-public class NetworkNode extends Identifiable {
+public class NetworkNode extends PositionedNode {
 
 	String name;
-	Point2D.Double position;
 	boolean isReplica;
 	int regeneratorsCount, occupiedRegenerators;
 	
@@ -40,14 +37,5 @@ public class NetworkNode extends Identifiable {
 		if (occupiedRegenerators > regeneratorsCount || occupiedRegenerators < 0)
 			throw new NetworkException("Regenerators occupation exception! (" + occupiedRegenerators + "/" +
 					regeneratorsCount + ")");
-	}
-	
-	public void setPosition(int x, int y) {
-		if (position == null) position = new Point2D.Double();
-		position.setLocation(x, y);
-	}
-	
-	public Point2D.Double getPosition() {
-		return position;
 	}
 }

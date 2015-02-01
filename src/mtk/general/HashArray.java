@@ -2,9 +2,10 @@ package mtk.general;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 
-public class HashArray<E> implements Iterable<E> {
+public class HashArray<E> implements Collection<E> {
 
 	Object[] array;
 	int size;
@@ -14,7 +15,13 @@ public class HashArray<E> implements Iterable<E> {
 		array = new Object[initialCapacity];
 	}
 	
-	public boolean contains(E element) {
+	@Override
+	public boolean isEmpty() {
+		return size == 0;
+	}
+	
+	@Override
+	public boolean contains(Object element) {
 		if (element == null) return false;
 		return contains(element.hashCode());
 	}
@@ -24,33 +31,59 @@ public class HashArray<E> implements Iterable<E> {
 		else return array[hashCode] != null;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public E add(E element) {
+	@Override
+	public boolean containsAll(Collection<?> collection) {
+		for (Object element : collection) if (!contains(element)) return false;
+		return true;
+	}
+	
+	@Override
+	public boolean add(E element) {
 		if (element == null) throw new HashArrayException("Cannot add null element to HashArray!");
-		E old = (E) array[element.hashCode()];
+		if (!Utils.checkArrayIndex(capacity(), element.hashCode())) throw new HashArrayException("Hash code: '%d' is out of bounds!", element.hashCode());
+		if (array[element.hashCode()] == null) size++;
 		array[element.hashCode()] = element;
-		if (old == null) size++;
-		return old;
+		return true;
+	}
+	
+	@Override
+	public boolean addAll(Collection<? extends E> collection) {
+		boolean result = false;
+		for (E element : collection) result |= add(element);
+		return result;
 	}
 	
 	@SuppressWarnings("unchecked")
 	public E get(int hashCode) {
-		if (!Utils.checkArrayIndex(array.length, hashCode)) throw new HashArrayException("Hash code: '%d' is out of bounds!", hashCode());
+		if (!Utils.checkArrayIndex(array.length, hashCode)) throw new HashArrayException("Hash code: '%d' is out of bounds!", hashCode);
 		return (E) array[hashCode];
 	}
 	
-	@SuppressWarnings("unchecked")
-	public E remove(int hashCode) {
-		if (!Utils.checkArrayIndex(array.length, hashCode)) throw new HashArrayException("Hash code: '%d' is out of bounds!", hashCode());
-		E old = (E) array[hashCode];
+	public boolean remove(int hashCode) {
+		if (!Utils.checkArrayIndex(array.length, hashCode)) throw new HashArrayException("Hash code: '%d' is out of bounds!", hashCode);
+		if (array[hashCode] != null) size--;
 		array[hashCode] = null;
-		if (old != null) size--;
-		return old;
+		return true;
 	}
 	
-	public E remove(E element) {
+	@Override
+	public boolean remove(Object element) {
 		if (element == null) throw new HashArrayException("Cannot remove null element from HashArray!");
 		return remove(element.hashCode());
+	}
+	
+	@Override
+	public boolean removeAll(Collection<?> collection) {
+		boolean result = false;
+		for (Object element : collection) result |= remove(element);
+		return result;
+	}
+	
+	@Override
+	public boolean retainAll(Collection<?> collection) {
+		boolean result = false;
+		for (int i = 0; i < capacity(); i++) if (!collection.contains(array[i]) && array[i] != null) result |= remove(array[i]);
+		return result;
 	}
 	
 	public void resize(int capacity) {
@@ -78,8 +111,34 @@ public class HashArray<E> implements Iterable<E> {
 		return array.length;
 	}
 	
+	@Override
 	public int size() {
 		return size;
+	}
+	
+	@Override
+	public void clear() {
+		for (int i = 0; i < capacity(); i++) if (array[i] != null) remove(array[i]);
+	}
+	
+	@Override
+	public Object[] toArray() {
+		int index = 0;
+		Object[] result = new Object[size()];
+		for (E element : this) {
+			result[index] = element;
+			index++;
+		}
+		return result;
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T[] toArray(T[] array) {
+		if (array.length < size) return (T[]) Arrays.copyOf(toArray(), size, array.getClass());
+		System.arraycopy(toArray(), 0, array, 0, size);
+		if (array.length > size) array[size] = null; 
+		return array;
 	}
 	
 	@Override
