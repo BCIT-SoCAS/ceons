@@ -97,10 +97,6 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 		return replicas;
 	}
 	
-	public void guessNodesPositions() {
-		// TODO
-	}
-	
 	@Override
 	protected boolean addNode(NetworkNode node) {
 		boolean result = super.addNode(node);
@@ -113,6 +109,9 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 		boolean result = super.removeNode(node);
 		if (result) nodes.remove(node.getName());
 		return result;
+	}
+	
+	public void guessNodesPositions() {
 	}
 	
 	// LINKS

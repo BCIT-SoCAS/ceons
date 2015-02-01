@@ -71,6 +71,7 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 	}
 	
 	public L getLink(N nodeA, N nodeB) {
+		if (nodeA == nodeB) return null;
 		Relation<N, L, P> relation = relations.get(Relation.hash(nodeA.hashCode(), nodeB.hashCode()));
 		if (relation == null) return null;
 		return relation.link;

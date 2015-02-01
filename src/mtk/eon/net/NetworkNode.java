@@ -1,13 +1,13 @@
 package mtk.eon.net;
 
-import java.awt.Point;
+import java.awt.geom.Point2D;
 
 import mtk.general.Identifiable;
 
 public class NetworkNode extends Identifiable {
 
 	String name;
-	Point position;
+	Point2D.Double position;
 	boolean isReplica;
 	int regeneratorsCount, occupiedRegenerators;
 	
@@ -43,10 +43,11 @@ public class NetworkNode extends Identifiable {
 	}
 	
 	public void setPosition(int x, int y) {
+		if (position == null) position = new Point2D.Double();
 		position.setLocation(x, y);
 	}
 	
-	public Point getPosition() {
+	public Point2D.Double getPosition() {
 		return position;
 	}
 }
