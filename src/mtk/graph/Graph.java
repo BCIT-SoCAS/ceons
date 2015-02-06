@@ -1,6 +1,7 @@
 package mtk.graph;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,8 +38,8 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 		return true;
 	}
 	
-	public Iterable<N> getNodes() {
-		return nodes;
+	public List<N> getNodes() {
+		return new ArrayList<N>(nodes);
 	}
 	
 	public boolean removeNode(N node) {
