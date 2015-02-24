@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import mtk.eon.net.DemandAllocationResult.Type;
 import mtk.eon.net.algo.Algorithm;
+import mtk.eon.net.demand.Demand;
+import mtk.eon.net.demand.DemandAllocationResult;
+import mtk.eon.net.demand.DemandAllocationResult.Type;
+import mtk.eon.net.spectrum.Spectrum;
 import mtk.graph.Graph;
-import mtk.graph.positioned.NodeCluster;
 
 
 public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Network> {
@@ -16,6 +18,7 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	ArrayList<NetworkNode> replicas = new ArrayList<NetworkNode>();
 
 	List<Modulation> modulations = new ArrayList<Modulation>();
+	int[][] slicesConsumption = new int[6][40];
 	int[][] modulationDistances = new int[6][40];
 	MetricType modulationMetricType;
 	int[][] modulationMetrics = new int[6][6];
@@ -114,12 +117,20 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	
 	// LINKS
 	
-	public Slices getLinkSlices(NetworkNode source, NetworkNode destination) {
+	public Spectrum getLinkSlices(NetworkNode source, NetworkNode destination) {
 		NetworkLink link = getLink(source, destination);
 		return source.getID() < destination.getID() ? link.slicesUp : link.slicesDown;
 	}
 	
 	// MODULATION
+	
+	public int getSlicesConsumption(Modulation modulation, int volume) {
+		return slicesConsumption[modulation.ordinal()][volume];
+	}
+	
+	public void setSlicesConsumption(Modulation modulation, int volume, int slicesConsumption) {
+		this.slicesConsumption[modulation.ordinal()][volume] = slicesConsumption;
+	}
 	
 	public MetricType getModualtionMetricType() {
 		return modulationMetricType;
@@ -147,7 +158,7 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	public void setModualtionMetricType(MetricType modulationMetricType) {
 		this.modulationMetricType = modulationMetricType;
 		if (modulationMetricType == MetricType.DYNAMIC)
-			for (int i = 0; i < 6; i++)
+			for (int i = 0; i < 6; i++) // TODO RETHINK THAT
 				for (int j = 0; j < 6; j++)
 					modulationMetrics[i][j] = j <= i ? i - j : j;
 	}

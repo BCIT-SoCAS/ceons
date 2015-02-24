@@ -1,6 +1,11 @@
-package mtk.eon.net;
+package mtk.eon.net.demand;
 
 import java.util.ArrayList;
+
+import mtk.eon.net.Network;
+import mtk.eon.net.NetworkNode;
+import mtk.eon.net.NetworkPath;
+import mtk.eon.net.PartedPath;
 
 public class AnycastDemand extends Demand {
 

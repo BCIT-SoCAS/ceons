@@ -1,6 +1,11 @@
-package mtk.eon.net;
+package mtk.eon.net.demand;
 
 import java.util.ArrayList;
+
+import mtk.eon.net.Network;
+import mtk.eon.net.PartedPath;
+import mtk.eon.net.PathPart;
+import mtk.eon.net.spectrum.Spectrum;
 
 public abstract class Demand {
 
@@ -32,8 +37,8 @@ public abstract class Demand {
 		return ttl <= 0;
 	}
 	
-	public DemandAllocationResult allocate(PartedPath path) {
-		if (path.allocate(this)) {
+	public DemandAllocationResult allocate(Network network, PartedPath path) {
+		if (path.allocate(network, this)) {
 			this.path = path;
 			return new DemandAllocationResult(path);
 		}
@@ -45,7 +50,7 @@ public abstract class Demand {
 		for (PathPart part : path) {
 			if (!isFirst) part.getSource().occupyRegenerators(-1);
 			else isFirst = false;
-			for	(Slices slices : part.slices) slices.deallocate(part.index, part.slicesCount);
+			for	(Spectrum slices : part.slices) slices.deallocate(part.segment);
 		}
 	}
 }

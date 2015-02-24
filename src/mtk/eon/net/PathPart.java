@@ -2,23 +2,25 @@ package mtk.eon.net;
 
 import java.util.ArrayList;
 
+import mtk.eon.net.spectrum.Spectrum;
+import mtk.eon.net.spectrum.SpectrumSegment;
+
 public class PathPart {
 	NetworkNode source;
 	NetworkNode destination;
 	int length;
 	
-	ArrayList<Slices> slices = new ArrayList<Slices>();
-	int index;
-	int slicesCount;
+	ArrayList<Spectrum> slices = new ArrayList<Spectrum>();
+	SpectrumSegment segment;
 	
 	Modulation modulation;
 	int metric = Integer.MAX_VALUE;
 	
-	public PathPart(NetworkNode source, NetworkNode destination, int length, Slices... slices) {
+	public PathPart(NetworkNode source, NetworkNode destination, int length, Spectrum... slices) {
 		this.source = source;
 		this.destination = destination;
 		this.length = length;
-		for (Slices s : slices) this.slices.add(s);
+		for (Spectrum s : slices) this.slices.add(s);
 	}
 	
 	public PathPart merge(PathPart other) {
@@ -49,16 +51,16 @@ public class PathPart {
 	public double getOccupiedSlicesPercentage() {
 		double occupied = 0.0;
 		double all = 0.0;
-		for (Slices s : slices) {
+		for (Spectrum s : slices) {
 			occupied += s.getOccupiedSlices();
 			all += s.getSlicesCount();
 		}
 		return occupied / all;
 	}
 	
-	public Slices getSlices() {
-		Slices result = new Slices(NetworkLink.NUMBER_OF_SLICES);
-		for (Slices slices : this.slices) result.merge(slices);
+	public Spectrum getSlices() {
+		Spectrum result = new Spectrum(NetworkLink.NUMBER_OF_SLICES);
+		for (Spectrum slices : this.slices) result.merge(slices);
 		return result;
 	}
 	

@@ -1,4 +1,6 @@
-package mtk.eon.net;
+package mtk.eon.net.demand;
+
+import mtk.eon.net.PartedPath;
 
 public class DemandAllocationResult {
 

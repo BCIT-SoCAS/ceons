@@ -4,12 +4,16 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import mtk.eon.net.demand.Demand;
+import mtk.eon.net.spectrum.Spectrum;
+
 public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
-	
-	ArrayList<PathPart> parts = new ArrayList<PathPart>();
+
 	NetworkPath path;
+	ArrayList<PathPart> parts = new ArrayList<PathPart>();
 	double occupiedRegeneratorsPercentage;
 	double metric = -1.0;
+	// TODO Use properties here and in other objects
 	
 	public PartedPath(Network network, NetworkPath path, boolean isUp) {
 		int allRegenerators = 0;
@@ -78,17 +82,16 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 		return parts.size() - 1;
 	}
 	
-	public boolean allocate(Demand demand) {
+	public boolean allocate(Network network, Demand demand) {
 		for (PathPart part : parts) {
-			Slices slices = part.getSlices();
-			int slicesCount = path.slicesConsumption[part.getModulation().ordinal()][(int) Math.ceil(demand.getVolume() / 10) - 1];
-			part.index = slices.canAllocate(slicesCount);
-			part.slicesCount = slicesCount;
-			if (part.index == -1) return false;
+			Spectrum slices = part.getSlices();
+			int slicesCount = network.getSlicesConsumption(part.getModulation(), (int) Math.ceil(demand.getVolume() / 10) - 1);
+			part.segment = slices.canAllocate(slicesCount);
+			if (part.segment == Spectrum.CANNOT_ALLOCATE) return false;
 		}
 		for (PathPart part : parts) {
 			if (part != parts.get(0)) part.source.occupyRegenerators(1);
-			for	(Slices slices : part.slices) slices.allocate(part.index, part.slicesCount);
+			for	(Spectrum slices : part.slices) slices.allocate(part.segment);
 		}
 		return true;
 	}

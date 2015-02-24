@@ -3,9 +3,9 @@ package mtk.eon.net.algo;
 import java.util.Collection;
 import java.util.HashMap;
 
-import mtk.eon.net.Demand;
-import mtk.eon.net.DemandAllocationResult;
 import mtk.eon.net.Network;
+import mtk.eon.net.demand.Demand;
+import mtk.eon.net.demand.DemandAllocationResult;
 
 public abstract class Algorithm {
 	
@@ -13,7 +13,8 @@ public abstract class Algorithm {
 	
 	static {
 		registeredAlgorithms = new HashMap<String, Algorithm>();
-		registerAlgorithm(new AlgorithmA());
+		registerAlgorithm(new AMRA());
+		registerAlgorithm(new MNC());
 	}
 	
 	public static void registerAlgorithm(Algorithm algorithm) {

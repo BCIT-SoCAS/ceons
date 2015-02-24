@@ -2,12 +2,12 @@ package mtk.eon.io.legacy;
 
 import mtk.eon.io.FileFormat;
 import mtk.eon.io.LightScanner;
-import mtk.eon.net.AnycastDemand;
-import mtk.eon.net.Demand;
-import mtk.eon.net.DemandAllocationResult;
 import mtk.eon.net.NetworkNode;
 import mtk.eon.net.PathPart;
-import mtk.eon.net.UnicastDemand;
+import mtk.eon.net.demand.AnycastDemand;
+import mtk.eon.net.demand.Demand;
+import mtk.eon.net.demand.DemandAllocationResult;
+import mtk.eon.net.demand.UnicastDemand;
 
 public class DemandFileFormat extends FileFormat<DemandLoader> {
 

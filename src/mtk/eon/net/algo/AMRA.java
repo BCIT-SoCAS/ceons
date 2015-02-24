@@ -3,19 +3,19 @@ package mtk.eon.net.algo;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import mtk.eon.net.Demand;
-import mtk.eon.net.DemandAllocationResult;
 import mtk.eon.net.MetricType;
 import mtk.eon.net.Modulation;
 import mtk.eon.net.Network;
 import mtk.eon.net.PartedPath;
 import mtk.eon.net.PathPart;
+import mtk.eon.net.demand.Demand;
+import mtk.eon.net.demand.DemandAllocationResult;
 
-public class AlgorithmA extends Algorithm {
+public class AMRA extends Algorithm {
 
 	@Override
 	public String getName() {
-		return "A";
+		return "AMRA";
 	}
 	
 	@Override
@@ -61,7 +61,7 @@ public class AlgorithmA extends Algorithm {
 		
 		DemandAllocationResult result = null;
 		for (PartedPath path : candidatePaths) {
-			result = demand.allocate(path);
+			result = demand.allocate(network, path);
 			if (result != DemandAllocationResult.NO_SPECTRUM) return result;
 		}
 		

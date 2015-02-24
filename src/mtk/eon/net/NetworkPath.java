@@ -5,7 +5,6 @@ import mtk.graph.Path;
 public class NetworkPath extends Path<NetworkNode> {
 
 	int length;
-	public int[][] slicesConsumption = new int[6][40];
 	public double[][] costs = new double[6][40];
 	public int[][] energy = new int[6][40];
 	
