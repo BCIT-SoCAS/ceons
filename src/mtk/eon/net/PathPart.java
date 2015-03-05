@@ -10,17 +10,17 @@ public class PathPart {
 	NetworkNode destination;
 	int length;
 	
-	ArrayList<Spectrum> slices = new ArrayList<Spectrum>();
+	ArrayList<Spectrum> spectra = new ArrayList<Spectrum>();
 	SpectrumSegment segment;
 	
 	Modulation modulation;
 	int metric = Integer.MAX_VALUE;
 	
-	public PathPart(NetworkNode source, NetworkNode destination, int length, Spectrum... slices) {
+	public PathPart(NetworkNode source, NetworkNode destination, int length, Spectrum... spectra) {
 		this.source = source;
 		this.destination = destination;
 		this.length = length;
-		for (Spectrum s : slices) this.slices.add(s);
+		for (Spectrum s : spectra) this.spectra.add(s);
 	}
 	
 	public PathPart merge(PathPart other) {
@@ -32,7 +32,7 @@ public class PathPart {
 			source = other.source;
 		else throw new NetworkException("Cannot merge PathParts that are not adjacent!");
 		length += other.length;
-		slices.addAll(other.slices);
+		spectra.addAll(other.spectra);
 		return this;
 	}
 	
@@ -51,7 +51,7 @@ public class PathPart {
 	public double getOccupiedSlicesPercentage() {
 		double occupied = 0.0;
 		double all = 0.0;
-		for (Spectrum s : slices) {
+		for (Spectrum s : spectra) {
 			occupied += s.getOccupiedSlices();
 			all += s.getSlicesCount();
 		}
@@ -60,7 +60,7 @@ public class PathPart {
 	
 	public Spectrum getSlices() {
 		Spectrum result = new Spectrum(NetworkLink.NUMBER_OF_SLICES);
-		for (Spectrum slices : this.slices) result.merge(slices);
+		for (Spectrum slices : this.spectra) result.merge(slices);
 		return result;
 	}
 	

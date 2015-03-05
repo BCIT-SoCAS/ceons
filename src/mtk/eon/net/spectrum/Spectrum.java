@@ -1,96 +1,112 @@
 package mtk.eon.net.spectrum;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import mtk.eon.net.NetworkException;
+import mtk.eon.net.demand.Demand;
+import mtk.general.InsertionSortList;
 
 public class Spectrum {
 	
 	public static final SpectrumSegment CANNOT_ALLOCATE = new SpectrumSegment(null, -1, -1);
 	
-	private List<SpectrumSegment> free = new ArrayList<SpectrumSegment>();
-	private List<SpectrumSegment> all = new ArrayList<SpectrumSegment>();
+	private InsertionSortList<SpectrumSegment> spectrum = new InsertionSortList<SpectrumSegment>();
 	int slicesCount, occupiedSlices;
 	
 	public Spectrum(int slicesCount) {
 		if (slicesCount <= 0) throw new NetworkException("The number of slices has to be larger than 0!");
 		if (slicesCount % 2 != 0) throw new NetworkException("The number of slices has to be even!");
 		this.slicesCount = slicesCount;
-		SpectrumSegment initSegment = new SpectrumSegment(this, 0, slicesCount);
-		free.add(initSegment);
-		all.add(initSegment);
+		spectrum.add(new SpectrumSegment(this, 0, slicesCount, true));
 	}
 	
 	public int getSlicesCount() {
 		return slicesCount;
 	}
 	
-	public void merge(Spectrum slices) {
-		if (slices.getSlicesCount() != getSlicesCount())
-			throw new NetworkException("Cannot merge slices of different lengths!");
-		for (int i = 0; i < this.slices.length; i++)
-			this.slices[i] |= slices.slices[i];
+	public void merge(Spectrum spectrum) {
+		if (slicesCount != getSlicesCount())
+			throw new SpectrumException(SpectrumException.Type.MERGE_DIFFERENT_LENGTH_SPECTRA);
+		
 	}
 	
-	public boolean canAllocate(int volume) {
-		for (SpectrumSegment segment : free) if (segment.getVolume() >= volume)
-			return true;
+	public List<SpectrumSegment> getWorkingCandidates(int volume) {
+		List<SpectrumSegment> candidates = new ArrayList<SpectrumSegment>();
+		for (SpectrumSegment segment : spectrum) if (segment.getVolume() >= volume && segment.isFree()) candidates.add(segment);
+		return candidates;
+	}
+	
+	public List<List<SpectrumSegment>> getBackupCandidate(int volume, Demand demand) {
+		List<List<SpectrumSegment>> candidates = new ArrayList<List<SpectrumSegment>>();
+		candidates.add(new ArrayList<SpectrumSegment>());
+		for (SpectrumSegment segment : spectrum) {
+			List<SpectrumSegment> lastCluster = candidates.get(candidates.size() - 1);
+			if (segment.isFree() || segment instanceof BackupSpectrumSegment && ((BackupSpectrumSegment) segment).canOverlap(demand))
+				if (lastCluster.isEmpty() || lastCluster.get(lastCluster.size() - 1).getEndOffset() == segment.getOffset()) lastCluster.add(segment);
+				else {
+					lastCluster = new ArrayList<SpectrumSegment>();
+					lastCluster.add(segment);
+					candidates.add(lastCluster);
+				}
+			else
+				if (!lastCluster.isEmpty()) candidates.add(new ArrayList<SpectrumSegment>());
+		}
+		return candidates;
+	}
+	
+	public List<SpectrumSegment> getFullSpectrum() {
+		return new InsertionSortList<SpectrumSegment>(spectrum);
+	}
+	
+	public boolean canAllocateWorking(int volume) {
+		for (SpectrumSegment segment : spectrum) if (segment.getVolume() >= volume) return true;
 		return false;
 	}
 	
-	public SpectrumSegment allocate(int volume) {
-		for (int i = 0; i < free.size(); i++) {
-			SpectrumSegment segment = free.get(i);
-			if (segment.getVolume() >= volume) {
-				SpectrumSegment result = new SpectrumSegment(this, segment.getOffset(), volume);
-				int allIndex = all.indexOf(segment);
-				if (segment.getVolume() != volume) {
-					SpectrumSegment newFree = new SpectrumSegment(this, segment.getOffset() + volume, segment.getVolume() - volume);
-					free.set(i, newFree);
-					all.set(allIndex, newFree);
-					all.add(allIndex, result);
-				} else {
-					free.remove(i);
-					all.set(allIndex, result);
-				}
-				occupiedSlices += volume;
-				return result;
-			}
-		}
+	public SpectrumSegment allocateWorking(SpectrumSegment segment) {
+		int start, end;
+		for (start = 0; segment.getOffset() < spectrum.get(start).getOffset(); start++);
+		for (end = start; segment.getEndOffset() > spectrum.get(end).getEndOffset(); end++)
+			if (!spectrum.get(end).isFree()) throw new SpectrumException(SpectrumException.Type.OVERLAPPING_WORKING_SEGMENT);
+		if () // TODO
 		return CANNOT_ALLOCATE;
 	}
 	
-	public void deallocate(int offset, int volume) {
-		int index = offset >> 6;
-		long volumeMask = -1L << (64 - volume);
-		slices[index] ^= volumeMask >>> offset;
-		if (index + 1 < slices.length && (offset & 63) != 0) {
-			slices[index + 1] ^= volumeMask << (64 - (offset & 63));
+	public SpectrumSegment allocateOverlapping(int volume, Demand demand) {
+		InsertionSortList<SpectrumSegment> tempFree = new InsertionSortList<SpectrumSegment>(free);
+		for (BackupSpectrumSegment backupSegment : backup) if (backupSegment.canOverlap(demand)) tempFree.add(backupSegment);
+		ArrayList<SpectrumSegment> best, candidate = new ArrayList<SpectrumSegment>();
+		int 
+		for (SpectrumSegment segment : tempFree) {
+			if (candidate.isEmpty() || candidate.get(candidate.size() - 1).getEndOffset() == segment.getOffset())
+				;
+			else
+				;
 		}
-		occupiedSlices -= volume;
+		return null; // TODO overlapping allocation
 	}
 	
 	public void deallocate(SpectrumSegment segment) {
-		deallocate(segment.getOffset(), segment.getVolume());
+		int index = main.indexOf(segment);
+		if (index == -1) throw new SpectrumException(SpectrumException.Type.DEALLOCATING_UNALLOCATED);
+		main.remove(index);
+		index = free.addSort(segment);
+		if (index != free.size()) if (segment.isAdjacent(free.get(index + 1))) {
+			free.set(index, segment.merge(free.get(index + 1)));
+			free.remove(index + 1);
+		}
+		if (index != 0) if (segment.isAdjacent(free.get(index - 1))) {
+			free.set(index, segment.merge(free.get(index - 1)));
+			free.remove(index - 1);
+		}
+		occupiedSlices -= segment.getVolume();
 	}
 	
 	public int getOccupiedSlices() {
 		return occupiedSlices;
-	}
-	
-	public List<SpectrumSegment> getFreeSegments() {
-		List<SpectrumSegment> freeSegments = new ArrayList<SpectrumSegment>();
-		int offset = -1;
-		for (int i = 0; i < slices.length * 64; i++)
-			if (offset == -1) {
-				if ((slices[i / 64] & Long.MIN_VALUE) == 0) offset = i;
-			} else
-				if ((slices[i / 64] & Long.MIN_VALUE) != 0) {
-					freeSegments.add(new SpectrumSegment(this, offset, i - offset));
-					offset = -1;
-				}
-		return freeSegments;
 	}
 	
 	@Override

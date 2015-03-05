@@ -37,6 +37,10 @@ public abstract class Demand {
 		return ttl <= 0;
 	}
 	
+	public boolean isDisjoint(Demand other) {
+		return true; // TODO Disjointness checking 
+	}
+	
 	public DemandAllocationResult allocate(Network network, PartedPath path) {
 		if (path.allocate(network, this)) {
 			this.path = path;
@@ -50,7 +54,7 @@ public abstract class Demand {
 		for (PathPart part : path) {
 			if (!isFirst) part.getSource().occupyRegenerators(-1);
 			else isFirst = false;
-			for	(Spectrum slices : part.slices) slices.deallocate(part.segment);
+			for	(Spectrum slices : part.spectra) slices.deallocate(part.segment);
 		}
 	}
 }

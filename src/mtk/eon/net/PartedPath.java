@@ -91,7 +91,7 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 		}
 		for (PathPart part : parts) {
 			if (part != parts.get(0)) part.source.occupyRegenerators(1);
-			for	(Spectrum slices : part.slices) slices.allocate(part.segment);
+			for	(Spectrum slices : part.spectra) slices.allocate(part.segment);
 		}
 		return true;
 	}
