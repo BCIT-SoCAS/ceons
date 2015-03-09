@@ -1,24 +1,151 @@
 package mtk.eon.jfx;
 
+import mtk.eon.drawing.*;
+import mtk.geom.Vector2F;
+import mtk.utilities.DashedDrawing;
+import mtk.utilities.Rotation;
+import mtk.utilities.Zooming;
+import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 
 public class ResizableCanvas extends Canvas {
-	
+	private FigureControl list;
+	private FigureControl listBeforeChanges;
+	private boolean isDrawingLink;
+	private DrawingState state;
+	private Figure selectedFigure;
+	private int scrollNumber = 0;
+	private FXMLController parent;
+	private Vector2F startTempPoint;
+	private Vector2F endTempPoint;
+	private Rotation rotation;
+
 	public ResizableCanvas() {
 		widthProperty().addListener(evt -> draw());
 		heightProperty().addListener(evt -> draw());
+		// czy musi byc canva jako konstruktor??
+		list = new FigureControl(this);
 	}
 
+	public void canvasOnMousePressed(MouseEvent e) {
+			Vector2F pressedPoint = new Vector2F((float) e.getX(),
+					(float) e.getY());
+			if (isLinkAddingState() && isEnoughNodesForDrawingLink())
+			{
+				addLink(pressedPoint);
+			}
+			else if (isLinkDeleteState() || isFewElementsDeleteState()
+					|| isRotationAroundCenterChose()
+					|| isRotationAroundNodeChose())
+			{
+				startTempPoint = pressedPoint;
+					if (isRotationAroundNodeChose())
+					{
+						Figure activeRotateNode=list.get(list.findClosestNode(startTempPoint));
+						Vector2F centerPoint =((Node)activeRotateNode).getStartPoint();
+						rotation = new Rotation(centerPoint,listBeforeChanges);
+					}
+					else if(isRotationAroundCenterChose())
+					{
+						Vector2F centerPoint=new Vector2F((float)getHeight()/2,(float)getWidth()/2);
+						rotation=new Rotation(centerPoint,listBeforeChanges);
+					}
+			}
+			else if (isClickingState()) {
+					Figure temp = findClosestElement(pressedPoint);
+					setSelectedFigure(temp);
+					loadProperties(temp);
+					}
+		}
+
+	public void canvasOnMouseScroll(ScrollEvent e) {
+			parent.loadProperties(null,list);
+			if (e.getDeltaY() > 0)
+				scrollNumber++;
+			else
+				scrollNumber--;
+			Zooming zooming=new Zooming(listBeforeChanges);
+			zooming.zoom(scrollNumber);
+		}
+	
+	public void canvasOnMouseReleased(MouseEvent e)
+	{
+		 if (isLinkAddingState() && isEnoughNodesForDrawingLink()) {
+		            Vector2F releasedPoint=new Vector2F((float) e.getX(), (float) e.getY());
+		            list.changeLinkEndPointAfterDrag(releasedPoint);
+		            setSelectedFigure(null);
+		        }
+		}
+	
+	 public void canvasOnMouseClicked(MouseEvent e)
+	{
+
+	Vector2F clickedPoint = new Vector2F((float) e.getX(), (float) e.getY());
+    if (isNodeAddingState()) {
+        setSelectedFigure(null);
+        addNode(clickedPoint);
+    } else if (isClickingState()) {
+        if (isDrawingLink)
+            isDrawingLink = false;
+       /* else if(isClickingState()){
+            Figure temp=findClosestElement(clickedPoint);
+            setSelectedFigure(temp);
+            loadProperties(temp);
+        }*/
+    }else if(isNodeDeleteState())
+        {
+            deleteNode(clickedPoint);
+        }
+    else if(isRotationAroundCenterChose() || isRotationAroundNodeChose())
+    {
+    	setNoneRadioButtonActive();
+    }
+    else if(isFewElementsDeleteState()){
+    list.deleteElementsFromRectangle(startTempPoint, endTempPoint);
+    }else if(isLinkDeleteState()) {
+        list.deleteLinks(startTempPoint, endTempPoint);
+    }
+
+	
+}
+
+	public void canvasOnMouseDragged(MouseEvent e)
+	{
+			Vector2F draggedPoint = new Vector2F((float) e.getX(), (float) e.getY());
+	        if (isLinkAddingState() && isEnoughNodesForDrawingLink()) {
+	            list.changeLastLinkEndPoint(draggedPoint);
+	            isDrawingLink = true;
+	        } else if (isClickingState()) {
+	            if (list.getSelectedFigure() instanceof Node && list.getSelectedFigure().getStartPoint().distance(draggedPoint)<30 )
+	                list.changeNodePoint(list.getSelectedFigure(), draggedPoint);
+	            //else
+	            	//setNoneRadioButtonActive();
+	        } else if (isLinkDeleteState()) {
+	            endTempPoint = draggedPoint;
+	            list.redraw();
+	            DashedDrawing.drawDashedLine(getGraphicsContext2D(), startTempPoint, endTempPoint);
+	        } else if (isFewElementsDeleteState()) {
+	            endTempPoint = draggedPoint;
+	            list.redraw();
+	            DashedDrawing.drawDashedRectangle(getGraphicsContext2D(), startTempPoint, endTempPoint);
+	        } else {
+	            if (isRotationAroundCenterChose() || isRotationAroundNodeChose()) {
+	                endTempPoint = draggedPoint;
+	                list=rotation.rotate(startTempPoint, endTempPoint);
+	                startTempPoint=endTempPoint;
+	            }
+	        }
+		}
+	
 	private void draw() {
-//		double width = getWidth();
-//		double height = getHeight();
-//
-//		GraphicsContext gc = getGraphicsContext2D();
-//		gc.clearRect(0, 0, width, height);
-//
-//		gc.setStroke(Color.RED);
-//		gc.strokeLine(0, 0, width, height);
-//		gc.strokeLine(0, height, width, 0);
+
+	}
+
+	public void init(FXMLController parent) {
+		this.parent = parent;
 	}
 
 	@Override
@@ -35,4 +162,86 @@ public class ResizableCanvas extends Canvas {
 	public double prefHeight(double width) {
 		return getHeight();
 	}
+
+	public void changeState(DrawingState chosenState) {
+		setState(chosenState);
+		setSelectedFigure(null);
+		listBeforeChanges=new FigureControl(list);
+		scrollNumber=0;
+		list.setCanvas(this);
+	}
+	private void setState(DrawingState chosenState )
+	{
+		state=chosenState;
+	}
+	private boolean isClickingState() {
+		return state == DrawingState.clickingState;
+	}
+
+	private boolean isNodeAddingState() {
+		return state == DrawingState.nodeAddingState;
+			
+	}
+
+	private boolean isLinkAddingState() {
+		return state == DrawingState.linkAddingState;
+	}
+
+	private boolean isEnoughNodesForDrawingLink() {
+		if (list.getNodeAmmount() > 1)
+			return true;
+		return false;
+	}
+
+	private void addNode(Vector2F vec2F) {
+		list.add(new Node(vec2F, list.getNodeAmmount()));
+	}
+
+	private void addLink(Vector2F vec2F) {
+		list.add(new Link(vec2F, vec2F, list.getLinkAmmount()));
+	}
+
+	private Figure findClosestElement(Vector2F vec2F) {
+		return list.findClosestElement(vec2F);
+	}
+
+	private boolean isNodeDeleteState() {
+		return state == DrawingState.nodeDeleteState;
+	}
+
+	private boolean isLinkDeleteState() {
+		return state == DrawingState.linkDeleteState;
+	}
+
+	private void deleteNode(Vector2F clickedPoint) {
+		list.deleteNode(clickedPoint);
+	}
+
+	private boolean isFewElementsDeleteState() {
+		return state == DrawingState.fewElementsDeleteState;
+	}
+
+	private boolean isRotationAroundCenterChose() {
+		return state == DrawingState.rotateAroundCenter;
+	}
+
+	private boolean isRotationAroundNodeChose() {
+		return state == DrawingState.rotateAroundNode;
+	}
+	private void setNoneRadioButtonActive()
+	{
+		parent.setNoneRadioButtonActive();
+		state=DrawingState.clickingState;
+	}
+	private void setSelectedFigure(Figure temp)
+	{
+	    list.setSelectedFigure(temp);
+	    if(temp!=null)
+	    	list.drawOutline(temp);
+	}
+	private void loadProperties(Figure temp)
+	{
+		parent.loadProperties(temp, list);
+	}
+
 }

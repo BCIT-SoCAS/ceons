@@ -55,4 +55,16 @@ public class Vector2F extends Matrix2F implements Cloneable {
 	public Vector2F clone() {
 		return new Vector2F(super.clone());
 	}
+    public float distance(Vector2F vec)
+    {
+        return (float)Math.sqrt(Math.pow(getX()-vec.getX(),2)+Math.pow(getY() - vec.getY(), 2));
+    }
+    @Override
+    public boolean equals(Object o)
+    {
+        Vector2F temp=(Vector2F)o;
+        if(getX()==temp.getX() && getY()==temp.getY())
+            return true;
+        return false;
+    }
 }

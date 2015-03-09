@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<TitledPane fx:id="titledPane" animated="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="342.0" prefWidth="194.0" text="Properties" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mtk.eon.jfx.LinkPropertiesController">
+  <content>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+         <children>
+            <GridPane layoutX="2.0" layoutY="-1.0" prefHeight="319.0" prefWidth="194.0">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="92.0" minWidth="10.0" prefWidth="92.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="108.0" minWidth="10.0" prefWidth="102.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints maxHeight="102.0" minHeight="0.0" prefHeight="27.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="213.0" minHeight="6.0" prefHeight="27.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="275.0" minHeight="1.0" prefHeight="27.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="275.0" minHeight="10.0" prefHeight="27.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="275.0" minHeight="10.0" prefHeight="26.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="275.0" minHeight="10.0" prefHeight="184.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label text="Type:" />
+                  <Label text="Link" GridPane.columnIndex="1" />
+                  <Label text="Name" GridPane.rowIndex="1" />
+                  <TextField fx:id="textFieldName" maxWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Label text="Start node:" GridPane.rowIndex="3"  />
+                  <Label text="End node:" GridPane.rowIndex="4"  />
+                  <Label GridPane.columnIndex="1" GridPane.rowIndex="4" fx:id="labelEndNode" onMouseClicked="#labelEndNodeMouseClicked"/>
+                  <Label GridPane.columnIndex="1" GridPane.rowIndex="3" fx:id="labelStartNode" onMouseClicked="#labelStartNodeMouseClicked" />
+                  <Label text="Length" GridPane.rowIndex="2" />
+                  <TextField maxWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="textFieldLength"  />
+               </children>
+            </GridPane>
+         </children></AnchorPane>
+  </content>
+</TitledPane>
