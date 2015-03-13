@@ -5,9 +5,7 @@ import mtk.geom.Vector2F;
 import mtk.utilities.DashedDrawing;
 import mtk.utilities.Rotation;
 import mtk.utilities.Zooming;
-import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
@@ -16,7 +14,6 @@ public class ResizableCanvas extends Canvas {
 	private FigureControl listBeforeChanges;
 	private boolean isDrawingLink;
 	private DrawingState state;
-	private Figure selectedFigure;
 	private int scrollNumber = 0;
 	private FXMLController parent;
 	private Vector2F startTempPoint;
@@ -90,19 +87,11 @@ public class ResizableCanvas extends Canvas {
     } else if (isClickingState()) {
         if (isDrawingLink)
             isDrawingLink = false;
-       /* else if(isClickingState()){
-            Figure temp=findClosestElement(clickedPoint);
-            setSelectedFigure(temp);
-            loadProperties(temp);
-        }*/
     }else if(isNodeDeleteState())
         {
             deleteNode(clickedPoint);
         }
-    else if(isRotationAroundCenterChose() || isRotationAroundNodeChose())
-    {
-    	setNoneRadioButtonActive();
-    }
+
     else if(isFewElementsDeleteState()){
     list.deleteElementsFromRectangle(startTempPoint, endTempPoint);
     }else if(isLinkDeleteState()) {
@@ -121,8 +110,6 @@ public class ResizableCanvas extends Canvas {
 	        } else if (isClickingState()) {
 	            if (list.getSelectedFigure() instanceof Node && list.getSelectedFigure().getStartPoint().distance(draggedPoint)<30 )
 	                list.changeNodePoint(list.getSelectedFigure(), draggedPoint);
-	            //else
-	            	//setNoneRadioButtonActive();
 	        } else if (isLinkDeleteState()) {
 	            endTempPoint = draggedPoint;
 	            list.redraw();
@@ -168,7 +155,6 @@ public class ResizableCanvas extends Canvas {
 		setSelectedFigure(null);
 		listBeforeChanges=new FigureControl(list);
 		scrollNumber=0;
-		list.setCanvas(this);
 	}
 	private void setState(DrawingState chosenState )
 	{
@@ -227,11 +213,6 @@ public class ResizableCanvas extends Canvas {
 
 	private boolean isRotationAroundNodeChose() {
 		return state == DrawingState.rotateAroundNode;
-	}
-	private void setNoneRadioButtonActive()
-	{
-		parent.setNoneRadioButtonActive();
-		state=DrawingState.clickingState;
 	}
 	private void setSelectedFigure(Figure temp)
 	{
