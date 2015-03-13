@@ -11,7 +11,7 @@ import mtk.eon.net.PathPart;
 import mtk.eon.net.demand.Demand;
 import mtk.eon.net.demand.DemandAllocationResult;
 
-public class AMRA extends Algorithm {
+public class AMRA extends RMSAAlgorithm {
 
 	@Override
 	public String getName() {

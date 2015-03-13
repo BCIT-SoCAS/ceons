@@ -12,7 +12,7 @@ import mtk.eon.net.demand.Demand;
 import mtk.eon.net.demand.DemandAllocationResult;
 import mtk.eon.net.spectrum.Spectrum;
 
-public class MNC extends Algorithm {
+public class MNC extends RMSAAlgorithm {
 
 	@Override
 	public String getName() {

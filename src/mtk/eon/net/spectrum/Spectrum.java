@@ -71,7 +71,7 @@ public class Spectrum {
 		for (start = 0; segment.getOffset() < spectrum.get(start).getOffset(); start++);
 		for (end = start; segment.getEndOffset() > spectrum.get(end).getEndOffset(); end++)
 			if (!spectrum.get(end).isFree()) throw new SpectrumException(SpectrumException.Type.OVERLAPPING_WORKING_SEGMENT);
-		if () // TODO
+		if ()
 		return CANNOT_ALLOCATE;
 	}
 	

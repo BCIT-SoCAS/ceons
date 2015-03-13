@@ -25,13 +25,13 @@ public class Main extends Application {
 		primaryStage.setMinWidth(primaryStage.getWidth());
 		primaryStage.setMinHeight(primaryStage.getHeight());
 		
-		final Canvas canvas = (Canvas) scene.lookup("#graph");
-		BorderPane pane = (BorderPane) scene.lookup("#borderPane");
-		canvas.widthProperty().bind(pane.widthProperty());
-		canvas.heightProperty().bind(pane.heightProperty());
+//		final Canvas canvas = (Canvas) scene.lookup("#graph");
+//		BorderPane pane = (BorderPane) scene.lookup("#borderPane");
+//		canvas.widthProperty().bind(pane.widthProperty());
+//		canvas.heightProperty().bind(pane.heightProperty());
 //		System.out.println(canvas.getBoundsInParent());
-		canvas.getGraphicsContext2D().fillRect(10, 10, 20, 20);
-		canvas.setOnMouseDragged(e -> { canvas.getGraphicsContext2D().fillRect(e.getX(), e.getY(), 10, 10); });
+//		canvas.getGraphicsContext2D().fillRect(10, 10, 20, 20);
+//		canvas.setOnMouseDragged(e -> { canvas.getGraphicsContext2D().fillRect(e.getX(), e.getY(), 10, 10); });
 	}
 	
 	public static void main(String[] args) {

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import mtk.eon.net.algo.Algorithm;
+import mtk.eon.net.algo.RMSAAlgorithm;
 import mtk.eon.net.demand.Demand;
 import mtk.eon.net.demand.DemandAllocationResult;
 import mtk.eon.net.demand.DemandAllocationResult.Type;
@@ -26,7 +26,7 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	MetricType regeneratorMetricType;
 	int regeneratorMetricValue;
 	
-	Algorithm demandAllocationAlgorithm;
+	RMSAAlgorithm demandAllocationAlgorithm;
 	int bestPathsCount;
 	boolean canSwitchModulation;
 	ArrayList<Demand> allocatedDemands = new ArrayList<Demand>();
@@ -37,7 +37,7 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	
 	// DEMANDS
 	
-	public void setDemandAllocationAlgorithm(Algorithm algorithm) {
+	public void setDemandAllocationAlgorithm(RMSAAlgorithm algorithm) {
 		this.demandAllocationAlgorithm = algorithm;
 	}
 	

@@ -7,26 +7,25 @@ import mtk.eon.net.Network;
 import mtk.eon.net.demand.Demand;
 import mtk.eon.net.demand.DemandAllocationResult;
 
-public abstract class Algorithm {
+public abstract class RMSAAlgorithm {
 	
-	static HashMap<String, Algorithm> registeredAlgorithms;
+	static HashMap<String, RMSAAlgorithm> registeredAlgorithms = new HashMap<String, RMSAAlgorithm>();
 	
 	static {
-		registeredAlgorithms = new HashMap<String, Algorithm>();
 		registerAlgorithm(new AMRA());
 		registerAlgorithm(new MNC());
 	}
 	
-	public static void registerAlgorithm(Algorithm algorithm) {
+	public static void registerAlgorithm(RMSAAlgorithm algorithm) {
 		if (!registeredAlgorithms.containsKey(algorithm.getName()))
 			registeredAlgorithms.put(algorithm.getName(), algorithm);
 	}
 	
-	public static Algorithm getAlgorithmByName(String name) {
+	public static RMSAAlgorithm getAlgorithmByName(String name) {
 		return registeredAlgorithms.get(name);
 	}
 	
-	public static Collection<Algorithm> getRegisteredAlgorithms() {
+	public static Collection<RMSAAlgorithm> getRegisteredAlgorithms() {
 		return registeredAlgorithms.values();
 	}
 	

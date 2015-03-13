@@ -1,53 +1,74 @@
 package mtk.eon.net.spectrum;
 
-public class SpectrumSegment implements Comparable<SpectrumSegment>, Cloneable {
+
+public abstract class SpectrumSegment implements Comparable<SpectrumSegment> {
 	
-	private Spectrum spectrum;
-	private int offset, volume;
-	private boolean isFree;
-	
-	SpectrumSegment(Spectrum spectrum, int offset, int volume, boolean isFree) {
-		this.spectrum = spectrum;
-		this.offset = offset;
-		this.volume = volume;
-		this.isFree = isFree;
+	public enum Type {
+		FREE, WORKING, BACKUP, MULTI;
 	}
 	
-	public int getOffset() {
-		return offset;
-	}
+	public abstract Type getType();
+	
+	public abstract int getOffset();
+	
+	public abstract int getVolume();
 	
 	public int getEndOffset() {
-		return offset + volume;
-	}
-	
-	public int getVolume() {
-		return volume;
-	}
-	
-	public boolean isFree() {
-		return isFree;
+		return getOffset() + getVolume();
 	}
 	
 	public boolean isAdjacent(SpectrumSegment other) {
-		int minOffset = Math.min(offset, other.offset);
-		return minOffset == offset && getEndOffset() == other.offset || minOffset == other.offset && other.getEndOffset() == offset;
+		return other.getOffset() == getEndOffset() || other.getEndOffset() == getOffset();
 	}
 	
-	public SpectrumSegment merge(SpectrumSegment other) {
-		if (spectrum != other.spectrum) throw new SpectrumException(SpectrumException.Type.DIFFERENT_SPECTRA_SEGMENTS_MERGE);
-		if (isAdjacent(other))
-			return new SpectrumSegment(spectrum, Math.min(offset, other.offset), volume + other.volume);
-		else throw new SpectrumException(SpectrumException.Type.NOT_ADJACENT_SEGMENTS_MERGE);
+	public boolean isOverlapping(SpectrumSegment other) {
+		return !(getOffset() >= other.getEndOffset() || getEndOffset() <= other.getOffset());
 	}
-
-	@Override
-	protected SpectrumSegment clone() throws CloneNotSupportedException {
-		return new SpectrumSegment(spectrum, offset, volume);
+	
+	public abstract boolean canOverlap(SpectrumSegment other);
+	
+	public SpectrumSegment join(SpectrumSegment other) {
+		if (other.getType() != getType()) throw new SpectrumException("Cannot join Type." + getType() + " SpectrumSegment with Type." + other.getType() + " SpectrumSegment.");
+		if (!isAdjacent(other)) throw new SpectrumException("Cannot join segments that are not adjacent.");
+		return partialClone(Math.min(getOffset(), other.getOffset()), getVolume() + other.getVolume());
 	}
+	
+	public abstract SpectrumSegment merge(SpectrumSegment other);
 
+	public SpectrumSegment add(SpectrumSegment other) {
+		int offset = Math.min(getOffset(), other.getOffset());
+		return partialClone(offset, Math.max(getEndOffset(), other.getEndOffset()) - offset);
+	}
+	
+	public SpectrumSegment subtract(SpectrumSegment other) {
+		if (isOverlapping(other)) {
+			int overlapCase = (getOffset() < other.getOffset() ? 1 : 0) + (getEndOffset() > other.getEndOffset() ? 2 : 0);
+			switch (overlapCase) {
+			case 0: return null;
+			case 1: return partialClone(getOffset(), other.getOffset() - getOffset());
+			case 2: return partialClone(other.getEndOffset(), getEndOffset() - other.getEndOffset());
+			case 3: return new MultiSpectrumSegment(partialClone(getOffset(), other.getOffset() - getOffset()), partialClone(other.getEndOffset(), getEndOffset() - other.getEndOffset()));
+			}
+			throw new SpectrumException("God left us all...");
+		} else return partialClone(getOffset(), getVolume());
+	}
+	
+	public SpectrumSegment multiply(SpectrumSegment other) {
+		if (isOverlapping(other)) {
+			int offset = Math.max(getOffset(), other.getOffset());
+			return partialClone(offset, Math.min(getEndOffset(), other.getEndOffset()) - offset);
+		} else return null;
+	}
+	
+	public abstract SpectrumSegment partialClone(int offset, int volume);
+	
 	@Override
 	public int compareTo(SpectrumSegment other) {
-		return Integer.compare(offset, other.offset);
+		return Integer.compare(getOffset(), other.getOffset());
+	}
+	
+	@Override
+	public String toString() {
+		return "{Type: " + getType() + ", Offset: " + getOffset() + ", Volume: " + getVolume() + "}";
 	}
 }

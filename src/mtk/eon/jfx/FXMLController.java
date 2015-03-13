@@ -4,9 +4,14 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -26,7 +31,7 @@ import mtk.eon.net.MetricType;
 import mtk.eon.net.Modulation;
 import mtk.eon.net.Network;
 import mtk.eon.net.NetworkNode;
-import mtk.eon.net.algo.Algorithm;
+import mtk.eon.net.algo.RMSAAlgorithm;
 import mtk.general.Utils;
 
 import com.sun.javafx.collections.ObservableListWrapper;
@@ -39,7 +44,7 @@ public class FXMLController {
 	@FXML private Label progressLabel;
 	
 	@FXML private VBox settings;
-	@FXML private ComboBox<Algorithm> algorithms;
+	@FXML private ComboBox<RMSAAlgorithm> algorithms;
 	@FXML private ToggleGroup regeneratorsMetric;
 	@FXML private ToggleGroup modulationMetric;
 	@FXML private CheckBox allowModulationChange;
@@ -63,7 +68,7 @@ public class FXMLController {
 		}
 		
 		
-		algorithms.setItems(new ObservableListWrapper<Algorithm>(new ArrayList<Algorithm>(Algorithm.getRegisteredAlgorithms())));
+		algorithms.setItems(new ObservableListWrapper<RMSAAlgorithm>(new ArrayList<RMSAAlgorithm>(RMSAAlgorithm.getRegisteredAlgorithms())));
 		
 		modulations = new CheckBox[Modulation.values().length];
 		for (Modulation modulation : Modulation.values())

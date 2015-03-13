@@ -27,11 +27,31 @@ public class InsertionSortList<E extends Comparable<? super E>> extends ArrayLis
 		return addSort(e) != -1;
 	}
 	
+	@Override
+	public boolean addAll(Collection<? extends E> c) {
+		boolean result = false;
+		for (E e : c) if (addSort(e) >= 0) result = true;
+		return result;
+	}
+	
 	public int addSort(E e) {
+		if (e == null) return -1;
 		for (int i = 0; i < size(); i++) if (e.compareTo(get(i)) < 0) {
 			super.add(i, e);
 			return i;
 		}
 		return super.add(e) ? size() : -1;
+	}
+	
+	public boolean trustedAdd(E e) {
+		return super.add(e);
+	}
+	
+	public boolean trustedAddAll(Collection<? extends E> c) {
+		return super.addAll(c);
+	}
+	
+	public E last() {
+		return get(size() - 1);
 	}
 }
