@@ -36,16 +36,16 @@ public class ResizableCanvas extends Canvas {
 				|| isRotationAroundCenterChose()
 				|| isRotationAroundNodeChose())
 		{
+			startTempPoint=pressedPoint;
 			if (isRotationAroundNodeChose())
 				{
-					startTempPoint = pressedPoint;
+					
 					Figure activeRotateNode=list.get(list.findClosestNode(startTempPoint));
 					Vector2F centerPoint =((Node)activeRotateNode).getStartPoint();
 					rotation = new Rotation(centerPoint,listBeforeChanges);
 				}
 			else if(isRotationAroundCenterChose())
 				{
-					startTempPoint = pressedPoint;
 					Vector2F centerPoint=new Vector2F((float)getHeight()/2,(float)getWidth()/2);
 					rotation=new Rotation(centerPoint,listBeforeChanges);
 				}
