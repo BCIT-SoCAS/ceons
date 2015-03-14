@@ -85,4 +85,8 @@ public class Matrix2F implements Cloneable {
 		
 		return new Matrix2F(matrix);
 	}
+    public Vector2F getRow(int i)
+    {
+        return new Vector2F(matrix[i][0],matrix[i][1]);
+    }
 }
