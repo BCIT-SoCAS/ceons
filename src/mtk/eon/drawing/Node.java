@@ -13,7 +13,7 @@ public class Node extends Figure {
 	
 	private static LinearGradient nodeFill = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,	new Stop[] {new Stop(0, Color.MAGENTA), new Stop(0.5f, Color.PURPLE)});
 	
-	static float imageSize = 48; //24
+	static float imageSize = 24;
 
 	public Node(Node node) {
 		startPoint = node.startPoint.clone();

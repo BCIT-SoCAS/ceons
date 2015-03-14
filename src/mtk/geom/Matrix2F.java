@@ -1,5 +1,7 @@
 package mtk.geom;
 
+import java.util.Arrays;
+
 public class Matrix2F implements Cloneable {
 	
 	float[][] matrix;
@@ -92,7 +94,7 @@ public class Matrix2F implements Cloneable {
 
 	@Override
 	public boolean equals(Object other) {
-		if (other instanceof Matrix2F) return ((Matrix2F) other).matrix.equals(matrix);
+		if (other instanceof Matrix2F) return Arrays.deepEquals(((Matrix2F) other).matrix, matrix);
 		return false;
 	}
     public Vector2F getRow(int i)
