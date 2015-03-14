@@ -63,6 +63,7 @@ public class FXMLController  {
 	@FXML private Accordion accordion;
 	@FXML private TitledPane propertiesTitledPane;
 	private final static int PROPERTIES_PANE_NUMBER=4;
+	private final static int EDIT_PANE_NUMBER=3;
 	private CheckBox[] modulations;
 	
 	@FXML private void nodeChose(ActionEvent e) 
@@ -202,7 +203,7 @@ public class FXMLController  {
 	}
 	private void loadEmptyProperties()
 	{
-		setExpadedPane(0);
+		setExpadedPane(EDIT_PANE_NUMBER);
 	}
 	private void loadNodeProperties(Figure temp,FigureControl list) {
         TitledPane properties = new TitledPane();
@@ -234,7 +235,7 @@ public class FXMLController  {
         setSelectedPaneContent(properties);
         setExpadedPane(PROPERTIES_PANE_NUMBER);
     }
-    private void setExpadedPane(int idx)
+    public void setExpadedPane(int idx)
     {
         accordion.getPanes().get(idx).setExpanded(true);
     }
