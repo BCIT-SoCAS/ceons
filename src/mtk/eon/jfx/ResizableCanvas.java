@@ -45,6 +45,7 @@ public class ResizableCanvas extends Canvas {
 				}
 			else if(isRotationAroundCenterChose())
 				{
+					startTempPoint = pressedPoint;
 					Vector2F centerPoint=new Vector2F((float)getHeight()/2,(float)getWidth()/2);
 					rotation=new Rotation(centerPoint,listBeforeChanges);
 				}

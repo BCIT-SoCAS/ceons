@@ -31,6 +31,8 @@ public class Rotation {
 		figuresTable=figuresTable.multiply(rotationTable);
 		FigureControl temp=new FigureControl(list);
 		temp.matrixToList(figuresTable, rotationPoint);
+		rotationArc%=2*Math.PI;
+		System.out.println(rotationArc);
 		return temp;
 	}
 	private float calculateArc(Vector2F startPoint,Vector2F endPoint)
