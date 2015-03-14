@@ -9,6 +9,10 @@ public class Vector2F extends Matrix2F implements Cloneable {
 	Vector2F (Matrix2F vector) {
 		super(vector.matrix);
 	}
+
+	public float distance(Vector2F other) {
+		return subtract(other).length();
+	}
 	
 	@Override
 	public Vector2F add(Matrix2F other) {
@@ -55,10 +59,7 @@ public class Vector2F extends Matrix2F implements Cloneable {
 	public Vector2F clone() {
 		return new Vector2F(super.clone());
 	}
-    public float distance(Vector2F vec)
-    {
-        return (float)Math.sqrt(Math.pow(getX()-vec.getX(),2)+Math.pow(getY() - vec.getY(), 2));
-    }
+	
     @Override
     public boolean equals(Object o)
     {
