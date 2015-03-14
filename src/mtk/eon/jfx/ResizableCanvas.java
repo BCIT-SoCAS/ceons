@@ -23,40 +23,39 @@ public class ResizableCanvas extends Canvas {
 	public ResizableCanvas() {
 		widthProperty().addListener(evt -> draw());
 		heightProperty().addListener(evt -> draw());
-		// czy musi byc canva jako konstruktor??
 		list = new FigureControl(this);
 	}
 
 	public void canvasOnMousePressed(MouseEvent e) {
-			Vector2F pressedPoint = new Vector2F((float) e.getX(),
-					(float) e.getY());
-			if (isLinkAddingState() && isEnoughNodesForDrawingLink())
-			{
-				addLink(pressedPoint);
-			}
-			else if (isLinkDeleteState() || isFewElementsDeleteState()
-					|| isRotationAroundCenterChose()
-					|| isRotationAroundNodeChose())
-			{
-				startTempPoint = pressedPoint;
-					if (isRotationAroundNodeChose())
-					{
-						Figure activeRotateNode=list.get(list.findClosestNode(startTempPoint));
-						Vector2F centerPoint =((Node)activeRotateNode).getStartPoint();
-						rotation = new Rotation(centerPoint,listBeforeChanges);
-					}
-					else if(isRotationAroundCenterChose())
-					{
-						Vector2F centerPoint=new Vector2F((float)getHeight()/2,(float)getWidth()/2);
-						rotation=new Rotation(centerPoint,listBeforeChanges);
-					}
-			}
-			else if (isClickingState()) {
-					Figure temp = findClosestElement(pressedPoint);
-					setSelectedFigure(temp);
-					loadProperties(temp);
-					}
+		Vector2F pressedPoint = new Vector2F((float) e.getX(),(float) e.getY());
+		if(isLinkAddingState())
+		{
+			addLink(pressedPoint);
 		}
+		else if (isLinkDeleteState() || isFewElementsDeleteState()
+				|| isRotationAroundCenterChose()
+				|| isRotationAroundNodeChose())
+		{
+			if (isRotationAroundNodeChose())
+				{
+					startTempPoint = pressedPoint;
+					Figure activeRotateNode=list.get(list.findClosestNode(startTempPoint));
+					Vector2F centerPoint =((Node)activeRotateNode).getStartPoint();
+					rotation = new Rotation(centerPoint,listBeforeChanges);
+				}
+			else if(isRotationAroundCenterChose())
+				{
+					Vector2F centerPoint=new Vector2F((float)getHeight()/2,(float)getWidth()/2);
+					rotation=new Rotation(centerPoint,listBeforeChanges);
+				}
+		}
+		else if (isClickingState())
+		{
+				Figure temp = findClosestElement(pressedPoint);
+				setSelectedFigure(temp);
+				loadProperties(temp);
+		}
+	}
 
 	public void canvasOnMouseScroll(ScrollEvent e) {
 			parent.loadProperties(null,list);
@@ -70,46 +69,47 @@ public class ResizableCanvas extends Canvas {
 	
 	public void canvasOnMouseReleased(MouseEvent e)
 	{
-		 if (isLinkAddingState() && isEnoughNodesForDrawingLink()) {
-		            Vector2F releasedPoint=new Vector2F((float) e.getX(), (float) e.getY());
-		            list.changeLinkEndPointAfterDrag(releasedPoint);
-		            setSelectedFigure(null);
-		        }
-		}
+		 if(isLinkAddingState())
+		 {
+			 Vector2F releasedPoint=new Vector2F((float) e.getX(), (float) e.getY());
+		     list.changeLinkEndPointAfterDrag(releasedPoint);
+		     setSelectedFigure(null);
+	     }
+		 else if(isRotationAroundCenterChose() || isRotationAroundNodeChose())
+		 {
+			 listBeforeChanges=new FigureControl(list);
+		 }
+	}
 	
 	 public void canvasOnMouseClicked(MouseEvent e)
-	{
-
-	Vector2F clickedPoint = new Vector2F((float) e.getX(), (float) e.getY());
-    if (isNodeAddingState()) {
-        setSelectedFigure(null);
-        addNode(clickedPoint);
-    } else if (isClickingState()) {
-        if (isDrawingLink)
-            isDrawingLink = false;
-    }else if(isNodeDeleteState())
-        {
-            deleteNode(clickedPoint);
-        }
-
-    else if(isFewElementsDeleteState()){
-    list.deleteElementsFromRectangle(startTempPoint, endTempPoint);
-    }else if(isLinkDeleteState()) {
-        list.deleteLinks(startTempPoint, endTempPoint);
-    }
-
-	
-}
+	 {
+		 Vector2F clickedPoint = new Vector2F((float) e.getX(), (float) e.getY());
+		 if (isNodeAddingState()) {
+			 setSelectedFigure(null);
+			 addNode(clickedPoint);
+		 } else if (isClickingState()) {
+			 if (isDrawingLink)
+				 isDrawingLink = false;
+		 }else if(isNodeDeleteState())
+		 {
+			 deleteNode(clickedPoint);
+		 }
+		 else if(isFewElementsDeleteState()){
+			 list.deleteElementsFromRectangle(startTempPoint, endTempPoint);
+		 }else if(isLinkDeleteState()) {
+			 list.deleteLinks(startTempPoint, endTempPoint);
+		 }	
+	 }
 
 	public void canvasOnMouseDragged(MouseEvent e)
 	{
-			Vector2F draggedPoint = new Vector2F((float) e.getX(), (float) e.getY());
-	        if (isLinkAddingState() && isEnoughNodesForDrawingLink()) {
-	            list.changeLastLinkEndPoint(draggedPoint);
-	            isDrawingLink = true;
-	        } else if (isClickingState()) {
-	            if (list.getSelectedFigure() instanceof Node && list.getSelectedFigure().getStartPoint().distance(draggedPoint)<30 )
-	                list.changeNodePoint(list.getSelectedFigure(), draggedPoint);
+		Vector2F draggedPoint = new Vector2F((float) e.getX(), (float) e.getY());
+	    if(isLinkAddingState()){
+	    	list.changeLastLinkEndPoint(draggedPoint);
+	        isDrawingLink = true;
+	    } else if (isClickingState()) {
+	        if(list.getSelectedFigure() instanceof Node)
+	    		list.changeNodePoint(list.getSelectedFigure(), draggedPoint); 
 	        } else if (isLinkDeleteState()) {
 	            endTempPoint = draggedPoint;
 	            list.redraw();
@@ -155,6 +155,7 @@ public class ResizableCanvas extends Canvas {
 		setSelectedFigure(null);
 		listBeforeChanges=new FigureControl(list);
 		scrollNumber=0;
+		list.setCanvas(this);
 	}
 	private void setState(DrawingState chosenState )
 	{
@@ -165,18 +166,11 @@ public class ResizableCanvas extends Canvas {
 	}
 
 	private boolean isNodeAddingState() {
-		return state == DrawingState.nodeAddingState;
-			
+		return state == DrawingState.nodeAddingState;			
 	}
 
 	private boolean isLinkAddingState() {
 		return state == DrawingState.linkAddingState;
-	}
-
-	private boolean isEnoughNodesForDrawingLink() {
-		if (list.getNodeAmmount() > 1)
-			return true;
-		return false;
 	}
 
 	private void addNode(Vector2F vec2F) {
@@ -224,5 +218,5 @@ public class ResizableCanvas extends Canvas {
 	{
 		parent.loadProperties(temp, list);
 	}
-
+	
 }

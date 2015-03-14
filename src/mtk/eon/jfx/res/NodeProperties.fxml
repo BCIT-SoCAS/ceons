@@ -4,41 +4,41 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<TitledPane animated="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0" prefWidth="194.0" text="Properties" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:id="titledPane" fx:controller="mtk.eon.jfx.NodePropertiesController">
+<TitledPane animated="true" prefHeight="350.0" prefWidth="194.0" text="Properties" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:id="titledPane" fx:controller="mtk.eon.jfx.NodePropertiesController">
   <content>
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+    <AnchorPane prefHeight="180.0" prefWidth="200.0">
          <children>
             <GridPane layoutX="2.0" layoutY="-1.0" prefHeight="319.0" prefWidth="194.0">
               <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="92.0" minWidth="10.0" prefWidth="92.0" />
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="108.0" minWidth="10.0" prefWidth="102.0" />
+                <ColumnConstraints prefWidth="92.0" />
+                <ColumnConstraints prefWidth="102.0" />
               </columnConstraints>
               <rowConstraints>
-                <RowConstraints maxHeight="102.0" minHeight="0.0" prefHeight="27.0" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="213.0" minHeight="6.0" prefHeight="27.0" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="275.0" minHeight="10.0" prefHeight="59.0" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="275.0" minHeight="1.0" prefHeight="22.0" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="275.0" minHeight="10.0" prefHeight="184.0" vgrow="SOMETIMES" />
+                <RowConstraints prefHeight="27.0" />
+                <RowConstraints prefHeight="27.0" />
+                  <RowConstraints prefHeight="59.0" />
+                  <RowConstraints prefHeight="22.0" />
+                <RowConstraints prefHeight="184.0" />
               </rowConstraints>
                <children>
                   <Label text="Type:" />
                   <Label text="Node" GridPane.columnIndex="1" />
                   <Label text="Name" GridPane.rowIndex="1" />
-                  <TextField fx:id="textFieldName" maxWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <TextField fx:id="textFieldName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <Label alignment="BOTTOM_CENTER" contentDisplay="RIGHT" text="Connected with:" textAlignment="CENTER" GridPane.rowIndex="3" />
-                  <ListView fx:id="listView" maxHeight="90.0" maxWidth="93.0" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="TOP" onMouseClicked="#listViewMouseClicked">
+                  <ListView fx:id="listView" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="TOP" onMouseClicked="#listViewMouseClicked">
                      <GridPane.margin>
                         <Insets />
                      </GridPane.margin>
                   </ListView>
                   <GridPane prefHeight="88.0" prefWidth="102.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                     <columnConstraints>
-                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="46.0" minWidth="10.0" prefWidth="28.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="80.0" minWidth="10.0" prefWidth="74.0" />
+                      <ColumnConstraints prefWidth="28.0" />
+                      <ColumnConstraints prefWidth="74.0" />
                     </columnConstraints>
                     <rowConstraints>
-                      <RowConstraints maxHeight="32.0" minHeight="10.0" prefHeight="24.0" vgrow="SOMETIMES" />
-                      <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="21.0" vgrow="SOMETIMES" />
+                      <RowConstraints prefHeight="24.0" />
+                      <RowConstraints prefHeight="21.0" />
                     </rowConstraints>
                      <children>
                         <Label text="X:" />

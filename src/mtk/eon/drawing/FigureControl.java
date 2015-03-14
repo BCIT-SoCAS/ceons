@@ -1,17 +1,17 @@
 package mtk.eon.drawing;
 
 import mtk.geom.*;
+import mtk.utilities.LinkCrossing;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
 
 
+
 import java.util.ArrayList;
 
-/**
- * Created by Admin on 2014-12-27.
- */
+
 public class FigureControl {
     private ArrayList<Figure> list = new ArrayList<Figure>();
     private int nodeAmmount;
@@ -51,7 +51,7 @@ public class FigureControl {
                 list.add(temp);
                 nodeAmmount++;
             } else {
-                if (temp instanceof Link) {
+                if (temp instanceof Link && isEnoughNodesForAddLink()) {
                     Vector2F p = list.get(findClosestNode(temp.getStartPoint())).getStartPoint();
                     p = fixLinkPoint(p);
                     temp.setStartPoint(p);
@@ -59,8 +59,7 @@ public class FigureControl {
                     linkAmmount++;
                 }
             }
-            redraw();
-        //}
+            redraw();    
     }
 
 
@@ -73,20 +72,21 @@ public class FigureControl {
     }
 
     public int findClosestNode(Vector2F temp) {
-        double closestDistance=calculateDistance(0,temp);
-        int actualClosestNode=0;
-        for (int i=0;i<list.size();i++)
-        {
-            if(list.get(i) instanceof Node)
-            {
-                double actualDistance=calculateDistance(i,temp);
-                if(actualDistance<closestDistance)
-                {
-                    closestDistance=actualDistance;
-                    actualClosestNode=i;
-                }
-            }
-        }
+
+        	double closestDistance=calculateDistance(0,temp);
+        	int actualClosestNode=0;
+        	for (int i=0;i<list.size();i++)
+        	{
+        		if(list.get(i) instanceof Node)
+        		{
+        			double actualDistance=calculateDistance(i,temp);
+        			if(actualDistance<closestDistance)
+        			{
+        				closestDistance=actualDistance;
+        				actualClosestNode=i;
+        			}
+        		}
+        	}
 
         return actualClosestNode;
     }
@@ -113,23 +113,29 @@ public class FigureControl {
     }
     public void changeLastLinkEndPoint(Vector2F p)
     {
-        ((Link)list.get(list.size()-1)).setEndPoint(p);
-        redraw();
+    	if(isEnoughNodesForAddLink())
+    	{
+    		((Link)list.get(list.size()-1)).setEndPoint(p);
+    		redraw();
+    	}
     }
     public void changeLinkEndPointAfterDrag(Vector2F p)
     {
-
-        Vector2F temp=list.get(findClosestNode(p)).getStartPoint();
-        temp= fixLinkPoint(temp);
-        Link link=((Link)list.get(list.size()-1));
-        link.setEndPoint(temp);
-        if(temp.equals(link.startPoint)|| isLinkAlreadyExist()) {
-
+    	if(isEnoughNodesForAddLink())
+    	{
+    		System.out.println("change end point");
+    		Vector2F temp=list.get(findClosestNode(p)).getStartPoint();
+    		temp= fixLinkPoint(temp);
+    		Link link=((Link)list.get(list.size()-1));
+    		link.setEndPoint(temp);
+    		if(temp.equals(link.startPoint)|| isLinkAlreadyExist()) 
+    		{
                 list.remove(list.size() - 1);
                 linkAmmount--;
-        }
+    		}
 
-        redraw();
+    		redraw();
+    	}
     }
     public void clearCanvas()
     {
@@ -233,29 +239,35 @@ public class FigureControl {
     }
 
     private void changeLinksPoint(Figure node, Vector2F vec2f) {
-        Vector2F fixedOldPoint= fixLinkPoint(node.getStartPoint());
-        Vector2F fixedNewPoint= fixLinkPoint(vec2f);
-
-        for (Figure fig:list) {
-            if (fig instanceof Link) {
-                if (fig.getStartPoint().equals(fixedOldPoint))
-                    fig.setStartPoint(fixedNewPoint);
-                else if (((Link) fig).getEndPoint().equals(fixedOldPoint))
-                    ((Link) fig).setEndPoint(fixedNewPoint);
-            }
-        }
+        if(isEnoughNodesForAddLink())
+        {
+        	Vector2F fixedOldPoint= fixLinkPoint(node.getStartPoint());
+        	Vector2F fixedNewPoint= fixLinkPoint(vec2f);
+        	for (Figure fig:list) {
+        		if (fig instanceof Link) 
+        		{
+        			if (fig.getStartPoint().equals(fixedOldPoint))
+        				fig.setStartPoint(fixedNewPoint);
+        			else if (((Link) fig).getEndPoint().equals(fixedOldPoint))
+        				((Link) fig).setEndPoint(fixedNewPoint);
+        		}
+        	}
         redraw();
+        }
     }
     private boolean isLinkAlreadyExist()
     {
-        Link link= (Link) list.get(list.size()-1);
-        for(int i=0;i<list.size()-1;i++)
-        {
-            Figure fig=list.get(i);
-            if(fig instanceof Link)
-                if(link.equals(fig))
-                    return true;
-        }
+    	if(isEnoughNodesForAddLink())
+    	{
+    		Link link= (Link) list.get(list.size()-1);
+    		for(int i=0;i<list.size()-1;i++)
+    		{
+    			Figure fig=list.get(i);
+    			if(fig instanceof Link)
+    				if(link.equals(fig))
+    					return true;
+        	}
+    	}
         return false;
     }
     public Figure get(int idx)
@@ -360,7 +372,6 @@ public class FigureControl {
     public ObservableList<String> getNodeList()
     {
         ObservableList<String> data=FXCollections.observableArrayList();
-        data.add("Center");
         for(Figure fig:list)
         {
             if(fig instanceof Node)
@@ -376,7 +387,8 @@ public class FigureControl {
             Figure fig=list.get(i);
             if(fig instanceof Link)
             {
-                if(areCrossing((Link)fig,link)) {
+            	LinkCrossing linkCrossing=new LinkCrossing((Link)fig,link);
+                if(linkCrossing.areCrossing()) {
                     list.remove(i);
                     i--;
                 }
@@ -385,54 +397,25 @@ public class FigureControl {
         redraw();
     }
 
-    private boolean areCrossing(Link fig, Link link) {
-        Vector2F p1=fig.getStartPoint();
-        Vector2F p2=fig.getEndPoint();
-        Vector2F p3=link.getStartPoint();
-        Vector2F p4=link.getEndPoint();
-        float sP1=scalarProduct(p1,p3,p2);
-        float sP2=scalarProduct(p1,p4,p2);
-        float sP3=scalarProduct(p3,p1,p4);
-        float sP4=scalarProduct(p3,p2,p4);
-
-        if(((sP1>0 && sP2<0)||(sP1<0 && sP2>0) )&& ((sP3<0 && sP4>0)||(sP3>0 && sP4<0)))
-            return true;
-        else if(sP1==0 && liesBetween(p1,p2,p3))
-            return true;
-        else if(sP2==0 && liesBetween(p1,p2,p4))
-            return true;
-        else if(sP3==0 && liesBetween(p3,p4,p1))
-            return true;
-        else if(sP4==0 && liesBetween(p3,p4,p2))
-            return true;
-        return false;
-
-    }
-    private float scalarProduct(Vector2F p1,Vector2F p2,Vector2F p3 )
-    {
-        return (p2.getX() - p1.getX())*(p3.getY() - p1.getY()) - (p3.getX() - p1.getX())*(p2.getY() - p1.getY());
-    }
-    private boolean liesBetween(Vector2F p1,Vector2F p2,Vector2F p3)
-    {
-        return (Math.min(p1.getX(),p2.getX())<=p3.getX() && Math.max(p1.getX(),p2.getX())>=p3.getX());
-    }
-
     public void deleteNode(Vector2F clickedPoint) {
-        int temp = (findClosestNode(clickedPoint));
-        if(calculateDistance(temp,clickedPoint)<30)
+        if(!isEmpty())
         {
-        Vector2F fixedPoint = fixLinkPoint(list.get(temp).getStartPoint());
-            for (int i = 0; i < list.size(); i++) {
-                Figure fig = list.get(i);
-                if (fig instanceof Link) {
-                    if (fig.getStartPoint().equals(fixedPoint) || ((Link) fig).getEndPoint().equals(fixedPoint)) {
-                        list.remove(i);
-                        i--;
-                    }
-                }
-            }
-            list.remove(temp);
-            redraw();
+        	int temp = (findClosestNode(clickedPoint));
+        	if(calculateDistance(temp,clickedPoint)<30)
+        	{
+        		Vector2F fixedPoint = fixLinkPoint(list.get(temp).getStartPoint());
+        		for (int i = 0; i < list.size(); i++) {
+        			Figure fig = list.get(i);
+        			if (fig instanceof Link) {
+        				if (fig.getStartPoint().equals(fixedPoint) || ((Link) fig).getEndPoint().equals(fixedPoint)) {
+        					list.remove(i);
+        					i--;
+        				}
+        			}
+        		}
+        		list.remove(temp);
+        		redraw();
+        }
         }
     }
     public void deleteElementsFromRectangle(Vector2F startPoint, Vector2F endPoint) {
@@ -444,6 +427,7 @@ public class FigureControl {
         Link rectSide2=new Link(new Vector2F(startPoint.getX(),startPoint.getY()),new Vector2F(startPoint.getX(),endPoint.getY()),"rectSide2");
         Link rectSide3=new Link(new Vector2F(endPoint.getX(),startPoint.getY()), new Vector2F(endPoint.getX(),endPoint.getY()),"rectSide3");
         Link rectSide4=new Link(new Vector2F(startPoint.getX(),endPoint.getY()), new Vector2F(endPoint.getX(),endPoint.getY()),"rectSide4");
+        
         for (int i=0;i<list.size();i++)
         {
             Figure fig=list.get(i);
@@ -453,15 +437,24 @@ public class FigureControl {
                fig.getStartPoint().getY()<endPoint.getY()) {
                 list.remove(i);
                 i--;
-
+                if(fig instanceof Node)
+                	nodeAmmount--;
             }else if(fig instanceof Link)
+            {
+            	LinkCrossing LC1=new LinkCrossing((Link)fig,rectSide1);
+                LinkCrossing LC2=new LinkCrossing((Link)fig,rectSide2);
+                LinkCrossing LC3=new LinkCrossing((Link)fig,rectSide3);
+                LinkCrossing LC4=new LinkCrossing((Link)fig,rectSide4);
+                boolean areCrossing=LC1.areCrossing() ||LC2.areCrossing() || LC3.areCrossing() ||LC4.areCrossing();
                 if((((Link) fig).getEndPoint().getX()>startPoint.getX() &&
                    ((Link) fig).getEndPoint().getX()<endPoint.getX() &&
                    ((Link) fig).getEndPoint().getY()>startPoint.getY() &&
-                   ((Link) fig).getEndPoint().getY()<endPoint.getY()) || areCrossing((Link)fig,rectSide1) || areCrossing((Link)fig,rectSide2) ||areCrossing((Link)fig,rectSide3) || areCrossing((Link)fig,rectSide4))
-                {
-                list.remove(i);
-                i--;
+                   ((Link) fig).getEndPoint().getY()<endPoint.getY()) || areCrossing);
+                	{
+                		list.remove(i);
+                		i--;
+                		linkAmmount--;
+            }
             }
         }
         redraw();
@@ -474,4 +467,15 @@ public class FigureControl {
     {
     	this.canvas=canvas;
     }
+    public boolean isEmpty()
+    {
+    	if(list.size()==0)
+    		return true;
+    	return false;
+    }
+	public boolean isEnoughNodesForAddLink() {
+		if (nodeAmmount > 1)
+			return true;
+		return false;
+	}
 }
