@@ -21,8 +21,6 @@ public class ResizableCanvas extends Canvas {
 	private Rotation rotation;
 
 	public ResizableCanvas() {
-		widthProperty().addListener(evt -> draw());
-		heightProperty().addListener(evt -> draw());
 		list = new FigureControl(this);
 	}
 
@@ -127,10 +125,6 @@ public class ResizableCanvas extends Canvas {
 	            }
 	        }
 		}
-	
-	private void draw() {
-
-	}
 
 	public void init(FXMLController parent) {
 		this.parent = parent;

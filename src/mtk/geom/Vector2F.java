@@ -34,12 +34,7 @@ public class Vector2F extends Matrix2F implements Cloneable {
 		return new Vector2F(super.multiply(scalar));
 	}
 	
-	@Override
-	public Vector2F multiply(Matrix2F other) {
-		return new Vector2F(super.multiply(other));
-	}
-	
-	public float multiply(Vector2F other) {
+	public float dot(Vector2F other) {
 		return getX() * other.getX() + getY() * other.getY();
 	}
 	
@@ -52,20 +47,11 @@ public class Vector2F extends Matrix2F implements Cloneable {
 	}
 	
 	public float length() {
-		return (float) Math.sqrt(multiply(this));
+		return (float) Math.sqrt(dot(this));
 	}
 	
 	@Override
 	public Vector2F clone() {
 		return new Vector2F(super.clone());
 	}
-	
-    @Override
-    public boolean equals(Object o)
-    {
-        Vector2F temp=(Vector2F)o;
-        if(getX()==temp.getX() && getY()==temp.getY())
-            return true;
-        return false;
-    }
 }

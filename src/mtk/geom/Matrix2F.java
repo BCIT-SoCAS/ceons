@@ -59,6 +59,10 @@ public class Matrix2F implements Cloneable {
 		return new Matrix2F(matrix);
 	}
 	
+	public Vector2F multiply(Vector2F other) {
+		return new Vector2F(multiply((Matrix2F) other)); 
+	}
+	
 	public Matrix2F transpose() {
 		float[][] matrix = new float[columns()][rows()];
 		
@@ -84,6 +88,12 @@ public class Matrix2F implements Cloneable {
 			matrix[i][j] = this.matrix[i][j];
 		
 		return new Matrix2F(matrix);
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof Matrix2F) return ((Matrix2F) other).matrix.equals(matrix);
+		return false;
 	}
     public Vector2F getRow(int i)
     {
