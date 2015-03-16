@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.control.Label?>
+<?import mtk.eon.jfx.components.UIntField?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Button?>
+
+<VBox fx:id="settings" spacing="8.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mtk.eon.jfx.controllers.SimulationMenuController">
+	<children>
+		<Label text="Algorithm" />
+		<ComboBox fx:id="algorithms" promptText="Choose algorithm... " />
+		<Separator />
+		<CheckBox fx:id="allowModulationChange" text="Allow changing modulation on path?" />
+		<Label text="Allowed Modulations" />
+		<GridPane>
+			<columnConstraints>
+				<ColumnConstraints percentWidth="50" />
+				<ColumnConstraints percentWidth="50" />
+			</columnConstraints>
+			<children>
+				<CheckBox id="modulation0" text="BPSK" />
+				<CheckBox id="modulation1" text="QPSK" GridPane.rowIndex="1" />
+				<CheckBox id="modulation2" text="8QAM" GridPane.rowIndex="2" />
+				<CheckBox id="modulation3" text="16QAM" GridPane.columnIndex="1" />
+				<CheckBox id="modulation4" text="32QAM" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+				<CheckBox id="modulation5" text="64QAM" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+			</children>
+		</GridPane>
+		<Separator />
+		<Label text="Best paths" />
+		<UIntField fx:id="bestPaths" />
+		<Separator />
+		<Label text="Modulation metric" />
+		<GridPane>
+			<columnConstraints>
+				<ColumnConstraints percentWidth="50" />
+				<ColumnConstraints percentWidth="50" />
+			</columnConstraints>
+			<fx:define>
+				<ToggleGroup fx:id="modulationMetric" />
+			</fx:define>
+			<children>
+				<RadioButton text="Static" toggleGroup="$modulationMetric" selected="true" />
+				<RadioButton text="Dynamic" toggleGroup="$modulationMetric" GridPane.columnIndex="1" />
+			</children>
+		</GridPane>
+		<Separator />
+		<Label text="Regenerator metric value" />
+		<UIntField fx:id="regeneratorsMetricValue" />
+		<Label text="Regenerators metric" />
+		<GridPane>
+			<columnConstraints>
+				<ColumnConstraints percentWidth="50" />
+				<ColumnConstraints percentWidth="50" />
+			</columnConstraints>
+			<fx:define>
+				<ToggleGroup fx:id="regeneratorsMetric" />
+			</fx:define>
+			<children>
+				<RadioButton text="Static" toggleGroup="$regeneratorsMetric" selected="true" />
+				<RadioButton text="Dynamic" toggleGroup="$regeneratorsMetric" GridPane.columnIndex="1" />
+			</children>
+		</GridPane>
+		<Separator />
+		<Button text="Start Simulation" onAction="#startSimulationAction" />
+	</children>
+</VBox>

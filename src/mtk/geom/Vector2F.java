@@ -14,6 +14,10 @@ public class Vector2F extends Matrix2F implements Cloneable {
 		return subtract(other).length();
 	}
 	
+	public Vector2F unit() {
+		return multiply(1f / length());
+	}
+	
 	@Override
 	public Vector2F add(Matrix2F other) {
 		return new Vector2F(super.add(other));

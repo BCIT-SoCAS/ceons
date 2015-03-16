@@ -5,4 +5,4 @@
  * @author Mateusz Blazejewski
  *
  */
-package mtk.eon.jfx;
+package mtk.eon.jfx.controllers;

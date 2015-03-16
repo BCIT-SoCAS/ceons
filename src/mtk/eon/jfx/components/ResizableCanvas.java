@@ -1,6 +1,8 @@
-package mtk.eon.jfx;
+package mtk.eon.jfx.components;
 
 import mtk.eon.drawing.*;
+import mtk.eon.jfx.DrawingState;
+import mtk.eon.jfx.controllers.MainWindowController;
 import mtk.geom.Vector2F;
 import mtk.utilities.DashedDrawing;
 import mtk.utilities.Rotation;
@@ -15,7 +17,7 @@ public class ResizableCanvas extends Canvas {
 	private boolean isDrawingLink;
 	private DrawingState state;
 	private int scrollNumber = 0;
-	private FXMLController parent;
+	private MainWindowController parent;
 	private Vector2F startTempPoint;
 	private Vector2F endTempPoint;
 	private Rotation rotation;
@@ -126,7 +128,7 @@ public class ResizableCanvas extends Canvas {
 	        }
 		}
 
-	public void init(FXMLController parent) {
+	public void init(MainWindowController parent) {
 		this.parent = parent;
 	}
 

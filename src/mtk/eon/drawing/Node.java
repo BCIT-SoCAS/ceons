@@ -13,7 +13,8 @@ public class Node extends Figure {
 	
 	private static LinearGradient nodeFill = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,	new Stop[] {new Stop(0, Color.MAGENTA), new Stop(0.5f, Color.PURPLE)});
 	
-	static float imageSize = 24;
+	static float imageSize = 64;
+	float fill = (float) Math.random();
 
 	public Node(Node node) {
 		startPoint = node.startPoint.clone();
@@ -43,6 +44,8 @@ public class Node extends Figure {
 		gc.fillOval(startPoint.getX(), startPoint.getY(), imageSize, imageSize);
 		gc.setFill(Color.WHITE);
 		gc.fillOval(startPoint.getX() + imageSize / 8f, startPoint.getY() + imageSize / 8f, imageSize - imageSize / 4f, imageSize - imageSize / 4f);
+		gc.setFill(Color.hsb(120.0 + fill * 180, 0.5 + 0.5 * fill, 1  - 0.5 * fill));
+		gc.fillOval(getCenterPoint().getX() - imageSize * (3f / 8f) * fill, getCenterPoint().getY() - imageSize * (3f  / 8f) * fill, imageSize * (6f / 8f) * fill, imageSize * (6f / 8f) * fill);
 	}
 
 	@Override
@@ -91,7 +94,6 @@ public class Node extends Figure {
 
 	@Override
 	protected double calculateDistanceFromPoint(Vector2F p) {
-		return Math.sqrt(Math.pow(p.getX() - startPoint.getX(), 2)
-				+ Math.pow(p.getY() - startPoint.getY(), 2));
+		return getCenterPoint().distance(p);
 	}
 }
