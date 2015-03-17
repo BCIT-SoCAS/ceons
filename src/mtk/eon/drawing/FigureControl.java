@@ -1,13 +1,14 @@
 package mtk.eon.drawing;
 
-import mtk.geom.*;
-import mtk.utilities.LinkCrossing;
+import java.util.ArrayList;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
-
-import java.util.ArrayList;
+import mtk.eon.utils.draw.LinkCrossing;
+import mtk.eon.utils.geom.FloatMatrix;
+import mtk.eon.utils.geom.Vector2F;
 
 public class FigureControl {
 	private ArrayList<Figure> list = new ArrayList<Figure>();
@@ -279,7 +280,7 @@ public class FigureControl {
 		return selectedFigure;
 	}
 
-	public Matrix2F allElementsToMatrix(String name) {
+	public FloatMatrix allElementsToMatrix(String name) {
 		Figure temp = findFigureByName(name);
 		if (temp == null)
 			return allElementsToMatrix();
@@ -288,13 +289,13 @@ public class FigureControl {
 		}
 	}
 
-	public Matrix2F allElementsToMatrix() {
+	public FloatMatrix allElementsToMatrix() {
 		Vector2F vec2F = new Vector2F((float) canvas.getWidth() / 2,
 				(float) canvas.getHeight() / 2);
 		return allElementsToMatrix(vec2F);
 	}
 
-	public Matrix2F allElementsToMatrix(Vector2F rotatePoint) {
+	public FloatMatrix allElementsToMatrix(Vector2F rotatePoint) {
 		float table[][] = new float[nodeAmmount + linkAmmount * 2][2];
 		int actualFigure = 0;
 		float dx = rotatePoint.getX();
@@ -315,10 +316,10 @@ public class FigureControl {
 			}
 			actualFigure++;
 		}
-		return new Matrix2F(table);
+		return new FloatMatrix(table);
 	}
 
-	public void matrixToList(Matrix2F mat, String nodeName) {
+	public void matrixToList(FloatMatrix mat, String nodeName) {
 		Figure temp = findFigureByName(nodeName);
 		if (temp == null)
 			matrixToList(mat);
@@ -327,13 +328,13 @@ public class FigureControl {
 		}
 	}
 
-	public void matrixToList(Matrix2F mat) {
+	public void matrixToList(FloatMatrix mat) {
 		Vector2F vec2F = new Vector2F((float) canvas.getWidth() / 2,
 				(float) canvas.getHeight() / 2);
 		matrixToList(mat, vec2F);
 	}
 
-	public void matrixToList(Matrix2F mat, Vector2F rotationPoint) {
+	public void matrixToList(FloatMatrix mat, Vector2F rotationPoint) {
 		int actualFigure = 0;
 		float dx = rotationPoint.getX();
 		float dy = rotationPoint.getY();

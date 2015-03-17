@@ -1,6 +1,6 @@
 package mtk.eon.net;
 
-import mtk.graph.Path;
+import mtk.eon.graph.Path;
 
 public class NetworkPath extends Path<NetworkNode> {
 

@@ -41,7 +41,7 @@ import mtk.eon.net.Modulation;
 import mtk.eon.net.Network;
 import mtk.eon.net.NetworkNode;
 import mtk.eon.net.algo.RMSAAlgorithm;
-import mtk.general.Utils;
+import mtk.eon.utils.Utils;
 
 import com.sun.javafx.collections.ObservableListWrapper;
 

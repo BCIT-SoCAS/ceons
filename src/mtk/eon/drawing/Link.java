@@ -1,10 +1,13 @@
 package mtk.eon.drawing;
 
-import mtk.utilities.*;
-import mtk.geom.Vector2F;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.paint.*;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
+import mtk.eon.utils.draw.DashedDrawing;
+import mtk.eon.utils.geom.Vector2F;
 
 public class Link extends Figure {
 	protected Vector2F endPoint;

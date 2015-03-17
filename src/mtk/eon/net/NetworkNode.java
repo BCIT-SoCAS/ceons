@@ -1,6 +1,6 @@
 package mtk.eon.net;
 
-import mtk.graph.positioned.PositionedNode;
+import mtk.eon.graph.positioned.PositionedNode;
 
 public class NetworkNode extends PositionedNode {
 

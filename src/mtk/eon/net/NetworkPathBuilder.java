@@ -2,7 +2,7 @@ package mtk.eon.net;
 
 import java.util.ArrayList;
 
-import mtk.graph.PathBuilder;
+import mtk.eon.graph.PathBuilder;
 
 public class NetworkPathBuilder extends PathBuilder<NetworkNode, NetworkPath, Network> {
 	ArrayList<NetworkNode> path;

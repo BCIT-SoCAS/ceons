@@ -1,7 +1,7 @@
 package mtk.eon.net;
 
+import mtk.eon.graph.positioned.FixedLengthLink;
 import mtk.eon.net.spectrum.Spectrum;
-import mtk.graph.positioned.FixedLengthLink;
 
 public class NetworkLink extends FixedLengthLink<NetworkLink> {
 	

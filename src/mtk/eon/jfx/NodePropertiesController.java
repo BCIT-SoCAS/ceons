@@ -1,6 +1,5 @@
 package mtk.eon.jfx;
 
-import mtk.geom.Vector2F;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -12,7 +11,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import mtk.eon.drawing.*;
+import mtk.eon.utils.geom.Vector2F;
 import javafx.scene.paint.Color;
+
 
 
 import java.net.URL;

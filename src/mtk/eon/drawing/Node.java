@@ -6,8 +6,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
-import mtk.geom.Vector2F;
-import mtk.utilities.DashedDrawing;
+import mtk.eon.utils.draw.DashedDrawing;
+import mtk.eon.utils.geom.Vector2F;
 
 public class Node extends Figure {
 	

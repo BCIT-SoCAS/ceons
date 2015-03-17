@@ -2,8 +2,8 @@ package mtk.eon.drawing;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import mtk.geom.*;
 import javafx.scene.paint.Color;
+import mtk.eon.utils.geom.Vector2F;
 
 /**
  * Created by Admin on 2014-12-27.

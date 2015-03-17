@@ -2,7 +2,7 @@ package mtk.eon.net.spectrum;
 
 import java.util.Collection;
 
-import mtk.general.InsertionSortList;
+import mtk.eon.utils.collections.InsertionSortList;
 
 public class MultiSpectrumSegment extends SpectrumSegment {
 

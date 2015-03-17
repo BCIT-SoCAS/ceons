@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import mtk.eon.graph.Graph;
 import mtk.eon.net.algo.RMSAAlgorithm;
 import mtk.eon.net.demand.Demand;
 import mtk.eon.net.demand.DemandAllocationResult;
 import mtk.eon.net.demand.DemandAllocationResult.Type;
 import mtk.eon.net.spectrum.Spectrum;
-import mtk.graph.Graph;
 
 
 public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Network> {
