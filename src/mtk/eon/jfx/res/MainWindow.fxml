@@ -44,7 +44,7 @@
 			<children>
 				<BorderPane id="borderPane">
 					<children>
-						<ResizableCanvas fx:id="graph" height="${borderPane.height}" width="${borderPane.width}" onMouseClicked="#canvasOnMouseClicked" onMouseDragged="#canvasOnMouseDragged" onMousePressed="#canvasOnMousePressed" onMouseReleased="#canvasOnMouseReleased" onScroll="#canvasOnMouseScroll" />
+						<ResizableCanvas fx:id="graph" height="${borderPane.height}" width="${borderPane.width}" />
 					</children>
 				</BorderPane>
 				<Console fx:id="console" wrapText="true" GridPane.rowIndex="1" />

@@ -101,4 +101,14 @@ public class FloatMatrix implements Cloneable {
     {
         return new Vector2F(matrix[i][0],matrix[i][1]);
     }
+    public String toString()
+    {
+    	String str="";
+    	for(int i=0;i<rows();i++)
+    	{	for(int j=0;j<columns();j++)
+    			str+=(matrix[i][j]+" ");			
+    		str+='\n';
+    	}
+    	return str;
+    }
 }

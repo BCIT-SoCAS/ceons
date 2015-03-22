@@ -13,7 +13,7 @@ public class Node extends Figure {
 	
 	private static LinearGradient nodeFill = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,	new Stop[] {new Stop(0, Color.MAGENTA), new Stop(0.5f, Color.PURPLE)});
 	
-	static float imageSize = 64;
+	public static float imageSize = 64;
 	float fill = (float) Math.random();
 
 	public Node(Node node) {
@@ -73,19 +73,17 @@ public class Node extends Figure {
 				imageSize / 2 + 3, Color.GRAY);
 	}
 
-	public static void changeNodeSize(float factory) {
-		System.out.println("factory" + factory);
-		restoreDefaultNodeSize();
-		imageSize = (int) (imageSize * factory);
+	public static void changeNodeSize(float newNodeSize) {
+		imageSize = newNodeSize;
 		if (imageSize < 12)
 			imageSize = 12;
-		else if (imageSize > 24)
-			imageSize = 24;
+		else if (imageSize > 64)
+			imageSize = 64;
 
 	}
 
-	public static void restoreDefaultNodeSize() {
-		imageSize = 24;
+	public static float getStartNodeSize() {
+		return 64;
 	}
 
 	public static float getNodeSize() {

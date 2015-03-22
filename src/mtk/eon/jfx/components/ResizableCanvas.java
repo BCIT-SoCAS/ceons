@@ -16,7 +16,7 @@ public class ResizableCanvas extends Canvas {
 	private FigureControl listBeforeChanges;
 	private boolean isDrawingLink;
 	private DrawingState state;
-	private int scrollNumber = 0;
+	//private int scrollNumber = 0;
 	private MainWindowController parent;
 	private Vector2F startTempPoint;
 	private Vector2F endTempPoint;
@@ -24,9 +24,16 @@ public class ResizableCanvas extends Canvas {
 
 	public ResizableCanvas() {
 		list = new FigureControl(this);
+		setOnMouseClicked((e)->canvasOnMouseClicked(e));
+		setOnMouseDragged((e)->canvasOnMouseDragged(e));
+		setOnMousePressed((e)->canvasOnMousePressed(e));
+		setOnMouseReleased((e)->canvasOnMouseReleased(e));
+		setOnScroll((e)->canvasOnMouseScroll(e));
+		
 	}
 
-	public void canvasOnMousePressed(MouseEvent e) {
+	private void canvasOnMousePressed(MouseEvent e) {
+		System.out.println("Press");
 		Vector2F pressedPoint = new Vector2F((float) e.getX(),(float) e.getY());
 		if(isLinkAddingState())
 		{
@@ -54,35 +61,48 @@ public class ResizableCanvas extends Canvas {
 		{
 				Figure temp = findClosestElement(pressedPoint);
 				setSelectedFigure(temp);
-				loadProperties(temp);
+				//Odkomentować w razie jak zostaną dodane Propertiesy
+				//loadProperties(temp);
 		}
 	}
 
-	public void canvasOnMouseScroll(ScrollEvent e) {
-			parent.loadProperties(null,list);
-			if (e.getDeltaY() > 0)
-				scrollNumber++;
-			else
-				scrollNumber--;
+	private void canvasOnMouseScroll(ScrollEvent e) {
 			Zooming zooming=new Zooming(listBeforeChanges);
-			zooming.zoom(scrollNumber);
-		}
+			//Odkomentować w razie jak zostaną dodane Propertiesy
+			//parent.loadProperties(null,list);
+			if (e.getDeltaY() > 0)
+			//	scrollNumber++;
+				list=new FigureControl(zooming.zoom(true));
+			else
+				list=new FigureControl(zooming.zoom(false));
+			//	scrollNumber--;
+			list.redraw();
+	}
 	
-	public void canvasOnMouseReleased(MouseEvent e)
+	private void canvasOnMouseReleased(MouseEvent e)
 	{
+		Vector2F releasedPoint=new Vector2F((float) e.getX(), (float) e.getY());
 		 if(isLinkAddingState())
 		 {
-			 Vector2F releasedPoint=new Vector2F((float) e.getX(), (float) e.getY());
 		     list.changeLinkEndPointAfterDrag(releasedPoint);
 		     setSelectedFigure(null);
 	     }
 		 else if(isRotationAroundCenterChose() || isRotationAroundNodeChose())
 		 {
 			 listBeforeChanges=new FigureControl(list);
+		 }else if(isNodeDeleteState())
+		 {
+			 deleteNode(releasedPoint);
 		 }
+		 else if(isFewElementsDeleteState()){
+			 list.deleteElementsFromRectangle(startTempPoint, endTempPoint);
+		 }else if(isLinkDeleteState()) {
+			 list.deleteLinks(startTempPoint, endTempPoint);
+		 }	
+		 updateListBeforeChanges();
 	}
 	
-	 public void canvasOnMouseClicked(MouseEvent e)
+	 private void canvasOnMouseClicked(MouseEvent e)
 	 {
 		 Vector2F clickedPoint = new Vector2F((float) e.getX(), (float) e.getY());
 		 if (isNodeAddingState()) {
@@ -91,18 +111,11 @@ public class ResizableCanvas extends Canvas {
 		 } else if (isClickingState()) {
 			 if (isDrawingLink)
 				 isDrawingLink = false;
-		 }else if(isNodeDeleteState())
-		 {
-			 deleteNode(clickedPoint);
 		 }
-		 else if(isFewElementsDeleteState()){
-			 list.deleteElementsFromRectangle(startTempPoint, endTempPoint);
-		 }else if(isLinkDeleteState()) {
-			 list.deleteLinks(startTempPoint, endTempPoint);
-		 }	
+		 updateListBeforeChanges();
 	 }
 
-	public void canvasOnMouseDragged(MouseEvent e)
+	private void canvasOnMouseDragged(MouseEvent e)
 	{
 		Vector2F draggedPoint = new Vector2F((float) e.getX(), (float) e.getY());
 	    if(isLinkAddingState()){
@@ -123,6 +136,7 @@ public class ResizableCanvas extends Canvas {
 	            if (isRotationAroundCenterChose() || isRotationAroundNodeChose()) {
 	                endTempPoint = draggedPoint;
 	                list=rotation.rotate(startTempPoint, endTempPoint);
+	                list.redraw();
 	                startTempPoint=endTempPoint;
 	            }
 	        }
@@ -151,8 +165,7 @@ public class ResizableCanvas extends Canvas {
 		setState(chosenState);
 		setSelectedFigure(null);
 		listBeforeChanges=new FigureControl(list);
-		scrollNumber=0;
-		list.setCanvas(this);
+		//scrollNumber=0;
 	}
 	private void setState(DrawingState chosenState )
 	{
@@ -172,6 +185,8 @@ public class ResizableCanvas extends Canvas {
 
 	private void addNode(Vector2F vec2F) {
 		list.add(new Node(vec2F, list.getNodeAmmount()));
+		System.out.println("NodeSizeAdd"+Node.imageSize);
+		System.out.println("////////////////////////////////////////////////////////////////////////////////");
 	}
 
 	private void addLink(Vector2F vec2F) {
@@ -208,12 +223,18 @@ public class ResizableCanvas extends Canvas {
 	private void setSelectedFigure(Figure temp)
 	{
 	    list.setSelectedFigure(temp);
-	    if(temp!=null)
-	    	list.drawOutline(temp);
 	}
 	private void loadProperties(Figure temp)
 	{
 		parent.loadProperties(temp, list);
+	}
+	private void updateListBeforeChanges()
+	{
+		listBeforeChanges=new FigureControl(list);
+		if(list.elementsAmmount()>0){
+		Figure fig=list.get(list.elementsAmmount()-1);
+		System.out.println("update"+((Node)fig).imageSize);
+		}Zooming.clearScrollNumber();
 	}
 	
 }

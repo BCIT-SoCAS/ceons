@@ -165,37 +165,13 @@ public class MainWindowController  {
     {
         accordion.getPanes().get(idx).setExpanded(true);
     }
-	public void setNoneRadioButtonActive()
-	{
-		RBNoneChose.setSelected(true);
-		RBNoneChose.requestFocus();
-	}
+
     private void setSelectedPaneContent(TitledPane tp)
     {
         if(tp!=null)
             propertiesTitledPane.setContent(tp.getContent());
         else
             propertiesTitledPane.setContent(null);
-    }
-    @FXML private void canvasOnMouseClicked(MouseEvent e)
-    {
-    	graph.canvasOnMouseClicked(e);
-    }
-    @FXML private void canvasOnMousePressed(MouseEvent e)
-    {
-    	graph.canvasOnMousePressed(e);
-    }
-    @FXML private void canvasOnMouseReleased(MouseEvent e)
-    {
-    	graph.canvasOnMouseReleased(e);
-    }
-    @FXML private void canvasOnMouseDragged(MouseEvent e)
-    {
-    	graph.canvasOnMouseDragged(e);
-    }
-    @FXML private void canvasOnMouseScroll(ScrollEvent e)
-    {
-    	graph.canvasOnMouseScroll(e);
     }
 
 }
