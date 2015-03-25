@@ -12,6 +12,8 @@ import javafx.stage.Stage;
 
 import javax.swing.JOptionPane;
 
+import mtk.eon.io.Logger;
+
 public class Main extends Application {
 	
 	@Override

@@ -1,67 +1,81 @@
 package mtk.eon.net.spectrum;
 
 import mtk.eon.net.demand.Demand;
+import mtk.eon.utils.IntegerRange;
 
-public class WorkingSpectrumSegment extends AbstractSpectrumSegment {
+public class WorkingSpectrumSegment extends AllocatableSpectrumSegment {
 
-	Demand demand;
+	public static final String TYPE = "WORKING";
 	
-	public WorkingSpectrumSegment(int offset, int volume, Demand demand) {
-		super(offset, volume);
-		this.demand = demand;
+	private Demand owner;
+	
+	public WorkingSpectrumSegment(int offset, int length, Demand demand) {
+		super(new IntegerRange(offset, length));
+		this.owner = demand;
+	}
+	
+	public WorkingSpectrumSegment(IntegerRange range, Demand demand) {
+		super(range);
+		this.owner = demand;
 	}
 
 	public Demand getOwner() {
-		return demand;
+		return owner;
 	}
 	
 	@Override
-	public Type getType() {
-		return Type.WORKING;
-	}
-	
-	@Override
-	public boolean canOverlap(SpectrumSegment other) {
-		return other.getType() == Type.FREE;
+	public String getType() {
+		return TYPE;
 	}
 
 	@Override
-	public SpectrumSegment join(SpectrumSegment other) {
-		SpectrumSegment result = super.join(other);
-		if (!demand.equals(((WorkingSpectrumSegment) other).getOwner())) throw new SpectrumException("Cannot join two Type.WORKING SpectrumSegments which demands are not the same.");
-		return result;
+	public boolean isOwnedBy(Demand demand) {
+		return owner.equals(demand);
 	}
 
 	@Override
-	public SpectrumSegment merge(SpectrumSegment other) {
-		if (other.getType() == Type.MULTI) return other.merge(this);
-		if (isOverlapping(other)) {
-			if (other.getType() == Type.WORKING) return new MultiSpectrumSegment(subtract(other), other.subtract(this), multiply(other));
-			else return mergeWorkignNonWorking(other);
-		} else return new MultiSpectrumSegment(this, other);
-	}
-	
-	SpectrumSegment mergeWorkignNonWorking(SpectrumSegment other) {
-		SpectrumSegment subtraction = other.subtract(this);
-		if (subtraction != null) return new MultiSpectrumSegment(subtraction, this);
-		else return this;
+	public boolean canJoin(SpectrumSegment other) {
+		if (getType() != other.getType()) return false;
+		return ((WorkingSpectrumSegment) other).owner.equals(owner);
 	}
 
 	@Override
-	public SpectrumSegment multiply(SpectrumSegment other) {
-		SpectrumSegment result = super.multiply(other);
-		if (other.getType() == Type.WORKING && ((WorkingSpectrumSegment) other).demand.getTTL() > demand.getTTL()) ((WorkingSpectrumSegment) result).demand = ((WorkingSpectrumSegment) other).demand;
-		return result;
+	public boolean canAllocate(SpectrumSegment other) {
+		return other.getType() == FreeSpectrumSegment.TYPE;
 	}
-	
+
 	@Override
-	public SpectrumSegment partialClone(int offset, int volume) {
-		return new WorkingSpectrumSegment(offset, volume, demand);
+	public WorkingSpectrumSegment allocate(IntegerRange range, SpectrumSegment other) {
+		if (other.getType() != FreeSpectrumSegment.TYPE) throw new SpectrumException("Working spectrum can only by allocated on type-FREE segments.");
+		return clone(range);
+	}
+
+	@Override
+	public SpectrumSegment deallocate(Demand demand) {
+		if (!owner.equals(demand)) throw new SpectrumException("Tried do deallocate segment with demand that is not its owner.");
+		return new FreeSpectrumSegment(range);
+	}
+
+	@Override
+	public SpectrumSegment merge(IntegerRange range, SpectrumSegment other) {
+		switch(other.getType()) {
+		case FreeSpectrumSegment.TYPE: return clone(range);
+		case BackupSpectrumSegment.TYPE: return clone(range);
+		case WorkingSpectrumSegment.TYPE: 
+			WorkingSpectrumSegment castedOther = (WorkingSpectrumSegment) other;
+			return new WorkingSpectrumSegment(range, castedOther.owner.getTTL() > owner.getTTL() ? castedOther.owner : owner);
+		}
+		return other.merge(range, this);
+	}
+
+	@Override
+	public WorkingSpectrumSegment clone(IntegerRange range) {
+		return new WorkingSpectrumSegment(range, owner);
 	}
 
 	@Override
 	public String toString() {
 		String result = super.toString();
-		return result.substring(0, result.length() - 1) + ", Demand: " + demand + "}";
+		return result.substring(0, result.length() - 1) + ", Demand: " + owner + "}";
 	}
 }

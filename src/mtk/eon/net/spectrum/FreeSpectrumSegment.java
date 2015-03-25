@@ -1,39 +1,37 @@
 package mtk.eon.net.spectrum;
 
+import mtk.eon.utils.IntegerRange;
 
-public class FreeSpectrumSegment extends AbstractSpectrumSegment {
+
+public class FreeSpectrumSegment extends SpectrumSegment {
 	
-	public FreeSpectrumSegment(int offset, int volume) {
-		super(offset, volume);
-	}
-
-	@Override
-	public Type getType() {
-		return Type.FREE;
-	}
-
-	@Override
-	public boolean canOverlap(SpectrumSegment other) {
-		return true; // TODO think about it
-	}
-
-	@Override
-	public SpectrumSegment merge(SpectrumSegment other) {
-		if (other.getType() == Type.MULTI) return other.merge(this);
-		if (isOverlapping(other)) {
-			if (other.getType() == Type.FREE) return add(other);
-			else return mergeFreeNonFree(other);
-		} else return new MultiSpectrumSegment(this, other);
+	public static final String TYPE = "FREE";
+	
+	public FreeSpectrumSegment(IntegerRange range) {
+		super(range);
 	}
 	
-	SpectrumSegment mergeFreeNonFree(SpectrumSegment other) {
-		SpectrumSegment subtraction = subtract(other);
-		if (subtraction != null) return new MultiSpectrumSegment(subtraction, other);
-		else return other;
+	public FreeSpectrumSegment(int offset, int length) {
+		super(new IntegerRange(offset, length));
 	}
 
 	@Override
-	public SpectrumSegment partialClone(int offset, int volume) {
-		return new FreeSpectrumSegment(offset, volume);
+	public String getType() {
+		return TYPE;
+	}
+
+	@Override
+	public boolean canJoin(SpectrumSegment other) {
+		return other.getType() == FreeSpectrumSegment.TYPE;
+	}
+
+	@Override
+	public SpectrumSegment merge(IntegerRange range, SpectrumSegment other) {
+		return other.clone(range);
+	}
+
+	@Override
+	public SpectrumSegment clone(IntegerRange range) {
+		return new FreeSpectrumSegment(range);
 	}
 }

@@ -3,7 +3,7 @@ package mtk.eon.utils.collections;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class InsertionSortList<E extends Comparable<? super E>> extends ArrayList<E> {
+public class InsertionSortList<E extends Comparable<E>> extends ArrayList<E> {
 	
 	/**
 	 * 

@@ -1,74 +1,108 @@
 package mtk.eon.net.spectrum;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import mtk.eon.net.demand.Demand;
+import mtk.eon.utils.IntegerRange;
 
-public class BackupSpectrumSegment extends AbstractSpectrumSegment {
+public class BackupSpectrumSegment extends AllocatableSpectrumSegment {
+	
+	public static final String TYPE = "BACKUP";
 	
 	private Set<Demand> demands;
 	
-	public BackupSpectrumSegment(int offset, int volume, Demand demand) {
-		super(offset, volume);
+	public BackupSpectrumSegment(int offset, int length, Demand demand) {
+		super(new IntegerRange(offset, length));
 		demands = new HashSet<Demand>();
 		demands.add(demand);
 	}
-
-	public BackupSpectrumSegment(int offset, int volume, Set<Demand> demands) {
-		super(offset, volume);
+	
+	public BackupSpectrumSegment(IntegerRange range, Demand demand) {
+		super(range);
+		demands = new HashSet<Demand>();
+		demands.add(demand);
+	}
+	
+	private BackupSpectrumSegment(IntegerRange range, Set<Demand> demands) {
+		super(range);
 		this.demands = demands;
 	}
 
 	public Set<Demand> getDemands() {
-		return demands;
+		return Collections.unmodifiableSet(demands);
 	}
 	
 	@Override
-	public Type getType() {
-		return Type.BACKUP;
+	public String getType() {
+		return TYPE;
 	}
 
 	@Override
-	public boolean canOverlap(SpectrumSegment other) {
-//		if (other.getType() == Type.FREE) return true;
-//		else if (other.getType() == Type.BACKUP) {
-//			for (Demand demand : demands) if (!demand.isDisjoint(other)) return false;
-//		}
-		return false; // TODO
+	public boolean isOwnedBy(Demand demand) {
+		return demands.contains(demand);
 	}
 
 	@Override
-	public SpectrumSegment join(SpectrumSegment other) {
-		if (!(other instanceof BackupSpectrumSegment)) throw new SpectrumException("Cannot join Type." + getType() + " SpectrumSegment with Type." + other.getType() + " SpectrumSegment.");
-		Set<Demand> othersDemands = ((BackupSpectrumSegment) other).getDemands();
-		if (demands.size() != othersDemands.size() || !demands.containsAll(othersDemands)) throw new SpectrumException("Cannot join two Type.BACKUP SpectrumSegments which demand set is not the same.");
-		return super.join(other);
+	public boolean canJoin(SpectrumSegment other) {
+		if (getType() != other.getType()) return false;
+		return ((BackupSpectrumSegment) other).demands.equals(demands);
 	}
 
 	@Override
-	public SpectrumSegment merge(SpectrumSegment other) {
-		if (other.getType() == Type.MULTI) return other.merge(this);
-		if (isOverlapping(other)) {
-			switch (other.getType()) {
-			case BACKUP: return new MultiSpectrumSegment(subtract(other), other.subtract(this), multiply(other));
-			case FREE: return ((FreeSpectrumSegment) other).mergeFreeNonFree(this);
-			case WORKING: return ((WorkingSpectrumSegment) other).mergeWorkignNonWorking(this);
+	public boolean canAllocate(SpectrumSegment other) {
+		if (other.getType() == FreeSpectrumSegment.TYPE) return true;
+		else if (other.getType() == BackupSpectrumSegment.TYPE) {
+			for (Demand demand1 : demands) for (Demand demand2 : ((BackupSpectrumSegment) other).demands) if (!demand1.isDisjoint(demand2)) return false; // TODO Compare collections of links instead...
+			return true;
+		} else return false;
+	}
+
+	@Override
+	public BackupSpectrumSegment allocate(IntegerRange range, SpectrumSegment other) {
+		if (other.getType() == FreeSpectrumSegment.TYPE) return clone(range);
+		else if (other.getType() == BackupSpectrumSegment.TYPE) {
+			Set<Demand> demands = new HashSet<Demand>(((BackupSpectrumSegment) other).demands);
+			demands.addAll(this.demands);
+			return new BackupSpectrumSegment(range, demands);
+		} else throw new SpectrumException("BackupSpectrumSegment can only be allocated on FREE or disjoint BACKUP segments");
+	}
+
+	@Override
+	public SpectrumSegment deallocate(Demand demand) {
+		if (!demands.contains(demand)) throw new SpectrumException("Tried do deallocate segment with demand that is not its owner.");
+		if (demands.size() == 1) return new FreeSpectrumSegment(range);
+		else {
+			Set<Demand> demands = new HashSet<Demand>(this.demands);
+			demands.remove(demand);
+			return new BackupSpectrumSegment(range, demands);
+		}
+	}
+
+	@Override
+	public SpectrumSegment merge(IntegerRange range, SpectrumSegment other) {
+		switch(other.getType()) {
+		case FreeSpectrumSegment.TYPE: return clone(range);
+		case BackupSpectrumSegment.TYPE:
+			BackupSpectrumSegment castedOther = (BackupSpectrumSegment) other;
+			Set<Demand> demands;
+			if (castedOther.demands.size() > this.demands.size()) {
+				demands = new HashSet<Demand>(castedOther.demands);
+				demands.addAll(this.demands);
+			} else {
+				demands = new HashSet<Demand>(this.demands);
+				demands.addAll(castedOther.demands);
 			}
-			throw new SpectrumException("Great job! You encountered an impossible to encounter exception.");
-		} else return new MultiSpectrumSegment(this, other);
-	}
-	
-	@Override
-	public SpectrumSegment multiply(SpectrumSegment other) {
-		SpectrumSegment result = super.multiply(other);
-		if (other.getType() == Type.BACKUP) ((BackupSpectrumSegment) result).demands.addAll(((BackupSpectrumSegment) other).getDemands());
-		return result;
+			return new BackupSpectrumSegment(range, demands);
+		case WorkingSpectrumSegment.TYPE: return other.clone(range);
+		}
+		return other.merge(range, this);
 	}
 
 	@Override
-	public SpectrumSegment partialClone(int offset, int volume) {
-		return new BackupSpectrumSegment(offset, volume, new HashSet<Demand>(demands));
+	public BackupSpectrumSegment clone(IntegerRange range) {
+		return new BackupSpectrumSegment(range, demands);
 	}
 	
 	@Override
