@@ -78,7 +78,6 @@ public class FigureControlFloatMatrixConv {
 			Vector2F startPoint=floatMatrixAfterChanges.getRow(actualFigure);
 			Vector2F fixedStartPoint=fixPoint(startPoint,false);
 			fig.setStartPoint(fixedStartPoint);
-			//System.out.println("Node "+actualFigure+" "+fixedStartPoint);
 			actualFigure++;
 		}
 		for(int i=0;i<list.elementsAmmount()-nodeAmmount;i++)
@@ -93,8 +92,6 @@ public class FigureControlFloatMatrixConv {
 			Vector2F fixedEndPoint=fixLinkPoint(endPoint,false);
 			link.setStartPoint(fixedStartPoint);
 			link.setEndPoint(fixedEndPoint);
-			//System.out.println("Przed Link "+i+" "+startPoint+" "+endPoint);
-			//System.out.println("Po Link "+i+" "+fixedStartPoint+" "+fixedEndPoint);
 		}
 		return returnList;
 	}
@@ -107,14 +104,13 @@ public class FigureControlFloatMatrixConv {
 			dx=-dx;
 			dy=-dy;
 		}
-		return new Vector2F(vec.getX() + dx,(vec.getY() + dy));
+		return new Vector2F(vec.getX() + dx,vec.getY() + dy);
 	}
 	private Vector2F fixLinkPoint(Vector2F vec,boolean beforeModifications)
 	{
 		int nodeSize=-this.nodeSize;
 		if(!beforeModifications)
 			nodeSize=-nodeSize;
-		System.out.println("node size"+nodeSize);
 		return new Vector2F(vec.getX()
 				+ nodeSize, vec.getY()
 				+ nodeSize );

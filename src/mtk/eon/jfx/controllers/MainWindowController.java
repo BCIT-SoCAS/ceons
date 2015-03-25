@@ -63,9 +63,7 @@ public class MainWindowController  {
 	
 	@FXML private void nodeChose(ActionEvent e) 
 	{
-		System.out.println(progressLabel);
         graph.changeState(DrawingState.nodeAddingState);
-
 	}
 	@FXML private void linkChose(ActionEvent e) 
 	{

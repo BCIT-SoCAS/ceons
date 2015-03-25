@@ -1,10 +1,12 @@
 package mtk.eon.drawing;
 
 import java.util.ArrayList;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.canvas.Canvas;
-import mtk.eon.utils.draw.LinkCrossing;
+import mtk.eon.utils.geom.LineSegment;
+import mtk.eon.utils.geom.Rectangle;
 import mtk.eon.utils.geom.Vector2F;
 
 public class FigureControl {
@@ -68,21 +70,22 @@ public class FigureControl {
 	}
 
 	public int findClosestNode(Vector2F temp) {
-		
-		//gdyby bylo zero to by obliczył odleglosc od linka,gdyz linki sa jako pierwsze na liscie
-		int actualClosestNode = findFirstNode();
-		double closestDistance = calculateDistance(actualClosestNode, temp);
-		for (int i = actualClosestNode; i < list.size(); i++) {
-			if (list.get(i) instanceof Node) {
-				double actualDistance = calculateDistance(i, temp);
-				if (actualDistance < closestDistance) {
-					closestDistance = actualDistance;
-					actualClosestNode = i;
+		if(!isEmpty()){
+			//gdyby bylo zero to by obliczył odleglosc od linka,gdyz linki sa jako pierwsze na liscie
+			int actualClosestNode = findFirstNode();
+			double closestDistance = calculateDistance(actualClosestNode, temp);
+			for (int i = actualClosestNode; i < list.size(); i++) {
+				if (list.get(i) instanceof Node) {
+					double actualDistance = calculateDistance(i, temp);
+					if (actualDistance < closestDistance) {
+						closestDistance = actualDistance;
+						actualClosestNode = i;
+					}
 				}
 			}
+			return actualClosestNode;
 		}
-
-		return actualClosestNode;
+		return -1;
 	}
 
 	private int findFirstNode() {
@@ -230,9 +233,9 @@ public class FigureControl {
 			Vector2F fixedNewPoint = fixLinkPoint(vec2f);
 			for (Figure fig : list) {
 				if (fig instanceof Link) {
-					if (fig.getStartPoint().equals(fixedOldPoint))
+					if (fig.getStartPoint().distance(fixedOldPoint)<=1)
 						fig.setStartPoint(fixedNewPoint);
-					else if (((Link) fig).getEndPoint().equals(fixedOldPoint))
+					else if (((Link) fig).getEndPoint().distance(fixedOldPoint)<=1)
 						((Link) fig).setEndPoint(fixedNewPoint);
 				}
 			}
@@ -243,11 +246,20 @@ public class FigureControl {
 	private boolean isLinkAlreadyExist() {
 		if (isEnoughNodesForAddLink()) {
 			Link link = (Link) list.get(0);
+			Vector2F startPoint=link.getStartPoint();
+			Vector2F endPoint=link.getEndPoint();
 			for (int i = 1; i < list.size(); i++) {
 				Figure fig = list.get(i);
 				if (fig instanceof Link)
-					if (link.equals(fig))
+				{
+					Link tempLink=(Link)fig;
+					Vector2F startTempPoint=tempLink.getStartPoint();
+					Vector2F endTempPoint=tempLink.getEndPoint();
+					if((startTempPoint.distance(startPoint)<=1&&endTempPoint.distance(endPoint)<=1) ||(startTempPoint.distance(endPoint)<=1 &&endTempPoint.distance(startPoint)<=1))
+					{
 						return true;
+					}
+				}
 			}
 		}
 		return false;
@@ -287,13 +299,13 @@ public class FigureControl {
 		return data;
 	}
 	public void deleteLinks(Vector2F startPoint, Vector2F endPoint) {
-		Link link = new Link(startPoint, endPoint, "temp");
+		LineSegment line=new LineSegment(startPoint,endPoint);
 		for (int i = 0; i < list.size(); i++) {
 			Figure fig = list.get(i);
 			if (fig instanceof Link) {
-				LinkCrossing linkCrossing = new LinkCrossing((Link) fig, link);
-				if (linkCrossing.areCrossing()) {
+				if (line.areCrossing((Link)fig)) {
 					list.remove(i);
+					linkAmmount--;
 					i--;
 				}
 			}
@@ -306,18 +318,20 @@ public class FigureControl {
 			int temp = (findClosestNode(clickedPoint));
 			if (calculateDistance(temp, clickedPoint) < Node.imageSize/2) 
 				{
-					Vector2F fixedPoint = fixLinkPoint(list.get(temp)
-							.getStartPoint());
+					Figure fig=list.get(temp);
+					Vector2F startPoint=fig.getStartPoint();
+					Vector2F fixedPoint=fixLinkPoint(startPoint);
 					list.remove(temp);
+					nodeAmmount--;
 					for (int i = 0; i < list.size(); i++) {
-						Figure fig = list.get(i);
+						fig = list.get(i);
 						if (fig instanceof Link) {
-							if (fig.getStartPoint().equals(fixedPoint)
-									|| ((Link) fig).getEndPoint()
-											.equals(fixedPoint)) {
+							if (fixedPoint.distance(fig.startPoint)<=1 || fixedPoint.distance(((Link)fig).getEndPoint())<=1)
+							{
 								list.remove(i);
 								i--;
-						}
+								linkAmmount--;
+							}
 					}
 				}
 				
@@ -328,69 +342,27 @@ public class FigureControl {
 
 	public void deleteElementsFromRectangle(Vector2F startPoint,
 			Vector2F endPoint) {
-		Vector2F leftUpCorner = findLeftUpCorner(startPoint, endPoint);
-		Vector2F rightDownCorner = findRightDownCorner(startPoint, endPoint);	
+		Rectangle rec=new Rectangle(startPoint,endPoint);
 		for (int i = 0; i < list.size(); i++) {
 			Figure fig = list.get(i);
-			Vector2F checkedPoint=fig.getStartPoint();
-			boolean isInside=pointIsInsideRectangle(leftUpCorner, rightDownCorner, checkedPoint);
-			if (isInside) {
-				list.remove(i);
-				i--;
-				if (fig instanceof Node)
-					nodeAmmount--;
-				else
-					linkAmmount--;
-			} else if (fig instanceof Link) {
-				boolean areCrossing=isLinkCrossRectangle((Link)fig,leftUpCorner,rightDownCorner);
-				checkedPoint=((Link)fig).getEndPoint();
-				isInside=pointIsInsideRectangle(leftUpCorner, rightDownCorner, checkedPoint);
-				if(isInside||areCrossing)
+			if(rec.isFigureCrossOrIsInsideRectangle(fig))
+			{
+				if(fig instanceof Node)
 				{
-					list.remove(i);
-					i--;
+					nodeAmmount--;
+				}
+				else
+				{
 					linkAmmount--;
 				}
+				list.remove(i);
+				i--;
 			}
 		}
 		redraw();
+		
 	}
 
-	private boolean pointIsInsideRectangle(Vector2F leftUpCorner,Vector2F rightDownCorner, Vector2F checkedPoint)
-	{
-		boolean isBelowLeftLine= checkedPoint.getX() > leftUpCorner.getX();
-		boolean isBelowRightLine=checkedPoint.getX() < rightDownCorner.getX();
-		boolean isBelowUpLine=checkedPoint.getY() > leftUpCorner.getY();
-		boolean isUnderDownLine=checkedPoint.getY() < rightDownCorner.getY();
-		boolean isInside=isBelowLeftLine&&isBelowRightLine&&isBelowUpLine&&isUnderDownLine;
-		return isInside;
-	}
-	private boolean isLinkCrossRectangle(Link link,Vector2F leftUpCorner,Vector2F rightDownCorner)
-	{
-		float LUCX=leftUpCorner.getX();
-		float LUCY=leftUpCorner.getY();
-		float RDCX=rightDownCorner.getX();
-		float RDCY=rightDownCorner.getY();
-		Link rectSide1 = new Link(new Vector2F(LUCX,LUCY), new Vector2F(RDCX,LUCY), "rectSide1");
-		Link rectSide2 = new Link(new Vector2F(LUCX,LUCY), new Vector2F(LUCX,RDCY), "rectSide2");
-		Link rectSide3 = new Link(new Vector2F(RDCX,LUCY), new Vector2F(RDCX,RDCY), "rectSide3");
-		Link rectSide4 = new Link(new Vector2F(LUCX,RDCY), new Vector2F(RDCX,RDCY), "rectSide4");
-		LinkCrossing LC1 = new LinkCrossing(link, rectSide1);
-		LinkCrossing LC2 = new LinkCrossing(link, rectSide2);
-		LinkCrossing LC3 = new LinkCrossing(link, rectSide3);
-		LinkCrossing LC4 = new LinkCrossing(link, rectSide4);
-		return LC1.areCrossing() || LC2.areCrossing() || LC3.areCrossing() || LC4.areCrossing();
-	}
-	private Vector2F findLeftUpCorner(Vector2F vec1,Vector2F vec2)
-	{
-		return new Vector2F(Math.min(vec1.getX(),
-				vec2.getX()), Math.min(vec1.getY(), vec2.getY()));
-	}
-	private Vector2F findRightDownCorner(Vector2F vec1,Vector2F vec2)
-	{
-		return new Vector2F(Math.max(vec1.getX(),
-				vec2.getX()), Math.max(vec1.getY(), vec2.getY()));	
-	}
 	public int elementsAmmount() {
 		return list.size();
 	}

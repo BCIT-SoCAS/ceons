@@ -16,7 +16,6 @@ public class ResizableCanvas extends Canvas {
 	private FigureControl listBeforeChanges;
 	private boolean isDrawingLink;
 	private DrawingState state;
-	//private int scrollNumber = 0;
 	private MainWindowController parent;
 	private Vector2F startTempPoint;
 	private Vector2F endTempPoint;
@@ -28,12 +27,11 @@ public class ResizableCanvas extends Canvas {
 		setOnMouseDragged((e)->canvasOnMouseDragged(e));
 		setOnMousePressed((e)->canvasOnMousePressed(e));
 		setOnMouseReleased((e)->canvasOnMouseReleased(e));
-		setOnScroll((e)->canvasOnMouseScroll(e));
-		
+		setOnScroll((e)->canvasOnMouseScroll(e));	
 	}
 
 	private void canvasOnMousePressed(MouseEvent e) {
-		System.out.println("Press");
+		updateListBeforeChanges();
 		Vector2F pressedPoint = new Vector2F((float) e.getX(),(float) e.getY());
 		if(isLinkAddingState())
 		{
@@ -44,20 +42,20 @@ public class ResizableCanvas extends Canvas {
 				|| isRotationAroundNodeChose())
 		{
 			startTempPoint=pressedPoint;
-			if (isRotationAroundNodeChose())
+			if (isRotationAroundNodeChose()&& !list.isEmpty())
 				{
 					
 					Figure activeRotateNode=list.get(list.findClosestNode(startTempPoint));
 					Vector2F centerPoint =((Node)activeRotateNode).getStartPoint();
 					rotation = new Rotation(centerPoint,listBeforeChanges);
 				}
-			else if(isRotationAroundCenterChose())
+			else if(isRotationAroundCenterChose()&& !list.isEmpty())
 				{
 					Vector2F centerPoint=new Vector2F((float)getHeight()/2,(float)getWidth()/2);
 					rotation=new Rotation(centerPoint,listBeforeChanges);
 				}
 		}
-		else if (isClickingState())
+		else if (isClickingState()&& !list.isEmpty())
 		{
 				Figure temp = findClosestElement(pressedPoint);
 				setSelectedFigure(temp);
@@ -67,16 +65,18 @@ public class ResizableCanvas extends Canvas {
 	}
 
 	private void canvasOnMouseScroll(ScrollEvent e) {
-			Zooming zooming=new Zooming(listBeforeChanges);
-			//Odkomentować w razie jak zostaną dodane Propertiesy
-			//parent.loadProperties(null,list);
-			if (e.getDeltaY() > 0)
-			//	scrollNumber++;
-				list=new FigureControl(zooming.zoom(true));
-			else
-				list=new FigureControl(zooming.zoom(false));
-			//	scrollNumber--;
-			list.redraw();
+			if(!list.isEmpty())
+			{
+				listBeforeChanges.setSelectedFigure(null);
+				Zooming zooming=new Zooming(listBeforeChanges);
+				//Odkomentować w razie jak zostaną dodane Propertiesy
+				//parent.loadProperties(null,list);
+				if (e.getDeltaY() > 0)
+					list=new FigureControl(zooming.zoom(true));
+				else
+					list=new FigureControl(zooming.zoom(false));
+				list.redraw();
+			}
 	}
 	
 	private void canvasOnMouseReleased(MouseEvent e)
@@ -133,7 +133,7 @@ public class ResizableCanvas extends Canvas {
 	            list.redraw();
 	            DashedDrawing.drawDashedRectangle(getGraphicsContext2D(), startTempPoint, endTempPoint);
 	        } else {
-	            if (isRotationAroundCenterChose() || isRotationAroundNodeChose()) {
+	            if ((isRotationAroundCenterChose() || isRotationAroundNodeChose())&& !list.isEmpty()) {
 	                endTempPoint = draggedPoint;
 	                list=rotation.rotate(startTempPoint, endTempPoint);
 	                list.redraw();
@@ -165,7 +165,6 @@ public class ResizableCanvas extends Canvas {
 		setState(chosenState);
 		setSelectedFigure(null);
 		listBeforeChanges=new FigureControl(list);
-		//scrollNumber=0;
 	}
 	private void setState(DrawingState chosenState )
 	{
@@ -185,8 +184,6 @@ public class ResizableCanvas extends Canvas {
 
 	private void addNode(Vector2F vec2F) {
 		list.add(new Node(vec2F, list.getNodeAmmount()));
-		System.out.println("NodeSizeAdd"+Node.imageSize);
-		System.out.println("////////////////////////////////////////////////////////////////////////////////");
 	}
 
 	private void addLink(Vector2F vec2F) {
@@ -231,10 +228,7 @@ public class ResizableCanvas extends Canvas {
 	private void updateListBeforeChanges()
 	{
 		listBeforeChanges=new FigureControl(list);
-		if(list.elementsAmmount()>0){
-		Figure fig=list.get(list.elementsAmmount()-1);
-		System.out.println("update"+((Node)fig).imageSize);
-		}Zooming.clearScrollNumber();
+		Zooming.clearFactory();
 	}
 	
 }

@@ -69,7 +69,7 @@ public class Link extends Figure {
 
 	@Override
 	protected void loadImage() {
-		image = new Image(getClass().getResourceAsStream("line_image.jpg"));
+		//image = new Image(getClass().getResourceAsStream("line_image.jpg"));
 	}
 
 	@Override

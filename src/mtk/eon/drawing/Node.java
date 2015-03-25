@@ -56,8 +56,8 @@ public class Node extends Figure {
 	}
 
 	protected void loadImage() {
-		image = new Image("mtk/eon/drawing/circle_image.jpg", imageSize,
-				imageSize, true, false);
+		//image = new Image("mtk/eon/drawing/circle_image.jpg", imageSize,
+		//		imageSize, true, false);
 	}
 
 	public Vector2F getCenterPoint() {

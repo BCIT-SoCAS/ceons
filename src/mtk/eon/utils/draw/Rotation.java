@@ -18,22 +18,24 @@ public class Rotation {
 	}
 
 	public FigureControl rotate(Vector2F startPoint, Vector2F endPoint) {
-		float actualArc = calculateArc(startPoint, endPoint);
-		if (isClockwiseRotation(startPoint, endPoint)) {
-			rotationArc += actualArc;
-		} else {
-			rotationArc -= actualArc;
-		}
-		FigureControlFloatMatrixConv conv=new FigureControlFloatMatrixConv(list,rotationPoint);
-		FloatMatrix figuresTable = conv.convertFigureControlToFloatMatrix();
-		System.out.println("Przed obrotem"+figuresTable.toString());
-		FloatMatrix rotationTable = new FloatMatrix(
+		if(!list.isEmpty())
+		{
+			float actualArc = calculateArc(startPoint, endPoint);
+			if (isClockwiseRotation(startPoint, endPoint)) {
+				rotationArc += actualArc;
+			} else {
+				rotationArc -= actualArc;
+			}
+			FigureControlFloatMatrixConv conv=new FigureControlFloatMatrixConv(list,rotationPoint);
+			FloatMatrix figuresTable = conv.convertFigureControlToFloatMatrix();
+			FloatMatrix rotationTable = new FloatMatrix(
 				new float[][] {{(float) Math.cos(rotationArc), (float) -Math.sin(rotationArc)}, {(float) Math.sin(rotationArc),	(float) Math.cos(rotationArc)}});
-		figuresTable = figuresTable.multiply(rotationTable);
-		System.out.println("Po obrocie"+figuresTable.toString());
-		FigureControl temp = conv.convertFloatMatrixToFigureControl(figuresTable);
-		rotationArc %= 2 * Math.PI;
-		return temp;
+			figuresTable = figuresTable.multiply(rotationTable);
+			FigureControl temp = conv.convertFloatMatrixToFigureControl(figuresTable);
+			rotationArc %= 2 * Math.PI;
+			return temp;
+		}
+		return list;
 	}
 
 	private float calculateArc(Vector2F startPoint, Vector2F endPoint) {
