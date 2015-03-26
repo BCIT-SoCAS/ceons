@@ -19,7 +19,18 @@ public class Spectrum {
 		if (slicesCount <= 0) throw new NetworkException("The number of slices has to be larger than 0!");
 		if (slicesCount % 2 != 0) throw new NetworkException("The number of slices has to be even!");
 		this.slicesCount = slicesCount;
-		segments = new ArrayList<>();
+		segments = new ArrayList<SpectrumSegment>() {
+			@Override
+			public void add(int arg0, SpectrumSegment arg1) {
+				if (arg1.getRange().getLength() == 0) throw new SpectrumException("Cannot add 0 length");
+				super.add(arg0, arg1);
+			}
+			@Override
+			public boolean add(SpectrumSegment e) {
+				if (e.getRange().getLength() == 0) throw new SpectrumException("Cannot add 0 length");
+				return super.add(e);
+			}
+		};
 		segments.add(new FreeSpectrumSegment(0, slicesCount));
 	}
 	
@@ -47,8 +58,8 @@ public class Spectrum {
 		return slicesCount;
 	}
 	
-//	public int getOccupiedSlices(SpectrumSegment candidate) {
-//		if (candidate.getType().equals(WorkingSpectrumSegment.TYPE)) return occupiedSlices;
+	public int getOccupiedSlices() {
+		return occupiedSlices; // TODO SUPPORT FOR BACKUP
 //		else if (candidate.getType().equals(BackupSpectrumSegment.TYPE)) {
 //			int result = 0;
 //			for (SpectrumSegment segment : segments.getSegments()) if (segment.getType().equals(FreeSpectrumSegment.TYPE) ||
@@ -56,7 +67,7 @@ public class Spectrum {
 //				result += segment.range.getLength();
 //			return result;
 //		} else throw new SpectrumException("Occupied slices check can only be performed on WORKING or BACKUP segments.");
-//	}
+	}
 	
 	private int firstOverlapIndex(int min, int max, SpectrumSegment segment) {
 		if (min == max) return -1;
@@ -89,12 +100,17 @@ public class Spectrum {
 	
 	public void allocate(AllocatableSpectrumSegment segment) {
 		int i = firstOverlapIndex(0, segments.size(), segment);
-		if (i == -1 || segment.getRange().getEndOffset() > slicesCount) throw new SpectrumException("Cannot allocate segment that is out of spectrum bounds!");
+		if (i == -1 || segment.getRange().getEndOffset() > slicesCount) {
+			System.out.println("Segment: " + segment);
+			System.out.println("Spectrum:");
+			for (SpectrumSegment segmentI : segments) System.out.println("  - " + segmentI);
+			throw new SpectrumException("Cannot allocate segment that is out of spectrum bounds!");
+		}
 		SpectrumSegment segmentI = segments.get(i);
 		if (segmentI.getRange().contains(segment.getRange())) {
 			InsertionSortList<SpectrumSegment> segments = new InsertionSortList<>();
 			segments.add(segment.allocate(segment.getRange().multiply(segmentI.getRange()), segmentI));
-			for (IntegerRange range : segmentI.getRange().multipleSupportedSubtract(segment.getRange())) if (range != null)
+			for (IntegerRange range : segmentI.getRange().multipleSupportedSubtract(segment.getRange())) if (range.getLength() != 0)
 				segments.add(segmentI.clone(range));
 			this.segments.addAll(i, segments);
 			this.segments.remove(i + segments.size());
@@ -104,7 +120,7 @@ public class Spectrum {
 			segmentI = segments.get(i);
 			segments.add(i, segment.allocate(segment.getRange().multiply(segmentI.getRange()), segmentI));
 			IntegerRange range = segmentI.getRange().subtract(segment.getRange());
-			if (range != null) {
+			if (range.getLength() != 0) {
 				if (i == start) segments.add(i, segmentI.clone(range));
 				else segments.add(i + 1, segmentI.clone(range));
 				i++;
@@ -128,8 +144,8 @@ public class Spectrum {
 		}
 	}
 	
-	public boolean canAllocateWorking(int volume) {
-		for (SpectrumSegment segment : segments) if (segment.getType() == FreeSpectrumSegment.TYPE && segment.getRange().getLength() >= volume) return true;
-		return false;
+	public int canAllocateWorking(int volume) {
+		for (SpectrumSegment segment : segments) if (segment.getType() == FreeSpectrumSegment.TYPE && segment.getRange().getLength() >= volume) return segment.getRange().getOffset();
+		return -1; // TODO CHANGE TO BOOL
 	}
 }

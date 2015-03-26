@@ -12,7 +12,7 @@ import mtk.eon.utils.geom.Vector2F;
 public class Link extends Figure {
 	protected Vector2F endPoint;
 	private int length;
-	float fill = (float) Math.random();
+	float fill = 0; //(float) Math.random();
 
 	public Link(Link link) {
 		length = link.length;

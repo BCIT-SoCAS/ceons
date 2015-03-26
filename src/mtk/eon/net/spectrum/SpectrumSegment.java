@@ -20,7 +20,7 @@ public abstract class SpectrumSegment implements Comparable<SpectrumSegment> {
 	public abstract boolean canJoin(SpectrumSegment other);
 	
 	public SpectrumSegment join(SpectrumSegment other) {
-		if (!canJoin(other)) throw new SpectrumException("Segments joining conditions were not fulfilled.");
+		if (!canJoin(other) || !range.isAdjacent(other.range)) throw new SpectrumException("Segments joining conditions were not fulfilled.");
 		return clone(range.add(other.range));
 	}
 	

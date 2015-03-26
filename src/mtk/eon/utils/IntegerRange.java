@@ -34,7 +34,7 @@ public class IntegerRange {
 	}
 	
 	public boolean isOverlapping(IntegerRange other) {
-		return !(offset >= other.getEndOffset() || other.offset >= other.getEndOffset());
+		return !(offset >= other.getEndOffset() || other.offset >= getEndOffset());
 	}
 	
 	public boolean isDisconnected(IntegerRange other) {
@@ -65,7 +65,12 @@ public class IntegerRange {
 	}
 	
 	public IntegerRange[] multipleSupportedSubtract(IntegerRange other) {
-		return new IntegerRange[] {new IntegerRange(offset, other.offset - offset), new IntegerRange(other.getEndOffset(), getEndOffset() - other.getEndOffset())};
+		IntegerRange a = new IntegerRange(offset, other.offset - offset);
+		IntegerRange b = new IntegerRange(other.getEndOffset(), getEndOffset() - other.getEndOffset());
+		if (a != null) if (b != null) return new IntegerRange[] {a, b};
+		else return new IntegerRange[] {a};
+		else if (b != null) return new IntegerRange[] {b};
+		else return new IntegerRange[] {};
 	}
 	
 	@Override

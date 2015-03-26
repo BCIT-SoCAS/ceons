@@ -54,7 +54,7 @@ public abstract class Demand {
 		for (PathPart part : path) {
 			if (!isFirst) part.getSource().occupyRegenerators(-1);
 			else isFirst = false;
-			for	(Spectrum slices : part.spectra) slices.deallocate(part.segment);
+			for	(Spectrum slices : part.spectra) slices.deallocate(this);
 		}
 	}
 }

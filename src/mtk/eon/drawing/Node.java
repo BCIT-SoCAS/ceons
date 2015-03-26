@@ -14,7 +14,7 @@ public class Node extends Figure {
 	private static LinearGradient nodeFill = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,	new Stop[] {new Stop(0, Color.MAGENTA), new Stop(0.5f, Color.PURPLE)});
 	
 	public static float imageSize = 64;
-	float fill = (float) Math.random();
+	float fill = 0;//(float) Math.random();
 
 	public Node(Node node) {
 		startPoint = node.startPoint.clone();

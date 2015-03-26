@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import mtk.eon.net.demand.Demand;
 import mtk.eon.net.spectrum.Spectrum;
+import mtk.eon.net.spectrum.WorkingSpectrumSegment;
 
 public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 
@@ -86,8 +87,9 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 		for (PathPart part : parts) {
 			Spectrum slices = part.getSlices();
 			int slicesCount = network.getSlicesConsumption(part.getModulation(), (int) Math.ceil(demand.getVolume() / 10) - 1);
-			part.segment = slices.canAllocate(slicesCount);
-			if (part.segment == Spectrum.CANNOT_ALLOCATE) return false;
+			int offset = slices.canAllocateWorking(slicesCount);
+			if (offset == -1) return false;
+			part.segment = new WorkingSpectrumSegment(offset, slicesCount, demand);
 		}
 		for (PathPart part : parts) {
 			if (part != parts.get(0)) part.source.occupyRegenerators(1);

@@ -1,23 +1,27 @@
 package mtk.eon.jfx.controllers;
 
+import java.io.File;
+
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.stage.FileChooser;
 import mtk.eon.ApplicationResources;
 import mtk.eon.jfx.components.Console;
+import mtk.eon.jfx.tasks.ProjectLoadingTask;
 import mtk.eon.net.Network;
 import mtk.eon.net.NetworkNode;
 
 public class NetworkMenuController {
 
 	@FXML public void loadNetworkAction(ActionEvent e) {
-//		FileChooser fileChooser = new FileChooser();
-//		fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-//		File file = fileChooser.showOpenDialog(.getScene().getWindow());
-//		
-//		ProjectLoadingTask task = new ProjectLoadingTask(file);
-//		Thread thread = new Thread(task);
-//		thread.start();
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+		File file = fileChooser.showOpenDialog(null);
+		
+		ProjectLoadingTask task = new ProjectLoadingTask(file);
+		Thread thread = new Thread(task);
+		thread.start();
 	}
 
 	int i;

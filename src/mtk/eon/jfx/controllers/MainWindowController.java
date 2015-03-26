@@ -109,6 +109,7 @@ public class MainWindowController  {
 		}
 		
 		graph.init(this);
+		simulationMenuController.setProgressBar(progressBar); // TODO Fujjjjjj...
 	}
 	public void loadProperties(Figure fig,FigureControl list)
 	{

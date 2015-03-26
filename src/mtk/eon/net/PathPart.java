@@ -3,15 +3,15 @@ package mtk.eon.net;
 import java.util.ArrayList;
 
 import mtk.eon.net.spectrum.Spectrum;
-import mtk.eon.net.spectrum.FreeSpectrumSegment;
+import mtk.eon.net.spectrum.WorkingSpectrumSegment;
 
 public class PathPart {
 	NetworkNode source;
 	NetworkNode destination;
 	int length;
 	
-	ArrayList<Spectrum> spectra = new ArrayList<Spectrum>();
-	FreeSpectrumSegment segment;
+	public ArrayList<Spectrum> spectra = new ArrayList<Spectrum>(); // TODO Should not be public
+	WorkingSpectrumSegment segment;
 	
 	Modulation modulation;
 	int metric = Integer.MAX_VALUE;
@@ -60,7 +60,7 @@ public class PathPart {
 	
 	public Spectrum getSlices() {
 		Spectrum result = new Spectrum(NetworkLink.NUMBER_OF_SLICES);
-		for (Spectrum slices : this.spectra) result.merge(slices);
+		for (Spectrum slices : this.spectra) result = result.merge(slices);
 		return result;
 	}
 	
