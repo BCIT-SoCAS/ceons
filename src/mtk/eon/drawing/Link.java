@@ -64,19 +64,19 @@ public class Link extends Figure {
 	@Override
 	public boolean equals(Object o) {
 		Link vex = (Link) o;
-		return (startPoint.equals(vex.startPoint) && endPoint.equals(vex.endPoint));
+		return (startPoint.equals(vex.startPoint) && endPoint.equals(vex.endPoint) || (startPoint.equals(vex.endPoint) && endPoint.equals(vex.startPoint)));
 	}
 
 	@Override
 	protected void loadImage() {
-		image = new Image(getClass().getResourceAsStream("line_image.jpg"));
+		//image = new Image(getClass().getResourceAsStream("line_image.jpg"));
 	}
 
 	@Override
 	protected void drawOutline(GraphicsContext gc, Color color) {
-		int dx = 0, dy = 5;
+		int dx = 0, dy = (int) (Node.imageSize/4);
 		if (Math.abs(endPoint.getX() - startPoint.getX()) < 50) {
-			dx = 5;
+			dx = (int)Node.imageSize/4;
 			dy = 0;
 		}
 		Vector2F newStartPoint = new Vector2F(startPoint.getX() + dx,

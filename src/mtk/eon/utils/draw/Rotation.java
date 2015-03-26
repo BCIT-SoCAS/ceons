@@ -3,6 +3,7 @@ package mtk.eon.utils.draw;
 import java.awt.geom.Line2D;
 
 import mtk.eon.drawing.FigureControl;
+import mtk.eon.drawing.FigureControlFloatMatrixConv;
 import mtk.eon.utils.geom.FloatMatrix;
 import mtk.eon.utils.geom.Vector2F;
 
@@ -17,21 +18,24 @@ public class Rotation {
 	}
 
 	public FigureControl rotate(Vector2F startPoint, Vector2F endPoint) {
-		float actualArc = calculateArc(startPoint, endPoint);
-		if (isClockwiseRotation(startPoint, endPoint)) {
-			rotationArc += actualArc;
-		} else {
-			rotationArc -= actualArc;
-		}
-		FloatMatrix figuresTable = list.allElementsToMatrix(rotationPoint);
-		FloatMatrix rotationTable = new FloatMatrix(
+		if(!list.isEmpty())
+		{
+			float actualArc = calculateArc(startPoint, endPoint);
+			if (isClockwiseRotation(startPoint, endPoint)) {
+				rotationArc += actualArc;
+			} else {
+				rotationArc -= actualArc;
+			}
+			FigureControlFloatMatrixConv conv=new FigureControlFloatMatrixConv(list,rotationPoint);
+			FloatMatrix figuresTable = conv.convertFigureControlToFloatMatrix();
+			FloatMatrix rotationTable = new FloatMatrix(
 				new float[][] {{(float) Math.cos(rotationArc), (float) -Math.sin(rotationArc)}, {(float) Math.sin(rotationArc),	(float) Math.cos(rotationArc)}});
-		figuresTable = figuresTable.multiply(rotationTable);
-		FigureControl temp = new FigureControl(list);
-		temp.matrixToList(figuresTable, rotationPoint);
-		rotationArc %= 2 * Math.PI;
-		System.out.println(rotationArc);
-		return temp;
+			figuresTable = figuresTable.multiply(rotationTable);
+			FigureControl temp = conv.convertFloatMatrixToFigureControl(figuresTable);
+			rotationArc %= 2 * Math.PI;
+			return temp;
+		}
+		return list;
 	}
 
 	private float calculateArc(Vector2F startPoint, Vector2F endPoint) {
@@ -39,6 +43,9 @@ public class Rotation {
 		float sideB = endPoint.distance(rotationPoint);
 		float sideC = startPoint.distance(endPoint);
 		float cosArc = (sideA * sideA + sideB * sideB - sideC * sideC) / (2 * sideA * sideB);
+		//Łapało NaN tu prawdopodobnie jest problem
+		if(cosArc<-1 || cosArc>1)
+			return 0;
 		return (float) Math.acos(cosArc);
 	}
 

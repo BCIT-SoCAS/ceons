@@ -12,9 +12,6 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 import mtk.eon.drawing.*;
 import mtk.eon.utils.geom.Vector2F;
-import javafx.scene.paint.Color;
-
-
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -41,7 +38,7 @@ public class NodePropertiesController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 if(newValue!=null) {
-                    list.drawOutline(list.findFigureByName(newValue), Color.BLUE);
+                    list.setSelectedFigure(list.findFigureByName(newValue));
                 }
             }
         });
