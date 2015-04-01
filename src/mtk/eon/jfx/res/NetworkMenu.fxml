@@ -8,8 +8,8 @@
 <VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mtk.eon.jfx.controllers.NetworkMenuController">
 	<children>
 		<Button onAction="#loadNetworkAction" text="Load" />
-		<Button onAction="#testButton" text="Test Button" />
-		<Button>
+		<Button onAction="#testButton" text="Test Button" visible="false" />
+		<Button visible="false">
 			<graphic>
 				<ImageView>
 					<Image url="@icon_new.png" />

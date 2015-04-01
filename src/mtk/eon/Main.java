@@ -48,4 +48,6 @@ public class Main extends Application {
 	// Pytania do michala:
 	//   - Czemu inaczej wyglada tabelka do dynamicznej metryki modulacji w pracy i w programie?
 	//   - Czemu pod koniec unifikacji modulacji metryka sciezki liczona jest inaczej?
+	
+	// ZDEFINIOWAC OPCJE CZY ANYCAST PO ROZLACZENIU MUSI DO TEGO SAMEGO DC
 }

@@ -12,7 +12,7 @@ import mtk.eon.utils.geom.Vector2F;
 public class Link extends Figure {
 	protected Vector2F endPoint;
 	private int length;
-	float fill = 0; //(float) Math.random();
+	float fill = 1f; //(float) Math.random();
 
 	public Link(Link link) {
 		length = link.length;
@@ -57,8 +57,8 @@ public class Link extends Figure {
 		gc.setStroke(Color.WHITE);
 		gc.strokeLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
 		gc.setLineWidth((Node.imageSize / 2 - Node.imageSize / 4) * fill);
-		gc.setStroke(Color.hsb(120.0 + fill * 180, 0.5 + 0.5 * fill, 1  - 0.5 * fill));
-		gc.strokeLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
+//		gc.setStroke(Color.hsb(120.0 + fill * 180, 0.5 + 0.5 * fill, 1  - 0.5 * fill));
+//		gc.strokeLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
 	}
 
 	@Override
