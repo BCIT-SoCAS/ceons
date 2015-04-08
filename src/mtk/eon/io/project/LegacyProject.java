@@ -1,4 +1,4 @@
-package mtk.eon;
+package mtk.eon.io.project;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,13 +21,13 @@ import mtk.eon.io.legacy.SlicesConsumptionFileFormat;
 import mtk.eon.jfx.tasks.SimulationTask;
 import mtk.eon.net.Network;
 
-public class Project {
+public class LegacyProject extends Project {
 
 	File projectDirectory;
 	File demandFolder;
 	Network network;
 	
-	public Project(File projectInfo) throws FileNotFoundException, InvalidExtensionException {
+	public LegacyProject(File projectInfo) throws FileNotFoundException, InvalidExtensionException {
 		projectDirectory = projectInfo.getParentFile();
 		LegacyLoader loader = new LegacyLoader();
 		LightScanner scanner = new LightScanner(projectInfo);
@@ -57,6 +57,7 @@ public class Project {
 		network = loader.getNetwork();
 	}
 	
+	@Override
 	public Network getNetwork() {
 		return network;
 	}

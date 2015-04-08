@@ -1,5 +1,7 @@
 package mtk.eon.net;
 
+import java.util.Map;
+
 import mtk.eon.graph.positioned.FixedLengthLink;
 import mtk.eon.net.spectrum.Spectrum;
 
@@ -12,5 +14,15 @@ public class NetworkLink extends FixedLengthLink<NetworkLink> {
 	
 	public NetworkLink(int length) {
 		super(length);
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public NetworkLink(Map map) {
+		super(map);
+	}
+	
+	@Override
+	public Map<String, Object> serialize() {
+		return super.serialize();
 	}
 }

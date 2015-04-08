@@ -9,20 +9,24 @@ import mtk.eon.net.spectrum.Spectrum;
 
 public abstract class Demand {
 
-	int volume;
-	int ttl;
+	int initVolume, minVolume, ttl;
 	
 	PartedPath path;
 	
-	public Demand(int volume, int ttl) {
-		this.volume = volume;
+	public Demand(int initVolume, int minVolume, int ttl) {
+		this.initVolume = initVolume;
+		this.minVolume = minVolume;
 		this.ttl = ttl;
 	}
 	
 	public abstract ArrayList<PartedPath> getCandidatePaths(Network network);
 	
-	public int getVolume() {
-		return volume;
+	public int getInitialVolume() {
+		return initVolume;
+	}
+	
+	public int getMinimumVolume() {
+		return minVolume;
 	}
 	
 	public int getTTL() {

@@ -12,8 +12,8 @@ public class AnycastDemand extends Demand {
 	NetworkNode client;
 	boolean isUpstream;
 	
-	public AnycastDemand(NetworkNode client, boolean isUpstream, int volume, int ttl) {
-		super(volume, ttl);
+	public AnycastDemand(NetworkNode client, boolean isUpstream, int initVolume, int minVolume, int ttl) {
+		super(initVolume, minVolume, ttl);
 		this.client = client;
 		this.isUpstream = isUpstream;
 	}

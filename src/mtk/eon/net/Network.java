@@ -1,10 +1,14 @@
 package mtk.eon.net;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import mtk.eon.graph.Graph;
+import mtk.eon.io.YamlSerializable;
 import mtk.eon.net.algo.RMSAAlgorithm;
 import mtk.eon.net.demand.Demand;
 import mtk.eon.net.demand.DemandAllocationResult;
@@ -12,7 +16,7 @@ import mtk.eon.net.demand.DemandAllocationResult.Type;
 import mtk.eon.net.spectrum.Spectrum;
 
 
-public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Network> {
+public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Network> implements YamlSerializable {
 	
 	HashMap<String, NetworkNode> nodes = new HashMap<String, NetworkNode>();
 	ArrayList<NetworkNode> replicas = new ArrayList<NetworkNode>();
@@ -197,5 +201,31 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	
 	public void setRegeneratorMetricValue(int regeneratorMetricValue) {
 		this.regeneratorMetricValue = regeneratorMetricValue;
+	}
+	
+	// SERIALICATION
+	
+	@SuppressWarnings("rawtypes")
+	private Network(Map map) {
+		super(new NetworkPathBuilder());
+		for (NetworkNode node : (List<NetworkNode>) map.get("nodes"))
+			addNode(node);
+		for (Entry<List<String>, NetworkLink> link : ((Map<List<String>, NetworkLink>) map.get("links")).entrySet())
+			putLink(getNode(link.getKey().get(0)), getNode(link.getKey().get(1)), link.getValue());
+	}
+	
+	@Override
+	public Map<String, Object> serialize() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		List<NetworkNode> nodes = getNodes();
+		map.put("nodes", nodes);
+		Map<List<String>, NetworkLink> links = new HashMap<List<String>, NetworkLink>();
+		for (int i = 0; i < nodes.size(); i++)
+			for (int j = i + 1; j < nodes.size(); j++)
+				if (containsLink(nodes.get(i), nodes.get(j)))
+					links.put(Arrays.asList(nodes.get(i).getName(), nodes.get(j).getName()),
+							getLink(nodes.get(i), nodes.get(j)));
+		map.put("links", links);
+		return map;
 	}
 }

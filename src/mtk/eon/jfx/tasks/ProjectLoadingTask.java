@@ -5,8 +5,8 @@ import java.io.File;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import mtk.eon.ApplicationResources;
-import mtk.eon.Project;
 import mtk.eon.io.Logger;
+import mtk.eon.io.project.LegacyProject;
 
 public class ProjectLoadingTask extends Task<Void> {
 
@@ -21,7 +21,7 @@ public class ProjectLoadingTask extends Task<Void> {
 		if (file != null) {
 			Logger.info("Loading project from: " + file.getAbsolutePath());
 			try {
-				Project project = new Project(file);
+				LegacyProject project = new LegacyProject(file);
 				Logger.info("Project loaded successfully.");
 				Platform.runLater(() -> ApplicationResources.setProject(project));
 			} catch (Exception e) {

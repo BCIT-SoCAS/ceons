@@ -34,7 +34,8 @@ public abstract class FileFormat<T> {
 		}
 		
 		if (!file.exists()) throw new FileNotFoundException(file.getAbsolutePath());
-		if (!file.getAbsolutePath().endsWith("." + fileFormat.getExtension())) throw new InvalidExtensionException(file.getAbsolutePath(), fileFormat.getExtension());
+		if (!file.getAbsolutePath().endsWith("." + fileFormat.getExtension()))
+			throw new InvalidExtensionException(file.getAbsolutePath(), fileFormat.getExtension());
 		
 		fileFormat.file = file;
 		

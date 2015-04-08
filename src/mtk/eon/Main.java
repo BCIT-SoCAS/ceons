@@ -13,6 +13,8 @@ import javafx.stage.Stage;
 import javax.swing.JOptionPane;
 
 import mtk.eon.io.Logger;
+import mtk.eon.io.YamlSerializable;
+import mtk.eon.net.NetworkNode;
 
 public class Main extends Application {
 	
@@ -38,6 +40,7 @@ public class Main extends Application {
 	
 	public static void main(String[] args) {
 		try {
+			YamlSerializable.registerSerializableClass(NetworkNode.class);
 			launch(args);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Fatal error occured: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

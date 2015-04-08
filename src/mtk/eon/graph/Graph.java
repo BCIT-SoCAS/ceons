@@ -29,7 +29,7 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 	
 	protected boolean addNode(N node) {
 		if (!nodes.add(node)) return false;
-		relations.resize(relationsSize());
+		relations.resize(getNodesPairsCount());
 		for (N n : nodes)
 			if (node != n) {
 				Relation<N, L, P> relation = new Relation<N, L, P>(n, node);
@@ -49,7 +49,7 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 				relations.remove(Relation.hash(n.hashCode(), node.hashCode()));
 		nodes.remove(node);
 		relations.rehash();
-		relations.resize(relationsSize());
+		relations.resize(getNodesPairsCount());
 		return true;
 	}
 	
@@ -117,7 +117,15 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 		return nodes;
 	}
 	
-	public int relationsSize() { // TODO only for testing
+	public List<L> getLinks() {
+		List<L> links = new ArrayList<L>();
+		for (Relation<N, L, P> relation : relations)
+			if (relation.hasLink())
+				links.add(relation.link);
+		return links;
+	}
+	
+	public int getNodesPairsCount() { // TODO only for testing
 		return nodes.size() * (nodes.size() - 1) / 2;
 	}
 	

@@ -11,8 +11,8 @@ public class UnicastDemand extends Demand {
 
 	NetworkNode source, destination;
 	
-	public UnicastDemand(NetworkNode source, NetworkNode destination, int volume, int ttl) {
-		super(volume, ttl);
+	public UnicastDemand(NetworkNode source, NetworkNode destination, int initVolume, int minVolume, int ttl) {
+		super(initVolume, minVolume, ttl);
 		this.source = source;
 		this.destination = destination;
 	}

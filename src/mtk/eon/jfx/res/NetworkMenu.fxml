@@ -4,11 +4,29 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
 
 <VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mtk.eon.jfx.controllers.NetworkMenuController">
 	<children>
+		<GridPane>
+			<columnConstraints>
+				<ColumnConstraints percentWidth="33.3" />
+				<ColumnConstraints percentWidth="33.3" />
+				<ColumnConstraints percentWidth="33.3" />
+			</columnConstraints>
+			<rowConstraints>
+				<RowConstraints minHeight="10.0"/>
+			</rowConstraints>
+			<children>
+				<Button onAction="#onNew" text="N" />
+				<Button onAction="#onLoad" text="L" GridPane.columnIndex="1" />
+				<Button onAction="#onSave" text="S" GridPane.columnIndex="2" />
+			</children>
+		</GridPane>
 		<Button onAction="#loadNetworkAction" text="Load" />
-		<Button onAction="#testButton" text="Test Button" visible="false" />
+		<Button onAction="#testButton" text="Test Button" />
 		<Button visible="false">
 			<graphic>
 				<ImageView>

@@ -67,10 +67,12 @@ public class IntegerRange {
 	public IntegerRange[] multipleSupportedSubtract(IntegerRange other) {
 		IntegerRange a = new IntegerRange(offset, other.offset - offset);
 		IntegerRange b = new IntegerRange(other.getEndOffset(), getEndOffset() - other.getEndOffset());
-		if (a != null) if (b != null) return new IntegerRange[] {a, b};
-		else return new IntegerRange[] {a};
-		else if (b != null) return new IntegerRange[] {b};
-		else return new IntegerRange[] {};
+		if (a != null)
+			if (b != null) return new IntegerRange[] {a, b};
+			else return new IntegerRange[] {a};
+		else
+			if (b != null) return new IntegerRange[] {b};
+			else return new IntegerRange[] {};
 	}
 	
 	@Override
@@ -101,5 +103,17 @@ public class IntegerRange {
 		if (offset != other.offset)
 			return false;
 		return true;
+	}
+	
+	public static int binarySearch(IntegerRange[] array, int key) {
+		int min = 0, max = array.length - 1;
+		while (min <= max) {
+			int mid = (min + max) >>> 1;
+			IntegerRange midValue = array[mid];
+			if (midValue.getEndOffset() <= key) min = mid + 1;
+			else if (midValue.getOffset() > key) max = mid - 1;
+			else return mid;
+		}
+		return -min - 1;
 	}
 }
