@@ -69,7 +69,7 @@ public class Simulation {
 		Logger.info("Blocked Link Failure: " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
 		File dir = new File("results");
 		if (!dir.isDirectory()) dir.mkdir();
-		File save = new File(dir, generator.getName() + ".txt");
+		File save = new File(dir, generator.getName() + "-ALPHA" + alpha + ".txt");
 		try {
 			PrintWriter out = new PrintWriter(save);
 			out.println("Generator: " + generator.getName());
