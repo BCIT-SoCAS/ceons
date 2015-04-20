@@ -58,9 +58,9 @@ public class DemandFileFormat extends FileFormat<DemandLoader> {
 		case NO_SPECTRUM: loader.spectrumBlockedVolume += demand.getVolume(); break;
 		case SUCCESS:
 			double modulationsUsage[] = new double[6];
-			for (PathPart part : result.path) modulationsUsage[part.getModulation().ordinal()]++;
+			for (PathPart part : result.workingPath) modulationsUsage[part.getModulation().ordinal()]++;
 			for (int i = 0; i < 6; i++) {
-				modulationsUsage[i] /= result.path.getPartsCount();
+				modulationsUsage[i] /= result.workingPath.getPartsCount();
 				loader.modulationsUsage[i] += modulationsUsage[i];
 			}
 			break;

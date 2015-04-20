@@ -21,7 +21,7 @@ public class SlicesConsumptionFileFormat extends FileFormat<LegacyLoader> {
 		
 		for (Modulation modulation : Modulation.values())
 			for (int birNr = 0; birNr < 40; birNr++)
-				loader.getNetwork().setSlicesConsumption(modulation, birNr, scanner.nextInt());
+				modulation.slicesConsumption[birNr] = scanner.nextInt();
 		
 //		for (int idA = 0; idA < loader.getNodesCount(); idA++)
 //			for (int idB = 0; idB < loader.getNodesCount(); idB++)

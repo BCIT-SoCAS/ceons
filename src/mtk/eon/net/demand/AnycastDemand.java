@@ -7,28 +7,104 @@ import mtk.eon.net.NetworkNode;
 import mtk.eon.net.NetworkPath;
 import mtk.eon.net.PartedPath;
 
-public class AnycastDemand extends Demand {
-
-	NetworkNode client;
-	boolean isUpstream;
+public abstract class AnycastDemand extends Demand {
 	
-	public AnycastDemand(NetworkNode client, boolean isUpstream, int initVolume, int minVolume, int ttl) {
-		super(initVolume, minVolume, ttl);
-		this.client = client;
-		this.isUpstream = isUpstream;
+	public static class Upstream extends AnycastDemand {
+
+		public Upstream(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, int squeezedVolume, int ttl) {
+			super(client, reallocate, allocateBackup, volume, squeezedVolume, ttl);
+		}
+		
+		public Upstream(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl) {
+			super(client, reallocate, allocateBackup, volume, squeezeRatio, ttl);
+		}
+		
+		@Override
+		public ArrayList<PartedPath> getCandidatePaths(boolean backup, Network network) {
+			ArrayList<PartedPath> paths = new ArrayList<PartedPath>();
+			
+			if (backup)
+				for (NetworkNode replica : network.getGroup("replicas")) {
+					int acceptedPaths = 0;
+					for (NetworkPath path : network.getPaths(client , replica))
+						if (!network.isInactive(path))
+							if (acceptedPaths >= network.getBestPathsCount()) break;
+							else if (path.isDisjoint(workingPath)) {
+								paths.add(new PartedPath(network, path, path.get(0) == client));
+								acceptedPaths++;
+							}
+				}
+			else
+				for (NetworkNode replica : network.getGroup("replicas"))
+					for (NetworkPath path : network.getPaths(client , replica).subList(0, network.getBestPathsCount()))
+						if (!network.isInactive(path))
+							paths.add(new PartedPath(network, path, path.get(0) == client));
+			
+			paths.sort(PartedPath.LENGTH_COMPARATOR);
+			if (paths.size() > network.getBestPathsCount())
+				paths.subList(network.getBestPathsCount(), paths.size()).clear();
+			
+			return paths;
+		}
 	}
 
+	public static class Downstream extends AnycastDemand {
+
+		public Downstream(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, int squeezedVolume, int ttl) {
+			super(client, reallocate, allocateBackup, volume, squeezedVolume, ttl);
+		}
+		
+		public Downstream(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl) {
+			super(client, reallocate, allocateBackup, volume, squeezeRatio, ttl);
+		}
+		
+		@Override
+		public ArrayList<PartedPath> getCandidatePaths(boolean backup, Network network) {
+			ArrayList<PartedPath> paths = new ArrayList<PartedPath>();
+
+			if (backup)
+				for (NetworkNode replica : network.getGroup("replicas")) {
+					int acceptedPaths = 0;
+					for (NetworkPath path : network.getPaths(client , replica))
+						if (!network.isInactive(path))
+							if (acceptedPaths >= network.getBestPathsCount()) break;
+							else if (path.isDisjoint(workingPath)) {
+								paths.add(new PartedPath(network, path, path.get(0) == replica));
+								acceptedPaths++;
+							}
+				}
+			else
+				for (NetworkNode replica : network.getGroup("replicas"))
+					for (NetworkPath path : network.getPaths(replica, client).subList(0, network.getBestPathsCount()))
+						if (!network.isInactive(path))
+							paths.add(new PartedPath(network, path, path.get(0) == replica));
+			
+			paths.sort(PartedPath.LENGTH_COMPARATOR);
+			if (paths.size() > network.getBestPathsCount())
+				paths.subList(network.getBestPathsCount(), paths.size()).clear();
+			
+			return paths;
+		}
+	}
+	
+	NetworkNode client;
+	
+	public AnycastDemand(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, int squeezedVolume, int ttl) {
+		super(reallocate, allocateBackup, volume, squeezedVolume, ttl);
+		this.client = client;
+	}
+	
+	public AnycastDemand(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl) {
+		super(reallocate, allocateBackup, volume, squeezeRatio, ttl);
+		this.client = client;
+	}
+	
+	public NetworkNode getClient() {
+		return client;
+	}
+	
 	@Override
-	public ArrayList<PartedPath> getCandidatePaths(Network network) {
-		ArrayList<PartedPath> paths = new ArrayList<PartedPath>();
-		
-		if (isUpstream)
-			for (NetworkNode replica : network.getReplicas()) for (NetworkPath path : network.getPaths(client , replica)) paths.add(new PartedPath(network, path, path.get(0) == client));
-		else
-			for (NetworkNode replica : network.getReplicas()) for (NetworkPath path : network.getPaths(replica, client)) paths.add(new PartedPath(network, path, path.get(0) == replica));
-		paths.sort(PartedPath.LENGTH_COMPARATOR);
-		while (paths.size() > network.getBestPathsCount()) paths.remove(network.getBestPathsCount());
-		
-		return paths;
+	public String toString() {
+		return "AnycastDemand {client: " + client + ", volume: " + getVolume() + ", ttl: " + getTTL() + "}";
 	}
 }

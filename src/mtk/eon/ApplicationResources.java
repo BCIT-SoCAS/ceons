@@ -1,17 +1,17 @@
 package mtk.eon;
 
-import mtk.eon.io.project.LegacyProject;
+import mtk.eon.io.project.Project;
 
 
 public class ApplicationResources {
 	
-	private static LegacyProject project;
+	private static Project project;
 	
-	public static void setProject(LegacyProject project) {
+	public static void setProject(Project project) {
 		ApplicationResources.project = project;
 	}
 	
-	public static LegacyProject getProject() {
+	public static Project getProject() {
 		return project;
 	}
 }

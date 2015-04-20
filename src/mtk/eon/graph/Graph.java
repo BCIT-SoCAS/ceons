@@ -1,7 +1,6 @@
 package mtk.eon.graph;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,7 +11,7 @@ import mtk.eon.utils.collections.IdentifiableSet;
 public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Path<N>, G extends Graph<N, L, P, G>> {
 	
 	IdentifiableSet<N> nodes;
-	HashArray<Relation<N, L, P>> relations;
+	protected HashArray<Relation<N, L, P>> relations;
 	protected PathBuilder<N, P, G> pathBuilder;
 	
 	@SuppressWarnings("unchecked")
@@ -90,7 +89,7 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 	public List<P> getPaths(N nodeA, N nodeB) {
 		Relation<N, L, P> relation = relations.get(Relation.hash(nodeA.hashCode(), nodeB.hashCode()));
 		if (relation == null) return null;
-		return relation.paths;
+		return (List<P>) relation.paths;
 	}
 	
 	public ArrayList<L> getConnectedLinks(N node) {
@@ -165,12 +164,19 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 			pathBuilder.init();
 			pathBuilder.addNode(relation.nodeA);
 			depthFirstSearch(relation.nodeA);
-			Collections.sort(relation.paths);
-			if (Runtime.getRuntime().maxMemory() - Runtime.getRuntime().totalMemory() < 1024 * 1024 * 100) relation.paths = relation.paths.subList(0, maxPathsPerPair - 1);
-			if (maxPathsPerPair > relation.paths.size()) {
-				maxPathsPerPair = relation.paths.size();
-				for (int i = 0; relations.get(i) != relation; i++) relations.get(i).paths = relation.paths.subList(0, maxPathsPerPair);
-			} else relation.paths = relation.paths.subList(0, maxPathsPerPair);
+//			Collections.sort(relation.paths);
+			if (relation.paths.size() > maxPathsPerPair) relation.paths.subList(maxPathsPerPair, relation.paths.size()).clear();
+			if (Runtime.getRuntime().maxMemory() - Runtime.getRuntime().totalMemory() < 1024 * 1024 * 1000) {
+				int max = 0;
+				if (maxPathsPerPair == Integer.MAX_VALUE) {
+					for (Relation<N, L, P> rel : relations) if (rel.paths.size() > max) max = rel.paths.size();
+					maxPathsPerPair = max;
+				}
+				maxPathsPerPair -= 2;
+				for (Relation<N, L, P> rel : relations)
+					if (rel.paths.size() > maxPathsPerPair)
+						rel.paths.subList(maxPathsPerPair, rel.paths.size()).clear();
+			}
 			progressUpdate.run();
 		}
 		return maxPathsPerPair;

@@ -12,9 +12,20 @@ import javafx.stage.Stage;
 
 import javax.swing.JOptionPane;
 
-import mtk.eon.io.Logger;
 import mtk.eon.io.YamlSerializable;
+import mtk.eon.io.project.EONProjectFileFormat;
+import mtk.eon.io.project.LegacyProjectFileFormat;
+import mtk.eon.io.project.ProjectFileFormat;
+import mtk.eon.net.Network;
+import mtk.eon.net.NetworkLink;
 import mtk.eon.net.NetworkNode;
+import mtk.eon.net.demand.generator.AnycastDemandGenerator;
+import mtk.eon.net.demand.generator.TrafficGenerator;
+import mtk.eon.net.demand.generator.UnicastDemandGenerator;
+import mtk.eon.utils.random.ConstantRandomVariable;
+import mtk.eon.utils.random.IrwinHallRandomVariable;
+import mtk.eon.utils.random.MappedRandomVariable;
+import mtk.eon.utils.random.UniformRandomVariable;
 
 public class Main extends Application {
 	
@@ -41,6 +52,19 @@ public class Main extends Application {
 	public static void main(String[] args) {
 		try {
 			YamlSerializable.registerSerializableClass(NetworkNode.class);
+			YamlSerializable.registerSerializableClass(NetworkLink.class);
+			YamlSerializable.registerSerializableClass(Network.class);
+			
+			YamlSerializable.registerSerializableClass(MappedRandomVariable.class);
+			YamlSerializable.registerSerializableClass(UniformRandomVariable.Generic.class);
+			YamlSerializable.registerSerializableClass(ConstantRandomVariable.class);
+			YamlSerializable.registerSerializableClass(IrwinHallRandomVariable.Integer.class);
+			YamlSerializable.registerSerializableClass(UnicastDemandGenerator.class);
+			YamlSerializable.registerSerializableClass(AnycastDemandGenerator.class);
+			YamlSerializable.registerSerializableClass(TrafficGenerator.class);
+			
+			ProjectFileFormat.registerFileFormat(new EONProjectFileFormat());
+			ProjectFileFormat.registerFileFormat(new LegacyProjectFileFormat());
 			launch(args);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Fatal error occured: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

@@ -4,29 +4,52 @@ import java.util.ArrayList;
 
 import mtk.eon.net.Network;
 import mtk.eon.net.PartedPath;
-import mtk.eon.net.PathPart;
-import mtk.eon.net.spectrum.Spectrum;
 
 public abstract class Demand {
 
-	int initVolume, minVolume, ttl;
+	private boolean reallocate, allocateBackup;
+	private int volume, squeezedVolume, ttl, initialTTL;
 	
-	PartedPath path;
+	protected PartedPath workingPath;
+	protected PartedPath backupPath;
 	
-	public Demand(int initVolume, int minVolume, int ttl) {
-		this.initVolume = initVolume;
-		this.minVolume = minVolume;
+	public Demand(boolean reallocate, boolean allocateBackup, int volume, int squeezedVolume, int ttl) {
+		this.reallocate = reallocate;
+		this.allocateBackup = allocateBackup;
+		this.volume = volume;
+		this.squeezedVolume = squeezedVolume < 10 ? 10 : squeezedVolume;
 		this.ttl = ttl;
+		initialTTL = ttl;
 	}
 	
-	public abstract ArrayList<PartedPath> getCandidatePaths(Network network);
-	
-	public int getInitialVolume() {
-		return initVolume;
+	public Demand(boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl) {
+		this(reallocate, allocateBackup, volume, (int) Math.round(volume * squeezeRatio), ttl);
 	}
 	
-	public int getMinimumVolume() {
-		return minVolume;
+	public PartedPath getWorkingPath() {
+		return workingPath;
+	}
+	
+	public PartedPath getBackupPath() {
+		return backupPath;
+	}
+	
+	public abstract ArrayList<PartedPath> getCandidatePaths(boolean backup, Network network);
+	
+	public boolean reallocate() {
+		return reallocate;
+	}
+	
+	public boolean allocateBackup() {
+		return allocateBackup;
+	}
+	
+	public int getVolume() {
+		return volume;
+	}
+	
+	public int getSqueezedVolume() {
+		return squeezedVolume;
 	}
 	
 	public int getTTL() {
@@ -42,23 +65,43 @@ public abstract class Demand {
 	}
 	
 	public boolean isDisjoint(Demand other) {
-		return true; // TODO Disjointness checking 
+		return workingPath.isDisjoint(other.workingPath);
 	}
 	
-	public DemandAllocationResult allocate(Network network, PartedPath path) {
-		if (path.allocate(network, this)) {
-			this.path = path;
-			return new DemandAllocationResult(path);
+	public boolean allocate(Network network, PartedPath path) {
+		if (workingPath == null)
+			if (path.allocate(network, this)) {
+				this.workingPath = path;
+				return true;
+			} else return false;
+		else
+			if (path.allocate(network, this)) {
+				this.backupPath = path;
+				return true;
+			} else return false;
+	}
+	
+	public boolean onWorkingFailure() {
+		workingPath.deallocate(this);
+		if (backupPath == null) {
+			workingPath = null;
+			this.ttl = initialTTL;
+			return false;
 		}
-		else return DemandAllocationResult.NO_SPECTRUM;
+		workingPath = backupPath;
+		backupPath = null;
+		workingPath.toWorking(this);
+		return true;
+	}
+	
+	public void onBackupFailure() {
+		if (backupPath != null)
+			backupPath.deallocate(this);
+		backupPath = null;
 	}
 	
 	public void deallocate() {
-		boolean isFirst = true;
-		for (PathPart part : path) {
-			if (!isFirst) part.getSource().occupyRegenerators(-1);
-			else isFirst = false;
-			for	(Spectrum slices : part.spectra) slices.deallocate(this);
-		}
+		workingPath.deallocate(this);
+		if (backupPath != null) backupPath.deallocate(this);
 	}
 }

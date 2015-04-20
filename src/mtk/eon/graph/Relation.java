@@ -1,15 +1,16 @@
 package mtk.eon.graph;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import mtk.eon.utils.collections.InsertionSortList;
 
 
 public class Relation<N, L, P extends Path<N>> {
 	
-	final N nodeA;
-	final N nodeB;
+	public final N nodeA;
+	public final N nodeB;
 	L link;
-	List<P> paths = new ArrayList<P>();
+	List<Path<N>> paths = new InsertionSortList<Path<N>>();
 	
 	Relation(N nodeA, N nodeB) {
 		if (nodeA.equals(nodeB)) throw new GraphException("A node cannot have a relation with itself!");
@@ -17,13 +18,21 @@ public class Relation<N, L, P extends Path<N>> {
 		this.nodeB = nodeB.hashCode() > nodeB.hashCode() ? nodeA : nodeB;
 	}
 	
-	boolean hasLink() {
+	public boolean hasLink() {
 		return link != null;
+	}
+	
+	public L getLink() {
+		return link;
+	}
+	
+	public List<P> getPaths() {
+		return (List<P>) paths;
 	}
 	
 	@Override
 	public int hashCode() {
-		return (int) (nodeB.hashCode() * (nodeB.hashCode() - 1) / 2 + nodeA.hashCode());
+		return nodeB.hashCode() * (nodeB.hashCode() - 1) / 2 + nodeA.hashCode();
 	}
 	
 	public static int hash(int idA, int idB) {

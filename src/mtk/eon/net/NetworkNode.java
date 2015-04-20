@@ -9,7 +9,6 @@ import mtk.eon.io.YamlSerializable;
 public class NetworkNode extends PositionedNode implements YamlSerializable {
 
 	String name;
-	boolean isReplica;
 	int regeneratorsCount, occupiedRegenerators;
 	
 	public NetworkNode(String name) {
@@ -18,10 +17,6 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 	
 	public String getName() {
 		return name;
-	}
-	
-	public boolean isReplica() {
-		return isReplica;
 	}
 	
 	public void setRegeneratorsCount(int regeneratorsCount) {
@@ -42,16 +37,20 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 			throw new NetworkException("Regenerators occupation exception! (" + occupiedRegenerators + "/" +
 					regeneratorsCount + ")");
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		return o instanceof NetworkNode && ((NetworkNode) o).getName().equals(name);
+	}
 	
 	@Override
 	public String toString() {
-		return "{name: " + name + ", replica: " + isReplica + ", regenerators: " + regeneratorsCount + "}";
+		return "{name: " + name + ", regenerators: " + regeneratorsCount + "}";
 	}
 
 	@SuppressWarnings({ "rawtypes", "unused" })
 	private NetworkNode(Map map) {
 		name = (String) map.get("name");
-		isReplica = (boolean) map.get("replica");
 		regeneratorsCount = (Integer) map.get("regenerators");
 	}
 	
@@ -59,7 +58,6 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 	public Map<String, Object> serialize() {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("name", name);
-		map.put("replica", isReplica);
 		map.put("regenerators", regeneratorsCount);
 		return map;
 	}

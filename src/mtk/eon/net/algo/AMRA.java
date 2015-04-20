@@ -1,7 +1,7 @@
 package mtk.eon.net.algo;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import mtk.eon.net.MetricType;
 import mtk.eon.net.Modulation;
@@ -20,16 +20,45 @@ public class AMRA extends RMSAAlgorithm {
 	
 	@Override
 	public DemandAllocationResult allocateDemand(Demand demand, Network network) {
-		ArrayList<PartedPath> candidatePaths = demand.getCandidatePaths(network);
 		int volume = (int) Math.ceil(demand.getVolume() / 10) - 1;
 		
+		List<PartedPath> candidatePaths = applyMetrics(network, volume, demand.getCandidatePaths(false, network));
+		
+		if (candidatePaths.isEmpty()) return DemandAllocationResult.NO_REGENERATORS;
+		
+		boolean workingPathSuccess = false;
+		for (PartedPath path : candidatePaths)
+			if (demand.allocate(network, path)) {
+				workingPathSuccess = true;
+				break;
+			}
+		
+		if (!workingPathSuccess) return DemandAllocationResult.NO_SPECTRUM;
+		
+		if (demand.allocateBackup()) {
+			volume = (int) Math.ceil(demand.getSqueezedVolume() / 10) - 1;
+			
+			candidatePaths = applyMetrics(network, volume, demand.getCandidatePaths(true, network));
+			
+			if (candidatePaths.isEmpty()) return new DemandAllocationResult(DemandAllocationResult.Type.NO_REGENERATORS, demand.getWorkingPath());
+			
+			for (PartedPath path : candidatePaths)
+				if (demand.allocate(network, path)) return new DemandAllocationResult(demand.getWorkingPath(), demand.getBackupPath());
+			
+			return new DemandAllocationResult(DemandAllocationResult.Type.NO_SPECTRUM, demand.getWorkingPath());
+		}
+		
+		return new DemandAllocationResult(DemandAllocationResult.Type.SUCCESS, demand.getWorkingPath());
+	}
+	
+	public List<PartedPath> applyMetrics(Network network, int volume, List<PartedPath> candidatePaths) {
 		pathLoop: for (PartedPath path : candidatePaths) {
 			path.mergeRegeneratorlessParts();
 			
 			// choosing modulations for parts
 			for (PathPart part : path) {
 				for (Modulation modulation : network.getAllowedModulations())
-					if (network.getModulationDistance(modulation, volume) >= part.getLength()) {
+					if (modulation.modulationDistances[volume] >= part.getLength()) {
 						part.setModulationIfBetter(modulation, calculateModulationMetric(network, part, modulation));
 					}
 				
@@ -57,15 +86,7 @@ public class AMRA extends RMSAAlgorithm {
 			i--;
 		}
 		
-		if (candidatePaths.isEmpty()) return DemandAllocationResult.NO_REGENERATORS;
-		
-		DemandAllocationResult result = null;
-		for (PartedPath path : candidatePaths) {
-			result = demand.allocate(network, path);
-			if (result != DemandAllocationResult.NO_SPECTRUM) return result;
-		}
-		
-		return result;
+		return candidatePaths;
 	}
 	
 	public int calculateModulationMetric(Network network, PathPart part, Modulation modulation) {

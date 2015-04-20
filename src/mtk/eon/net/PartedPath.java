@@ -5,7 +5,9 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import mtk.eon.net.demand.Demand;
+import mtk.eon.net.spectrum.BackupSpectrumSegment;
 import mtk.eon.net.spectrum.Spectrum;
+import mtk.eon.net.spectrum.SpectrumSegment;
 import mtk.eon.net.spectrum.WorkingSpectrumSegment;
 
 public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
@@ -59,7 +61,7 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 	public void mergeIdenticalModulation(Network network, int volume) {
 		for (int i = 1; i < parts.size(); i++)
 			if (parts.get(i - 1).getModulation() == parts.get(i).getModulation() && parts.get(i - 1).getLength() +
-					parts.get(i).getLength() <= network.getModulationDistance(parts.get(i).getModulation(), volume)) {
+					parts.get(i).getLength() <= parts.get(i).getModulation().modulationDistances[volume]) {
 				parts.get(i - 1).merge(parts.get(i));
 				parts.remove(i);
 				i--;
@@ -83,19 +85,45 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 		return parts.size() - 1;
 	}
 	
+	public boolean isDisjoint(PartedPath path) {
+		return this.path.isDisjoint(path);
+	}
+	
 	public boolean allocate(Network network, Demand demand) {
 		for (PathPart part : parts) {
 			Spectrum slices = part.getSlices();
-			int slicesCount = network.getSlicesConsumption(part.getModulation(), (int) Math.ceil(demand.getVolume() / 10) - 1);
-			int offset = slices.canAllocateWorking(slicesCount);
-			if (offset == -1) return false;
-			part.segment = new WorkingSpectrumSegment(offset, slicesCount, demand);
+			int slicesCount, offset;
+			if (demand.getWorkingPath() == null) {
+				slicesCount = part.getModulation().slicesConsumption[(int) Math.ceil(demand.getVolume() / 10) - 1];
+				offset = slices.canAllocateWorking(slicesCount);
+				if (offset == -1) return false;
+				part.segment = new WorkingSpectrumSegment(offset, slicesCount, demand);
+			} else {
+				slicesCount = part.getModulation().slicesConsumption[(int) Math.ceil(demand.getSqueezedVolume() / 10) - 1];
+				offset = slices.canAllocateBackup(demand, slicesCount);
+				if (offset == -1) return false;
+				part.segment = new BackupSpectrumSegment(offset, slicesCount, demand);
+			}
 		}
 		for (PathPart part : parts) {
 			if (part != parts.get(0)) part.source.occupyRegenerators(1);
 			for	(Spectrum slices : part.spectra) slices.allocate(part.segment);
 		}
 		return true;
+	}
+	
+	public void toWorking(Demand demand) {
+		for (PathPart part : parts) {
+			part.segment = new WorkingSpectrumSegment(part.segment.getRange(), demand);
+			for	(Spectrum slices : part.spectra) slices.claimBackup(demand);
+		}
+	}
+	
+	public void deallocate(Demand demand) {
+		for (PathPart part : parts) {
+			if (part != parts.get(0)) part.source.occupyRegenerators(-1);
+			for	(Spectrum slices : part.spectra) slices.deallocate(demand);
+		}
 	}
 
 	public int getPartsCount() {

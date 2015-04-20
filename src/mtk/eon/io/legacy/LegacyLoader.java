@@ -42,7 +42,7 @@ public class LegacyLoader {
 	}
 	
 	public void addReplica(int id) {
-		network.addReplica(nodes.get(id));
+		network.addNodeToGroup("replicas", nodes.get(id));
 	}
 	
 	public void addLink(int source, int destination, int distance) {

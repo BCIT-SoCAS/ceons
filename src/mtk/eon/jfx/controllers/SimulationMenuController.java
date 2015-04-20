@@ -8,8 +8,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
@@ -21,11 +21,20 @@ import mtk.eon.jfx.tasks.SimulationTask;
 import mtk.eon.net.MetricType;
 import mtk.eon.net.Modulation;
 import mtk.eon.net.Network;
+import mtk.eon.net.Simulation;
 import mtk.eon.net.algo.RMSAAlgorithm;
+import mtk.eon.net.demand.generator.TrafficGenerator;
 
 import com.sun.javafx.collections.ObservableListWrapper;
 
 public class SimulationMenuController {
+	
+	public static ComboBox<TrafficGenerator> generatorsStatic; // TODO ;_;
+	
+	@FXML private ComboBox<TrafficGenerator> generators;
+	@FXML private UIntField seed;
+	@FXML private TextField alpha;
+	@FXML private UIntField demands;
 	
 	@FXML private VBox settings;
 	@FXML private ComboBox<RMSAAlgorithm> algorithms;
@@ -36,7 +45,7 @@ public class SimulationMenuController {
 	@FXML private UIntField regeneratorsMetricValue;
 	private CheckBox[] modulations;
 
-	private TaskReadyProgressBar progressBar;
+	public static TaskReadyProgressBar progressBar; // TODO ;_;
 	
 	@FXML public void initialize() {
 		for (Field field : MainWindowController.class.getDeclaredFields()) if (field.isAnnotationPresent(FXML.class))
@@ -50,6 +59,8 @@ public class SimulationMenuController {
 		modulations = new CheckBox[Modulation.values().length];
 		for (Modulation modulation : Modulation.values())
 			modulations[modulation.ordinal()] = ((CheckBox) settings.lookup("#modulation" + modulation.ordinal()));
+		
+		generatorsStatic = generators;
 	}
 	
 	void setProgressBar(TaskReadyProgressBar progressBar) {
@@ -109,8 +120,9 @@ public class SimulationMenuController {
 		
 		network.setBestPathsCount(bestPaths.getValue());
 		
-		settings.disableProperty().set(true);
-		SimulationTask task = new SimulationTask();
+//		settings.disableProperty().set(true);
+		Simulation simulation = new Simulation(network, algorithms.getValue(), generators.getValue());
+		SimulationTask task = new SimulationTask(simulation, seed.getValue(), Double.parseDouble(alpha.getText()), demands.getValue());
 		progressBar.runTask(task, true);
 	}
 }

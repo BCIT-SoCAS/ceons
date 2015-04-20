@@ -2,8 +2,8 @@ package mtk.eon.net;
 
 import java.util.ArrayList;
 
+import mtk.eon.net.spectrum.AllocatableSpectrumSegment;
 import mtk.eon.net.spectrum.Spectrum;
-import mtk.eon.net.spectrum.WorkingSpectrumSegment;
 
 public class PathPart {
 	NetworkNode source;
@@ -11,7 +11,7 @@ public class PathPart {
 	int length;
 	
 	public ArrayList<Spectrum> spectra = new ArrayList<Spectrum>(); // TODO Should not be public
-	WorkingSpectrumSegment segment;
+	AllocatableSpectrumSegment segment;
 	
 	Modulation modulation;
 	int metric = Integer.MAX_VALUE;

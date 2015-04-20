@@ -1,23 +1,32 @@
 package mtk.eon.jfx.tasks;
 
 import javafx.concurrent.Task;
-import mtk.eon.ApplicationResources;
 import mtk.eon.io.Logger;
-import mtk.eon.io.legacy.DemandLoader;
+import mtk.eon.net.Simulation;
 
 public class SimulationTask extends Task<Void> {
 	
+	Simulation simulation;
+	long seed;
+	int demandsCount;
+	double alpha;
+	
+	public SimulationTask(Simulation simulation, long seed, double alpha, int demandsCount) {
+		this.simulation = simulation;
+		this.seed = seed;
+		this.demandsCount = demandsCount;
+		this.alpha = alpha;
+	}
+	
 	@Override
 	protected Void call() throws Exception {
-		DemandLoader demandLoader = null;
 		try {
-			demandLoader = ApplicationResources.getProject().getDefaultDemandLoader(this);
 			Logger.info("Starting simulation!");
-			demandLoader.loadAndAllocateDemands();
+			simulation.simulate(seed, demandsCount, alpha, this);
 			Logger.info("Simulation finished!");
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
-			return null;
+			throw e;
 		}
 		return null;
 	}

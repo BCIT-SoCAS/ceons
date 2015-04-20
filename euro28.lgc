@@ -1,0 +1,9 @@
+net: net/ff.net
+pat: net/f30.pat
+dist: net/mod.dist
+regs: net/all2.regs
+spec: net/f6.spec
+ener: net/f6.ener
+cost: net/f6.cost
+rep: net/07.rep
+dems: net/demands

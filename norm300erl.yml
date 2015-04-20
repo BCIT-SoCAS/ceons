@@ -1,0 +1,14 @@
+class: mtk.eon.net.demand.generator.TrafficGenerator
+name: Normal 300 Erlang
+generators:
+  class: mtk.eon.utils.random.MappedRandomVariable
+  distribution:
+    -
+      class: mtk.eon.utils.random.MappedRandomVariable.Entry
+      probability: 1
+      value:
+        class: mtk.eon.net.demand.generator.UnicastDemandGenerator
+        source:
+          class: mtk.eon.utils.random.UniformRandomVariable.Generic
+          values:
+            

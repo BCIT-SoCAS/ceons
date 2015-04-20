@@ -1,49 +1,26 @@
 package mtk.eon.jfx.controllers;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Accordion;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TitledPane;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
-import mtk.eon.ApplicationResources;
 import mtk.eon.drawing.Figure;
 import mtk.eon.drawing.FigureControl;
 import mtk.eon.drawing.Link;
 import mtk.eon.drawing.Node;
-import mtk.eon.io.Logger;
 import mtk.eon.jfx.DrawingState;
 import mtk.eon.jfx.LinkPropertiesController;
 import mtk.eon.jfx.NodePropertiesController;
 import mtk.eon.jfx.components.Console;
 import mtk.eon.jfx.components.ResizableCanvas;
 import mtk.eon.jfx.components.TaskReadyProgressBar;
-import mtk.eon.jfx.components.UIntField;
-import mtk.eon.jfx.tasks.ProjectLoadingTask;
-import mtk.eon.jfx.tasks.SimulationTask;
-import mtk.eon.net.MetricType;
-import mtk.eon.net.Modulation;
-import mtk.eon.net.Network;
-import mtk.eon.net.NetworkNode;
-import mtk.eon.net.algo.RMSAAlgorithm;
 import mtk.eon.utils.Utils;
-
-import com.sun.javafx.collections.ObservableListWrapper;
 
 public class MainWindowController  {
 	

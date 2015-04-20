@@ -14,7 +14,7 @@ public abstract class Identifiable {
 	}
 	
 	@Override
-	public final boolean equals(Object o) {
+	public boolean equals(Object o) { // TODO temp final removal
 		if (o == null) return false;
 		if (o.getClass() != this.getClass()) return false;
 		return getID() == ((Identifiable) o).getID();

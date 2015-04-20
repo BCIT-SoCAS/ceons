@@ -3,6 +3,7 @@ package mtk.eon.net.spectrum;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import mtk.eon.net.NetworkException;
 import mtk.eon.net.demand.Demand;
@@ -59,6 +60,8 @@ public class Spectrum {
 	}
 	
 	public int getOccupiedSlices() {
+		int occupiedSlices = getSlicesCount();
+		for (SpectrumSegment segment : segments) if (segment.getType() == FreeSpectrumSegment.TYPE) occupiedSlices -= segment.getRange().getLength();
 		return occupiedSlices; // TODO SUPPORT FOR BACKUP
 //		else if (candidate.getType().equals(BackupSpectrumSegment.TYPE)) {
 //			int result = 0;
@@ -129,6 +132,17 @@ public class Spectrum {
 		}
 	}
 	
+	public void claimBackup(Demand demand) {
+		for (int i = 0; i < segments.size(); i++)
+			if (segments.get(i) instanceof BackupSpectrumSegment)
+				if (((AllocatableSpectrumSegment) segments.get(i)).isOwnedBy(demand)) {
+					Set<Demand> demands = ((BackupSpectrumSegment) segments.get(i)).getDemands();
+					segments.set(i, new WorkingSpectrumSegment(segments.get(i).getRange(), demand));
+					for (Demand other : demands)
+						if (demand != other) other.onBackupFailure();
+				}
+	}
+	
 	public void deallocate(Demand demand) {
 		for (int i = 0; i < segments.size(); i++) if (segments.get(i) instanceof AllocatableSpectrumSegment && ((AllocatableSpectrumSegment) segments.get(i)).isOwnedBy(demand)) {
 			segments.set(i, ((AllocatableSpectrumSegment) segments.get(i)).deallocate(demand));
@@ -146,6 +160,24 @@ public class Spectrum {
 	
 	public int canAllocateWorking(int volume) {
 		for (SpectrumSegment segment : segments) if (segment.getType() == FreeSpectrumSegment.TYPE && segment.getRange().getLength() >= volume) return segment.getRange().getOffset();
+		return -1; // TODO CHANGE TO BOOL
+	}
+	
+	public int canAllocateBackup(Demand demand, int volume) {
+		int offset = -1, gatheredVolume = 0;
+		for (int i = segments.size() - 1; i >= 0; i--)
+			if (segments.get(i).getType() == FreeSpectrumSegment.TYPE || segments.get(i).getType() == BackupSpectrumSegment.TYPE && ((BackupSpectrumSegment) segments.get(i)).isDisjoint(demand)) {
+				if (segments.get(i).getRange().getLength() + gatheredVolume >= volume)
+					if (offset == -1) return segments.get(i).getRange().getEndOffset() - volume;
+					else return offset - volume + gatheredVolume;
+				else {
+					offset = segments.get(i).getRange().getOffset();
+					gatheredVolume += segments.get(i).getRange().getLength();
+				}
+			} else {
+				offset = -1;
+				gatheredVolume = 0;
+			}
 		return -1; // TODO CHANGE TO BOOL
 	}
 }

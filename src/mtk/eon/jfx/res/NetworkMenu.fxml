@@ -18,15 +18,15 @@
 			</columnConstraints>
 			<rowConstraints>
 				<RowConstraints minHeight="10.0"/>
+				<RowConstraints minHeight="10.0"/>
 			</rowConstraints>
 			<children>
-				<Button onAction="#onNew" text="N" />
-				<Button onAction="#onLoad" text="L" GridPane.columnIndex="1" />
-				<Button onAction="#onSave" text="S" GridPane.columnIndex="2" />
+				<Button onAction="#onNew" text="New" />
+				<Button onAction="#onLoad" text="Load" GridPane.columnIndex="1" />
+				<Button onAction="#onSave" text="Save" GridPane.columnIndex="2" />
+				<Button onAction="#testButton" text="Calculate Paths" GridPane.rowIndex="1" GridPane.columnSpan="3" />
 			</children>
 		</GridPane>
-		<Button onAction="#loadNetworkAction" text="Load" />
-		<Button onAction="#testButton" text="Test Button" />
 		<Button visible="false">
 			<graphic>
 				<ImageView>

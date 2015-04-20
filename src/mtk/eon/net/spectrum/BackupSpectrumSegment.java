@@ -49,6 +49,13 @@ public class BackupSpectrumSegment extends AllocatableSpectrumSegment {
 		if (getType() != other.getType()) return false;
 		return ((BackupSpectrumSegment) other).demands.equals(demands);
 	}
+	
+	public boolean isDisjoint(Demand demand) {
+		for (Demand other : demands)
+			if (!demand.isDisjoint(other))
+				return false; // TODO Compare collections of links instead...
+		return true;
+	}
 
 	@Override
 	public boolean canAllocate(SpectrumSegment other) {

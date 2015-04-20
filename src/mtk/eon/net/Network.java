@@ -3,27 +3,35 @@ package mtk.eon.net;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
+import java.util.Set;
 
 import mtk.eon.graph.Graph;
+import mtk.eon.graph.Relation;
 import mtk.eon.io.YamlSerializable;
 import mtk.eon.net.algo.RMSAAlgorithm;
 import mtk.eon.net.demand.Demand;
 import mtk.eon.net.demand.DemandAllocationResult;
 import mtk.eon.net.demand.DemandAllocationResult.Type;
+import mtk.eon.net.spectrum.BackupSpectrumSegment;
 import mtk.eon.net.spectrum.Spectrum;
+import mtk.eon.net.spectrum.SpectrumSegment;
+import mtk.eon.net.spectrum.WorkingSpectrumSegment;
 
 
 public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Network> implements YamlSerializable {
 	
-	HashMap<String, NetworkNode> nodes = new HashMap<String, NetworkNode>();
-	ArrayList<NetworkNode> replicas = new ArrayList<NetworkNode>();
+	Map<String, NetworkNode> nodes = new HashMap<String, NetworkNode>();
+	Map<String, List<NetworkNode>> nodesGroups = new HashMap<String, List<NetworkNode>>();
 
+	Set<Relation<NetworkNode, NetworkLink, NetworkPath>> inactiveLinks = new HashSet<>();
+	Set<NetworkPath> inactivePaths = new HashSet<>();
+	
 	List<Modulation> modulations = new ArrayList<Modulation>();
-	int[][] slicesConsumption = new int[6][40];
-	int[][] modulationDistances = new int[6][40];
 	MetricType modulationMetricType;
 	int[][] modulationMetrics = new int[6][6];
 	
@@ -34,6 +42,8 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	int bestPathsCount;
 	boolean canSwitchModulation;
 	ArrayList<Demand> allocatedDemands = new ArrayList<Demand>();
+	
+	public int maxPathsCount;
 	
 	public Network() {
 		super(new NetworkPathBuilder());
@@ -79,30 +89,42 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	
 	public void waitForDemandsDeath() {
 		while (!allocatedDemands.isEmpty()) update();
+		inactiveLinks.clear();
+		inactivePaths.clear();
+	}
+	
+	// NODES GROUPS
+	
+	public boolean addNodeToGroup(String groupName, NetworkNode node) {
+		if (!contains(node)) return false;
+		List<NetworkNode> group = nodesGroups.get(groupName);
+		if (group == null) {
+			group = new ArrayList<NetworkNode>();
+			nodesGroups.put(groupName, group);
+		}
+		if (group.contains(node)) return false;
+		group.add(node);
+		return true;
+	}
+	
+	public boolean removeNodeFromGroup(String groupName, NetworkNode node) {
+		if (!contains(node)) return false;
+		List<NetworkNode> group = nodesGroups.get(groupName);
+		if (group == null) return false;
+		if (!group.contains(node)) return false;
+		group.remove(node);
+		if (group.isEmpty()) nodesGroups.remove(groupName);
+		return true;
+	}
+	
+	public List<NetworkNode> getGroup(String name) {
+		return nodesGroups.get(name);
 	}
 	
 	// NODES
 	
 	public NetworkNode getNode(String name) {
 		return nodes.get(name);
-	}
-	
-	public boolean addReplica(NetworkNode node) {
-		if (!contains(node) || replicas.contains(node)) return false;
-		replicas.add(node);
-		node.isReplica = true;
-		return true;
-	}
-	
-	public boolean removeReplica(NetworkNode node) {
-		if (!contains(node) || !replicas.contains(node)) return false;
-		replicas.remove(node);
-		node.isReplica = false;
-		return true;
-	}
-	
-	public ArrayList<NetworkNode> getReplicas() {
-		return replicas;
 	}
 	
 	@Override
@@ -121,6 +143,49 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	
 	// LINKS
 	
+	Random linkDestroyer;
+	
+	public void setSeed(long seed) {
+		linkDestroyer = new Random(seed);
+	}
+	
+	public Set<Demand> cutLink() {
+		System.out.println("Link fail!");
+		List<Relation<NetworkNode, NetworkLink, NetworkPath>> links = new ArrayList<>();
+		for (Relation<NetworkNode, NetworkLink, NetworkPath> relation : relations)
+			if (relation.hasLink() && !inactiveLinks.contains(relation))
+				links.add(relation);
+		Relation<NetworkNode, NetworkLink, NetworkPath> link = links.get(linkDestroyer.nextInt(links.size()));
+		inactiveLinks.add(link);
+		for (Relation<NetworkNode, NetworkLink, NetworkPath> relation : relations)
+			for (NetworkPath path : relation.getPaths())
+				if (Math.abs(path.indexOf(relation.nodeA) - path.indexOf(relation.nodeB)) == 1)
+					inactivePaths.add(path);
+		
+		Set<Demand> working = new HashSet<Demand>();
+		Set<Demand> backup = new HashSet<Demand>();
+		Set<Demand> result = new HashSet<Demand>();
+		for (SpectrumSegment segment : link.getLink().slicesDown.getSegments())
+			if (segment instanceof WorkingSpectrumSegment) working.add(((WorkingSpectrumSegment) segment).getOwner());
+			else if (segment instanceof BackupSpectrumSegment) backup.addAll(((BackupSpectrumSegment) segment).getDemands());
+		for (SpectrumSegment segment : link.getLink().slicesUp.getSegments())
+			if (segment instanceof WorkingSpectrumSegment) working.add(((WorkingSpectrumSegment) segment).getOwner());
+			else if (segment instanceof BackupSpectrumSegment) backup.addAll(((BackupSpectrumSegment) segment).getDemands());
+		for (Demand demand : working)
+			if (!demand.onWorkingFailure()) {
+				result.add(demand);
+				allocatedDemands.remove(demand);
+			}
+		for (Demand demand : backup)
+			demand.onBackupFailure();
+		
+		return result;
+	}
+	
+	public boolean isInactive(NetworkPath path) {
+		return inactivePaths.contains(path);
+	}
+	
 	public Spectrum getLinkSlices(NetworkNode source, NetworkNode destination) {
 		NetworkLink link = getLink(source, destination);
 		return source.getID() < destination.getID() ? link.slicesUp : link.slicesDown;
@@ -128,24 +193,8 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	
 	// MODULATION
 	
-	public int getSlicesConsumption(Modulation modulation, int volume) {
-		return slicesConsumption[modulation.ordinal()][volume];
-	}
-	
-	public void setSlicesConsumption(Modulation modulation, int volume, int slicesConsumption) {
-		this.slicesConsumption[modulation.ordinal()][volume] = slicesConsumption;
-	}
-	
 	public MetricType getModualtionMetricType() {
 		return modulationMetricType;
-	}
-	
-	public int getModulationDistance(Modulation modulation, int volume) {
-		return modulationDistances[modulation.ordinal()][volume];
-	}
-	
-	public void setModulationDistance(Modulation modulation, int volume, int distance) {
-		modulationDistances[modulation.ordinal()][volume] = distance;
 	}
 	
 	public int getDynamicModulationMetric(Modulation modulation, int slicesOccupationMetric) {
@@ -203,15 +252,17 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 		this.regeneratorMetricValue = regeneratorMetricValue;
 	}
 	
-	// SERIALICATION
+	// SERIALIZATION
 	
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Network(Map map) {
 		super(new NetworkPathBuilder());
-		for (NetworkNode node : (List<NetworkNode>) map.get("nodes"))
-			addNode(node);
-		for (Entry<List<String>, NetworkLink> link : ((Map<List<String>, NetworkLink>) map.get("links")).entrySet())
-			putLink(getNode(link.getKey().get(0)), getNode(link.getKey().get(1)), link.getValue());
+		List<NetworkNode> nodes = (List<NetworkNode>) map.get("nodes");
+		if (nodes != null) for (NetworkNode node : nodes) addNode(node);
+		Map<List<String>, NetworkLink> links = (Map<List<String>, NetworkLink>) map.get("links");
+		if (links != null) for (Entry<List<String>, NetworkLink> link : links.entrySet()) putLink(getNode(link.getKey().get(0)), getNode(link.getKey().get(1)), link.getValue());
+		Map<String, List<String>> groups = (Map<String, List<String>>) map.get("groups");
+		if (groups != null) for (Entry<String, List<String>> group : groups.entrySet()) for (String node : group.getValue()) addNodeToGroup(group.getKey(), getNode(node));
 	}
 	
 	@Override
@@ -226,6 +277,13 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 					links.put(Arrays.asList(nodes.get(i).getName(), nodes.get(j).getName()),
 							getLink(nodes.get(i), nodes.get(j)));
 		map.put("links", links);
+		Map<String, List<String>> groups = new HashMap<String, List<String>>();
+		for (Entry<String, List<NetworkNode>> group : nodesGroups.entrySet()) {
+			groups.put(group.getKey(), new ArrayList<String>());
+			for (NetworkNode node : group.getValue())
+				groups.get(group.getKey()).add(node.getName());
+		}
+		map.put("groups", groups);
 		return map;
 	}
 }

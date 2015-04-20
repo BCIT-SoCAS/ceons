@@ -19,7 +19,7 @@ public class ModulationDistancesFileFormat extends FileFormat<LegacyLoader> {
 			int volume = (int) Math.ceil(scanner.nextInt() / 10.0) - 1;
 			if (volume >= 40) throw new RuntimeException("Volume cannot be larger than 400!");
 			for (Modulation modulation : Modulation.values())
-				loader.getNetwork().setModulationDistance(modulation, volume, scanner.nextInt());
+				modulation.modulationDistances[volume] = scanner.nextInt();
 		}
 		
 		scanner.close();

@@ -1,0 +1,116 @@
+nodes:
+- {name: Node_0, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_1, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_3, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_19, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_2, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_4, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_6, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_17, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_8, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_7, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_20, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_5, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_18, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_9, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_11, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_10, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_12, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_14, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_15, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_24, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_25, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_13, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_21, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_22, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_23, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_16, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_26, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+- {name: Node_27, regenerators: 1000, class: mtk.eon.net.NetworkNode}
+groups:
+  replicas: [Node_0, Node_1, Node_3, Node_5, Node_8, Node_16, Node_24]
+  international: [Node_17, Node_19, Node_21]
+links:
+  ? [Node_0, Node_3]
+  : {length: 540, class: mtk.eon.net.NetworkLink}
+  ? [Node_9, Node_10]
+  : {length: 522, class: mtk.eon.net.NetworkLink}
+  ? [Node_2, Node_8]
+  : {length: 474, class: mtk.eon.net.NetworkLink}
+  ? [Node_9, Node_12]
+  : {length: 720, class: mtk.eon.net.NetworkLink}
+  ? [Node_7, Node_11]
+  : {length: 381, class: mtk.eon.net.NetworkLink}
+  ? [Node_6, Node_5]
+  : {length: 218, class: mtk.eon.net.NetworkLink}
+  ? [Node_8, Node_7]
+  : {length: 592, class: mtk.eon.net.NetworkLink}
+  ? [Node_6, Node_8]
+  : {length: 271, class: mtk.eon.net.NetworkLink}
+  ? [Node_0, Node_1]
+  : {length: 514, class: mtk.eon.net.NetworkLink}
+  ? [Node_4, Node_5]
+  : {length: 507, class: mtk.eon.net.NetworkLink}
+  ? [Node_10, Node_14]
+  : {length: 534, class: mtk.eon.net.NetworkLink}
+  ? [Node_11, Node_25]
+  : {length: 540, class: mtk.eon.net.NetworkLink}
+  ? [Node_11, Node_24]
+  : {length: 775, class: mtk.eon.net.NetworkLink}
+  ? [Node_25, Node_27]
+  : {length: 722, class: mtk.eon.net.NetworkLink}
+  ? [Node_12, Node_13]
+  : {length: 783, class: mtk.eon.net.NetworkLink}
+  ? [Node_14, Node_15]
+  : {length: 376, class: mtk.eon.net.NetworkLink}
+  ? [Node_21, Node_22]
+  : {length: 1209, class: mtk.eon.net.NetworkLink}
+  ? [Node_14, Node_13]
+  : {length: 400, class: mtk.eon.net.NetworkLink}
+  ? [Node_1, Node_17]
+  : {length: 747, class: mtk.eon.net.NetworkLink}
+  ? [Node_12, Node_21]
+  : {length: 1500, class: mtk.eon.net.NetworkLink}
+  ? [Node_3, Node_7]
+  : {length: 552, class: mtk.eon.net.NetworkLink}
+  ? [Node_5, Node_9]
+  : {length: 327, class: mtk.eon.net.NetworkLink}
+  ? [Node_1, Node_4]
+  : {length: 594, class: mtk.eon.net.NetworkLink}
+  ? [Node_8, Node_10]
+  : {length: 456, class: mtk.eon.net.NetworkLink}
+  ? [Node_1, Node_6]
+  : {length: 600, class: mtk.eon.net.NetworkLink}
+  ? [Node_3, Node_2]
+  : {length: 259, class: mtk.eon.net.NetworkLink}
+  ? [Node_3, Node_20]
+  : {length: 1067, class: mtk.eon.net.NetworkLink}
+  ? [Node_1, Node_2]
+  : {length: 393, class: mtk.eon.net.NetworkLink}
+  ? [Node_11, Node_15]
+  : {length: 420, class: mtk.eon.net.NetworkLink}
+  ? [Node_24, Node_26]
+  : {length: 1213, class: mtk.eon.net.NetworkLink}
+  ? [Node_22, Node_23]
+  : {length: 474, class: mtk.eon.net.NetworkLink}
+  ? [Node_26, Node_27]
+  : {length: 623, class: mtk.eon.net.NetworkLink}
+  ? [Node_4, Node_18]
+  : {length: 796, class: mtk.eon.net.NetworkLink}
+  ? [Node_17, Node_16]
+  : {length: 834, class: mtk.eon.net.NetworkLink}
+  ? [Node_11, Node_10]
+  : {length: 757, class: mtk.eon.net.NetworkLink}
+  ? [Node_24, Node_23]
+  : {length: 819, class: mtk.eon.net.NetworkLink}
+  ? [Node_18, Node_16]
+  : {length: 760, class: mtk.eon.net.NetworkLink}
+  ? [Node_13, Node_22]
+  : {length: 551, class: mtk.eon.net.NetworkLink}
+  ? [Node_15, Node_23]
+  : {length: 668, class: mtk.eon.net.NetworkLink}
+  ? [Node_0, Node_19]
+  : {length: 690, class: mtk.eon.net.NetworkLink}
+  ? [Node_19, Node_20]
+  : {length: 462, class: mtk.eon.net.NetworkLink}
+class: mtk.eon.net.Network

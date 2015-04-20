@@ -12,15 +12,24 @@ public class DemandAllocationResult {
 	public static final DemandAllocationResult NO_SPECTRUM = new DemandAllocationResult(Type.NO_SPECTRUM);
 	
 	public final Type type;
-	public final PartedPath path;
+	public final PartedPath workingPath;
+	public final PartedPath backupPath;
 	
 	DemandAllocationResult(Type type) {
 		this.type = type;
-		path = null;
+		workingPath = null;
+		backupPath = null;
 	}
 	
-	public DemandAllocationResult(PartedPath path) {
+	public DemandAllocationResult(Type type, PartedPath workingPath) {
 		this.type = Type.SUCCESS;
-		this.path = path;
+		this.workingPath = workingPath;
+		this.backupPath = null;
+	}
+	
+	public DemandAllocationResult(PartedPath workingPath, PartedPath backupPath) {
+		this.type = Type.SUCCESS;
+		this.workingPath = workingPath;
+		this.backupPath = backupPath;
 	}
 }
