@@ -78,6 +78,7 @@ public class Simulation {
 			out.println("Blocked Spectrum: " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
 			out.println("Blocked Regenerators: " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
 			out.println("Blocked Link Failure: " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
+			out.println("Blocked All: " + ((spectrumBlockedVolume / totalVolume) + (regeneratorsBlockedVolume / totalVolume) + (linkFailureBlockedVolume / totalVolume)) * 100 + "%");
 			out.close();
 		} catch (IOException e) {
 			Logger.debug(e);
