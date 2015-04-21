@@ -32,6 +32,7 @@ public class TrafficGenerator implements DemandStream<Demand>, YamlSerializable 
 		generators.setSeed(seedGenerator.nextLong());
 		for (DemandGenerator<?> generator : generators.values())
 			generator.setSeed(seedGenerator.nextLong());
+		generatedDemandsCount = 0;
 	}
 	
 	@Override

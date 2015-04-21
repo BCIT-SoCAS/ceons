@@ -21,10 +21,7 @@ public class Simulation {
 	TrafficGenerator generator;
 	Random linkCutter;
 	
-	double totalVolume;
-	double spectrumBlockedVolume;
-	double regeneratorsBlockedVolume;
-	double linkFailureBlockedVolume;
+	double totalVolume, spectrumBlockedVolume, regeneratorsBlockedVolume, linkFailureBlockedVolume, regsPerAllocation, allocations;
 	double modulationsUsage[] = new double[6];
 	int[] pdf = new int[28 * 28];
 	int[] pdfa = new int[28];
@@ -79,6 +76,7 @@ public class Simulation {
 			out.println("Blocked Regenerators: " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
 			out.println("Blocked Link Failure: " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
 			out.println("Blocked All: " + ((spectrumBlockedVolume / totalVolume) + (regeneratorsBlockedVolume / totalVolume) + (linkFailureBlockedVolume / totalVolume)) * 100 + "%");
+			out.println("Average regenerators per allocation: " + (regsPerAllocation / allocations));
 			out.close();
 		} catch (IOException e) {
 			Logger.debug(e);
@@ -96,6 +94,10 @@ public class Simulation {
 			case NO_SPECTRUM: spectrumBlockedVolume += demand.getVolume(); break;
 			}
 		else {
+			allocations++;
+			regsPerAllocation += demand.getWorkingPath().getPartsCount() - 1;
+			if (demand.getBackupPath() != null)
+				regsPerAllocation += demand.getBackupPath().getPartsCount() - 1;
 			double modulationsUsage[] = new double[6];
 			for (PathPart part : result.workingPath) modulationsUsage[part.getModulation().ordinal()]++;
 			for (int i = 0; i < 6; i++) {

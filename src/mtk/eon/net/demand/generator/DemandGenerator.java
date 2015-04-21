@@ -32,6 +32,7 @@ public abstract class DemandGenerator<D extends Demand> implements DemandStream<
 		volume.setSeed(seedGenerator.nextLong());
 		squeezeRatio.setSeed(seedGenerator.nextLong());
 		ttl.setSeed(seedGenerator.nextLong());
+		generatedDemandsCount = 0;
 		return seedGenerator;
 	}
 
