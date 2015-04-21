@@ -21,10 +21,8 @@ public class Simulation {
 	TrafficGenerator generator;
 	Random linkCutter;
 	
-	double totalVolume, spectrumBlockedVolume, regeneratorsBlockedVolume, linkFailureBlockedVolume, regsPerAllocation, allocations;
+	double totalVolume, spectrumBlockedVolume, regeneratorsBlockedVolume, linkFailureBlockedVolume, regsPerAllocation, allocations, unhandledVolume;
 	double modulationsUsage[] = new double[6];
-	int[] pdf = new int[28 * 28];
-	int[] pdfa = new int[28];
 	
 	public Simulation(Network network, RMSAAlgorithm algorithm, TrafficGenerator generator) {
 		this.network = network;
@@ -37,27 +35,32 @@ public class Simulation {
 		network.setSeed(seed);
 		linkCutter = new Random(seed);
 		int erlang = Integer.parseInt(generator.getName().split("ERL")[1]);
-		for (; generator.getGeneratedDemandsCount() < demandsCount;) {
-			Demand demand = generator.next();
-
-			if (linkCutter.nextDouble() < alpha / erlang)
-				for (Demand reallocate : network.cutLink())
-					if (reallocate.reallocate()) handleDemand(reallocate);
-					else linkFailureBlockedVolume += reallocate.getVolume();
-			else {
-				handleDemand(demand);
-				if (demand instanceof AnycastDemand) handleDemand(generator.next());
+		try {
+			for (; generator.getGeneratedDemandsCount() < demandsCount;) {
+				Demand demand = generator.next();
+	
+				if (linkCutter.nextDouble() < alpha / erlang)
+					for (Demand reallocate : network.cutLink())
+						if (reallocate.reallocate()) handleDemand(reallocate);
+						else linkFailureBlockedVolume += reallocate.getVolume();
+				else {
+					handleDemand(demand);
+					if (demand instanceof AnycastDemand) handleDemand(generator.next());
+				}
+				
+				network.update();
+				task.updateProgress(generator.getGeneratedDemandsCount(), demandsCount);
 			}
-			
-			network.update();
-			task.updateProgress(generator.getGeneratedDemandsCount(), demandsCount);
+		} catch (NetworkException e) {
+			Logger.info("Network exception: " + e.getMessage());
+			for (; generator.getGeneratedDemandsCount() < demandsCount;) {
+				Demand demand = generator.next();
+				unhandledVolume += demand.getVolume();
+				if (demand instanceof AnycastDemand) unhandledVolume += generator.next().getVolume();
+				task.updateProgress(generator.getGeneratedDemandsCount(), demandsCount);
+			}
+			totalVolume += unhandledVolume;
 		}
-		
-		for (int i = 0; i < 28; i++)
-			for (int j = 0; j < 28; j++)
-				if (i != j) System.out.println(i + "=>" + j + ": " + pdf[i * 28 + j]);
-		for (int i = 0; i < 28; i++) System.out.println(i + ": " + pdfa[i]);
-		//TestMain.pdf(pdf, 1f);
 		
 		network.waitForDemandsDeath();
 		
@@ -75,7 +78,8 @@ public class Simulation {
 			out.println("Blocked Spectrum: " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
 			out.println("Blocked Regenerators: " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
 			out.println("Blocked Link Failure: " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
-			out.println("Blocked All: " + ((spectrumBlockedVolume / totalVolume) + (regeneratorsBlockedVolume / totalVolume) + (linkFailureBlockedVolume / totalVolume)) * 100 + "%");
+			out.println("Blocked Unhandled: " + (unhandledVolume / totalVolume) * 100 + "%");
+			out.println("Blocked All: " + ((spectrumBlockedVolume / totalVolume) + (regeneratorsBlockedVolume / totalVolume) + (linkFailureBlockedVolume / totalVolume) + (unhandledVolume / totalVolume)) * 100 + "%");
 			out.println("Average regenerators per allocation: " + (regsPerAllocation / allocations));
 			out.close();
 		} catch (IOException e) {

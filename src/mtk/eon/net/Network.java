@@ -179,6 +179,9 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 		for (Demand demand : backup)
 			demand.onBackupFailure();
 		
+		if (links.size() == 1)
+			throw new NetworkException("All links in the network failed...");
+		
 		return result;
 	}
 	

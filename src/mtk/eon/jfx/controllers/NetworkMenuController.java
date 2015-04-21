@@ -135,7 +135,7 @@ public class NetworkMenuController {
 					new ConstantRandomVariable<Float>(1f))));
 			
 			MappedRandomVariable<DemandGenerator<?>> distribution = new MappedRandomVariable<DemandGenerator<?>>(subGenerators);
-			generators.add(new TrafficGenerator("1:1-Backup-ERL" + erlang, distribution));
+			generators.add(new TrafficGenerator("1-1-Backup-ERL" + erlang, distribution));
 		}
 		
 		for (int erlang = 300; erlang < 1300; erlang += 100) {
@@ -209,16 +209,6 @@ public class NetworkMenuController {
 					e.printStackTrace();
 				}
 				Console.cout.println("Max best paths count: " + network.maxPathsCount);
-				
-				for (NetworkNode node1 : network.getNodes())
-					for (NetworkNode node2 : network.getNodes())
-						if (node1 != node2) {
-							System.out.print(node1 + " => " + node2);
-							List<NetworkPath> paths = network.getPaths(node1, node2);
-							for (int i = 0; i < 1; i++) {
-								System.out.println(" - " + paths.get(i).size());
-							}
-						}
 				
 				return null;
 			}

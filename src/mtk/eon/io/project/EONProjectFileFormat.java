@@ -40,9 +40,9 @@ public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
 				modulation.slicesConsumption[i] = modulations.get(Integer.class, modulation + ".consumptions." + i);
 			}
 		
-//		List<TrafficGenerator> trafficGenerators = new ArrayList<TrafficGenerator>();
-//		for (String generatorFileName : (List<String>) projectConfig.get(List.class, "generators"))
-//			trafficGenerators.add(new YamlConfiguration(zip.getInputStream(zip.getEntry(generatorFileName))).get(TrafficGenerator.class, ""));
+		List<TrafficGenerator> trafficGenerators = new ArrayList<TrafficGenerator>();
+		for (String generatorFileName : (List<String>) projectConfig.get(List.class, "generators"))
+			trafficGenerators.add(new YamlConfiguration(zip.getInputStream(zip.getEntry(generatorFileName))).get(TrafficGenerator.class, ""));
 		
 		zip.close();
 		return new EONProject(file, network, new ArrayList<TrafficGenerator>());
@@ -55,9 +55,9 @@ public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
 		YamlConfiguration projectConfig = new YamlConfiguration();
 		projectConfig.put("topology", "topology.yml");
 		projectConfig.put("modulations", "modulations.yml");
-//		List<String> generatorsNames = new ArrayList<String>();
-//		for (TrafficGenerator generator : data.getTrafficGenerators()) generatorsNames.add(generator.getName() + ".yml");
-//		projectConfig.put("generators", generatorsNames);
+		List<String> generatorsNames = new ArrayList<String>();
+		for (TrafficGenerator generator : data.getTrafficGenerators()) generatorsNames.add(generator.getName() + ".yml");
+		projectConfig.put("generators", generatorsNames);
 		zip.putNextEntry(new ZipEntry("project.yml"));
 		projectConfig.save(new OutputStreamWriter(zip));
 		zip.closeEntry();
@@ -82,13 +82,13 @@ public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
 		modulations.save(new OutputStreamWriter(zip));
 		zip.closeEntry();
 		
-//		for (TrafficGenerator generator : data.getTrafficGenerators()) {
-//			YamlConfiguration generatorConfig = new YamlConfiguration();
-//			generatorConfig.put("", generator);
-//			zip.putNextEntry(new ZipEntry(generator.getName() + ".yml"));
-//			generatorConfig.save(new OutputStreamWriter(zip));
-//			zip.closeEntry();
-//		}
+		for (TrafficGenerator generator : data.getTrafficGenerators()) {
+			YamlConfiguration generatorConfig = new YamlConfiguration();
+			generatorConfig.put("", generator);
+			zip.putNextEntry(new ZipEntry(generator.getName() + ".yml"));
+			generatorConfig.save(new OutputStreamWriter(zip));
+			zip.closeEntry();
+		}
 		
 		zip.close();
 	}
