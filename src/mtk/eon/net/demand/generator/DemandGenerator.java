@@ -7,6 +7,7 @@ import java.util.Random;
 import mtk.eon.io.YamlSerializable;
 import mtk.eon.net.demand.Demand;
 import mtk.eon.net.demand.DemandStream;
+import mtk.eon.utils.random.IrwinHallRandomVariable;
 import mtk.eon.utils.random.RandomVariable;
 
 public abstract class DemandGenerator<D extends Demand> implements DemandStream<D>, YamlSerializable {
@@ -17,11 +18,10 @@ public abstract class DemandGenerator<D extends Demand> implements DemandStream<
 
 	protected int generatedDemandsCount;
 	
-	public DemandGenerator(RandomVariable<Boolean> reallocate, RandomVariable<Boolean> allocateBackup, RandomVariable<Integer> volume, RandomVariable<Integer> ttl, RandomVariable<Float> squeezeRatio) {
+	public DemandGenerator(RandomVariable<Boolean> reallocate, RandomVariable<Boolean> allocateBackup, RandomVariable<Integer> volume, RandomVariable<Float> squeezeRatio) {
 		this.reallocate = reallocate;
 		this.allocateBackup = allocateBackup;
 		this.volume = volume;
-		this.ttl = ttl;
 		this.squeezeRatio = squeezeRatio;
 	}
 	
@@ -34,6 +34,10 @@ public abstract class DemandGenerator<D extends Demand> implements DemandStream<
 		ttl.setSeed(seedGenerator.nextLong());
 		generatedDemandsCount = 0;
 		return seedGenerator;
+	}
+	
+	public void setErlang(int erlang) {
+		ttl = new IrwinHallRandomVariable.Integer(erlang - 50, erlang + 50, 10);
 	}
 
 	@Override

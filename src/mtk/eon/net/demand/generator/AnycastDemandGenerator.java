@@ -14,8 +14,8 @@ public class AnycastDemandGenerator extends DemandGenerator<AnycastDemand> {
 	private AnycastDemand downstream;
 	
 	public AnycastDemandGenerator(RandomVariable<NetworkNode> client, RandomVariable<Boolean> reallocate, RandomVariable<Boolean> allocateBackup, 
-			RandomVariable<Integer> volume, RandomVariable<Integer> ttl, RandomVariable<Float> squeezeRatio) {
-		super(reallocate, allocateBackup, volume, ttl, squeezeRatio);
+			RandomVariable<Integer> volume, RandomVariable<Float> squeezeRatio) {
+		super(reallocate, allocateBackup, volume, squeezeRatio);
 		this.client = client;
 	}
 	

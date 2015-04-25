@@ -35,6 +35,11 @@ public class TrafficGenerator implements DemandStream<Demand>, YamlSerializable 
 		generatedDemandsCount = 0;
 	}
 	
+	public void setErlang(int erlang) {
+		for (DemandGenerator<?> generator : generators.values())
+			generator.setErlang(erlang);
+	}
+	
 	@Override
 	public Demand next() { // TODO ;_;
 		Demand demand;

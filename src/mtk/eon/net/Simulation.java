@@ -30,11 +30,11 @@ public class Simulation {
 		this.generator = generator;
 	}
 	
-	public void simulate(long seed, int demandsCount, double alpha, SimulationTask task) {
+	public void simulate(long seed, int demandsCount, double alpha, int erlang, SimulationTask task) {
+		generator.setErlang(erlang);
 		generator.setSeed(seed);
 		network.setSeed(seed);
 		linkCutter = new Random(seed);
-		int erlang = Integer.parseInt(generator.getName().split("ERL")[1]);
 		try {
 			for (; generator.getGeneratedDemandsCount() < demandsCount;) {
 				Demand demand = generator.next();
@@ -69,7 +69,7 @@ public class Simulation {
 		Logger.info("Blocked Link Failure: " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
 		File dir = new File("results");
 		if (!dir.isDirectory()) dir.mkdir();
-		File save = new File(dir, generator.getName() + "-ALPHA" + alpha + ".txt");
+		File save = new File(dir, generator.getName() + "-ERLANG" + erlang + "-ALPHA" + alpha + ".txt");
 		try {
 			PrintWriter out = new PrintWriter(save);
 			out.println("Generator: " + generator.getName());

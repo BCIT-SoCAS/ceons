@@ -61,3 +61,12 @@
 	-fx-background-repeat: no-repeat;
 	-fx-background-size: contain;
 }
+
+.scroll-pane > .viewport {
+	-fx-background-color: transparent;
+}
+
+.scroll-pane {
+	-fx-background-color: transparent;
+	-fx-padding-left: 15px;
+}

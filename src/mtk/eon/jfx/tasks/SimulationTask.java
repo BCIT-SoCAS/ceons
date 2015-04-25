@@ -8,10 +8,10 @@ public class SimulationTask extends Task<Void> {
 	
 	Simulation simulation;
 	long seed;
-	int demandsCount;
+	int demandsCount, erlang;
 	double alpha;
 	
-	public SimulationTask(Simulation simulation, long seed, double alpha, int demandsCount) {
+	public SimulationTask(Simulation simulation, long seed, double alpha, int erlang, int demandsCount) {
 		this.simulation = simulation;
 		this.seed = seed;
 		this.demandsCount = demandsCount;
@@ -22,7 +22,7 @@ public class SimulationTask extends Task<Void> {
 	protected Void call() throws Exception {
 		try {
 			Logger.info("Starting simulation!");
-			simulation.simulate(seed, demandsCount, alpha, this);
+			simulation.simulate(seed, demandsCount, alpha, erlang, this);
 			Logger.info("Simulation finished!");
 		} catch (Throwable e) {
 			e.printStackTrace();

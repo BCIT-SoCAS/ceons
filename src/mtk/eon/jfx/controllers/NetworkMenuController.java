@@ -92,106 +92,74 @@ public class NetworkMenuController {
 		Network network = project.getNetwork();
 		List<TrafficGenerator> generators = project.getTrafficGenerators();
 		
-		for (int erlang = 300; erlang < 1300; erlang += 100) {
-			int erlmin = erlang - 50, erlmax = erlang + 50;
-			List<Entry<DemandGenerator<?>>> subGenerators = new ArrayList<Entry<DemandGenerator<?>>>();
-			
-			subGenerators.add(new Entry<DemandGenerator<?>>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new ConstantRandomVariable<Boolean>(false),
-					new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 210, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10), new ConstantRandomVariable<Float>(1f))));
-			subGenerators.add(new Entry<DemandGenerator<?>>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()),
-					new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 110, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10),
-					new ConstantRandomVariable<Float>(1f))));
-			subGenerators.add(new Entry<DemandGenerator<?>>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("replicas")), new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("replicas")),
-					new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(40, 410, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10),
-					new ConstantRandomVariable<Float>(1f))));
-			subGenerators.add(new Entry<DemandGenerator<?>>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("international")),
-					new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 110, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10),
-					new ConstantRandomVariable<Float>(1f))));
-			subGenerators.add(new Entry<DemandGenerator<?>>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("international")), new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()),
-					new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 110, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10),
-					new ConstantRandomVariable<Float>(1f))));
-			
-			MappedRandomVariable<DemandGenerator<?>> distribution = new MappedRandomVariable<DemandGenerator<?>>(subGenerators);
-			generators.add(new TrafficGenerator("No failure-ERL" + erlang, distribution));
-		}
+		List<Entry<DemandGenerator<?>>> subGenerators = new ArrayList<Entry<DemandGenerator<?>>>();
 		
-		for (int erlang = 300; erlang < 1300; erlang += 100) {
-			int erlmin = erlang - 50, erlmax = erlang + 50;
-			List<Entry<DemandGenerator<?>>> subGenerators = new ArrayList<Entry<DemandGenerator<?>>>();
-			
-			subGenerators.add(new Entry<DemandGenerator<?>>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new ConstantRandomVariable<Boolean>(false),
-					new ConstantRandomVariable<Boolean>(true), new UniformRandomVariable.Integer(10, 210, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10), new ConstantRandomVariable<Float>(1f))));
-			subGenerators.add(new Entry<DemandGenerator<?>>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()),
-					new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(true), new UniformRandomVariable.Integer(10, 110, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10),
-					new ConstantRandomVariable<Float>(1f))));
-			subGenerators.add(new Entry<DemandGenerator<?>>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("replicas")), new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("replicas")),
-					new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(true), new UniformRandomVariable.Integer(40, 410, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10),
-					new ConstantRandomVariable<Float>(1f))));
-			subGenerators.add(new Entry<DemandGenerator<?>>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("international")),
-					new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(true), new UniformRandomVariable.Integer(10, 110, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10),
-					new ConstantRandomVariable<Float>(1f))));
-			subGenerators.add(new Entry<DemandGenerator<?>>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("international")), new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()),
-					new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(true), new UniformRandomVariable.Integer(10, 110, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10),
-					new ConstantRandomVariable<Float>(1f))));
-			
-			MappedRandomVariable<DemandGenerator<?>> distribution = new MappedRandomVariable<DemandGenerator<?>>(subGenerators);
-			generators.add(new TrafficGenerator("1-1-Backup-ERL" + erlang, distribution));
-		}
+		subGenerators.add(new Entry<DemandGenerator<?>>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new ConstantRandomVariable<Boolean>(false),
+				new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 210, 10), new ConstantRandomVariable<Float>(1f))));
+		subGenerators.add(new Entry<DemandGenerator<?>>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()),
+				new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 110, 10),	new ConstantRandomVariable<Float>(1f))));
+		subGenerators.add(new Entry<DemandGenerator<?>>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("replicas")), new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("replicas")),
+				new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(40, 410, 10), new ConstantRandomVariable<Float>(1f))));
+		subGenerators.add(new Entry<DemandGenerator<?>>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("international")),
+				new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<Float>(1f))));
+		subGenerators.add(new Entry<DemandGenerator<?>>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("international")), new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()),
+				new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<Float>(1f))));
 		
-		for (int erlang = 300; erlang < 1300; erlang += 100) {
-			int erlmin = erlang - 50, erlmax = erlang + 50;
-			List<Entry<DemandGenerator<?>>> subGenerators = new ArrayList<Entry<DemandGenerator<?>>>();
+		generators.add(new TrafficGenerator("No_Backup", new MappedRandomVariable<DemandGenerator<?>>(subGenerators)));
+		
+		subGenerators = new ArrayList<Entry<DemandGenerator<?>>>();
+		
+		subGenerators.add(new Entry<DemandGenerator<?>>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new ConstantRandomVariable<Boolean>(false),
+				new ConstantRandomVariable<Boolean>(true), new UniformRandomVariable.Integer(10, 210, 10), new ConstantRandomVariable<Float>(1f))));
+		subGenerators.add(new Entry<DemandGenerator<?>>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()),
+				new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<Float>(1f))));
+		subGenerators.add(new Entry<DemandGenerator<?>>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("replicas")), new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("replicas")),
+				new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(true), new UniformRandomVariable.Integer(40, 410, 10), new ConstantRandomVariable<Float>(1f))));
+		subGenerators.add(new Entry<DemandGenerator<?>>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("international")),
+				new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<Float>(1f))));
+		subGenerators.add(new Entry<DemandGenerator<?>>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("international")), new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()),
+				new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<Float>(1f))));
+		
+		generators.add(new TrafficGenerator("Direct_Backup", new MappedRandomVariable<DemandGenerator<?>>(subGenerators)));
+		
+		subGenerators = new ArrayList<Entry<DemandGenerator<?>>>();
 
-			subGenerators.add(new Entry<DemandGenerator<?>>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new ConstantRandomVariable<Boolean>(false),
-					new ConstantRandomVariable<Boolean>(true), new UniformRandomVariable.Integer(10, 210, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10), new ConstantRandomVariable<Float>(1f))));
-			subGenerators.add(new Entry<DemandGenerator<?>>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()),
-					new ConstantRandomVariable<Boolean>(true),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 110, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10),
-					new ConstantRandomVariable<Float>(1f))));
-			subGenerators.add(new Entry<DemandGenerator<?>>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("replicas")), new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("replicas")),
-					new ConstantRandomVariable<Boolean>(true),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(40, 410, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10),
-					new ConstantRandomVariable<Float>(1f))));
-			subGenerators.add(new Entry<DemandGenerator<?>>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("international")),
-					new ConstantRandomVariable<Boolean>(true),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 110, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10),
-					new ConstantRandomVariable<Float>(1f))));
-			subGenerators.add(new Entry<DemandGenerator<?>>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("international")), new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()),
-					new ConstantRandomVariable<Boolean>(true),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 110, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10),
-					new ConstantRandomVariable<Float>(1f))));
+		subGenerators.add(new Entry<DemandGenerator<?>>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new ConstantRandomVariable<Boolean>(false),
+				new ConstantRandomVariable<Boolean>(true), new UniformRandomVariable.Integer(10, 210, 10), new ConstantRandomVariable<Float>(1f))));
+		subGenerators.add(new Entry<DemandGenerator<?>>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()),
+				new ConstantRandomVariable<Boolean>(true),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<Float>(1f))));
+		subGenerators.add(new Entry<DemandGenerator<?>>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("replicas")), new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("replicas")),
+				new ConstantRandomVariable<Boolean>(true),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(40, 410, 10), new ConstantRandomVariable<Float>(1f))));
+		subGenerators.add(new Entry<DemandGenerator<?>>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("international")),
+				new ConstantRandomVariable<Boolean>(true),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<Float>(1f))));
+		subGenerators.add(new Entry<DemandGenerator<?>>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("international")), new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()),
+				new ConstantRandomVariable<Boolean>(true),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<Float>(1f))));
+		
+		subGenerators.add(new Entry<DemandGenerator<?>>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new ConstantRandomVariable<Boolean>(false),
+				new ConstantRandomVariable<Boolean>(true), new UniformRandomVariable.Integer(10, 210, 10), new ConstantRandomVariable<Float>(0.5f))));
+		subGenerators.add(new Entry<DemandGenerator<?>>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()),
+				new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<Float>(0.5f))));
+		subGenerators.add(new Entry<DemandGenerator<?>>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("replicas")), new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("replicas")),
+				new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(true), new UniformRandomVariable.Integer(40, 410, 10), new ConstantRandomVariable<Float>(0.5f))));
+		subGenerators.add(new Entry<DemandGenerator<?>>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("international")),
+				new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<Float>(0.5f))));
+		subGenerators.add(new Entry<DemandGenerator<?>>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("international")), new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()),
+				new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<Float>(0.5f))));
+		
+		subGenerators.add(new Entry<DemandGenerator<?>>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new ConstantRandomVariable<Boolean>(true),
+				new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 210, 10), new ConstantRandomVariable<Float>(1f))));
+		subGenerators.add(new Entry<DemandGenerator<?>>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()),
+				new ConstantRandomVariable<Boolean>(true),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<Float>(1f))));
+		subGenerators.add(new Entry<DemandGenerator<?>>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("replicas")), new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("replicas")),
+				new ConstantRandomVariable<Boolean>(true),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(40, 410, 10), new ConstantRandomVariable<Float>(1f))));
+		subGenerators.add(new Entry<DemandGenerator<?>>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("international")),
+				new ConstantRandomVariable<Boolean>(true),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<Float>(1f))));
+		subGenerators.add(new Entry<DemandGenerator<?>>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("international")), new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()),
+				new ConstantRandomVariable<Boolean>(true),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<Float>(1f))));
+		
+		generators.add(new TrafficGenerator("Classed", new MappedRandomVariable<DemandGenerator<?>>(subGenerators)));
 			
-			subGenerators.add(new Entry<DemandGenerator<?>>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new ConstantRandomVariable<Boolean>(false),
-					new ConstantRandomVariable<Boolean>(true), new UniformRandomVariable.Integer(10, 210, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10), new ConstantRandomVariable<Float>(0.5f))));
-			subGenerators.add(new Entry<DemandGenerator<?>>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()),
-					new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(true), new UniformRandomVariable.Integer(10, 110, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10),
-					new ConstantRandomVariable<Float>(0.5f))));
-			subGenerators.add(new Entry<DemandGenerator<?>>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("replicas")), new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("replicas")),
-					new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(true), new UniformRandomVariable.Integer(40, 410, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10),
-					new ConstantRandomVariable<Float>(0.5f))));
-			subGenerators.add(new Entry<DemandGenerator<?>>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("international")),
-					new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(true), new UniformRandomVariable.Integer(10, 110, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10),
-					new ConstantRandomVariable<Float>(0.5f))));
-			subGenerators.add(new Entry<DemandGenerator<?>>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("international")), new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()),
-					new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(true), new UniformRandomVariable.Integer(10, 110, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10),
-					new ConstantRandomVariable<Float>(0.5f))));
-			
-			subGenerators.add(new Entry<DemandGenerator<?>>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new ConstantRandomVariable<Boolean>(true),
-					new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 210, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10), new ConstantRandomVariable<Float>(1f))));
-			subGenerators.add(new Entry<DemandGenerator<?>>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()),
-					new ConstantRandomVariable<Boolean>(true),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 110, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10),
-					new ConstantRandomVariable<Float>(1f))));
-			subGenerators.add(new Entry<DemandGenerator<?>>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("replicas")), new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("replicas")),
-					new ConstantRandomVariable<Boolean>(true),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(40, 410, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10),
-					new ConstantRandomVariable<Float>(1f))));
-			subGenerators.add(new Entry<DemandGenerator<?>>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()), new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("international")),
-					new ConstantRandomVariable<Boolean>(true),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 110, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10),
-					new ConstantRandomVariable<Float>(1f))));
-			subGenerators.add(new Entry<DemandGenerator<?>>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(network.getGroup("international")), new UniformRandomVariable.Generic<NetworkNode>(network.getNodes()),
-					new ConstantRandomVariable<Boolean>(true),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 110, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 10),
-					new ConstantRandomVariable<Float>(1f))));
-			
-			MappedRandomVariable<DemandGenerator<?>> distribution = new MappedRandomVariable<DemandGenerator<?>>(subGenerators);
-			generators.add(new TrafficGenerator("3-Class-ERL" + erlang, distribution));
-		}
 		SimulationMenuController.generatorsStatic.setItems(new ObservableListWrapper<TrafficGenerator>(generators));
-			
 	}
 
 	int i;

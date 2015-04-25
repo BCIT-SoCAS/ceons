@@ -32,6 +32,7 @@ public class SimulationMenuController {
 	public static ComboBox<TrafficGenerator> generatorsStatic; // TODO ;_;
 	
 	@FXML private ComboBox<TrafficGenerator> generators;
+	@FXML private UIntField erlang;
 	@FXML private UIntField seed;
 	@FXML private TextField alpha;
 	@FXML private UIntField demands;
@@ -122,7 +123,7 @@ public class SimulationMenuController {
 		
 //		settings.disableProperty().set(true);
 		Simulation simulation = new Simulation(network, algorithms.getValue(), generators.getValue());
-		SimulationTask task = new SimulationTask(simulation, seed.getValue(), Double.parseDouble(alpha.getText()), demands.getValue());
+		SimulationTask task = new SimulationTask(simulation, seed.getValue(), Double.parseDouble(alpha.getText()), erlang.getValue(), demands.getValue());
 		progressBar.runTask(task, true);
 	}
 }
