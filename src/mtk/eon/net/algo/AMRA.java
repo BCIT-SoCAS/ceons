@@ -22,7 +22,9 @@ public class AMRA extends RMSAAlgorithm {
 	public DemandAllocationResult allocateDemand(Demand demand, Network network) {
 		int volume = (int) Math.ceil(demand.getVolume() / 10) - 1;
 		
-		List<PartedPath> candidatePaths = applyMetrics(network, volume, demand.getCandidatePaths(false, network));
+		List<PartedPath> candidatePaths = demand.getCandidatePaths(false, network);
+		if (candidatePaths.isEmpty()) return DemandAllocationResult.NO_SPECTRUM;
+		candidatePaths = applyMetrics(network, volume, candidatePaths);
 		
 		if (candidatePaths.isEmpty()) return DemandAllocationResult.NO_REGENERATORS;
 		

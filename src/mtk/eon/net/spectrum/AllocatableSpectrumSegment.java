@@ -11,6 +11,8 @@ public abstract class AllocatableSpectrumSegment extends SpectrumSegment {
 	
 	public abstract boolean isOwnedBy(Demand demand);
 	
+	public abstract int getOccupationTimeLeft();
+	
 	public abstract boolean canAllocate(SpectrumSegment other);
 
 	public abstract SpectrumSegment allocate(IntegerRange range, SpectrumSegment other);

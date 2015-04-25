@@ -34,6 +34,11 @@ public class WorkingSpectrumSegment extends AllocatableSpectrumSegment {
 	}
 
 	@Override
+	public int getOccupationTimeLeft() {
+		return owner.getTTL();
+	}
+
+	@Override
 	public boolean canJoin(SpectrumSegment other) {
 		if (getType() != other.getType()) return false;
 		return ((WorkingSpectrumSegment) other).owner.equals(owner);

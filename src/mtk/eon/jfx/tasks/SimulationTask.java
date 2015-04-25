@@ -14,6 +14,7 @@ public class SimulationTask extends Task<Void> {
 	public SimulationTask(Simulation simulation, long seed, double alpha, int erlang, int demandsCount) {
 		this.simulation = simulation;
 		this.seed = seed;
+		this.erlang = erlang;
 		this.demandsCount = demandsCount;
 		this.alpha = alpha;
 	}

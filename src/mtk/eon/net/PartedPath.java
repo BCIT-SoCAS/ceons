@@ -3,16 +3,17 @@ package mtk.eon.net;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.function.Consumer;
 
 import mtk.eon.net.demand.Demand;
 import mtk.eon.net.spectrum.BackupSpectrumSegment;
 import mtk.eon.net.spectrum.Spectrum;
-import mtk.eon.net.spectrum.SpectrumSegment;
 import mtk.eon.net.spectrum.WorkingSpectrumSegment;
 
 public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 
 	NetworkPath path;
+	boolean isUp;
 	ArrayList<PathPart> parts = new ArrayList<PathPart>();
 	double occupiedRegeneratorsPercentage;
 	double metric = -1.0;
@@ -32,6 +33,7 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 		}
 		if (allRegenerators != 0) occupiedRegeneratorsPercentage /= allRegenerators;
 		else occupiedRegeneratorsPercentage = 1; // TODO TO JEST REGENERATOROWA KUPA...
+		this.isUp = isUp;
 		this.path = path;
 	}
 	
@@ -128,6 +130,15 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 
 	public int getPartsCount() {
 		return parts.size();
+	}
+	
+	public void forEachNode(Consumer<NetworkNode> action) {
+		if (isUp)
+			for (int i = 0; i < path.size(); i++)
+				action.accept(path.get(i));
+		else
+			for (int i = 0; i < path.size(); i++)
+				action.accept(path.get(path.size() - 1 - i));
 	}
 	
 	@Override

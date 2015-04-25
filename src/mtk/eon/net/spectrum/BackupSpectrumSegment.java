@@ -45,6 +45,14 @@ public class BackupSpectrumSegment extends AllocatableSpectrumSegment {
 	}
 
 	@Override
+	public int getOccupationTimeLeft() {
+		int time = 0;
+		for (Demand demand : demands) if (demand.getTTL() > time)
+			time = demand.getTTL();
+		return time;
+	}
+
+	@Override
 	public boolean canJoin(SpectrumSegment other) {
 		if (getType() != other.getType()) return false;
 		return ((BackupSpectrumSegment) other).demands.equals(demands);
