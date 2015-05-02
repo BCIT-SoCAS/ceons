@@ -18,6 +18,10 @@ public abstract class Project {
 		return projectFile;
 	}
 	
+	public String getName() {
+		return projectFile.getName().replaceFirst("\\.[^.]*$", "");
+	}
+	
 	public abstract Network getNetwork();
 	
 	public abstract List<TrafficGenerator> getTrafficGenerators();

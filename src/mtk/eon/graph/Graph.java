@@ -166,7 +166,7 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 			depthFirstSearch(relation.nodeA);
 //			Collections.sort(relation.paths);
 			if (relation.paths.size() > maxPathsPerPair) relation.paths.subList(maxPathsPerPair, relation.paths.size()).clear();
-			if (Runtime.getRuntime().maxMemory() - Runtime.getRuntime().totalMemory() < 1024 * 1024 * 1000) {
+			if (Runtime.getRuntime().freeMemory() < 1024 * 1024 * 1000) {
 				int max = 0;
 				if (maxPathsPerPair == Integer.MAX_VALUE) {
 					for (Relation<N, L, P> rel : relations) if (rel.paths.size() > max) max = rel.paths.size();

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Random;
 
+import mtk.eon.ApplicationResources;
 import mtk.eon.io.Logger;
 import mtk.eon.jfx.tasks.SimulationTask;
 import mtk.eon.net.algo.RMSAAlgorithm;
@@ -69,7 +70,7 @@ public class Simulation {
 		Logger.info("Blocked Link Failure: " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
 		File dir = new File("results");
 		if (!dir.isDirectory()) dir.mkdir();
-		File save = new File(dir, generator.getName() + "-ERLANG" + erlang + "-ALPHA" + alpha + ".txt");
+		File save = new File(dir, ApplicationResources.getProject().getName().toUpperCase() + "-" + generator.getName() + "-ERLANG" + erlang + "-ALPHA" + alpha + ".txt");
 		try {
 			PrintWriter out = new PrintWriter(save);
 			out.println("Generator: " + generator.getName());

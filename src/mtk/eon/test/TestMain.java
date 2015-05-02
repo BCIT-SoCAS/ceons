@@ -4,25 +4,11 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 import javax.swing.JFrame;
-
-import mtk.eon.net.NetworkNode;
-import mtk.eon.net.demand.AnycastDemand;
-import mtk.eon.net.demand.Demand;
-import mtk.eon.net.demand.UnicastDemand;
-import mtk.eon.net.demand.generator.AnycastDemandGenerator;
-import mtk.eon.net.demand.generator.DemandGenerator;
-import mtk.eon.net.demand.generator.TrafficGenerator;
-import mtk.eon.net.demand.generator.UnicastDemandGenerator;
-import mtk.eon.utils.random.ConstantRandomVariable;
-import mtk.eon.utils.random.IrwinHallRandomVariable;
-import mtk.eon.utils.random.MappedRandomVariable;
-import mtk.eon.utils.random.MappedRandomVariable.Entry;
-import mtk.eon.utils.random.UniformRandomVariable;
 
 public class TestMain {
 	
@@ -50,50 +36,36 @@ public class TestMain {
 		}
 	}
 	
-	public static void main(String[] args) {
-		int erlang = 300, demandsCount = 150281, erlmin = 300 - 50, erlmax = 300 + 50;
-		List<NetworkNode> all = new ArrayList<NetworkNode>();
-		List<NetworkNode> reps = new ArrayList<NetworkNode>();
-		List<NetworkNode> inters = new ArrayList<NetworkNode>();
+	public static void main(String[] args) throws FileNotFoundException {
+		final int NODES_COUNT = 26;
+		int[] uniClient = new int[NODES_COUNT * NODES_COUNT];
+		int[] anyClient = new int[NODES_COUNT];
 		
-		for (int i = 0; i < 28; i++) all.add(new NetworkNode("" + i));
-		for (Integer i : Arrays.asList(0, 1, 3, 5, 8, 16, 24)) reps.add(all.get(i));
-		for (Integer i : Arrays.asList(17, 19, 21)) inters.add(all.get(i));
+		Scanner s = new Scanner(new File("us26/00.ddem"));
 		
-		List<Entry<DemandGenerator<?>>> subGenerators = new ArrayList<Entry<DemandGenerator<?>>>();
-		
-		subGenerators.add(new Entry<DemandGenerator<?>>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(all), new ConstantRandomVariable<Boolean>(false),
-				new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 210, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 3), new ConstantRandomVariable<Float>(1f))));
-		subGenerators.add(new Entry<DemandGenerator<?>>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(all), new UniformRandomVariable.Generic<NetworkNode>(all),
-				new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 110, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 3),
-				new ConstantRandomVariable<Float>(1f))));
-		subGenerators.add(new Entry<DemandGenerator<?>>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(reps), new UniformRandomVariable.Generic<NetworkNode>(reps),
-				new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(40, 410, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 3),
-				new ConstantRandomVariable<Float>(1f))));
-		subGenerators.add(new Entry<DemandGenerator<?>>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(all), new UniformRandomVariable.Generic<NetworkNode>(inters),
-				new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 110, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 3),
-				new ConstantRandomVariable<Float>(1f))));
-		subGenerators.add(new Entry<DemandGenerator<?>>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<NetworkNode>(inters), new UniformRandomVariable.Generic<NetworkNode>(all),
-				new ConstantRandomVariable<Boolean>(false),	new ConstantRandomVariable<Boolean>(false), new UniformRandomVariable.Integer(10, 110, 10), new IrwinHallRandomVariable.Integer(erlmin, erlmax, 3),
-				new ConstantRandomVariable<Float>(1f))));
-		
-		MappedRandomVariable<DemandGenerator<?>> distribution = new MappedRandomVariable<DemandGenerator<?>>(subGenerators);
-		TrafficGenerator generator = new TrafficGenerator("No failure-ERL" + erlang, distribution);
-		
-		generator.setSeed(10);
-		
-		int[] pdf = new int[28 * 28];
-		
-		for (int i = 0; i < demandsCount; i++) {
-			System.out.println(i);
-			Demand demand = generator.next();
-			if (demand instanceof AnycastDemand) generator.next();
-			else
-				pdf[Integer.parseInt(((UnicastDemand) demand).getSource().getName()) * 28 + Integer.parseInt(((UnicastDemand) demand).getDestination().getName())]++;
+		int demCount = s.nextInt();
+		for (int i = 0; i < demCount; i++) {
+			if (s.nextInt() == 2) {
+				anyClient[s.nextInt()]++;
+				s.nextInt();
+				s.nextInt();
+				s.nextInt();				
+			} else {
+				uniClient[s.nextInt() * NODES_COUNT + s.nextInt()]++;
+				s.nextInt();
+				s.nextInt();
+			}
 		}
 		
-		for (int i = 0; i < 28 * 28; i++)
-			if (i / 28 != i % 28)
-				System.out.println(i / 28 + "=>" + i % 28 + ": " + pdf[i]);
+		System.out.println("Anycast:");
+		for (int i = 0; i < anyClient.length; i++)
+			System.out.println("  " + i + ": " + anyClient[i]);
+
+		System.out.println("Unicast:");
+		for (int i = 0; i < uniClient.length; i++)
+			if (i % NODES_COUNT != i / NODES_COUNT)
+				System.out.println("  " + i / NODES_COUNT + "<=>" + i % NODES_COUNT + ": " + uniClient[i]);
+			
+		s.close();
 	}
 }
