@@ -141,6 +141,10 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 				action.accept(path.get(path.size() - 1 - i));
 	}
 	
+	public NetworkPath getPath() {
+		return path;
+	}
+	
 	@Override
 	public Iterator<PathPart> iterator() {
 		return parts.iterator();

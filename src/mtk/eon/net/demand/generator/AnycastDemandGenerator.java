@@ -10,6 +10,7 @@ import mtk.eon.utils.random.RandomVariable;
 public class AnycastDemandGenerator extends DemandGenerator<AnycastDemand> {
 
 	private RandomVariable<NetworkNode> client;
+	private boolean replicaPreservation;
 	
 	private AnycastDemand downstream;
 	
@@ -17,6 +18,10 @@ public class AnycastDemandGenerator extends DemandGenerator<AnycastDemand> {
 			RandomVariable<Integer> volume, RandomVariable<Float> squeezeRatio) {
 		super(reallocate, allocateBackup, volume, squeezeRatio);
 		this.client = client;
+	}
+	
+	public void setReplicaPreservation(boolean backupPreservation) {
+		this.replicaPreservation = backupPreservation;
 	}
 	
 	@Override
@@ -38,8 +43,8 @@ public class AnycastDemandGenerator extends DemandGenerator<AnycastDemand> {
 			boolean reallocate = this.reallocate.next();
 			boolean allocateBackup = this.allocateBackup.next();
 			int ttl = this.ttl.next();
-			downstream = new AnycastDemand.Downstream(client, reallocate, allocateBackup, volume.next(), squeezeRatio.next(), ttl);
-			result = new AnycastDemand.Upstream(client, reallocate, allocateBackup, volume.next(), squeezeRatio.next(), ttl);
+			downstream = new AnycastDemand.Downstream(client, reallocate, allocateBackup, volume.next(), squeezeRatio.next(), ttl, replicaPreservation);
+			result = new AnycastDemand.Upstream(client, reallocate, allocateBackup, volume.next(), squeezeRatio.next(), ttl, replicaPreservation);
 		}
 		
 		generatedDemandsCount++;

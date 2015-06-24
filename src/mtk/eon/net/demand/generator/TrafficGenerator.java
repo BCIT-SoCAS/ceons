@@ -27,6 +27,12 @@ public class TrafficGenerator implements DemandStream<Demand>, YamlSerializable 
 		return name;
 	}
 	
+	public void setReplicaPreservation(boolean replicaPreservation) {
+		for (DemandGenerator<?> generator : generators.values())
+			if (generator instanceof AnycastDemandGenerator)
+				((AnycastDemandGenerator) generator).setReplicaPreservation(replicaPreservation);
+	}
+	
 	public void setSeed(long seed) {
 		Random seedGenerator = new Random(seed);
 		generators.setSeed(seedGenerator.nextLong());

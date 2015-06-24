@@ -11,12 +11,12 @@ public abstract class AnycastDemand extends Demand {
 	
 	public static class Upstream extends AnycastDemand {
 
-		public Upstream(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, int squeezedVolume, int ttl) {
-			super(client, reallocate, allocateBackup, volume, squeezedVolume, ttl);
+		public Upstream(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, int squeezedVolume, int ttl, boolean replicaPreservation) {
+			super(client, reallocate, allocateBackup, volume, squeezedVolume, ttl, replicaPreservation);
 		}
 		
-		public Upstream(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl) {
-			super(client, reallocate, allocateBackup, volume, squeezeRatio, ttl);
+		public Upstream(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl, boolean replicaPreservation) {
+			super(client, reallocate, allocateBackup, volume, squeezeRatio, ttl, replicaPreservation);
 		}
 		
 		@Override
@@ -24,7 +24,8 @@ public abstract class AnycastDemand extends Demand {
 			ArrayList<PartedPath> paths = new ArrayList<PartedPath>();
 			
 			if (backup)
-				for (NetworkNode replica : network.getGroup("replicas")) {
+				if (replicaPreservation) {
+					NetworkNode replica = workingPath.getPath().get(0) == client ? workingPath.getPath().get(workingPath.getPath().size() - 1) : workingPath.getPath().get(0);
 					int acceptedPaths = 0;
 					for (NetworkPath path : network.getPaths(client , replica))
 						if (!network.isInactive(path))
@@ -33,7 +34,17 @@ public abstract class AnycastDemand extends Demand {
 								paths.add(new PartedPath(network, path, path.get(0) == client));
 								acceptedPaths++;
 							}
-				}
+				} else
+					for (NetworkNode replica : network.getGroup("replicas")) {
+						int acceptedPaths = 0;
+						for (NetworkPath path : network.getPaths(client , replica))
+							if (!network.isInactive(path))
+								if (acceptedPaths >= network.getBestPathsCount()) break;
+								else if (path.isDisjoint(workingPath)) {
+									paths.add(new PartedPath(network, path, path.get(0) == client));
+									acceptedPaths++;
+								}
+					}
 			else
 				for (NetworkNode replica : network.getGroup("replicas"))
 					for (NetworkPath path : network.getPaths(client , replica).subList(0, network.getBestPathsCount()))
@@ -50,12 +61,12 @@ public abstract class AnycastDemand extends Demand {
 
 	public static class Downstream extends AnycastDemand {
 
-		public Downstream(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, int squeezedVolume, int ttl) {
-			super(client, reallocate, allocateBackup, volume, squeezedVolume, ttl);
+		public Downstream(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, int squeezedVolume, int ttl, boolean replicaPreservation) {
+			super(client, reallocate, allocateBackup, volume, squeezedVolume, ttl, replicaPreservation);
 		}
 		
-		public Downstream(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl) {
-			super(client, reallocate, allocateBackup, volume, squeezeRatio, ttl);
+		public Downstream(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl, boolean replicaPreservation) {
+			super(client, reallocate, allocateBackup, volume, squeezeRatio, ttl, replicaPreservation);
 		}
 		
 		@Override
@@ -63,7 +74,8 @@ public abstract class AnycastDemand extends Demand {
 			ArrayList<PartedPath> paths = new ArrayList<PartedPath>();
 
 			if (backup)
-				for (NetworkNode replica : network.getGroup("replicas")) {
+				if (replicaPreservation) {
+					NetworkNode replica = workingPath.getPath().get(0) == client ? workingPath.getPath().get(workingPath.getPath().size() - 1) : workingPath.getPath().get(0);
 					int acceptedPaths = 0;
 					for (NetworkPath path : network.getPaths(client , replica))
 						if (!network.isInactive(path))
@@ -72,7 +84,17 @@ public abstract class AnycastDemand extends Demand {
 								paths.add(new PartedPath(network, path, path.get(0) == replica));
 								acceptedPaths++;
 							}
-				}
+				} else
+					for (NetworkNode replica : network.getGroup("replicas")) {
+						int acceptedPaths = 0;
+						for (NetworkPath path : network.getPaths(client , replica))
+							if (!network.isInactive(path))
+								if (acceptedPaths >= network.getBestPathsCount()) break;
+								else if (path.isDisjoint(workingPath)) {
+									paths.add(new PartedPath(network, path, path.get(0) == replica));
+									acceptedPaths++;
+								}
+					}
 			else
 				for (NetworkNode replica : network.getGroup("replicas"))
 					for (NetworkPath path : network.getPaths(replica, client).subList(0, network.getBestPathsCount()))
@@ -88,15 +110,18 @@ public abstract class AnycastDemand extends Demand {
 	}
 	
 	NetworkNode client;
+	boolean replicaPreservation;
 	
-	public AnycastDemand(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, int squeezedVolume, int ttl) {
+	public AnycastDemand(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, int squeezedVolume, int ttl, boolean replicaPreservation) {
 		super(reallocate, allocateBackup, volume, squeezedVolume, ttl);
 		this.client = client;
+		this.replicaPreservation = replicaPreservation;
 	}
 	
-	public AnycastDemand(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl) {
+	public AnycastDemand(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl, boolean replicaPreservation) {
 		super(reallocate, allocateBackup, volume, squeezeRatio, ttl);
 		this.client = client;
+		this.replicaPreservation = replicaPreservation;
 	}
 	
 	public NetworkNode getClient() {

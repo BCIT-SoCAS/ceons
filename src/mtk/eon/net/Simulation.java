@@ -31,9 +31,10 @@ public class Simulation {
 		this.generator = generator;
 	}
 	
-	public void simulate(long seed, int demandsCount, double alpha, int erlang, SimulationTask task) {
+	public void simulate(long seed, int demandsCount, double alpha, int erlang, boolean replicaPreservation, SimulationTask task) {
 		generator.setErlang(erlang);
 		generator.setSeed(seed);
+		generator.setReplicaPreservation(replicaPreservation);
 		network.setSeed(seed);
 		linkCutter = new Random(seed);
 		try {
