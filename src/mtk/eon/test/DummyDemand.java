@@ -17,12 +17,12 @@ public class DummyDemand extends Demand {
 	}
 
 	@Override
-	public ArrayList<PartedPath> getCandidatePaths(Network network) {
-		return null;
+	public String toString() {
+		return "{id: " + id + "}";
 	}
 
 	@Override
-	public String toString() {
-		return "{id: " + id + "}";
+	public ArrayList<PartedPath> getCandidatePaths(boolean backup, Network network) {
+		return null;
 	}
 }

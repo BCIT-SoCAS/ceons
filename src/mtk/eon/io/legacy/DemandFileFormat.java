@@ -23,28 +23,28 @@ public class DemandFileFormat extends FileFormat<DemandLoader> {
 		LightScanner scanner = getStream();
 		int demandsCount = scanner.nextInt();
 		
-		for (int i = 0; i < demandsCount; i++) {
-			int demandType = scanner.nextInt();
-			if (demandType == 1)
-				handleDemand(new UnicastDemand(loader.getNetwork().getNode("Node_" + scanner.nextInt()), loader.getNetwork().getNode("Node_" + scanner.nextInt()), roundVolume(scanner.nextInt()), scanner.nextInt()), loader);
-			else if (demandType == 2) {
-				NetworkNode client = loader.getNetwork().getNode("Node_" + scanner.nextInt());
-				if (client.isReplica()) {
-					scanner.skipInt();
-					scanner.skipInt();
-					scanner.skipInt();
-					continue;
-				}
-				int downstreamVolume = roundVolume(scanner.nextInt());
-				int upstreamVolume = roundVolume(scanner.nextInt());
-				int ttl = scanner.nextInt();
-				handleDemand(new AnycastDemand(client, true, upstreamVolume, ttl), loader);
-				handleDemand(new AnycastDemand(client, false, downstreamVolume, ttl), loader);
-			}
-			
-			loader.getNetwork().update();
-			loader.task.updateProgress(i, demandsCount);
-		}
+//		for (int i = 0; i < demandsCount; i++) {
+//			int demandType = scanner.nextInt();
+//			if (demandType == 1)
+//				handleDemand(new UnicastDemand(loader.getNetwork().getNode("Node_" + scanner.nextInt()), loader.getNetwork().getNode("Node_" + scanner.nextInt()), roundVolume(scanner.nextInt()), scanner.nextInt()), loader);
+//			else if (demandType == 2) {
+//				NetworkNode client = loader.getNetwork().getNode("Node_" + scanner.nextInt());
+//				if (client.isReplica()) {
+//					scanner.skipInt();
+//					scanner.skipInt();
+//					scanner.skipInt();
+//					continue;
+//				}
+//				int downstreamVolume = roundVolume(scanner.nextInt());
+//				int upstreamVolume = roundVolume(scanner.nextInt());
+//				int ttl = scanner.nextInt();
+//				handleDemand(new AnycastDemand(client, true, upstreamVolume, ttl), loader);
+//				handleDemand(new AnycastDemand(client, false, downstreamVolume, ttl), loader);
+//			}
+//			
+//			loader.getNetwork().update();
+//			loader.task.updateProgress(i, demandsCount);
+//		}
 		
 		scanner.close();
 		return true;

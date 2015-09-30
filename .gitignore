@@ -59,3 +59,4 @@ $RECYCLE.BIN/
 *.lnk
 /bin/
 /.gitignore
+/target/
