@@ -6,6 +6,11 @@ import java.util.Map;
 import mtk.eon.graph.positioned.PositionedNode;
 import mtk.eon.io.YamlSerializable;
 
+/**
+ * Network Node with information about the regenerators
+ * @author Michal
+ *
+ */
 public class NetworkNode extends PositionedNode implements YamlSerializable {
 
 	String name;

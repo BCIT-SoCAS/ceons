@@ -5,6 +5,11 @@ import java.util.Map;
 import mtk.eon.graph.positioned.FixedLengthLink;
 import mtk.eon.net.spectrum.Spectrum;
 
+/**
+ * Network link
+ * Currently, has 320 slices
+ *
+ */
 public class NetworkLink extends FixedLengthLink<NetworkLink> {
 	
 	public static final int NUMBER_OF_SLICES = 320;

@@ -11,6 +11,11 @@ import mtk.eon.net.PathPart;
 import mtk.eon.net.demand.Demand;
 import mtk.eon.net.demand.DemandAllocationResult;
 
+/**
+ * RMSA Algorithm, AMRA (IEEE ICC)
+ * @author Michal
+ *
+ */
 public class AMRA extends RMSAAlgorithm {
 
 	@Override

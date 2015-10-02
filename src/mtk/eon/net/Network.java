@@ -22,7 +22,10 @@ import mtk.eon.net.spectrum.Spectrum;
 import mtk.eon.net.spectrum.SpectrumSegment;
 import mtk.eon.net.spectrum.WorkingSpectrumSegment;
 
-
+/**
+ * Class Network has main data about the network 
+ *
+ */
 public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Network> implements YamlSerializable {
 	
 	Map<String, NetworkNode> nodes = new HashMap<String, NetworkNode>();

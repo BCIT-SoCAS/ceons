@@ -1,5 +1,8 @@
 package mtk.eon.net;
-
+/**
+ * Metrics refer to IEEE ICC paper
+ *
+ */
 public enum MetricType {
 
 	STATIC, DYNAMIC;

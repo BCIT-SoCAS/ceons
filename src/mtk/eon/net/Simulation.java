@@ -15,6 +15,11 @@ import mtk.eon.net.demand.Demand;
 import mtk.eon.net.demand.DemandAllocationResult;
 import mtk.eon.net.demand.generator.TrafficGenerator;
 
+/**
+ * Main simulation class (start point)
+ * @author Michal
+ *
+ */
 public class Simulation {
 
 	Network network;
@@ -98,6 +103,8 @@ public class Simulation {
 			switch (result.type) {
 			case NO_REGENERATORS: regeneratorsBlockedVolume += demand.getVolume(); break;
 			case NO_SPECTRUM: spectrumBlockedVolume += demand.getVolume(); break;
+			default:
+				break;
 			}
 		else {
 			allocations++;

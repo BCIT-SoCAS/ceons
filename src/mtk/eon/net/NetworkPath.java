@@ -2,6 +2,11 @@ package mtk.eon.net;
 
 import mtk.eon.graph.Path;
 
+/**
+ * Path between nodes
+ * @author Michal
+ *
+ */
 public class NetworkPath extends Path<NetworkNode> {
 
 	int length;

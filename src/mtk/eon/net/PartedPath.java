@@ -10,6 +10,11 @@ import mtk.eon.net.spectrum.BackupSpectrumSegment;
 import mtk.eon.net.spectrum.Spectrum;
 import mtk.eon.net.spectrum.WorkingSpectrumSegment;
 
+/**
+ * Used for calculation of metrics in each segment of network path
+ * @author Michal
+ *
+ */
 public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 
 	NetworkPath path;

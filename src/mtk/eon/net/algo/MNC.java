@@ -19,6 +19,10 @@ import mtk.eon.net.spectrum.SpectrumSegment;
 import mtk.eon.net.spectrum.WorkingSpectrumSegment;
 import mtk.eon.utils.Container;
 
+/**
+ * Different RMSA algorithm 
+ *
+ */
 public class MNC extends RMSAAlgorithm {
 
 	@Override
