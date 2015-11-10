@@ -15,14 +15,20 @@ public abstract class DemandGenerator<D extends Demand> implements DemandStream<
 	protected RandomVariable<Boolean> reallocate, allocateBackup;
 	protected RandomVariable<Integer> volume, ttl;
 	protected RandomVariable<Float> squeezeRatio;
+	protected RandomVariable<Integer> cpu;
+	protected RandomVariable<Integer> memory;
+	protected RandomVariable<Integer> storage;
 
 	protected int generatedDemandsCount;
 	
-	public DemandGenerator(RandomVariable<Boolean> reallocate, RandomVariable<Boolean> allocateBackup, RandomVariable<Integer> volume, RandomVariable<Float> squeezeRatio) {
+	public DemandGenerator(RandomVariable<Boolean> reallocate, RandomVariable<Boolean> allocateBackup, RandomVariable<Integer> volume, RandomVariable<Float> squeezeRatio, RandomVariable<Integer> cpu, RandomVariable<Integer> memory,RandomVariable<Integer> storage) {
 		this.reallocate = reallocate;
 		this.allocateBackup = allocateBackup;
 		this.volume = volume;
 		this.squeezeRatio = squeezeRatio;
+		this.cpu = cpu;
+		this.memory = memory;
+		this.storage = storage;
 	}
 	
 	public Random setSeed(long seed) {
@@ -32,6 +38,9 @@ public abstract class DemandGenerator<D extends Demand> implements DemandStream<
 		volume.setSeed(seedGenerator.nextLong());
 		squeezeRatio.setSeed(seedGenerator.nextLong());
 		ttl.setSeed(seedGenerator.nextLong());
+		cpu.setSeed(seedGenerator.nextLong());
+		memory.setSeed(seedGenerator.nextLong());
+		storage.setSeed(seedGenerator.nextLong());
 		generatedDemandsCount = 0;
 		return seedGenerator;
 	}
@@ -52,6 +61,9 @@ public abstract class DemandGenerator<D extends Demand> implements DemandStream<
 		volume = (RandomVariable<Integer>) map.get("volume");
 		squeezeRatio = (RandomVariable<Float>) map.get("squeezeRatio");
 		ttl = (RandomVariable<Integer>) map.get("ttl");
+		cpu = (RandomVariable<Integer>) map.get("cpu");
+		memory = (RandomVariable<Integer>) map.get("memory");
+		storage = (RandomVariable<Integer>) map.get("storage");
 	}
 	
 	@Override
@@ -63,7 +75,9 @@ public abstract class DemandGenerator<D extends Demand> implements DemandStream<
 		map.put("volume", volume);
 		map.put("squeezeRatio", squeezeRatio);
 		map.put("ttl", ttl);
-		
+		map.put("cpu", cpu);
+		map.put("memory", memory);
+		map.put("storage", storage);
 		return map;
 	}
 }

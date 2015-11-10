@@ -27,7 +27,7 @@ public class Simulation {
 	TrafficGenerator generator;
 	Random linkCutter;
 	
-	double totalVolume, spectrumBlockedVolume, regeneratorsBlockedVolume, linkFailureBlockedVolume, regsPerAllocation, allocations, unhandledVolume;
+	double totalVolume, spectrumBlockedVolume, regeneratorsBlockedVolume, linkFailureBlockedVolume, regsPerAllocation, allocations, unhandledVolume, blockedCPU, totalCPU, blockedMemory, totalMemory, blockedStorage, totalStorage;
 	double modulationsUsage[] = new double[6];
 	
 	public Simulation(Network network, RMSAAlgorithm algorithm, TrafficGenerator generator) {
@@ -74,6 +74,9 @@ public class Simulation {
 		Logger.info("Blocked Spectrum: " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
 		Logger.info("Blocked Regenerators: " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
 		Logger.info("Blocked Link Failure: " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
+		Logger.info("Lack of CPU: " + (blockedCPU / totalCPU) * 100 + "%");
+		Logger.info("Lack of RAM: " + (blockedMemory / totalMemory) * 100 + "%");
+		Logger.info("Lack of Storage: " + (blockedStorage / totalStorage) * 100 + "%");
 		File dir = new File("results");
 		if (!dir.isDirectory()) dir.mkdir();
 		File save = new File(dir, ApplicationResources.getProject().getName().toUpperCase() + "-" + generator.getName() + "-ERLANG" + erlang + "-ALPHA" + alpha + ".txt");
@@ -101,8 +104,18 @@ public class Simulation {
 		
 		if (result.workingPath == null)
 			switch (result.type) {
-			case NO_REGENERATORS: regeneratorsBlockedVolume += demand.getVolume(); break;
-			case NO_SPECTRUM: spectrumBlockedVolume += demand.getVolume(); break;
+			case NO_REGENERATORS:
+				regeneratorsBlockedVolume += demand.getVolume();
+				blockedCPU += demand.getCPU();
+				blockedMemory += demand.getMemory();
+				blockedStorage += demand.getStorage();
+				break;
+			case NO_SPECTRUM:
+				spectrumBlockedVolume += demand.getVolume();
+				blockedCPU += demand.getCPU();
+				blockedMemory += demand.getMemory();
+				blockedStorage += demand.getStorage();
+				break;
 			default:
 				break;
 			}
@@ -119,5 +132,8 @@ public class Simulation {
 			}
 		}
 		totalVolume += demand.getVolume();
+		totalCPU += demand.getCPU();
+		totalMemory += demand.getMemory();
+		totalStorage += demand.getStorage();
 	}
 }

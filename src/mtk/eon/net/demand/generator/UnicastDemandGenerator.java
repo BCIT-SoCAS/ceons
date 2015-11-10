@@ -12,8 +12,8 @@ public class UnicastDemandGenerator extends DemandGenerator<UnicastDemand> {
 	RandomVariable<NetworkNode> source, destination;
 
 	public UnicastDemandGenerator(RandomVariable<NetworkNode> source, RandomVariable<NetworkNode> destination, RandomVariable<Boolean> reallocate, RandomVariable<Boolean> allocateBackup, 
-			RandomVariable<Integer> volume, RandomVariable<Float> squeezeRatio) {
-		super(reallocate, allocateBackup, volume, squeezeRatio);
+			RandomVariable<Integer> volume, RandomVariable<Float> squeezeRatio, RandomVariable<Integer> cpu, RandomVariable<Integer> memory, RandomVariable<Integer> storage) {
+		super(reallocate, allocateBackup, volume, squeezeRatio, cpu, memory, storage);
 		this.source = source;
 		this.destination = destination;
 	}
@@ -31,7 +31,7 @@ public class UnicastDemandGenerator extends DemandGenerator<UnicastDemand> {
 		NetworkNode source = this.source.next(), destination;
 		do destination = this.destination.next(); while (source.equals(destination));
 		generatedDemandsCount++;
-		return new UnicastDemand(source, destination, reallocate.next(), allocateBackup.next(), volume.next(), squeezeRatio.next(), ttl.next());
+		return new UnicastDemand(source, destination, reallocate.next(), allocateBackup.next(), volume.next(), squeezeRatio.next(), ttl.next(), cpu.next(), memory.next(), storage.next());
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })

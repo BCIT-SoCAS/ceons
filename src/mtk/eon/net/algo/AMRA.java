@@ -30,7 +30,7 @@ public class AMRA extends RMSAAlgorithm {
 		List<PartedPath> candidatePaths = demand.getCandidatePaths(false, network);
 		if (candidatePaths.isEmpty()) return DemandAllocationResult.NO_SPECTRUM;
 		candidatePaths = applyMetrics(network, volume, candidatePaths);
-		
+
 		if (candidatePaths.isEmpty()) return DemandAllocationResult.NO_REGENERATORS;
 		
 		boolean workingPathSuccess = false;
@@ -48,7 +48,6 @@ public class AMRA extends RMSAAlgorithm {
 			candidatePaths = applyMetrics(network, volume, demand.getCandidatePaths(true, network));
 			
 			if (candidatePaths.isEmpty()) return new DemandAllocationResult(DemandAllocationResult.Type.NO_REGENERATORS, demand.getWorkingPath());
-			
 			for (PartedPath path : candidatePaths)
 				if (demand.allocate(network, path)) return new DemandAllocationResult(demand.getWorkingPath(), demand.getBackupPath());
 			

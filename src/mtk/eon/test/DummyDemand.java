@@ -11,8 +11,8 @@ public class DummyDemand extends Demand {
 	public static int sid;
 	int id;
 	
-	public DummyDemand(int volume, int ttl) {
-		super(false, false, volume, 0.5f, ttl);
+	public DummyDemand(int volume, int ttl, int cpu, int memory, int storage) {
+		super(false, false, volume, 0.5f, ttl, cpu, memory, storage);
 		id = sid++;
 	}
 

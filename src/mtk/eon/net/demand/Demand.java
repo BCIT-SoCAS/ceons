@@ -8,22 +8,25 @@ import mtk.eon.net.PartedPath;
 public abstract class Demand {
 
 	private boolean reallocate, allocateBackup;
-	private int volume, squeezedVolume, ttl, initialTTL;
+	private int volume, squeezedVolume, ttl, initialTTL, cpu, memory, diskStorage;
 	
 	protected PartedPath workingPath;
 	protected PartedPath backupPath;
 	
-	public Demand(boolean reallocate, boolean allocateBackup, int volume, int squeezedVolume, int ttl) {
+	public Demand(boolean reallocate, boolean allocateBackup, int volume, int squeezedVolume, int ttl, int cpu, int memory, int diskStorage) {
 		this.reallocate = reallocate;
 		this.allocateBackup = allocateBackup;
 		this.volume = volume;
 		this.squeezedVolume = squeezedVolume < 10 ? 10 : squeezedVolume;
 		this.ttl = ttl;
+		this.cpu = cpu;
+		this.memory = memory;
+		this.diskStorage = diskStorage;
 		initialTTL = ttl;
 	}
 	
-	public Demand(boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl) {
-		this(reallocate, allocateBackup, volume, (int) Math.round(volume * squeezeRatio), ttl);
+	public Demand(boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl, int cpu, int memory, int diskStorage) {
+		this(reallocate, allocateBackup, volume, (int) Math.round(volume * squeezeRatio), ttl, cpu, memory, diskStorage);
 	}
 	
 	public PartedPath getWorkingPath() {
@@ -54,6 +57,18 @@ public abstract class Demand {
 	
 	public int getTTL() {
 		return ttl;
+	}
+	
+	public int getCPU(){
+		return cpu;
+	}
+	
+	public int getMemory(){
+		return memory;
+	}
+	
+	public int getStorage(){
+		return diskStorage;
 	}
 	
 	public void tick() {

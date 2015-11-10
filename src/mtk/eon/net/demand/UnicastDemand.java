@@ -11,14 +11,14 @@ public class UnicastDemand extends Demand {
 
 	NetworkNode source, destination;
 	
-	public UnicastDemand(NetworkNode source, NetworkNode destination, boolean reallocate, boolean allocateBackup, int volume, int squeezedVolume, int ttl) {
-		super(reallocate, allocateBackup, volume, squeezedVolume, ttl);
+	public UnicastDemand(NetworkNode source, NetworkNode destination, boolean reallocate, boolean allocateBackup, int volume, int squeezedVolume, int ttl, int cpu, int memory, int storage) {
+		super(reallocate, allocateBackup, volume, squeezedVolume, ttl, cpu, memory, storage);
 		this.source = source;
 		this.destination = destination;
 	}
 	
-	public UnicastDemand(NetworkNode source, NetworkNode destination, boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl) {
-		super(reallocate, allocateBackup, volume, squeezeRatio, ttl);
+	public UnicastDemand(NetworkNode source, NetworkNode destination, boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl, int cpu, int memory, int storage) {
+		super(reallocate, allocateBackup, volume, squeezeRatio, ttl, cpu, memory, storage);
 		this.source = source;
 		this.destination = destination;
 	}
