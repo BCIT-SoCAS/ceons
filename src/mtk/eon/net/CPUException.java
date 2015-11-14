@@ -1,10 +1,10 @@
 package mtk.eon.net;
 
-public class NetworkException extends RuntimeException {
+public class CPUException extends RuntimeException {
 
 	private static final long serialVersionUID = -1385146508031639810L;
 
-	public NetworkException(String message) {
+	public CPUException(String message) {
 		super(message);
 	}
 }

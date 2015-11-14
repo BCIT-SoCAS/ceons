@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Random;
 
+import org.omg.CORBA.NO_MEMORY;
+
 import mtk.eon.ApplicationResources;
 import mtk.eon.io.Logger;
 import mtk.eon.jfx.tasks.SimulationTask;
@@ -17,6 +19,7 @@ import mtk.eon.net.demand.generator.TrafficGenerator;
 
 /**
  * Main simulation class (start point)
+ * 
  * @author Michal
  *
  */
@@ -26,17 +29,20 @@ public class Simulation {
 	RMSAAlgorithm algorithm;
 	TrafficGenerator generator;
 	Random linkCutter;
-	
-	double totalVolume, spectrumBlockedVolume, regeneratorsBlockedVolume, linkFailureBlockedVolume, regsPerAllocation, allocations, unhandledVolume, blockedCPU, totalCPU, blockedMemory, totalMemory, blockedStorage, totalStorage;
+
+	double totalVolume, spectrumBlockedVolume, regeneratorsBlockedVolume, linkFailureBlockedVolume, regsPerAllocation,
+			allocations, unhandledVolume, blockedCPU, totalCPU, blockedMemory, totalMemory, blockedStorage,
+			totalStorage, averageCPU, averageMemory, averageStorage;
 	double modulationsUsage[] = new double[6];
-	
+
 	public Simulation(Network network, RMSAAlgorithm algorithm, TrafficGenerator generator) {
 		this.network = network;
 		this.algorithm = algorithm;
 		this.generator = generator;
 	}
-	
-	public void simulate(long seed, int demandsCount, double alpha, int erlang, boolean replicaPreservation, SimulationTask task) {
+
+	public void simulate(long seed, int demandsCount, double alpha, int erlang, boolean replicaPreservation,
+			SimulationTask task) {
 		generator.setErlang(erlang);
 		generator.setSeed(seed);
 		generator.setReplicaPreservation(replicaPreservation);
@@ -45,16 +51,19 @@ public class Simulation {
 		try {
 			for (; generator.getGeneratedDemandsCount() < demandsCount;) {
 				Demand demand = generator.next();
-	
+
 				if (linkCutter.nextDouble() < alpha / erlang)
 					for (Demand reallocate : network.cutLink())
-						if (reallocate.reallocate()) handleDemand(reallocate);
-						else linkFailureBlockedVolume += reallocate.getVolume();
+						if (reallocate.reallocate())
+							handleDemand(reallocate);
+						else
+							linkFailureBlockedVolume += reallocate.getVolume();
 				else {
 					handleDemand(demand);
-					if (demand instanceof AnycastDemand) handleDemand(generator.next());
+					if (demand instanceof AnycastDemand)
+						handleDemand(generator.next());
 				}
-				
+
 				network.update();
 				task.updateProgress(generator.getGeneratedDemandsCount(), demandsCount);
 			}
@@ -63,23 +72,29 @@ public class Simulation {
 			for (; generator.getGeneratedDemandsCount() < demandsCount;) {
 				Demand demand = generator.next();
 				unhandledVolume += demand.getVolume();
-				if (demand instanceof AnycastDemand) unhandledVolume += generator.next().getVolume();
+				if (demand instanceof AnycastDemand)
+					unhandledVolume += generator.next().getVolume();
 				task.updateProgress(generator.getGeneratedDemandsCount(), demandsCount);
 			}
 			totalVolume += unhandledVolume;
 		}
-		
+
 		network.waitForDemandsDeath();
-		
+
 		Logger.info("Blocked Spectrum: " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
 		Logger.info("Blocked Regenerators: " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
 		Logger.info("Blocked Link Failure: " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
 		Logger.info("Lack of CPU: " + (blockedCPU / totalCPU) * 100 + "%");
 		Logger.info("Lack of RAM: " + (blockedMemory / totalMemory) * 100 + "%");
 		Logger.info("Lack of Storage: " + (blockedStorage / totalStorage) * 100 + "%");
+		Logger.info("Average usage of CPU: " + (averageCPU / allocations) * 100 + "%");
+		Logger.info("Average usage of RAM: " + (averageMemory / allocations) * 100 + "%");
+		Logger.info("Average usage of Storage: " + (averageStorage / allocations) * 100 + "%");
 		File dir = new File("results");
-		if (!dir.isDirectory()) dir.mkdir();
-		File save = new File(dir, ApplicationResources.getProject().getName().toUpperCase() + "-" + generator.getName() + "-ERLANG" + erlang + "-ALPHA" + alpha + ".txt");
+		if (!dir.isDirectory())
+			dir.mkdir();
+		File save = new File(dir, ApplicationResources.getProject().getName().toUpperCase() + "-" + generator.getName()
+				+ "-ERLANG" + erlang + "-ALPHA" + alpha + ".txt");
 		try {
 			PrintWriter out = new PrintWriter(save);
 			out.println("Generator: " + generator.getName());
@@ -89,31 +104,39 @@ public class Simulation {
 			out.println("Blocked Regenerators: " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
 			out.println("Blocked Link Failure: " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
 			out.println("Blocked Unhandled: " + (unhandledVolume / totalVolume) * 100 + "%");
-			out.println("Blocked All: " + ((spectrumBlockedVolume / totalVolume) + (regeneratorsBlockedVolume / totalVolume) + (linkFailureBlockedVolume / totalVolume) + (unhandledVolume / totalVolume)) * 100 + "%");
+			out.println(
+					"Blocked All: "
+							+ ((spectrumBlockedVolume / totalVolume) + (regeneratorsBlockedVolume / totalVolume)
+									+ (linkFailureBlockedVolume / totalVolume) + (unhandledVolume / totalVolume)) * 100
+							+ "%");
 			out.println("Average regenerators per allocation: " + (regsPerAllocation / allocations));
 			out.close();
 		} catch (IOException e) {
 			Logger.debug(e);
 		}
-//		for (Modulation modulation : Modulation.values())
-//			Logger.info(modulation.toString() + ": " + modulationsUsage[modulation.ordinal()]);
+		// for (Modulation modulation : Modulation.values())
+		// Logger.info(modulation.toString() + ": " +
+		// modulationsUsage[modulation.ordinal()]);
 	}
-	
+
 	private void handleDemand(Demand demand) {
 		DemandAllocationResult result = network.allocateDemand(demand);
-		
+
 		if (result.workingPath == null)
 			switch (result.type) {
 			case NO_REGENERATORS:
 				regeneratorsBlockedVolume += demand.getVolume();
-				blockedCPU += demand.getCPU();
-				blockedMemory += demand.getMemory();
-				blockedStorage += demand.getStorage();
 				break;
 			case NO_SPECTRUM:
 				spectrumBlockedVolume += demand.getVolume();
+				break;
+			case NO_CPU:
 				blockedCPU += demand.getCPU();
+				break;
+			case NO_MEMORY:
 				blockedMemory += demand.getMemory();
+				break;
+			case NO_STORAGE:
 				blockedStorage += demand.getStorage();
 				break;
 			default:
@@ -122,10 +145,14 @@ public class Simulation {
 		else {
 			allocations++;
 			regsPerAllocation += demand.getWorkingPath().getPartsCount() - 1;
+			averageCPU += demand.getWorkingPath().occupiedCPU;
+			averageMemory += demand.getWorkingPath().occupiedMemory;
+			averageStorage += demand.getWorkingPath().occupiedStorage;
 			if (demand.getBackupPath() != null)
 				regsPerAllocation += demand.getBackupPath().getPartsCount() - 1;
 			double modulationsUsage[] = new double[6];
-			for (PathPart part : result.workingPath) modulationsUsage[part.getModulation().ordinal()]++;
+			for (PathPart part : result.workingPath)
+				modulationsUsage[part.getModulation().ordinal()]++;
 			for (int i = 0; i < 6; i++) {
 				modulationsUsage[i] /= result.workingPath.getPartsCount();
 				this.modulationsUsage[i] += modulationsUsage[i];

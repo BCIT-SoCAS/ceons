@@ -20,24 +20,39 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 	NetworkPath path;
 	boolean isUp;
 	ArrayList<PathPart> parts = new ArrayList<PathPart>();
-	double occupiedRegeneratorsPercentage;
+	double occupiedRegeneratorsPercentage, occupiedCPU, occupiedMemory, occupiedStorage;
 	double metric = -1.0;
 	// TODO Use properties here and in other objects
 	
 	public PartedPath(Network network, NetworkPath path, boolean isUp) {
-		int allRegenerators = 0;
+		int allRegenerators = 0, allCPU = 0, allMemory = 0, allStorage = 0;
 		for (int i = 1; i < path.size(); i++) {
 			NetworkNode source = path.get(isUp ? i - 1 : path.size() - i);
 			NetworkNode destination = path.get(isUp ? i : path.size() - i - 1);
 			if (i > 1) {
 				occupiedRegeneratorsPercentage += source.occupiedRegenerators;
 				allRegenerators += source.regeneratorsCount;
+				occupiedCPU += source.occupiedCPU;
+				occupiedStorage += source.occupiedStorage;
+				occupiedMemory += source.occupiedMemory;
+				allMemory += source.memory;
+				allCPU += source.cpu;
+				allStorage += source.storage;
 			}
 			parts.add(new PathPart(source, destination, network.getLink(source, destination).getLength(), 
 					network.getLinkSlices(source, destination)));
 		}
-		if (allRegenerators != 0) occupiedRegeneratorsPercentage /= allRegenerators;
-		else occupiedRegeneratorsPercentage = 1; // TODO TO JEST REGENERATOROWA KUPA...
+		if (allRegenerators != 0){
+			occupiedRegeneratorsPercentage /= allRegenerators;
+			occupiedCPU /= allCPU;
+			occupiedMemory /= allMemory;
+			occupiedStorage /= allStorage;
+		} else{
+			occupiedRegeneratorsPercentage = 1; // TODO TO JEST REGENERATOROWA KUPA...
+			occupiedCPU = 1;
+			occupiedMemory = 1;
+			occupiedStorage = 1;
+		}
 		this.isUp = isUp;
 		this.path = path;
 	}
@@ -113,7 +128,12 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 			}
 		}
 		for (PathPart part : parts) {
-			if (part != parts.get(0)) part.source.occupyRegenerators(1);
+			if (part != parts.get(0)){
+				part.source.occupyRegenerators(1, false);
+				part.source.occupyCpu(demand.getCPU(), false);
+				part.source.occupyMemory(demand.getMemory(), false);
+				part.source.occupyStorage(demand.getStorage(), false);
+			}
 			for	(Spectrum slices : part.spectra) slices.allocate(part.segment);
 		}
 		return true;
@@ -128,7 +148,12 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 	
 	public void deallocate(Demand demand) {
 		for (PathPart part : parts) {
-			if (part != parts.get(0)) part.source.occupyRegenerators(-1);
+			if (part != parts.get(0)){
+				part.source.occupyRegenerators(-1, true);
+				part.source.occupyCpu(-demand.getCPU(), true);
+				part.source.occupyMemory(-demand.getMemory(), true);
+				part.source.occupyStorage(-demand.getStorage(), true);
+			}
 			for	(Spectrum slices : part.spectra) slices.deallocate(demand);
 		}
 	}
