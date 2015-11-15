@@ -19,7 +19,6 @@ import mtk.eon.net.demand.generator.TrafficGenerator;
 
 public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
 
-	@SuppressWarnings("restriction")
 	@Override
 	public ExtensionFilter getExtensionFilter() {
 		return new ExtensionFilter("EON project files", "*.eon");

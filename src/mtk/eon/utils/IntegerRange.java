@@ -64,6 +64,7 @@ public class IntegerRange {
 		} else return this;
 	}
 	
+	@SuppressWarnings("unused")
 	public IntegerRange[] multipleSupportedSubtract(IntegerRange other) {
 		IntegerRange a = new IntegerRange(offset, other.offset - offset);
 		IntegerRange b = new IntegerRange(other.getEndOffset(), getEndOffset() - other.getEndOffset());

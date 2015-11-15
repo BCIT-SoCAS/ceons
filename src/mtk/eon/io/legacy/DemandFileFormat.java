@@ -2,12 +2,9 @@ package mtk.eon.io.legacy;
 
 import mtk.eon.io.FileFormat;
 import mtk.eon.io.LightScanner;
-import mtk.eon.net.NetworkNode;
 import mtk.eon.net.PathPart;
-import mtk.eon.net.demand.AnycastDemand;
 import mtk.eon.net.demand.Demand;
 import mtk.eon.net.demand.DemandAllocationResult;
-import mtk.eon.net.demand.UnicastDemand;
 
 public class DemandFileFormat extends FileFormat<DemandLoader> {
 
@@ -21,6 +18,7 @@ public class DemandFileFormat extends FileFormat<DemandLoader> {
 	@Override
 	public boolean loadWithData(DemandLoader loader) {
 		LightScanner scanner = getStream();
+		@SuppressWarnings("unused")
 		int demandsCount = scanner.nextInt();
 		
 //		for (int i = 0; i < demandsCount; i++) {
@@ -50,6 +48,7 @@ public class DemandFileFormat extends FileFormat<DemandLoader> {
 		return true;
 	}
 	
+	@SuppressWarnings("unused")
 	private void handleDemand(Demand demand, DemandLoader loader) {
 		DemandAllocationResult result = loader.getNetwork().allocateDemand(demand);
 		
@@ -63,6 +62,8 @@ public class DemandFileFormat extends FileFormat<DemandLoader> {
 				modulationsUsage[i] /= result.workingPath.getPartsCount();
 				loader.modulationsUsage[i] += modulationsUsage[i];
 			}
+			break;
+		default:
 			break;
 		}
 		loader.totalVolume += demand.getVolume();

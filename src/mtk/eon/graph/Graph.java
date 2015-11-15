@@ -1,7 +1,6 @@
 package mtk.eon.graph;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import mtk.eon.utils.collections.HashArray;
@@ -86,6 +85,7 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 		return oldLink;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<P> getPaths(N nodeA, N nodeB) {
 		Relation<N, L, P> relation = relations.get(Relation.hash(nodeA.hashCode(), nodeB.hashCode()));
 		if (relation == null) return null;

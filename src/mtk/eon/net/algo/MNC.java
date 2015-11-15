@@ -3,7 +3,6 @@ package mtk.eon.net.algo;
 import java.util.Collections;
 import java.util.List;
 
-import mtk.eon.net.MetricType;
 import mtk.eon.net.Modulation;
 import mtk.eon.net.Network;
 import mtk.eon.net.NetworkNode;
@@ -16,7 +15,6 @@ import mtk.eon.net.spectrum.BackupSpectrumSegment;
 import mtk.eon.net.spectrum.FreeSpectrumSegment;
 import mtk.eon.net.spectrum.Spectrum;
 import mtk.eon.net.spectrum.SpectrumSegment;
-import mtk.eon.net.spectrum.WorkingSpectrumSegment;
 import mtk.eon.utils.Container;
 
 /**
@@ -30,6 +28,7 @@ public class MNC extends RMSAAlgorithm {
 		return "MNC";
 	}
 
+	@SuppressWarnings("unused")
 	@Override
 	public DemandAllocationResult allocateDemand(Demand demand, Network network) {
 		int volume = (int) Math.ceil(demand.getVolume() / 10) - 1;

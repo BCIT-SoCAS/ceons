@@ -21,6 +21,7 @@ public class Spectrum {
 		if (slicesCount % 2 != 0) throw new NetworkException("The number of slices has to be even!");
 		this.slicesCount = slicesCount;
 		segments = new ArrayList<SpectrumSegment>() {
+			private static final long serialVersionUID = 5499411539908254723L;
 			@Override
 			public void add(int arg0, SpectrumSegment arg1) {
 				if (arg1.getRange().getLength() == 0) throw new SpectrumException("Cannot add 0 length");

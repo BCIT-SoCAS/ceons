@@ -15,13 +15,11 @@ import mtk.eon.io.project.ProjectFileFormat;
 import mtk.eon.jfx.components.Console;
 import mtk.eon.net.Network;
 import mtk.eon.net.NetworkNode;
-import mtk.eon.net.NetworkPath;
 import mtk.eon.net.demand.generator.AnycastDemandGenerator;
 import mtk.eon.net.demand.generator.DemandGenerator;
 import mtk.eon.net.demand.generator.TrafficGenerator;
 import mtk.eon.net.demand.generator.UnicastDemandGenerator;
 import mtk.eon.utils.random.ConstantRandomVariable;
-import mtk.eon.utils.random.IrwinHallRandomVariable;
 import mtk.eon.utils.random.MappedRandomVariable;
 import mtk.eon.utils.random.MappedRandomVariable.Entry;
 import mtk.eon.utils.random.UniformRandomVariable;
@@ -50,7 +48,9 @@ public class NetworkMenuController {
 					Project project = ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).load(file);
 					ApplicationResources.setProject(project);
 					Logger.info("Finished loading project.");
-					
+					for (NetworkNode n: project.getNetwork().getNodes()){
+						n.setRegeneratorsCount(100);
+					}
 					setupGenerators(project); // TODO TEMPORARY
 					
 				} catch (Exception ex) {

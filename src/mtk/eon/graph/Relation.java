@@ -26,6 +26,7 @@ public class Relation<N, L, P extends Path<N>> {
 		return link;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<P> getPaths() {
 		return (List<P>) paths;
 	}

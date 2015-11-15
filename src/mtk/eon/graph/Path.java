@@ -41,7 +41,7 @@ public abstract class Path<N> implements Comparable<Path<N>> {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Path other = (Path) obj;
+		Path<?> other = (Path<?>) obj;
 		if (!Arrays.equals(path, other.path))
 			return false;
 		return true;

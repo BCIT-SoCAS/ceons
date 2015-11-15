@@ -49,8 +49,6 @@ public class AMRA extends RMSAAlgorithm {
 					break;
 				}
 
-			if (!workingPathSuccess)
-				return DemandAllocationResult.NO_SPECTRUM;
 		} catch (CPUException cpu) {
 			workingPathSuccess = false;
 			return DemandAllocationResult.NO_CPU;
@@ -64,6 +62,8 @@ public class AMRA extends RMSAAlgorithm {
 			workingPathSuccess = false;
 			return DemandAllocationResult.NO_REGENERATORS;
 		}
+		if (!workingPathSuccess)
+			return DemandAllocationResult.NO_SPECTRUM;
 		try {
 			if (demand.allocateBackup()) {
 				volume = (int) Math.ceil(demand.getSqueezedVolume() / 10) - 1;

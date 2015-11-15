@@ -66,7 +66,7 @@ public class SimulationMenuController {
 	}
 	
 	void setProgressBar(TaskReadyProgressBar progressBar) {
-		this.progressBar = progressBar;
+		SimulationMenuController.progressBar = progressBar;
 	} // TODO Ugly way of doing that...
 	
 	public RMSAAlgorithm getAlgorithm() {

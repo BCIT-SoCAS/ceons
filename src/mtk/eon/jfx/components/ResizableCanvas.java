@@ -221,6 +221,7 @@ public class ResizableCanvas extends Canvas {
 	{
 	    list.setSelectedFigure(temp);
 	}
+	@SuppressWarnings("unused")
 	private void loadProperties(Figure temp)
 	{
 		parent.loadProperties(temp, list);

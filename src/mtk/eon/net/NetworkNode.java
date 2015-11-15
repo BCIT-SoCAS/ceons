@@ -16,9 +16,9 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 
 	String name;
 	int regeneratorsCount, occupiedRegenerators;
-	int cpu = 30, occupiedCPU;
-	int memory = 1600, occupiedMemory;
-	int storage = 10000, occupiedStorage;
+	int cpu = 40, occupiedCPU;
+	int memory = 160, occupiedMemory;
+	int storage = 4000, occupiedStorage;
 
 	public NetworkNode(String name) {
 		this.name = name;
@@ -26,6 +26,13 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 
 	public String getName() {
 		return name;
+	}
+	
+	public void clearOccupied(){
+		this.occupiedCPU = 0;
+		this.occupiedMemory = 0;
+		this.occupiedRegenerators = 0;
+		this.occupiedStorage = 0;
 	}
 
 	public void setRegeneratorsCount(int regeneratorsCount) {
@@ -55,7 +62,7 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 	public void occupyRegenerators(int count, boolean deallocate) {
 		if (deallocate) {
 			occupiedRegenerators += count;
-		} else if ((occupiedRegenerators > regeneratorsCount || occupiedRegenerators < 0) && !deallocate) {
+		} else if ((count > regeneratorsCount - occupiedRegenerators || occupiedRegenerators < 0) && !deallocate) {
 			throw new NetworkException(
 					"Regenerators occupation exception! (" + occupiedRegenerators + "/" + regeneratorsCount + ")");
 		} else {
@@ -66,10 +73,11 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 	public void occupyMemory(int count, boolean deallocate) {
 		if (deallocate) {
 			occupiedMemory += count;
-		} else if ((occupiedMemory > memory || occupiedMemory < 0) && !deallocate) {
+		} else if ((count > memory - occupiedMemory || occupiedMemory < 0) && !deallocate) {
 			throw new MemoryException("Memory occupation exception! (" + occupiedMemory + "/" + memory + ")");
+		} else {
+			occupiedMemory += count;
 		}
-		occupiedMemory += count;
 	}
 
 	public void setCpu(int cpu) {
@@ -87,7 +95,7 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 	public void occupyCpu(int count, boolean deallocate) {
 		if (deallocate) {
 			occupiedCPU += count;
-		} else if ((occupiedCPU > cpu || occupiedCPU < 0) && !deallocate) {
+		} else if ((count > cpu - occupiedCPU || occupiedCPU < 0) && !deallocate) {
 			throw new CPUException("CPU occupation exception! (" + occupiedCPU + "/" + cpu + ")");
 		} else {
 			occupiedCPU += count;
@@ -109,7 +117,7 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 	public void occupyStorage(int count, boolean deallocate) {
 		if (deallocate) {
 			occupiedStorage += count;
-		} else if ((occupiedStorage > storage || occupiedStorage < 0) && !deallocate) {
+		} else if ((count > storage - occupiedStorage || occupiedStorage < 0) && !deallocate) {
 			throw new StorageException("Storage occupation exception! (" + occupiedStorage + "/" + storage + ")");
 		} else {
 			occupiedStorage += count;

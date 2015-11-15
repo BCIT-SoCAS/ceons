@@ -17,6 +17,7 @@ public class SlicesConsumptionFileFormat extends FileFormat<LegacyLoader> {
 	@Override
 	public boolean loadWithData(LegacyLoader loader) {
 		LightScanner scanner = getStream();
+		@SuppressWarnings("unused")
 		List<NetworkPath> paths;
 		
 		for (Modulation modulation : Modulation.values())

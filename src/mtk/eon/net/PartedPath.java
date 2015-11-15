@@ -113,6 +113,16 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 	
 	public boolean allocate(Network network, Demand demand) {
 		for (PathPart part : parts) {
+			if (part != parts.get(0)){
+				part.source.occupyRegenerators(1, false);
+				part.source.occupyCpu(demand.getCPU(), false);
+				part.source.occupyMemory(demand.getMemory(), false);
+				part.source.occupyStorage(demand.getStorage(), false);
+			}
+			
+		}
+		
+		for (PathPart part : parts) {
 			Spectrum slices = part.getSlices();
 			int slicesCount, offset;
 			if (demand.getWorkingPath() == null) {
@@ -126,16 +136,9 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 				if (offset == -1) return false;
 				part.segment = new BackupSpectrumSegment(offset, slicesCount, demand);
 			}
+			for	(Spectrum slice : part.spectra) slice.allocate(part.segment);
 		}
-		for (PathPart part : parts) {
-			if (part != parts.get(0)){
-				part.source.occupyRegenerators(1, false);
-				part.source.occupyCpu(demand.getCPU(), false);
-				part.source.occupyMemory(demand.getMemory(), false);
-				part.source.occupyStorage(demand.getStorage(), false);
-			}
-			for	(Spectrum slices : part.spectra) slices.allocate(part.segment);
-		}
+
 		return true;
 	}
 	

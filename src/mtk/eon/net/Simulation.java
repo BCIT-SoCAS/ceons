@@ -1,12 +1,10 @@
 package mtk.eon.net;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
 import java.util.Random;
-
-import org.omg.CORBA.NO_MEMORY;
 
 import mtk.eon.ApplicationResources;
 import mtk.eon.io.Logger;
@@ -43,6 +41,7 @@ public class Simulation {
 
 	public void simulate(long seed, int demandsCount, double alpha, int erlang, boolean replicaPreservation,
 			SimulationTask task) {
+		clearVolumeValues();
 		generator.setErlang(erlang);
 		generator.setSeed(seed);
 		generator.setReplicaPreservation(replicaPreservation);
@@ -84,9 +83,9 @@ public class Simulation {
 		Logger.info("Blocked Spectrum: " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
 		Logger.info("Blocked Regenerators: " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
 		Logger.info("Blocked Link Failure: " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
-		Logger.info("Lack of CPU: " + (blockedCPU / totalCPU) * 100 + "%");
-		Logger.info("Lack of RAM: " + (blockedMemory / totalMemory) * 100 + "%");
-		Logger.info("Lack of Storage: " + (blockedStorage / totalStorage) * 100 + "%");
+		Logger.info("Lack of CPU: " + (blockedCPU / totalVolume) * 100 + "%");
+		Logger.info("Lack of RAM: " + (blockedMemory / totalVolume) * 100 + "%");
+		Logger.info("Lack of Storage: " + (blockedStorage / totalVolume) * 100 + "%");
 		Logger.info("Average usage of CPU: " + (averageCPU / allocations) * 100 + "%");
 		Logger.info("Average usage of RAM: " + (averageMemory / allocations) * 100 + "%");
 		Logger.info("Average usage of Storage: " + (averageStorage / allocations) * 100 + "%");
@@ -119,6 +118,28 @@ public class Simulation {
 		// modulationsUsage[modulation.ordinal()]);
 	}
 
+	private void clearVolumeValues() {
+		this.totalVolume = 0;
+		this.spectrumBlockedVolume = 0;
+		this.regeneratorsBlockedVolume = 0;
+		this.linkFailureBlockedVolume = 0;
+		this.regsPerAllocation = 0;
+		this.allocations = 0;
+		this.unhandledVolume = 0;
+		this.blockedCPU = 0;
+		this.totalCPU = 0;
+		this.blockedMemory = 0;
+		this.totalMemory = 0;
+		this.blockedStorage = 0;
+		this.totalStorage = 0;
+		this.averageCPU = 0;
+		this.averageMemory = 0;
+		this.averageStorage = 0;
+		for (Map.Entry<String, NetworkNode> entries: network.nodes.entrySet()){
+			entries.getValue().clearOccupied();
+		}
+	}
+
 	private void handleDemand(Demand demand) {
 		DemandAllocationResult result = network.allocateDemand(demand);
 
@@ -131,13 +152,13 @@ public class Simulation {
 				spectrumBlockedVolume += demand.getVolume();
 				break;
 			case NO_CPU:
-				blockedCPU += demand.getCPU();
+				blockedCPU += demand.getVolume();
 				break;
 			case NO_MEMORY:
-				blockedMemory += demand.getMemory();
+				blockedMemory += demand.getVolume();
 				break;
 			case NO_STORAGE:
-				blockedStorage += demand.getStorage();
+				blockedStorage += demand.getVolume();
 				break;
 			default:
 				break;
@@ -159,8 +180,5 @@ public class Simulation {
 			}
 		}
 		totalVolume += demand.getVolume();
-		totalCPU += demand.getCPU();
-		totalMemory += demand.getMemory();
-		totalStorage += demand.getStorage();
 	}
 }
