@@ -1,9 +1,0 @@
-net: us26/ss.net
-pat: us26/s30.pat
-dist: euro28/mod.dist
-regs: us26/s6.regs
-spec: us26/s6.spec
-ener: us26/s6.ener
-cost: us26/s6.cost
-rep: us26/07.rep
-dems: net/demands

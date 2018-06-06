@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<TitledPane animated="true" prefHeight="350.0" prefWidth="194.0" text="Properties" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:id="titledPane" fx:controller="ca.bcit.jfx.NodePropertiesController">
+  <content>
+    <AnchorPane prefHeight="180.0" prefWidth="200.0">
+         <children>
+            <GridPane layoutX="2.0" layoutY="-1.0" prefHeight="319.0" prefWidth="194.0">
+              <columnConstraints>
+                <ColumnConstraints prefWidth="92.0" />
+                <ColumnConstraints prefWidth="102.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints prefHeight="27.0" />
+                <RowConstraints prefHeight="27.0" />
+                  <RowConstraints prefHeight="59.0" />
+                  <RowConstraints prefHeight="22.0" />
+                <RowConstraints prefHeight="184.0" />
+              </rowConstraints>
+               <children>
+                  <Label text="Type:" />
+                  <Label text="Node" GridPane.columnIndex="1" />
+                  <Label text="Name" GridPane.rowIndex="1" />
+                  <TextField fx:id="textFieldName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Label alignment="BOTTOM_CENTER" contentDisplay="RIGHT" text="Connected with:" textAlignment="CENTER" GridPane.rowIndex="3" />
+                  <ListView fx:id="listView" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="TOP" onMouseClicked="#listViewMouseClicked">
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin>
+                  </ListView>
+                  <GridPane prefHeight="88.0" prefWidth="102.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                    <columnConstraints>
+                      <ColumnConstraints prefWidth="28.0" />
+                      <ColumnConstraints prefWidth="74.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints prefHeight="24.0" />
+                      <RowConstraints prefHeight="21.0" />
+                    </rowConstraints>
+                     <children>
+                        <Label text="X:" />
+                        <Label text="Y:" GridPane.rowIndex="1" />
+                        <TextField prefHeight="25.0" prefWidth="35.0" GridPane.columnIndex="1" fx:id="textFieldX" onAction="#onActionTextField" />
+                        <TextField prefWidth="35.0" GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="textFieldY" onAction="#onActionTextField" />
+                     </children>
+                  </GridPane>
+                  <Label alignment="TOP_LEFT" text="Point on screen:" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+               </children>
+            </GridPane>
+         </children></AnchorPane>
+  </content>
+</TitledPane>
