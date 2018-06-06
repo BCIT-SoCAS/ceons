@@ -20,13 +20,13 @@ import java.util.Map.Entry;
  */
 public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Network> implements YamlSerializable {
 	
-	final Map<String, NetworkNode> nodes = new HashMap<String, NetworkNode>();
-	private final Map<String, List<NetworkNode>> nodesGroups = new HashMap<String, List<NetworkNode>>();
+	final Map<String, NetworkNode> nodes = new HashMap<>();
+	private final Map<String, List<NetworkNode>> nodesGroups = new HashMap<>();
 
 	private final Set<Relation<NetworkNode, NetworkLink, NetworkPath>> inactiveLinks = new HashSet<>();
 	private final Set<NetworkPath> inactivePaths = new HashSet<>();
 	
-	private final List<Modulation> modulations = new ArrayList<Modulation>();
+	private final List<Modulation> modulations = new ArrayList<>();
 	private MetricType modulationMetricType;
 	private final int[][] modulationMetrics = new int[6][6];
 	
@@ -36,7 +36,7 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	private RMSAAlgorithm demandAllocationAlgorithm;
 	private int bestPathsCount;
 	private boolean canSwitchModulation;
-	private final ArrayList<Demand> allocatedDemands = new ArrayList<Demand>();
+	private final ArrayList<Demand> allocatedDemands = new ArrayList<>();
 	
 	public int maxPathsCount;
 	
@@ -92,11 +92,7 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	
 	private boolean addNodeToGroup(String groupName, NetworkNode node) {
 		if (!contains(node)) return false;
-		List<NetworkNode> group = nodesGroups.get(groupName);
-		if (group == null) {
-			group = new ArrayList<NetworkNode>();
-			nodesGroups.put(groupName, group);
-		}
+		List<NetworkNode> group = nodesGroups.computeIfAbsent(groupName, k -> new ArrayList<>());
 		if (group.contains(node)) return false;
 		group.add(node);
 		return true;
@@ -157,9 +153,9 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 				if (Math.abs(path.indexOf(relation.nodeA) - path.indexOf(relation.nodeB)) == 1)
 					inactivePaths.add(path);
 		
-		Set<Demand> working = new HashSet<Demand>();
-		Set<Demand> backup = new HashSet<Demand>();
-		Set<Demand> result = new HashSet<Demand>();
+		Set<Demand> working = new HashSet<>();
+		Set<Demand> backup = new HashSet<>();
+		Set<Demand> result = new HashSet<>();
 		for (SpectrumSegment segment : link.getLink().slicesDown.getSegments())
 			if (segment instanceof WorkingSpectrumSegment) working.add(((WorkingSpectrumSegment) segment).getOwner());
 			else if (segment instanceof BackupSpectrumSegment) backup.addAll(((BackupSpectrumSegment) segment).getDemands());
@@ -229,7 +225,7 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	}
 	
 	public List<Modulation> getAllowedModulations() {
-		return new ArrayList<Modulation>(modulations);
+		return new ArrayList<>(modulations);
 	}
 	
 	// REGENERATORS
@@ -265,19 +261,19 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	
 	@Override
 	public Map<String, Object> serialize() {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		List<NetworkNode> nodes = getNodes();
 		map.put("nodes", nodes);
-		Map<List<String>, NetworkLink> links = new HashMap<List<String>, NetworkLink>();
+		Map<List<String>, NetworkLink> links = new HashMap<>();
 		for (int i = 0; i < nodes.size(); i++)
 			for (int j = i + 1; j < nodes.size(); j++)
 				if (containsLink(nodes.get(i), nodes.get(j)))
 					links.put(Arrays.asList(nodes.get(i).getName(), nodes.get(j).getName()),
 							getLink(nodes.get(i), nodes.get(j)));
 		map.put("links", links);
-		Map<String, List<String>> groups = new HashMap<String, List<String>>();
+		Map<String, List<String>> groups = new HashMap<>();
 		for (Entry<String, List<NetworkNode>> group : nodesGroups.entrySet()) {
-			groups.put(group.getKey(), new ArrayList<String>());
+			groups.put(group.getKey(), new ArrayList<>());
 			for (NetworkNode node : group.getValue())
 				groups.get(group.getKey()).add(node.getName());
 		}

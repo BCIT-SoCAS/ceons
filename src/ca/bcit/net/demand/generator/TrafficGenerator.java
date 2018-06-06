@@ -74,7 +74,7 @@ public class TrafficGenerator implements DemandStream<Demand>, YamlSerializable 
 	
 	@Override
 	public Map<String, Object> serialize() {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		
 		map.put("name", name);
 		map.put("generators", generators);

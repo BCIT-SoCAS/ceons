@@ -36,7 +36,7 @@ public class MNC extends RMSAAlgorithm {
 		
 		path: for (PartedPath path : candidatePaths)
 			path.setMetric(mnc(network, path, demand));
-		Collections.sort(candidatePaths, (p1, p2) -> Double.compare(p2.getMetric(), p1.getMetric()));
+		candidatePaths.sort((p1, p2) -> Double.compare(p2.getMetric(), p1.getMetric()));
 		
 		boolean workingPathSuccess = false;
 		for (PartedPath path : candidatePaths)
@@ -61,7 +61,7 @@ public class MNC extends RMSAAlgorithm {
 			
 			path: for (PartedPath path : candidatePaths)
 				path.setMetric(mnc(network, path, demand));
-			Collections.sort(candidatePaths, (p1, p2) -> Double.compare(p2.getMetric(), p1.getMetric()));
+			candidatePaths.sort((p1, p2) -> Double.compare(p2.getMetric(), p1.getMetric()));
 			
 			for (PartedPath path : candidatePaths)
 				if (demand.allocate(network, path)) return new DemandAllocationResult(demand.getWorkingPath(), demand.getBackupPath());

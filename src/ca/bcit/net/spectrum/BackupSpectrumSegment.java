@@ -15,13 +15,13 @@ public class BackupSpectrumSegment extends AllocatableSpectrumSegment {
 	
 	public BackupSpectrumSegment(int offset, int length, Demand demand) {
 		super(new IntegerRange(offset, length));
-		demands = new HashSet<Demand>();
+		demands = new HashSet<>();
 		demands.add(demand);
 	}
 	
 	public BackupSpectrumSegment(IntegerRange range, Demand demand) {
 		super(range);
-		demands = new HashSet<Demand>();
+		demands = new HashSet<>();
 		demands.add(demand);
 	}
 
@@ -78,7 +78,7 @@ public class BackupSpectrumSegment extends AllocatableSpectrumSegment {
 	public BackupSpectrumSegment allocate(IntegerRange range, SpectrumSegment other) {
 		if (other.getType() == FreeSpectrumSegment.TYPE) return clone(range);
 		else if (other.getType() == BackupSpectrumSegment.TYPE) {
-			Set<Demand> demands = new HashSet<Demand>(((BackupSpectrumSegment) other).demands);
+			Set<Demand> demands = new HashSet<>(((BackupSpectrumSegment) other).demands);
 			demands.addAll(this.demands);
 			return new BackupSpectrumSegment(range, demands);
 		} else throw new SpectrumException("BackupSpectrumSegment can only be allocated on FREE or disjoint BACKUP segments");
@@ -89,7 +89,7 @@ public class BackupSpectrumSegment extends AllocatableSpectrumSegment {
 		if (!demands.contains(demand)) throw new SpectrumException("Tried do deallocate segment with demand that is not its owner.");
 		if (demands.size() == 1) return new FreeSpectrumSegment(range);
 		else {
-			Set<Demand> demands = new HashSet<Demand>(this.demands);
+			Set<Demand> demands = new HashSet<>(this.demands);
 			demands.remove(demand);
 			return new BackupSpectrumSegment(range, demands);
 		}
@@ -103,10 +103,10 @@ public class BackupSpectrumSegment extends AllocatableSpectrumSegment {
 			BackupSpectrumSegment castedOther = (BackupSpectrumSegment) other;
 			Set<Demand> demands;
 			if (castedOther.demands.size() > this.demands.size()) {
-				demands = new HashSet<Demand>(castedOther.demands);
+				demands = new HashSet<>(castedOther.demands);
 				demands.addAll(this.demands);
 			} else {
-				demands = new HashSet<Demand>(this.demands);
+				demands = new HashSet<>(this.demands);
 				demands.addAll(castedOther.demands);
 			}
 			return new BackupSpectrumSegment(range, demands);

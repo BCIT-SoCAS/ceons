@@ -36,8 +36,8 @@ public class TaskReadyProgressBar extends StackPane {
 	public void runTask(Task<?> task, boolean daemon) {
 		bind(task);
 		task.setOnSucceeded(e -> onSucceeded());
-		task.setOnFailed(e -> onFailed(e));
-		task.setOnCancelled(e -> onCancelled(e));
+		task.setOnFailed(this::onFailed);
+		task.setOnCancelled(this::onCancelled);
 		Thread thread = new Thread(task);
 		thread.setDaemon(daemon);
 		thread.start();

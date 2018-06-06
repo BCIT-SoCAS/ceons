@@ -4,13 +4,14 @@ import ca.bcit.net.spectrum.AllocatableSpectrumSegment;
 import ca.bcit.net.spectrum.Spectrum;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class PathPart {
 	NetworkNode source;
 	private NetworkNode destination;
 	private int length;
 	
-	public final ArrayList<Spectrum> spectra = new ArrayList<Spectrum>(); // TODO Should not be public
+	public final ArrayList<Spectrum> spectra = new ArrayList<>(); // TODO Should not be public
 	AllocatableSpectrumSegment segment;
 	
 	private Modulation modulation;
@@ -20,7 +21,7 @@ public class PathPart {
 		this.source = source;
 		this.destination = destination;
 		this.length = length;
-		for (Spectrum s : spectra) this.spectra.add(s);
+		Collections.addAll(this.spectra, spectra);
 	}
 	
 	public PathPart merge(PathPart other) {

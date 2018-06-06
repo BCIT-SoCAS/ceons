@@ -35,7 +35,7 @@ public class MappedRandomVariable<E> extends RandomVariable<E> implements YamlSe
 
 		@Override
 		public Map<String, Object> serialize() {
-			Map<String, Object> map = new HashMap<String, Object>();
+			Map<String, Object> map = new HashMap<>();
 			map.put("probability", probability);
 			map.put("value", value);
 			return map;
@@ -56,7 +56,7 @@ public class MappedRandomVariable<E> extends RandomVariable<E> implements YamlSe
 	}
 	
 	public List<E> values() {
-		List<E> values = new ArrayList<E>();
+		List<E> values = new ArrayList<>();
 		for (Entry<E> entry : this.entries) values.add(entry.getValue());
 		return values;
 	}
@@ -73,7 +73,7 @@ public class MappedRandomVariable<E> extends RandomVariable<E> implements YamlSe
 	
 	@Override
 	public Map<String, Object> serialize() {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("distribution", entries);
 		return map;
 	}

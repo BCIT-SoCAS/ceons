@@ -86,8 +86,7 @@ public class FloatMatrix implements Cloneable {
 	public FloatMatrix clone() {
 		float[][] matrix = new float[rows()][columns()];
 		
-		for (int i = 0; i < rows(); i++) for (int j = 0; j < columns(); j++)
-			matrix[i][j] = this.matrix[i][j];
+		for (int i = 0; i < rows(); i++) System.arraycopy(this.matrix[i], 0, matrix[i], 0, columns());
 		
 		return new FloatMatrix(matrix);
 	}

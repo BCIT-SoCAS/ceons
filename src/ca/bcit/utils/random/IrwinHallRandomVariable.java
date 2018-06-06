@@ -46,7 +46,7 @@ public abstract class IrwinHallRandomVariable<N> extends RandomVariable<N> {
 		
 		@Override
 		public Map<String, Object> serialize() {
-			Map<String, Object> map = new HashMap<String, Object>();
+			Map<String, Object> map = new HashMap<>();
 
 			map.put("rank", rank);
 			map.put("offset", offset);

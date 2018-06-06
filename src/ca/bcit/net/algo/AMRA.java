@@ -71,11 +71,7 @@ public class AMRA extends RMSAAlgorithm {
 
 				return new DemandAllocationResult(demand.getWorkingPath());
 			}
-		} catch (CPUException cpu) {
-			return new DemandAllocationResult(demand.getWorkingPath());
-		} catch (MemoryException memory) {
-			return new DemandAllocationResult(demand.getWorkingPath());
-		} catch (StorageException storage) {
+		} catch (CPUException | MemoryException | StorageException exception) {
 			return new DemandAllocationResult(demand.getWorkingPath());
 		}
 

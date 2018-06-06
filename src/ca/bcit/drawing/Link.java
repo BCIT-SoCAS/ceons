@@ -49,7 +49,7 @@ public class Link extends Figure {
 		gc.setLineWidth(Node.imageSize / 2 - Node.imageSize / 12);
 		Vector2F temp = startPoint.subtract(endPoint).unit().multiply(Node.imageSize / 4f - Node.imageSize / 24f);
 		gc.setStroke(new LinearGradient(startPoint.getX() - temp.getY(), startPoint.getY() + temp.getX(), startPoint.getX() + temp.getY(), startPoint.getY() -temp.getX(), false, CycleMethod.NO_CYCLE,
-				new Stop[] {new Stop(0, Color.MAGENTA), new Stop(0.15f, Color.PURPLE), new Stop(0.85f, Color.PURPLE), new Stop(1f, Color.MAGENTA)}));
+				new Stop(0, Color.MAGENTA), new Stop(0.15f, Color.PURPLE), new Stop(0.85f, Color.PURPLE), new Stop(1f, Color.MAGENTA)));
 		gc.strokeLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
 		gc.setLineWidth(Node.imageSize / 2 - Node.imageSize / 4);
 		gc.setStroke(Color.WHITE);

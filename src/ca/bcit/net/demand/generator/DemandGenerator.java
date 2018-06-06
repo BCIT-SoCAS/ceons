@@ -70,7 +70,7 @@ public abstract class DemandGenerator<D extends Demand> implements DemandStream<
 	
 	@Override
 	public Map<String, Object> serialize() {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		
 		map.put("reallocate", reallocate);
 		map.put("allocateBackup", allocateBackup);

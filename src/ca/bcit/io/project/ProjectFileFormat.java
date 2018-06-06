@@ -10,7 +10,7 @@ import java.util.Map;
 
 public abstract class ProjectFileFormat<L, S> extends FileFormat2<Project, L, S> {
 
-	private static final Map<ExtensionFilter, ProjectFileFormat<?, ?>> projectFileFormats = new HashMap<ExtensionFilter, ProjectFileFormat<?,?>>();
+	private static final Map<ExtensionFilter, ProjectFileFormat<?, ?>> projectFileFormats = new HashMap<>();
 	
 	public static void registerFileFormat(ProjectFileFormat<?, ?> projectFileFormat) {
 		if (!projectFileFormats.containsKey(projectFileFormat.getExtensionFilter()))
@@ -22,6 +22,6 @@ public abstract class ProjectFileFormat<L, S> extends FileFormat2<Project, L, S>
 	}
 	
 	public static List<ExtensionFilter> getExtensionFilters() {
-		return new ArrayList<ExtensionFilter>(projectFileFormats.keySet());
+		return new ArrayList<>(projectFileFormats.keySet());
 	}
 }

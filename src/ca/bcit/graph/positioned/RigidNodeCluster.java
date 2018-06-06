@@ -8,7 +8,7 @@ import java.util.HashSet;
 
 public class RigidNodeCluster<N extends PositionedNode> extends NodeCluster<N> {
 	
-	private final HashSet<N> cluster = new HashSet<N>();
+	private final HashSet<N> cluster = new HashSet<>();
 
 	@SuppressWarnings("unchecked")
 	public RigidNodeCluster(Graph<N, ? extends FixedLengthLink<?>, ?, ?> graph, N node1, N node2, N node3) {

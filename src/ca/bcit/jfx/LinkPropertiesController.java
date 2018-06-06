@@ -34,38 +34,30 @@ public class LinkPropertiesController implements Initializable {
     }
 
     private void addListenerToTextFieldLength() {
-        textFieldLength.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable,
-                                String oldValue, String newValue) {
-                actualLink = list.findFigureByName(textFieldName.getText());
-                int newLength=0;
-                try {
-                    newLength = Integer.parseInt(newValue);
-                }catch(NumberFormatException e)
-                {
-                }
-                if (newLength<0) {
-                    newLength=0;
-                    textFieldLength.setText("0");
-                }
-                ((Link) actualLink).setLength(newLength);
+        textFieldLength.textProperty().addListener((observable, oldValue, newValue) -> {
+            actualLink = list.findFigureByName(textFieldName.getText());
+            int newLength=0;
+            try {
+                newLength = Integer.parseInt(newValue);
+            }catch(NumberFormatException e)
+            {
             }
+            if (newLength<0) {
+                newLength=0;
+                textFieldLength.setText("0");
+            }
+            ((Link) actualLink).setLength(newLength);
         });
     }
 
     private void addListenerToTextFieldName() {
-        textFieldName.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable,
-                                String oldValue, String newValue) {
-                actualLink = list.findFigureByName(oldValue);
-                if (!list.containsFigureWithName(newValue)) {
-                    actualLink.setName(newValue);
-                }
-                //else
-                  //  textFieldName.setText(oldValue);
+        textFieldName.textProperty().addListener((observable, oldValue, newValue) -> {
+            actualLink = list.findFigureByName(oldValue);
+            if (!list.containsFigureWithName(newValue)) {
+                actualLink.setName(newValue);
             }
+            //else
+              //  textFieldName.setText(oldValue);
         });
     }
 

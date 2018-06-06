@@ -34,7 +34,7 @@ public class UnicastDemand extends Demand {
 
 	@Override
 	public ArrayList<PartedPath> getCandidatePaths(boolean backup, Network network) {
-		ArrayList<PartedPath> paths = new ArrayList<PartedPath>();
+		ArrayList<PartedPath> paths = new ArrayList<>();
 		
 		if (backup)
 			for (NetworkPath path : network.getPaths(source, destination)) {

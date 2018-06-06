@@ -88,7 +88,7 @@ public class LightScanner {
 
 	public void skipString(String delimiter) {
 		@SuppressWarnings("unused")
-		StringBuffer buffer = new StringBuffer(delimiter.length());
+		StringBuilder buffer = new StringBuilder(delimiter.length());
 //		for (int i = 0; i < delimiter.length() && !)
 //		buffer.
 		//TODO finish light scanner

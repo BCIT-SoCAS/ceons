@@ -35,22 +35,15 @@ public class NodePropertiesController implements Initializable {
     private Figure actualNode;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        listView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if(newValue!=null) {
-                    list.setSelectedFigure(list.findFigureByName(newValue));
-                }
+        listView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue!=null) {
+                list.setSelectedFigure(list.findFigureByName(newValue));
             }
         });
-        textFieldName.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable,
-                                String oldValue, String newValue) {
-                actualNode = list.findFigureByName(oldValue);
-                if (!list.containsFigureWithName(newValue)) {
-                    actualNode.setName(newValue);
-                }
+        textFieldName.textProperty().addListener((observable, oldValue, newValue) -> {
+            actualNode = list.findFigureByName(oldValue);
+            if (!list.containsFigureWithName(newValue)) {
+                actualNode.setName(newValue);
             }
         });
     }

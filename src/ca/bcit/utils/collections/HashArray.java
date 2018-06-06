@@ -99,7 +99,7 @@ public class HashArray<E> implements Collection<E> {
 	}
 	
 	public void rehash() {
-		ArrayList<Object> container = new ArrayList<Object>();
+		ArrayList<Object> container = new ArrayList<>();
 		for (int i = 0; i < capacity(); i++) 
 			if (contains(i)) {
 				container.add(array[i]);
@@ -150,6 +150,6 @@ public class HashArray<E> implements Collection<E> {
 
 	@Override
 	public Iterator<E> iterator() {
-		return new HashArrayIterator<E>(this);
+		return new HashArrayIterator<>(this);
 	}
 }

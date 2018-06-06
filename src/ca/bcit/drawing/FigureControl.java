@@ -10,7 +10,7 @@ import javafx.scene.canvas.Canvas;
 import java.util.ArrayList;
 
 public class FigureControl {
-	private final ArrayList<Figure> list = new ArrayList<Figure>();
+	private final ArrayList<Figure> list = new ArrayList<>();
 	private int nodeAmmount;
 	private int linkAmmount;
 	private final Canvas canvas;

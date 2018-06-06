@@ -121,7 +121,7 @@ public class Console extends TextArea {
 		out = new PrintStream(outputStream);
 		in = new LightScanner(inputStream);
 		setEditable(false);
-		addEventFilter(KeyEvent.KEY_PRESSED, e -> onKeyPress(e));
+		addEventFilter(KeyEvent.KEY_PRESSED, this::onKeyPress);
 	}
 	
 	private void appendCharacter(char character) {

@@ -1,7 +1,4 @@
 /**
- * 
- */
-/**
  * @author Krzysztof Romanowicz & Mateusz Blazejewski
  *
  */

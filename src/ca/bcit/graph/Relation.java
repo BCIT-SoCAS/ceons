@@ -10,7 +10,7 @@ public class Relation<N, L, P extends Path<N>> {
 	public final N nodeA;
 	public final N nodeB;
 	L link;
-	final List<Path<N>> paths = new InsertionSortList<Path<N>>();
+	final List<Path<N>> paths = new InsertionSortList<>();
 	
 	Relation(N nodeA, N nodeB) {
 		if (nodeA.equals(nodeB)) throw new GraphException("A node cannot have a relation with itself!");

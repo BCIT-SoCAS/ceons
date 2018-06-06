@@ -26,11 +26,11 @@ public class ResizableCanvas extends Canvas {
 
 	public ResizableCanvas() {
 		list = new FigureControl(this);
-		setOnMouseClicked((e)->canvasOnMouseClicked(e));
-		setOnMouseDragged((e)->canvasOnMouseDragged(e));
-		setOnMousePressed((e)->canvasOnMousePressed(e));
-		setOnMouseReleased((e)->canvasOnMouseReleased(e));
-		setOnScroll((e)->canvasOnMouseScroll(e));	
+		setOnMouseClicked(this::canvasOnMouseClicked);
+		setOnMouseDragged(this::canvasOnMouseDragged);
+		setOnMousePressed(this::canvasOnMousePressed);
+		setOnMouseReleased(this::canvasOnMouseReleased);
+		setOnScroll(this::canvasOnMouseScroll);
 	}
 
 	private void canvasOnMousePressed(MouseEvent e) {

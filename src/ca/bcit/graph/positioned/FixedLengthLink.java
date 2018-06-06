@@ -23,9 +23,7 @@ public abstract class FixedLengthLink<T extends FixedLengthLink<T>> implements C
 
 	@Override
 	public int compareTo(T other) {
-		if (length < other.length) return -1;
-		else if (length == other.length) return 0;
-		else return 1;
+		return Integer.compare(length, other.length);
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -35,7 +33,7 @@ public abstract class FixedLengthLink<T extends FixedLengthLink<T>> implements C
 	
 	@Override
 	public Map<String, Object> serialize() {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("length", length);
 		return map;
 	}

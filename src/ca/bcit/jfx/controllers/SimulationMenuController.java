@@ -50,7 +50,7 @@ public class SimulationMenuController {
 			} catch (IllegalArgumentException | IllegalAccessException e) {
 				throw new RuntimeException(e);
 			}
-		algorithms.setItems(new ObservableListWrapper<RMSAAlgorithm>(new ArrayList<RMSAAlgorithm>(RMSAAlgorithm.getRegisteredAlgorithms())));
+		algorithms.setItems(new ObservableListWrapper<>(new ArrayList<>(RMSAAlgorithm.getRegisteredAlgorithms())));
 		
 		modulations = new CheckBox[Modulation.values().length];
 		for (Modulation modulation : Modulation.values())
@@ -72,7 +72,7 @@ public class SimulationMenuController {
 	}
 
 	public List<Modulation> getModulations() {
-		List<Modulation> modulations = new ArrayList<Modulation>();
+		List<Modulation> modulations = new ArrayList<>();
 		for (Modulation modulation : Modulation.values()) if (this.modulations[modulation.ordinal()].isSelected())
 			modulations.add(modulation);
 		return modulations;

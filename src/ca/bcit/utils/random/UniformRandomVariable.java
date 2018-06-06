@@ -20,12 +20,12 @@ public abstract class UniformRandomVariable<E> extends RandomVariable<E> {
 		
 		public Generic(long seed, Collection<T> objects) {
 			super(seed);
-			this.objects = new ArrayList<T>(objects);
+			this.objects = new ArrayList<>(objects);
 		}
 		
 		public Generic(Collection<T> objects) {
 			super();
-			this.objects = new ArrayList<T>(objects);
+			this.objects = new ArrayList<>(objects);
 		}
 
 		@Override
@@ -40,7 +40,7 @@ public abstract class UniformRandomVariable<E> extends RandomVariable<E> {
 		
 		@Override
 		public Map<String, Object> serialize() {
-			Map<String, Object> map = new HashMap<String, Object>();
+			Map<String, Object> map = new HashMap<>();
 			map.put("values", objects);
 			return map;
 		}

@@ -84,13 +84,13 @@ public class YamlConfiguration {
 		String[] splittedPath = path.split("\\.");
 		if (splittedPath.length == 0) splittedPath = new String[] {path};
 		Object result = config;
-		for (int i = 0; i < splittedPath.length; i++)
-			if (result instanceof Map) result = ((Map) result).get(splittedPath[i]);
+		for (String aSplittedPath : splittedPath)
+			if (result instanceof Map) result = ((Map) result).get(aSplittedPath);
 			else if (result instanceof List)
 				try {
-					result = ((List) result).get(Integer.parseInt(splittedPath[i]));
+					result = ((List) result).get(Integer.parseInt(aSplittedPath));
 				} catch (NumberFormatException e) {
-					if (splittedPath[i].equals("size")) return (T) new Integer(((List) result).size());
+					if (aSplittedPath.equals("size")) return (T) new Integer(((List) result).size());
 					throw e;
 				}
 		return (T) result;

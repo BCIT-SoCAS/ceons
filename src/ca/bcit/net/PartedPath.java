@@ -19,7 +19,7 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 
 	final NetworkPath path;
 	private final boolean isUp;
-	private final ArrayList<PathPart> parts = new ArrayList<PathPart>();
+	private final ArrayList<PathPart> parts = new ArrayList<>();
 	private double occupiedRegeneratorsPercentage;
 	double occupiedCPU;
 	double occupiedMemory;
@@ -188,9 +188,7 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 
 	@Override
 	public int compareTo(PartedPath other) {
-		if (metric < other.metric) return -1;
-		else if (metric == other.metric) return 0;
-		else return 1;
+		return Double.compare(metric, other.metric);
 	}
 	
 	private static class PartedPathLengthComparator implements Comparator<PartedPath> {

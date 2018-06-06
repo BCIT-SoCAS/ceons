@@ -15,8 +15,8 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 	
 	@SuppressWarnings("unchecked")
 	protected Graph(PathBuilder<N, P, G> pathBuilder) {
-		nodes = new IdentifiableSet<N>();
-		relations = new HashArray<Relation<N, L, P>>(1);
+		nodes = new IdentifiableSet<>();
+		relations = new HashArray<>(1);
 		this.pathBuilder = pathBuilder;
 		pathBuilder.graph = (G) this;
 	}
@@ -30,14 +30,14 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 		relations.resize(getNodesPairsCount());
 		for (N n : nodes)
 			if (node != n) {
-				Relation<N, L, P> relation = new Relation<N, L, P>(n, node);
+				Relation<N, L, P> relation = new Relation<>(n, node);
 				relations.add(relation);
 			}
 		return true;
 	}
 	
 	public List<N> getNodes() {
-		return new ArrayList<N>(nodes);
+		return new ArrayList<>(nodes);
 	}
 	
 	public boolean removeNode(N node) {
@@ -93,7 +93,7 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 	}
 	
 	private ArrayList<L> getConnectedLinks(N node) {
-		ArrayList<L> links = new ArrayList<L>();
+		ArrayList<L> links = new ArrayList<>();
 		
 		for (N n : nodes)
 			if (n != node) {
@@ -105,7 +105,7 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 	}
 	
 	public ArrayList<N> getAdjacentNodes(N node) {
-		ArrayList<N> nodes = new ArrayList<N>();
+		ArrayList<N> nodes = new ArrayList<>();
 		
 		for (N n : this.nodes)
 			if (n != node) {
@@ -117,7 +117,7 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 	}
 	
 	public List<L> getLinks() {
-		List<L> links = new ArrayList<L>();
+		List<L> links = new ArrayList<>();
 		for (Relation<N, L, P> relation : relations)
 			if (relation.hasLink())
 				links.add(relation.link);

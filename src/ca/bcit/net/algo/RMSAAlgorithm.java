@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 public abstract class RMSAAlgorithm {
 	
-	private static final HashMap<String, RMSAAlgorithm> registeredAlgorithms = new HashMap<String, RMSAAlgorithm>();
+	private static final HashMap<String, RMSAAlgorithm> registeredAlgorithms = new HashMap<>();
 	
 	static {
 		registerAlgorithm(new AMRA());

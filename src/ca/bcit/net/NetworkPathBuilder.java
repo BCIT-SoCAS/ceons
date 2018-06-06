@@ -10,7 +10,7 @@ public class NetworkPathBuilder extends PathBuilder<NetworkNode, NetworkPath, Ne
 	
 	@Override
 	public void init() {
-		path = new ArrayList<NetworkNode>();
+		path = new ArrayList<>();
 	}
 
 	@Override

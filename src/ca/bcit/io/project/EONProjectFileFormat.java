@@ -39,12 +39,12 @@ public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
 				modulation.slicesConsumption[i] = modulations.get(modulation + ".consumptions." + i);
 			}
 		
-		List<TrafficGenerator> trafficGenerators = new ArrayList<TrafficGenerator>();
+		List<TrafficGenerator> trafficGenerators = new ArrayList<>();
 		for (String generatorFileName : (List<String>) projectConfig.get("generators"))
 			trafficGenerators.add(new YamlConfiguration(zip.getInputStream(zip.getEntry(generatorFileName))).get(""));
 		
 		zip.close();
-		return new EONProject(file, network, new ArrayList<TrafficGenerator>());
+		return new EONProject(file, network, new ArrayList<>());
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
 		YamlConfiguration projectConfig = new YamlConfiguration();
 		projectConfig.put("topology", "topology.yml");
 		projectConfig.put("modulations", "modulations.yml");
-		List<String> generatorsNames = new ArrayList<String>();
+		List<String> generatorsNames = new ArrayList<>();
 		for (TrafficGenerator generator : data.getTrafficGenerators()) generatorsNames.add(generator.getName() + ".yml");
 		projectConfig.put("generators", generatorsNames);
 		zip.putNextEntry(new ZipEntry("project.yml"));
