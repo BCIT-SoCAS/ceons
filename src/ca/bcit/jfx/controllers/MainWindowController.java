@@ -83,7 +83,7 @@ public class MainWindowController  {
 		}
 		
 		graph.init(this);
-		simulationMenuController.setProgressBar(progressBar); // TODO Fujjjjjj...
+		simulationMenuController.setProgressBar(progressBar);
 	}
 	public void loadProperties(Figure fig, FigureControl list)
 	{
@@ -123,7 +123,7 @@ public class MainWindowController  {
         TitledPane properties = new TitledPane();
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/LinkProperties.fxml"));
         try {
-            properties = (TitledPane) fxmlLoader.load();
+            properties = fxmlLoader.load();
         } catch (IOException e1) {
             e1.printStackTrace();
         }

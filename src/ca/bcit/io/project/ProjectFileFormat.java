@@ -1,6 +1,6 @@
 package ca.bcit.io.project;
 
-import ca.bcit.io.FileFormat2;
+import ca.bcit.io.FileFormat;
 import javafx.stage.FileChooser.ExtensionFilter;
 
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class ProjectFileFormat<L, S> extends FileFormat2<Project, L, S> {
+public abstract class ProjectFileFormat<L, S> extends FileFormat<Project, L, S> {
 
 	private static final Map<ExtensionFilter, ProjectFileFormat<?, ?>> projectFileFormats = new HashMap<>();
 	

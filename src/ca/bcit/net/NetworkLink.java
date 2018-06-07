@@ -7,7 +7,6 @@ import java.util.Map;
 
 /**
  * Network link
- * Currently, has 320 slices
  *
  */
 public class NetworkLink extends FixedLengthLink<NetworkLink> {

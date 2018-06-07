@@ -10,11 +10,8 @@ import javafx.scene.paint.Color;
  */
 public abstract class Figure {
 
-	private Image image;
 	Vector2F startPoint;
 	String name;
-
-	protected static final float sizeOfOutline = 8;
 
 	Figure(Vector2F _startPoint, String _name) {
 		startPoint = _startPoint;
@@ -27,11 +24,6 @@ public abstract class Figure {
 	}
 
 	public abstract void draw(GraphicsContext gc);
-
-
-	public Image getImage() {
-		return image;
-	}
 
 	public Vector2F getStartPoint() {
 		return startPoint;

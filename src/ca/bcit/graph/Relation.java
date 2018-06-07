@@ -53,10 +53,4 @@ public class Relation<N, L, P extends Path<N>> {
 		return hashCode() == obj.hashCode();
 	}
 	
-	public void print() { // TODO remove
-		System.out.println(nodeA + ":=:" + nodeB + " - " + (hasLink() ? "link " : "nolink ") + "{");
-//		for (Path path : paths)
-//			System.out.println("    " + path);
-		System.out.println("}");
-	}
 }

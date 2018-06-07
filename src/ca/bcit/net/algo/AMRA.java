@@ -41,22 +41,12 @@ public class AMRA extends RMSAAlgorithm {
 					break;
 				}
 
-		} catch (CPUException cpu) {
-			workingPathSuccess = false;
-			return DemandAllocationResult.NO_CPU;
-		} catch (MemoryException memory) {
-			workingPathSuccess = false;
-			return DemandAllocationResult.NO_MEMORY;
-		} catch (StorageException storage) {
-			workingPathSuccess = false;
-			return DemandAllocationResult.NO_STORAGE;
 		} catch (NetworkException storage) {
 			workingPathSuccess = false;
 			return DemandAllocationResult.NO_REGENERATORS;
 		}
 		if (!workingPathSuccess)
 			return DemandAllocationResult.NO_SPECTRUM;
-		try {
 			if (demand.allocateBackup()) {
 				volume = (int) Math.ceil(demand.getSqueezedVolume() / 10) - 1;
 
@@ -71,9 +61,6 @@ public class AMRA extends RMSAAlgorithm {
 
 				return new DemandAllocationResult(demand.getWorkingPath());
 			}
-		} catch (CPUException | MemoryException | StorageException exception) {
-			return new DemandAllocationResult(demand.getWorkingPath());
-		}
 
 		return new DemandAllocationResult(demand.getWorkingPath());
 	}

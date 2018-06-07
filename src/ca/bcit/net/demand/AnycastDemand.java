@@ -11,8 +11,8 @@ public abstract class AnycastDemand extends Demand {
 	
 	public static class Upstream extends AnycastDemand {
 		
-		public Upstream(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl, boolean replicaPreservation, int cpu, int memory, int storage) {
-			super(client, reallocate, allocateBackup, volume, squeezeRatio, ttl, replicaPreservation, cpu, memory, storage);
+		public Upstream(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl, boolean replicaPreservation) {
+			super(client, reallocate, allocateBackup, volume, squeezeRatio, ttl, replicaPreservation);
 		}
 		
 		@Override
@@ -57,12 +57,12 @@ public abstract class AnycastDemand extends Demand {
 
 	public static class Downstream extends AnycastDemand {
 
-		public Downstream(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, int squeezedVolume, int ttl, boolean replicaPreservation, int cpu, int memory, int storage) {
-			super(client, reallocate, allocateBackup, volume, squeezedVolume, ttl, replicaPreservation, cpu, memory, storage);
+		public Downstream(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, int squeezedVolume, int ttl, boolean replicaPreservation) {
+			super(client, reallocate, allocateBackup, volume, squeezedVolume, ttl, replicaPreservation);
 		}
 
-		public Downstream(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl, boolean replicaPreservation, int cpu, int memory, int storage) {
-			super(client, reallocate, allocateBackup, volume, squeezeRatio, ttl, replicaPreservation, cpu, memory, storage);
+		public Downstream(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl, boolean replicaPreservation) {
+			super(client, reallocate, allocateBackup, volume, squeezeRatio, ttl, replicaPreservation);
 		}
 		
 		@Override
@@ -107,23 +107,19 @@ public abstract class AnycastDemand extends Demand {
 	
 	final NetworkNode client;
 	final boolean replicaPreservation;
-	
-	AnycastDemand(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, int squeezedVolume, int ttl, boolean replicaPreservation, int cpu, int memory, int storage) {
-		super(reallocate, allocateBackup, volume, squeezedVolume, ttl, cpu, memory, storage);
+
+	public AnycastDemand(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, int squeezedVolume, int ttl, boolean replicaPreservation) {
+		super(reallocate, allocateBackup, volume, squeezedVolume, ttl);
 		this.client = client;
 		this.replicaPreservation = replicaPreservation;
 	}
-	
-	AnycastDemand(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl, boolean replicaPreservation, int cpu, int memory, int storage) {
-		super(reallocate, allocateBackup, volume, squeezeRatio, ttl, cpu, memory, storage);
+
+	public AnycastDemand(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl, boolean replicaPreservation) {
+		super(reallocate, allocateBackup, volume, squeezeRatio, ttl);
 		this.client = client;
 		this.replicaPreservation = replicaPreservation;
 	}
-	
-	public NetworkNode getClient() {
-		return client;
-	}
-	
+
 	@Override
 	public String toString() {
 		return "AnycastDemand {client: " + client + ", volume: " + getVolume() + ", ttl: " + getTTL() + "}";

@@ -23,7 +23,7 @@ import java.util.List;
 
 public class SimulationMenuController {
 	
-	public static ComboBox<TrafficGenerator> generatorsStatic; // TODO ;_;
+	public static ComboBox<TrafficGenerator> generatorsStatic;
 	
 	@FXML private ComboBox<TrafficGenerator> generators;
 	@FXML private UIntField erlang;
@@ -41,7 +41,7 @@ public class SimulationMenuController {
 	@FXML private UIntField regeneratorsMetricValue;
 	private CheckBox[] modulations;
 
-	public static TaskReadyProgressBar progressBar; // TODO ;_;
+	public static TaskReadyProgressBar progressBar;
 	
 	@FXML public void initialize() {
 		for (Field field : MainWindowController.class.getDeclaredFields()) if (field.isAnnotationPresent(FXML.class))
@@ -61,39 +61,8 @@ public class SimulationMenuController {
 	
 	void setProgressBar(TaskReadyProgressBar progressBar) {
 		SimulationMenuController.progressBar = progressBar;
-	} // TODO Ugly way of doing that...
-	
-	public RMSAAlgorithm getAlgorithm() {
-		return algorithms.getValue();
-	}
-
-	public boolean getAllowModulationChange() {
-		return allowModulationChange.isSelected();
-	}
-
-	public List<Modulation> getModulations() {
-		List<Modulation> modulations = new ArrayList<>();
-		for (Modulation modulation : Modulation.values()) if (this.modulations[modulation.ordinal()].isSelected())
-			modulations.add(modulation);
-		return modulations;
-	}
-
-	public MetricType getRegeneratorsMetric() {
-		return MetricType.valueOf2(((RadioButton) regeneratorsMetric.getSelectedToggle()).getText());
 	}
 	
-	public MetricType getModulationMetric() {
-		return MetricType.valueOf2(((RadioButton) modulationMetric.getSelectedToggle()).getText());
-	}
-	
-	public int getCandidatePathsCount() {
-		return bestPaths.getValue();
-	}
-	
-	public int getRegeneratorsMetricValue() {
-		return regeneratorsMetricValue.getValue();
-	}
-
 	@FXML public void startSimulationAction(ActionEvent e) {
 		Network network = ApplicationResources.getProject().getNetwork();
 		

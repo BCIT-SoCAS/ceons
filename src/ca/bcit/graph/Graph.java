@@ -51,10 +51,6 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 		return true;
 	}
 	
-	public int getNodesCount() {
-		return nodes.size();
-	}
-
 	protected L putLink(N nodeA, N nodeB, L link) {
 		if (!nodes.contains(nodeA)) addNode(nodeA);
 		if (!nodes.contains(nodeB)) addNode(nodeB);
@@ -76,34 +72,13 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 		return relation.link;
 	}
 
-	public L removeLink(N nodeA, N nodeB) {
-		Relation<N, L, P> relation = relations.get(Relation.hash(nodeA.hashCode(), nodeB.hashCode()));
-		L oldLink = relation.link;
-		relation.link = null;
-		if (getConnectedLinks(nodeA).size() == 0) removeNode(nodeA);
-		if (getConnectedLinks(nodeB).size() == 0) removeNode(nodeB);
-		return oldLink;
-	}
-	
 	@SuppressWarnings("unchecked")
 	public List<P> getPaths(N nodeA, N nodeB) {
 		Relation<N, L, P> relation = relations.get(Relation.hash(nodeA.hashCode(), nodeB.hashCode()));
 		if (relation == null) return null;
 		return (List<P>) relation.paths;
 	}
-	
-	private ArrayList<L> getConnectedLinks(N node) {
-		ArrayList<L> links = new ArrayList<>();
-		
-		for (N n : nodes)
-			if (n != node) {
-				L link = getLink(n, node);
-				if (link != null) links.add(link);
-			}
-		
-		return links;
-	}
-	
+
 	public ArrayList<N> getAdjacentNodes(N node) {
 		ArrayList<N> nodes = new ArrayList<>();
 		
@@ -115,16 +90,8 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 		
 		return nodes;
 	}
-	
-	public List<L> getLinks() {
-		List<L> links = new ArrayList<>();
-		for (Relation<N, L, P> relation : relations)
-			if (relation.hasLink())
-				links.add(relation.link);
-		return links;
-	}
 
-	public int getNodesPairsCount() { // TODO only for testing
+	public int getNodesPairsCount() {
 		return nodes.size() * (nodes.size() - 1) / 2;
 	}
 	

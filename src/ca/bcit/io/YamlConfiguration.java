@@ -17,19 +17,9 @@ public class YamlConfiguration {
 	private static final Yaml PARSER = new Yaml();
 	private Object config;
 	
-	public YamlConfiguration(File file) throws FileNotFoundException {
-		this(new FileInputStream(file));
-	}
-
 	public YamlConfiguration(InputStream stream) {
 		config = deserializeAll(PARSER.load(stream));
 	}
-
-	@SuppressWarnings("rawtypes")
-	public YamlConfiguration(Map map) {
-		config = map;
-	}
-
 	@SuppressWarnings("rawtypes")
 	public YamlConfiguration() {
 		config = new HashMap();
@@ -145,10 +135,6 @@ public class YamlConfiguration {
 		else throw new YAMLException("Tried to remove a value from an unexisting container!");
 	}
 
-	public void save(File file) throws IOException {
-		PARSER.dump(serializeAll(config), new FileWriter(file));
-	}
-	
 	public void save(Writer output) {
 		PARSER.dump(serializeAll(config), output);
 	}

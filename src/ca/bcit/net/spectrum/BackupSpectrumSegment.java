@@ -19,12 +19,6 @@ public class BackupSpectrumSegment extends AllocatableSpectrumSegment {
 		demands.add(demand);
 	}
 	
-	public BackupSpectrumSegment(IntegerRange range, Demand demand) {
-		super(range);
-		demands = new HashSet<>();
-		demands.add(demand);
-	}
-
 	private BackupSpectrumSegment(IntegerRange range, Set<Demand> demands) {
 		super(range);
 		this.demands = demands;
@@ -61,7 +55,7 @@ public class BackupSpectrumSegment extends AllocatableSpectrumSegment {
 	public boolean isDisjoint(Demand demand) {
 		for (Demand other : demands)
 			if (!demand.isDisjoint(other))
-				return false; // TODO Compare collections of links instead...
+				return false;
 		return true;
 	}
 
@@ -69,7 +63,7 @@ public class BackupSpectrumSegment extends AllocatableSpectrumSegment {
 	public boolean canAllocate(SpectrumSegment other) {
 		if (other.getType() == FreeSpectrumSegment.TYPE) return true;
 		else if (other.getType() == BackupSpectrumSegment.TYPE) {
-			for (Demand demand1 : demands) for (Demand demand2 : ((BackupSpectrumSegment) other).demands) if (!demand1.isDisjoint(demand2)) return false; // TODO Compare collections of links instead...
+			for (Demand demand1 : demands) for (Demand demand2 : ((BackupSpectrumSegment) other).demands) if (!demand1.isDisjoint(demand2)) return false;
 			return true;
 		} else return false;
 	}

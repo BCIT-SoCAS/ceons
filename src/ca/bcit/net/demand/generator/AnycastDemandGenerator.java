@@ -15,8 +15,8 @@ public class AnycastDemandGenerator extends DemandGenerator<AnycastDemand> {
 	private AnycastDemand downstream;
 	
 	public AnycastDemandGenerator(RandomVariable<NetworkNode> client, RandomVariable<Boolean> reallocate, RandomVariable<Boolean> allocateBackup, 
-			RandomVariable<Integer> volume, RandomVariable<Float> squeezeRatio, RandomVariable<Integer> cpu, RandomVariable<Integer> memory, RandomVariable<Integer> storage) {
-		super(reallocate, allocateBackup, volume, squeezeRatio, cpu, memory, storage);
+			RandomVariable<Integer> volume, RandomVariable<Float> squeezeRatio) {
+		super(reallocate, allocateBackup, volume, squeezeRatio);
 		this.client = client;
 	}
 	
@@ -43,11 +43,8 @@ public class AnycastDemandGenerator extends DemandGenerator<AnycastDemand> {
 			boolean reallocate = this.reallocate.next();
 			boolean allocateBackup = this.allocateBackup.next();
 			int ttl = this.ttl.next();
-			int cpu = this.cpu.next();
-			int memory = this.memory.next();
-			int storage = this.memory.next();
-			downstream = new AnycastDemand.Downstream(client, reallocate, allocateBackup, volume.next(), squeezeRatio.next(), ttl, replicaPreservation, cpu, memory, storage);
-			result = new AnycastDemand.Upstream(client, reallocate, allocateBackup, volume.next(), squeezeRatio.next(), ttl, replicaPreservation, cpu, memory, storage);
+			downstream = new AnycastDemand.Downstream(client, reallocate, allocateBackup, volume.next(), squeezeRatio.next(), ttl, replicaPreservation);
+			result = new AnycastDemand.Upstream(client, reallocate, allocateBackup, volume.next(), squeezeRatio.next(), ttl, replicaPreservation);
 		}
 		
 		generatedDemandsCount++;
@@ -59,7 +56,7 @@ public class AnycastDemandGenerator extends DemandGenerator<AnycastDemand> {
 		super(map);
 		client = (RandomVariable<NetworkNode>) map.get("client");
 	}
-	
+
 	@Override
 	public Map<String, Object> serialize() {
 		Map<String, Object> map = super.serialize();

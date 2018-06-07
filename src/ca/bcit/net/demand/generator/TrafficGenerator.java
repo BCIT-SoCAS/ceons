@@ -47,7 +47,7 @@ public class TrafficGenerator implements DemandStream<Demand>, YamlSerializable 
 	}
 	
 	@Override
-	public Demand next() { // TODO ;_;
+	public Demand next() {
 		Demand demand;
 		if (lastAnycast == null) {
 			DemandGenerator<?> generator = generators.next();
@@ -71,7 +71,7 @@ public class TrafficGenerator implements DemandStream<Demand>, YamlSerializable 
 		name = (String) map.get("name");
 		generators = (MappedRandomVariable<DemandGenerator<?>>) map.get("generators");
 	}
-	
+
 	@Override
 	public Map<String, Object> serialize() {
 		Map<String, Object> map = new HashMap<>();

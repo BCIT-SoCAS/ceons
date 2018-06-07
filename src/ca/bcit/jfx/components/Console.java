@@ -14,7 +14,7 @@ public class Console extends TextArea {
 	
 	public static final PrintStream cout = null;
 	public static final LightScanner cin = null;
-	
+
 	private static class ConsoleOutputStream extends OutputStream {
 
 		final Console console;

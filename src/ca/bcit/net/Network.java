@@ -205,7 +205,7 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	public void setModualtionMetricType(MetricType modulationMetricType) {
 		this.modulationMetricType = modulationMetricType;
 		if (modulationMetricType == MetricType.DYNAMIC)
-			for (int i = 0; i < 6; i++) // TODO RETHINK THAT
+			for (int i = 0; i < 6; i++)
 				for (int j = 0; j < 6; j++)
 					modulationMetrics[i][j] = j <= i ? i - j : j;
 	}

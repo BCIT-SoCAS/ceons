@@ -11,15 +11,15 @@ import java.util.ArrayList;
 
 public class FigureControl {
 	private final ArrayList<Figure> list = new ArrayList<>();
-	private int nodeAmmount;
-	private int linkAmmount;
+	private int nodeAmount;
+	private int linkAmount;
 	private final Canvas canvas;
 	private Figure selectedFigure;
 
 	public FigureControl(Canvas _canvas) {
 		canvas = _canvas;
-		nodeAmmount = 0;
-		linkAmmount = 0;
+		nodeAmount = 0;
+		linkAmount = 0;
 	}
 
 	public ArrayList<Figure> getList() {
@@ -34,8 +34,8 @@ public class FigureControl {
 				list.add(new Link((Link) fig));
 			}
 		}
-		nodeAmmount = temp.nodeAmmount;
-		linkAmmount = temp.linkAmmount;
+		nodeAmount = temp.nodeAmount;
+		linkAmount = temp.linkAmount;
 		canvas = temp.canvas;
 		selectedFigure = temp.selectedFigure;
 	}
@@ -44,7 +44,7 @@ public class FigureControl {
 
 		if (temp instanceof Node) {
 			list.add(temp);
-			nodeAmmount++;
+			nodeAmount++;
 		} else {
 			if (temp instanceof Link && isEnoughNodesForAddLink()) {
 				int closestNodeId=findClosestNode(temp.getStartPoint());
@@ -53,7 +53,7 @@ public class FigureControl {
 				p = fixLinkPoint(p);
 				temp.setStartPoint(p);
 				list.add(0, temp);
-				linkAmmount++;
+				linkAmount++;
 			}
 		}
 		redraw();
@@ -71,7 +71,6 @@ public class FigureControl {
 
 	public int findClosestNode(Vector2F temp) {
 		if(!isEmpty()){
-			//gdyby bylo zero to by obliczył odleglosc od linka,gdyz linki sa jako pierwsze na liscie
 			int actualClosestNode = findFirstNode();
 			double closestDistance = calculateDistance(actualClosestNode, temp);
 			for (int i = actualClosestNode; i < list.size(); i++) {
@@ -134,7 +133,7 @@ public class FigureControl {
 			link.setEndPoint(temp);
 			if (temp.equals(link.startPoint) || isLinkAlreadyExist()) {
 				list.remove(0);
-				linkAmmount--;
+				linkAmount--;
 			}
 			redraw();
 		}
@@ -145,15 +144,8 @@ public class FigureControl {
 				canvas.getHeight());
 	}
 
-	public void clear() {
-		clearCanvas();
-		list.clear();
-		nodeAmmount = 0;
-		linkAmmount = 0;
-	}
-
-	public int getNodeAmmount() {
-		return nodeAmmount;
+	public int getNodeAmount() {
+		return nodeAmount;
 	}
 
 	public Figure findClosestElement(Vector2F p) {
@@ -201,8 +193,8 @@ public class FigureControl {
 		return null;
 	}
 
-	public int getLinkAmmount() {
-		return linkAmmount;
+	public int getLinkAmount() {
+		return linkAmount;
 	}
 
 	public Figure findFigureByName(String name) {
@@ -288,14 +280,7 @@ public class FigureControl {
 	public Figure getSelectedFigure() {
 		return selectedFigure;
 	}
-	public ObservableList<String> getNodeList() {
-		ObservableList<String> data = FXCollections.observableArrayList();
-		for (Figure fig : list) {
-			if (fig instanceof Node)
-				data.add(fig.getName());
-		}
-		return data;
-	}
+
 	public void deleteLinks(Vector2F startPoint, Vector2F endPoint) {
 		LineSegment line=new LineSegment(startPoint,endPoint);
 		for (int i = 0; i < list.size(); i++) {
@@ -303,7 +288,7 @@ public class FigureControl {
 			if (fig instanceof Link) {
 				if (line.areCrossing((Link)fig)) {
 					list.remove(i);
-					linkAmmount--;
+					linkAmount--;
 					i--;
 				}
 			}
@@ -320,7 +305,7 @@ public class FigureControl {
 					Vector2F startPoint=fig.getStartPoint();
 					Vector2F fixedPoint=fixLinkPoint(startPoint);
 					list.remove(temp);
-					nodeAmmount--;
+					nodeAmount--;
 					for (int i = 0; i < list.size(); i++) {
 						fig = list.get(i);
 						if (fig instanceof Link) {
@@ -328,7 +313,7 @@ public class FigureControl {
 							{
 								list.remove(i);
 								i--;
-								linkAmmount--;
+								linkAmount--;
 							}
 					}
 				}
@@ -347,11 +332,11 @@ public class FigureControl {
 			{
 				if(fig instanceof Node)
 				{
-					nodeAmmount--;
+					nodeAmount--;
 				}
 				else
 				{
-					linkAmmount--;
+					linkAmount--;
 				}
 				list.remove(i);
 				i--;
@@ -361,7 +346,7 @@ public class FigureControl {
 		
 	}
 
-	public int elementsAmmount() {
+	public int elementsAmount() {
 		return list.size();
 	}
 	public boolean isEmpty() {
@@ -369,7 +354,7 @@ public class FigureControl {
 	}
 
 	private boolean isEnoughNodesForAddLink() {
-		return nodeAmmount > 1;
+		return nodeAmount > 1;
 	}
 	public Canvas getCanvas()
 	{

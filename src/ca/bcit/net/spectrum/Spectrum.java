@@ -63,14 +63,7 @@ public class Spectrum {
 	public int getOccupiedSlices() {
 		int occupiedSlices = getSlicesCount();
 		for (SpectrumSegment segment : segments) if (segment.getType() == FreeSpectrumSegment.TYPE) occupiedSlices -= segment.getRange().getLength();
-		return occupiedSlices; // TODO SUPPORT FOR BACKUP
-//		else if (candidate.getType().equals(BackupSpectrumSegment.TYPE)) {
-//			int result = 0;
-//			for (SpectrumSegment segment : segments.getSegments()) if (segment.getType().equals(FreeSpectrumSegment.TYPE) ||
-//					segment.getType().equals(BackupSpectrumSegment.TYPE) && segment.canOverlap(candidate))
-//				result += segment.range.getLength();
-//			return result;
-//		} else throw new SpectrumException("Occupied slices check can only be performed on WORKING or BACKUP segments.");
+		return occupiedSlices;
 	}
 	
 	private int firstOverlapIndex(int min, int max, SpectrumSegment segment) {
@@ -161,7 +154,7 @@ public class Spectrum {
 	
 	public int canAllocateWorking(int volume) {
 		for (SpectrumSegment segment : segments) if (segment.getType() == FreeSpectrumSegment.TYPE && segment.getRange().getLength() >= volume) return segment.getRange().getOffset();
-		return -1; // TODO CHANGE TO BOOL
+		return -1;
 	}
 	
 	public int canAllocateBackup(Demand demand, int volume) {
@@ -179,6 +172,6 @@ public class Spectrum {
 				offset = -1;
 				gatheredVolume = 0;
 			}
-		return -1; // TODO CHANGE TO BOOL
+		return -1;
 	}
 }

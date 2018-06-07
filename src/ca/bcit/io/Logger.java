@@ -5,7 +5,7 @@ import ca.bcit.jfx.components.Console;
 public class Logger {
 
 	public enum LoggerLevel {
-		NORMAL, DEBUG
+		DEBUG
 	}
 	
 	private static final LoggerLevel loggerLevel = LoggerLevel.DEBUG;

@@ -13,27 +13,21 @@ public abstract class Demand {
 	private final int squeezedVolume;
 	private int ttl;
 	private final int initialTTL;
-	private final int cpu;
-	private final int memory;
-	private final int diskStorage;
 	
 	PartedPath workingPath;
 	private PartedPath backupPath;
-	
-	Demand(boolean reallocate, boolean allocateBackup, int volume, int squeezedVolume, int ttl, int cpu, int memory, int diskStorage) {
+
+	public Demand(boolean reallocate, boolean allocateBackup, int volume, int squeezedVolume, int ttl) {
 		this.reallocate = reallocate;
 		this.allocateBackup = allocateBackup;
 		this.volume = volume;
 		this.squeezedVolume = squeezedVolume < 10 ? 10 : squeezedVolume;
 		this.ttl = ttl;
-		this.cpu = cpu;
-		this.memory = memory;
-		this.diskStorage = diskStorage;
 		initialTTL = ttl;
 	}
-	
-	Demand(boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl, int cpu, int memory, int diskStorage) {
-		this(reallocate, allocateBackup, volume, (int) Math.round(volume * squeezeRatio), ttl, cpu, memory, diskStorage);
+
+	public Demand(boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl) {
+		this(reallocate, allocateBackup, volume, (int) Math.round(volume * squeezeRatio), ttl);
 	}
 	
 	public PartedPath getWorkingPath() {
@@ -64,18 +58,6 @@ public abstract class Demand {
 	
 	public int getTTL() {
 		return ttl;
-	}
-	
-	public int getCPU(){
-		return cpu;
-	}
-	
-	public int getMemory(){
-		return memory;
-	}
-	
-	public int getStorage(){
-		return diskStorage;
 	}
 	
 	public void tick() {

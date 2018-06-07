@@ -21,10 +21,6 @@ public abstract class RMSAAlgorithm {
 			registeredAlgorithms.put(algorithm.getName(), algorithm);
 	}
 	
-	public static RMSAAlgorithm getAlgorithmByName(String name) {
-		return registeredAlgorithms.get(name);
-	}
-
 	public static Collection<RMSAAlgorithm> getRegisteredAlgorithms() {
 		return registeredAlgorithms.values();
 	}

@@ -14,10 +14,6 @@ public abstract class Project {
 		this.projectFile = projectFile;
 	}
 	
-	public File getProjectFile() {
-		return projectFile;
-	}
-
 	public String getName() {
 		return projectFile.getName().replaceFirst("\\.[^.]*$", "");
 	}

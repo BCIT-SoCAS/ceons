@@ -55,10 +55,7 @@ public class Node extends Figure {
 				.equals((name)));
 	}
 
-	protected void loadImage() {
-		//image = new Image("mtk/eon/drawing/circle_image.jpg", imageSize,
-		//		imageSize, true, false);
-	}
+	protected void loadImage() {}
 
 	private Vector2F getCenterPoint() {
 		float x = startPoint.getX() + imageSize / 2;

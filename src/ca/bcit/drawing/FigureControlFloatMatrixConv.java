@@ -15,25 +15,22 @@ public class FigureControlFloatMatrixConv {
 	{
 		this.list=_list;
 		this.benchmarkPoint=_benchmark;
-		this.nodeAmmount=list.getNodeAmmount();
-		this.linkAmmount=list.getLinkAmmount();
+		this.nodeAmmount=list.getNodeAmount();
+		this.linkAmmount=list.getLinkAmount();
 	}
 	public FigureControlFloatMatrixConv(FigureControl _list)
 	{
 		this.list=_list;
 		this.benchmarkPoint=new Vector2F(((float)_list.getCanvas().getWidth()/2),((float)_list.getCanvas().getHeight()/2));
-		this.nodeAmmount=list.getNodeAmmount();
-		this.linkAmmount=list.getLinkAmmount();
+		this.nodeAmmount=list.getNodeAmount();
+		this.linkAmmount=list.getLinkAmount();
 	}
-	//do Matrix2F zapamietuje tylko wspolrzedne nodów i je zwracan, natomiast linki zapamiętuje jako kolejne indeksy nodow i
-	//zostawiam je w klasie ,jezeli tak nie zrobie to linki i nody beda sie rozjezdzac a przy duzym pomniejszeniu nakladac sie 
-	//na siebie
 	public FloatMatrix convertFigureControlToFloatMatrix()
 	{
 		int actualFigure=0;
 		nodeSize=Math.round(Node.imageSize/2);
 		float nodeArray[][] = new float[nodeAmmount][2];
-		for(int i=list.elementsAmmount()-1;i>list.elementsAmmount()-nodeAmmount-1;i--)
+		for(int i = list.elementsAmount()-1; i>list.elementsAmount()-nodeAmmount-1; i--)
 		{
 			Figure fig=list.get(i);
 			Vector2F fixedStartPoint=fixPoint(fig.getStartPoint(),true);
@@ -43,7 +40,7 @@ public class FigureControlFloatMatrixConv {
 		}
 		nodeTable=new FloatMatrix(nodeArray);
 		float linkArray[][] = new float[linkAmmount][2];
-		for(int i=0;i<list.elementsAmmount()-nodeAmmount;i++)
+		for(int i = 0; i<list.elementsAmount()-nodeAmmount; i++)
 		{
 			Link link=((Link)list.get(i));
 			Vector2F startPoint=link.getStartPoint();
@@ -63,8 +60,6 @@ public class FigureControlFloatMatrixConv {
 	}
 	
 	
-	//Przekazana FloatMatrix musi mieć tyle samo elementów co list podana jako argument konstruktora,poniewaz ja zmieniam
-	//tylko wartosci a z poprzedniej listy biore nazwy itp,jezeli nie są równe zwracam to samo co dostałem
 	public FigureControl convertFloatMatrixToFigureControl(FloatMatrix floatMatrixAfterChanges)
 	{
 		
@@ -72,7 +67,7 @@ public class FigureControlFloatMatrixConv {
 			return list;
 		FigureControl returnList=new FigureControl(list);
 		int actualFigure=0;
-		for(int i=list.elementsAmmount()-1;i>list.elementsAmmount()-nodeAmmount-1;i--)
+		for(int i = list.elementsAmount()-1; i>list.elementsAmount()-nodeAmmount-1; i--)
 		{
 			Figure fig=returnList.get(i);
 			Vector2F startPoint=floatMatrixAfterChanges.getRow(actualFigure);
@@ -80,7 +75,7 @@ public class FigureControlFloatMatrixConv {
 			fig.setStartPoint(fixedStartPoint);
 			actualFigure++;
 		}
-		for(int i=0;i<list.elementsAmmount()-nodeAmmount;i++)
+		for(int i = 0; i<list.elementsAmount()-nodeAmmount; i++)
 		{
 			Link link=((Link)returnList.get(i));
 			Vector2F linkNodes=linkIdx.getRow(i);

@@ -11,7 +11,7 @@ public class PathPart {
 	private NetworkNode destination;
 	private int length;
 	
-	public final ArrayList<Spectrum> spectra = new ArrayList<>(); // TODO Should not be public
+	public final ArrayList<Spectrum> spectra = new ArrayList<>();
 	AllocatableSpectrumSegment segment;
 	
 	private Modulation modulation;

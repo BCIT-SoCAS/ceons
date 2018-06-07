@@ -1,44 +1,29 @@
 package ca.bcit.io;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 
-public abstract class FileFormat<T> {
+import javafx.stage.FileChooser.ExtensionFilter;
 
-	public File file;
+public abstract class FileFormat<D, L, S> {
 
-	public LightScanner getStream() {
-		return new LightScanner(file);
+	public abstract ExtensionFilter getExtensionFilter();
+
+	public abstract D load(File file, L parameter) throws IOException;
+
+	public D load(File file) throws IOException {
+		if (hasLoadParameter()) throw new FileFormatException("Loading paramter missing!");
+		return load(file, null);
 	}
 
-	public abstract String getExtension();
+	public abstract void save(File file, D data, S parameter) throws IOException;
 
-	public File getFile() {
-		return file;
+	public void save(File file, D data) throws IOException {
+		if (hasSaveParameter()) throw new FileFormatException("Saving paramter missing!");
+		save(file, data, null);
 	}
 
-	public abstract boolean loadWithData(T dataContainer);
+	public abstract boolean hasLoadParameter();
 
-	public static <T extends FileFormat<?>> T constructor(Class<T> fileFormatType, String path) throws FileNotFoundException, InvalidExtensionException {
-		return constructor(fileFormatType, new File(path));
-	}
-
-	private static <T extends FileFormat<?>> T constructor(Class<T> fileFormatType, File file) throws FileNotFoundException, InvalidExtensionException {
-		T fileFormat;
-
-		try {
-			fileFormat = fileFormatType.newInstance();
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-		
-		if (!file.exists()) throw new FileNotFoundException(file.getAbsolutePath());
-		if (!file.getAbsolutePath().endsWith("." + fileFormat.getExtension()))
-			throw new InvalidExtensionException(file.getAbsolutePath(), fileFormat.getExtension());
-		
-		fileFormat.file = file;
-		
-		return fileFormat;
-	}
+	public abstract boolean hasSaveParameter();
 }

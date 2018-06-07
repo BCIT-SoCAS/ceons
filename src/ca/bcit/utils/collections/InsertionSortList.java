@@ -13,15 +13,7 @@ public class InsertionSortList<E extends Comparable<E>> extends ArrayList<E> {
 	public InsertionSortList() {
 		super();
 	}
-	
-	public InsertionSortList(Collection<? extends E> c) {
-		super(c);
-	}
 
-	public InsertionSortList(int initialCapacity) {
-		super(initialCapacity);
-	}
-	
 	@Override
 	public boolean add(E e) {
 		return addSort(e) != -1;
@@ -43,15 +35,4 @@ public class InsertionSortList<E extends Comparable<E>> extends ArrayList<E> {
 		return super.add(e) ? size() : -1;
 	}
 	
-	public boolean trustedAdd(E e) {
-		return super.add(e);
-	}
-	
-	public boolean trustedAddAll(Collection<? extends E> c) {
-		return super.addAll(c);
-	}
-	
-	public E last() {
-		return get(size() - 1);
-	}
 }

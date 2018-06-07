@@ -9,11 +9,6 @@ public class IdentifiableSet<E extends Identifiable> extends HashArray<E> {
 		freeID = 0;
 	}
 	
-	public IdentifiableSet(int initialCapacity) {
-		super(initialCapacity);
-		freeID = 0;
-	}
-
 	@Override
 	public boolean add(E element) {
 		if (element.id != -1) return false;

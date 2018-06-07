@@ -69,7 +69,7 @@ public class Link extends Figure {
 
 	@Override
 	protected void loadImage() {
-		//image = new Image(getClass().getResourceAsStream("line_image.jpg"));
+
 	}
 
 	@Override
@@ -97,21 +97,16 @@ public class Link extends Figure {
 
 	@Override
 	protected double calculateDistanceFromPoint(Vector2F p) {
-		// jezeli punkt miesci sie w przedziale x nalezacych do prostej to
-		// obliczam jego dlugosc od prostej
 		if ((p.getX() + 5 > startPoint.getX() && p.getX() - 5 < endPoint.getX()) || (p.getX() + 5 > endPoint.getX() && p.getX() - 5 < startPoint.getX())) {
 			float x1 = startPoint.getX() - Node.imageSize / 2;
 			float y1 = startPoint.getY() - Node.imageSize / 2;
 			float x2 = endPoint.getX() - Node.imageSize / 2;
 			float y2 = endPoint.getY() - Node.imageSize / 2;
-			// wyznaczenie rownania prostej
 			float a = (-y2 + y1) / (x2 - x1);
 			float b = -y1 - ((-y2 + y1) / (x2 - x1)) * x1;
-			// wyyznaczenie odleglosci punktu od prostej
 			double odleglosc = (Math.abs(a * p.getX() + p.getY() + b)) / Math.sqrt(1 + a * a);
 			return odleglosc + Node.imageSize / 2;
 		}
-		// jesli to nie to obliczam jego odleglosc od punktow koncowych
 		else {
 			float dist1 = startPoint.distance(p);
 			float dist2 = endPoint.distance(p);

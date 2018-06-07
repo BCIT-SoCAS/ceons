@@ -33,12 +33,6 @@ public class Simulation {
 	private double regsPerAllocation;
 	private double allocations;
 	private double unhandledVolume;
-	private double blockedCPU;
-	private double blockedMemory;
-	private double blockedStorage;
-	private double averageCPU;
-	private double averageMemory;
-	private double averageStorage;
 	private final double[] modulationsUsage = new double[6];
 
 	public Simulation(Network network, TrafficGenerator generator) {
@@ -90,12 +84,6 @@ public class Simulation {
 		Logger.info("Blocked Spectrum: " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
 		Logger.info("Blocked Regenerators: " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
 		Logger.info("Blocked Link Failure: " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
-		Logger.info("Lack of CPU: " + (blockedCPU / totalVolume) * 100 + "%");
-		Logger.info("Lack of RAM: " + (blockedMemory / totalVolume) * 100 + "%");
-		Logger.info("Lack of Storage: " + (blockedStorage / totalVolume) * 100 + "%");
-		Logger.info("Average usage of CPU: " + (averageCPU / allocations) * 100 + "%");
-		Logger.info("Average usage of RAM: " + (averageMemory / allocations) * 100 + "%");
-		Logger.info("Average usage of Storage: " + (averageStorage / allocations) * 100 + "%");
 		File dir = new File("results");
 		if (!dir.isDirectory())
 			dir.mkdir();
@@ -133,15 +121,6 @@ public class Simulation {
 		this.regsPerAllocation = 0;
 		this.allocations = 0;
 		this.unhandledVolume = 0;
-		this.blockedCPU = 0;
-		double totalCPU = 0;
-		this.blockedMemory = 0;
-		double totalMemory = 0;
-		this.blockedStorage = 0;
-		double totalStorage = 0;
-		this.averageCPU = 0;
-		this.averageMemory = 0;
-		this.averageStorage = 0;
 		for (Map.Entry<String, NetworkNode> entries: network.nodes.entrySet()){
 			entries.getValue().clearOccupied();
 		}
@@ -158,24 +137,12 @@ public class Simulation {
 			case NO_SPECTRUM:
 				spectrumBlockedVolume += demand.getVolume();
 				break;
-			case NO_CPU:
-				blockedCPU += demand.getVolume();
-				break;
-			case NO_MEMORY:
-				blockedMemory += demand.getVolume();
-				break;
-			case NO_STORAGE:
-				blockedStorage += demand.getVolume();
-				break;
 			default:
 				break;
 			}
 		else {
 			allocations++;
 			regsPerAllocation += demand.getWorkingPath().getPartsCount() - 1;
-			averageCPU += demand.getWorkingPath().occupiedCPU;
-			averageMemory += demand.getWorkingPath().occupiedMemory;
-			averageStorage += demand.getWorkingPath().occupiedStorage;
 			if (demand.getBackupPath() != null)
 				regsPerAllocation += demand.getBackupPath().getPartsCount() - 1;
 			double modulationsUsage[] = new double[6];

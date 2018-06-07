@@ -12,24 +12,10 @@ public class UnicastDemand extends Demand {
 	private final NetworkNode source;
     private final NetworkNode destination;
 	
-	public UnicastDemand(NetworkNode source, NetworkNode destination, boolean reallocate, boolean allocateBackup, int volume, int squeezedVolume, int ttl, int cpu, int memory, int storage) {
-		super(reallocate, allocateBackup, volume, squeezedVolume, ttl, cpu, memory, storage);
+	public UnicastDemand(NetworkNode source, NetworkNode destination, boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl) {
+		super(reallocate, allocateBackup, volume, squeezeRatio, ttl);
 		this.source = source;
 		this.destination = destination;
-	}
-
-	public UnicastDemand(NetworkNode source, NetworkNode destination, boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl, int cpu, int memory, int storage) {
-		super(reallocate, allocateBackup, volume, squeezeRatio, ttl, cpu, memory, storage);
-		this.source = source;
-		this.destination = destination;
-	}
-
-	public NetworkNode getSource() {
-		return source;
-	}
-
-	public NetworkNode getDestination() {
-		return destination;
 	}
 
 	@Override
