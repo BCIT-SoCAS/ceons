@@ -12,6 +12,7 @@ public abstract class RMSAAlgorithm {
 	private static final HashMap<String, RMSAAlgorithm> registeredAlgorithms = new HashMap<>();
 	
 	static {
+		registerAlgorithm(new SPF());
 		registerAlgorithm(new AMRA());
 		registerAlgorithm(new MNC());
 	}
