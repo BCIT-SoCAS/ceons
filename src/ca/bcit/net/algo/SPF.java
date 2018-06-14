@@ -1,8 +1,6 @@
 package ca.bcit.net.algo;
 
-import ca.bcit.net.Network;
-import ca.bcit.net.NetworkException;
-import ca.bcit.net.PartedPath;
+import ca.bcit.net.*;
 import ca.bcit.net.demand.Demand;
 import ca.bcit.net.demand.DemandAllocationResult;
 
@@ -20,13 +18,10 @@ public class SPF extends RMSAAlgorithm {
         int volume = (int) Math.ceil(demand.getVolume() / 10) - 1;
         List<PartedPath> candidatePaths = demand.getCandidatePaths(false, network);
 
-        sortByLength(candidatePaths);
+        sortByLength(network, volume, candidatePaths);
 
         if (candidatePaths.isEmpty())
             return DemandAllocationResult.NO_SPECTRUM;
-
-        if (candidatePaths.isEmpty())
-            return DemandAllocationResult.NO_REGENERATORS;
 
         boolean workingPathSuccess = false;
 
@@ -59,10 +54,31 @@ public class SPF extends RMSAAlgorithm {
         return new DemandAllocationResult(demand.getWorkingPath());
     }
 
-    private List<PartedPath> sortByLength(List<PartedPath> candidatePaths) {
-        pathLoop: for (PartedPath path : candidatePaths) {
+    private List<PartedPath> sortByLength(Network network, int volume, List<PartedPath> candidatePaths) {
+        pathLoop:
+        for (PartedPath path : candidatePaths) {
             path.setMetric(path.getPath().getLength());
+
+            // choosing modulations for parts
+            for (PathPart part : path) {
+                for (Modulation modulation : network.getAllowedModulations())
+                    if (modulation.modulationDistances[volume] >= part.getLength()) {
+                        part.setModulation(modulation, 1);
+                        break;
+                    }
+
+                if (part.getModulation() == null)
+                    continue pathLoop;
+            }
         }
+        for (int i = 0; i < candidatePaths.size(); i++)
+            for (PathPart spec: candidatePaths.get(i).getParts()){
+                if (spec.getOccupiedSlicesPercentage() > 80.0) {
+                    candidatePaths.remove(i);
+                    i--;
+                }
+            }
+
         candidatePaths.sort(PartedPath::compareTo);
         return candidatePaths;
     }

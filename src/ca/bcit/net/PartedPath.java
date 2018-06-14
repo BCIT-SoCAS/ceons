@@ -19,6 +19,7 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 
 	final NetworkPath path;
 	private final boolean isUp;
+
 	private final ArrayList<PathPart> parts = new ArrayList<>();
 	private double occupiedRegeneratorsPercentage;
 	private double metric = -1.0;
@@ -43,7 +44,12 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 		this.isUp = isUp;
 		this.path = path;
 	}
-	
+
+
+	public ArrayList<PathPart> getParts() {
+		return parts;
+	}
+
 	public void calculateMetricFromParts() {
 		metric = 0.0;
 		for (PathPart part : parts) metric += part.metric;
