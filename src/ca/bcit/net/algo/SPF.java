@@ -9,6 +9,7 @@ import ca.bcit.net.demand.DemandAllocationResult;
 import java.util.List;
 
 public class SPF extends RMSAAlgorithm {
+
     @Override
     protected String getName() {
         return "SPF";
