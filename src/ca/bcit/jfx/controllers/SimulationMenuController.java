@@ -86,6 +86,7 @@ public class SimulationMenuController {
 		network.setBestPathsCount(bestPaths.getValue());
 		
 //		settings.disableProperty().set(true);
+		System.out.println(generators.getValue());
 		Simulation simulation = new Simulation(network, generators.getValue());
 		SimulationTask task = new SimulationTask(simulation, seed.getValue(), Double.parseDouble(alpha.getText()), erlang.getValue(), demands.getValue(), replicaPreservation.isSelected());
 		progressBar.runTask(task, true);
