@@ -7,4 +7,4 @@ M. Aibin and M. Blazejewski, "Complex Elastic Optical Network Simulator (CEONS),
 doi: 10.1109/ICTON.2015.7193519
 
 
-...
+# Robert Janzen
