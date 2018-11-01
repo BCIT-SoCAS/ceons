@@ -1,30 +1,49 @@
 package ca.bcit;
 
+import ca.bcit.io.Logger;
 import ca.bcit.io.YamlSerializable;
+import ca.bcit.io.project.EONProject;
 import ca.bcit.io.project.EONProjectFileFormat;
+import ca.bcit.io.project.Project;
 import ca.bcit.io.project.ProjectFileFormat;
-import ca.bcit.net.Network;
-import ca.bcit.net.NetworkLink;
-import ca.bcit.net.NetworkNode;
+import ca.bcit.jfx.controllers.SimulationMenuController;
+import ca.bcit.jfx.tasks.SimulationTask;
+import ca.bcit.net.*;
+import ca.bcit.net.algo.AMRA;
 import ca.bcit.net.demand.generator.AnycastDemandGenerator;
+import ca.bcit.net.demand.generator.DemandGenerator;
 import ca.bcit.net.demand.generator.TrafficGenerator;
 import ca.bcit.net.demand.generator.UnicastDemandGenerator;
 import ca.bcit.utils.random.ConstantRandomVariable;
 import ca.bcit.utils.random.IrwinHallRandomVariable;
 import ca.bcit.utils.random.MappedRandomVariable;
 import ca.bcit.utils.random.UniformRandomVariable;
+import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.Toggle;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import javax.swing.*;
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main extends Application {
+
+	private static long seed = 0;
+	private static int demandsCount = 10000;
+	private static int erlang = 300;
+	private static double alpha = 0;
+	private static boolean replicaPreservation = false;
+	private static List<TrafficGenerator> generators = new ArrayList<>();
+	private static int i;
 	
 	@Override
 	public void start(Stage primaryStage) throws IOException {
@@ -59,14 +78,67 @@ public class Main extends Application {
 			YamlSerializable.registerSerializableClass(UnicastDemandGenerator.class);
 			YamlSerializable.registerSerializableClass(AnycastDemandGenerator.class);
 			YamlSerializable.registerSerializableClass(TrafficGenerator.class);
-			
+
 			ProjectFileFormat.registerFileFormat(new EONProjectFileFormat());
-			launch(args);
+			EONProjectFileFormat project = new EONProjectFileFormat();
+			File file = new File("euro28.eon"); //file to change
+			Project eon = project.load(file);
+			ApplicationResources.setProject(eon);
+			for (NetworkNode n: eon.getNetwork().getNodes()){
+				n.setRegeneratorsCount(100); //change number of regenerators
+			}
+			generators = setupGenerators(eon);
+			Network network = eon.getNetwork();
+
+			network.setDemandAllocationAlgorithm(new AMRA()); //here to set algorithm
+
+			network.setCanSwitchModulation(true);
+			network.setModualtionMetricType(MetricType.DYNAMIC);
+
+			for (Modulation modulation : Modulation.values()) {
+				network.allowModulation(modulation);
+			}
+			network.setRegeneratorMetricValue(5);
+			network.setRegeneratorMetricType(MetricType.STATIC);
+
+			Simulation simulation = new Simulation(network, generators.get(0));
+			SimulationTask task = new SimulationTask(simulation, seed, alpha, erlang, demandsCount, replicaPreservation);
+			i = 1;
+			try {
+				network.maxPathsCount = network.calculatePaths(() -> task.updateProgress(i++, network.getNodesPairsCount()));
+			} catch (Throwable e) {
+				e.printStackTrace();
+			}
+			network.setBestPathsCount(10);
+			simulation.simulate(seed, demandsCount, alpha, erlang, replicaPreservation,	task);
+//			below is GUI code
+//			ProjectFileFormat.registerFileFormat(new EONProjectFileFormat());
+//			launch(args);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Fatal error occured: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
 	}
-	
 
+	private static List<TrafficGenerator> setupGenerators(Project project) {
+		Network network = project.getNetwork();
+		List<TrafficGenerator> generators = project.getTrafficGenerators();
+
+		List<MappedRandomVariable.Entry<DemandGenerator<?>>> subGenerators = new ArrayList<>();
+
+		subGenerators.add(new MappedRandomVariable.Entry<>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new ConstantRandomVariable<>(false),
+				new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 210, 10), new ConstantRandomVariable<>(1f))));
+		subGenerators.add(new MappedRandomVariable.Entry<>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getNodes()),
+				new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+		subGenerators.add(new MappedRandomVariable.Entry<>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("replicas")), new UniformRandomVariable.Generic<>(network.getGroup("replicas")),
+				new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(40, 410, 10), new ConstantRandomVariable<>(1f))));
+		subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getGroup("international")),
+				new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+		subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
+				new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+
+		generators.add(new TrafficGenerator("No_Backup", new MappedRandomVariable<>(subGenerators)));
+
+		return generators;
+	}
 }

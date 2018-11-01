@@ -11,14 +11,14 @@ public class Logger {
 	private static final LoggerLevel loggerLevel = LoggerLevel.DEBUG;
 	
 	public static void debug(String message) {
-		if (loggerLevel == LoggerLevel.DEBUG) Console.cout.println(message);
+		if (loggerLevel == LoggerLevel.DEBUG) System.out.println((message));
 	}
 	
 	public static void debug(Exception e) {
-		e.printStackTrace(Console.cout);
+		e.printStackTrace();
 	}
 	
 	public static void info(String message) {
-		Console.cout.println(message);
+		System.out.println(message);
 	}
 }
