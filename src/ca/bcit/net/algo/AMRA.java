@@ -15,6 +15,15 @@ import java.util.List;
  */
 public class AMRA extends RMSAAlgorithm {
 
+//	Original values: 90, 75, 60, 40, 20;
+// 	Basic Improvement: 90, 70, 50, 40, 20;
+
+	public double slice1 = 90.0;
+	public double slice2 = 75.0;
+	public double slice3 = 60.0;
+	public double slice4 = 40.0;
+	public double slice5 = 20.0;
+
 	@Override
 	public String getName() {
 		return "AMRA";
@@ -115,11 +124,11 @@ public class AMRA extends RMSAAlgorithm {
 		else {
 			double slicesOccupationPercentage = part.getOccupiedSlicesPercentage() * 100;
 			int slicesOccupationMetric;
-			if (slicesOccupationPercentage <= 90)
-				if (slicesOccupationPercentage <= 75)
-					if (slicesOccupationPercentage <= 60)
-						if (slicesOccupationPercentage <= 40)
-							if (slicesOccupationPercentage <= 20)
+			if (slicesOccupationPercentage <= slice1)
+				if (slicesOccupationPercentage <= slice2)
+					if (slicesOccupationPercentage <= slice3)
+						if (slicesOccupationPercentage <= slice4)
+							if (slicesOccupationPercentage <= slice5)
 								slicesOccupationMetric = 0;
 							else
 								slicesOccupationMetric = 1;
