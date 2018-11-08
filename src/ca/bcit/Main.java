@@ -38,8 +38,8 @@ import java.util.List;
 public class Main extends Application {
 
 	private static long seed = 0;
-	private static int demandsCount = 10000;
-	private static int erlang = 300;
+	private static int demandsCount = 100000;
+	private static int erlang = 1000;
 	private static double alpha = 0;
 	private static boolean replicaPreservation = false;
 	private static List<TrafficGenerator> generators = new ArrayList<>();
