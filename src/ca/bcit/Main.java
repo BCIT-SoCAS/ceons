@@ -18,6 +18,8 @@ import ca.bcit.utils.random.ConstantRandomVariable;
 import ca.bcit.utils.random.IrwinHallRandomVariable;
 import ca.bcit.utils.random.MappedRandomVariable;
 import ca.bcit.utils.random.UniformRandomVariable;
+import ca.bcit.net.RNN;
+
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -37,9 +39,10 @@ import java.util.List;
 
 public class Main extends Application {
 
+    // Run 100 epochs for each erland - 500, 600, 700, 800, 900, 1000
 	private static long seed = 0;
-	private static int demandsCount = 50000;
-	private static int erlang = 1000;
+	private static int demandsCount = 100000;
+	private static int erlang = 600;
 	private static double alpha = 0;
 	private static boolean replicaPreservation = false;
 	private static List<TrafficGenerator> generators = new ArrayList<>();
@@ -79,28 +82,34 @@ public class Main extends Application {
 			YamlSerializable.registerSerializableClass(AnycastDemandGenerator.class);
 			YamlSerializable.registerSerializableClass(TrafficGenerator.class);
 
+			// Load project based on network file
 			ProjectFileFormat.registerFileFormat(new EONProjectFileFormat());
 			EONProjectFileFormat project = new EONProjectFileFormat();
 			File file = new File("euro28.eon"); //file to change
 			Project eon = project.load(file);
 			ApplicationResources.setProject(eon);
+
+			// Set regenerators per node
 			for (NetworkNode n: eon.getNetwork().getNodes()){
 				n.setRegeneratorsCount(100); //change number of regenerators
 			}
 			generators = setupGenerators(eon);
 			Network network = eon.getNetwork();
 
-			network.setDemandAllocationAlgorithm(new AMRA()); //here to set algorithm
+			network.setDemandAllocationAlgorithm(new AMRA()); // here to set algorithm
 
+            // Can change modulation between nodes
 			network.setCanSwitchModulation(true);
 			network.setModualtionMetricType(MetricType.DYNAMIC);
 
+			// Setup metrics
 			for (Modulation modulation : Modulation.values()) {
 				network.allowModulation(modulation);
 			}
 			network.setRegeneratorMetricValue(5);
 			network.setRegeneratorMetricType(MetricType.STATIC);
 
+			// Create the simulation, then run it
 			Simulation simulation = new Simulation(network, generators.get(0));
 			SimulationTask task = new SimulationTask(simulation, seed, alpha, erlang, demandsCount, replicaPreservation);
 			i = 1;
@@ -120,6 +129,7 @@ public class Main extends Application {
 		}
 	}
 
+	// How the demands are created. Based on CISCO report in Europe and USA
 	private static List<TrafficGenerator> setupGenerators(Project project) {
 		Network network = project.getNetwork();
 		List<TrafficGenerator> generators = project.getTrafficGenerators();

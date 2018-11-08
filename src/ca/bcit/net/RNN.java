@@ -32,7 +32,7 @@ public class RNN {
 
     public static void main(String[] args) {
         NeuralNetConfiguration.Builder builder = new NeuralNetConfiguration.Builder();
-        builder.seed(123);
+        builder.seed(0);
         builder.biasInit(0);
         builder.miniBatch(false);
         builder.updater(new RmsProp(0.001));
@@ -61,7 +61,7 @@ public class RNN {
         /*
          * Run simulation multiple times
          */
-        for (int epoch = 0; epoch < 100; epoch++) {
+        for (int epoch = 0; epoch < 1; epoch++) {
 
         }
     }
