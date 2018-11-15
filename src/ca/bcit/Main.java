@@ -62,7 +62,7 @@ public class Main extends Application {
 		canvas.heightProperty().bind(pane.heightProperty());
 		System.out.println(canvas.getBoundsInParent());
 //		canvas.getGraphicsContext2D().fillRect(10, 10, 20, 20);
-//		canvas.setOnMouseDragged(e -> { canvas.getGraphicsContext2D().fillRect(e.getX(), e.getY(), 10, 10); });
+//		canvas.setOnMouseDragged(e -> { canvas.getGraphiccsContext2D().fillRect(e.getX(), e.getY(), 10, 10); });
 	}
 	
 	public static void main(String[] args) {
