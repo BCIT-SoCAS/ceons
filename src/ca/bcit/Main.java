@@ -18,6 +18,8 @@ import ca.bcit.utils.random.ConstantRandomVariable;
 import ca.bcit.utils.random.IrwinHallRandomVariable;
 import ca.bcit.utils.random.MappedRandomVariable;
 import ca.bcit.utils.random.UniformRandomVariable;
+import ca.bcit.net.RNN;
+
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -34,11 +36,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.BufferedReader;
+import java.io.FileReader;
 
 public class Main extends Application {
 
-	private static long seed = 0;
-	private static int demandsCount = 50000;
+    // Run 100 epochs for each erlang - 500, 600, 700, 800, 900, 1000
+	private static long seed = 120;
+	private static int demandsCount = 100000;
 	private static int erlang = 1000;
 	private static double alpha = 0;
 	private static boolean replicaPreservation = false;
@@ -66,60 +71,85 @@ public class Main extends Application {
 	}
 	
 	public static void main(String[] args) {
+
+		List<String> ranges = new ArrayList<String>();
 		try {
-			YamlSerializable.registerSerializableClass(NetworkNode.class);
-			YamlSerializable.registerSerializableClass(NetworkLink.class);
-			YamlSerializable.registerSerializableClass(Network.class);
-			
-			YamlSerializable.registerSerializableClass(MappedRandomVariable.class);
-			YamlSerializable.registerSerializableClass(UniformRandomVariable.Generic.class);
-			YamlSerializable.registerSerializableClass(ConstantRandomVariable.class);
-			YamlSerializable.registerSerializableClass(IrwinHallRandomVariable.Integer.class);
-			YamlSerializable.registerSerializableClass(UnicastDemandGenerator.class);
-			YamlSerializable.registerSerializableClass(AnycastDemandGenerator.class);
-			YamlSerializable.registerSerializableClass(TrafficGenerator.class);
-
-			ProjectFileFormat.registerFileFormat(new EONProjectFileFormat());
-			EONProjectFileFormat project = new EONProjectFileFormat();
-			File file = new File("euro28.eon"); //file to change
-			Project eon = project.load(file);
-			ApplicationResources.setProject(eon);
-			for (NetworkNode n: eon.getNetwork().getNodes()){
-				n.setRegeneratorsCount(100); //change number of regenerators
+			BufferedReader reader = new BufferedReader(new FileReader("ranges.txt"));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				ranges.add(line);
 			}
-			generators = setupGenerators(eon);
-			Network network = eon.getNetwork();
+			reader.close();
+		} catch (Exception e) {
+			System.err.format("Error reading '%s'.", "ranges.txt");
+			e.printStackTrace();
+		}
 
-			network.setDemandAllocationAlgorithm(new AMRA()); //here to set algorithm
-
-			network.setCanSwitchModulation(true);
-			network.setModualtionMetricType(MetricType.DYNAMIC);
-
-			for (Modulation modulation : Modulation.values()) {
-				network.allowModulation(modulation);
-			}
-			network.setRegeneratorMetricValue(5);
-			network.setRegeneratorMetricType(MetricType.STATIC);
-
-			Simulation simulation = new Simulation(network, generators.get(0));
-			SimulationTask task = new SimulationTask(simulation, seed, alpha, erlang, demandsCount, replicaPreservation);
-			i = 1;
+		for (String rangeList : ranges) {
+			// rangeList looks like 70,67,57,22,7
+			System.out.println("Ranges: "+rangeList);
 			try {
-				network.maxPathsCount = network.calculatePaths(() -> task.updateProgress(i++, network.getNodesPairsCount()));
-			} catch (Throwable e) {
+				YamlSerializable.registerSerializableClass(NetworkNode.class);
+				YamlSerializable.registerSerializableClass(NetworkLink.class);
+				YamlSerializable.registerSerializableClass(Network.class);
+
+				YamlSerializable.registerSerializableClass(MappedRandomVariable.class);
+				YamlSerializable.registerSerializableClass(UniformRandomVariable.Generic.class);
+				YamlSerializable.registerSerializableClass(ConstantRandomVariable.class);
+				YamlSerializable.registerSerializableClass(IrwinHallRandomVariable.Integer.class);
+				YamlSerializable.registerSerializableClass(UnicastDemandGenerator.class);
+				YamlSerializable.registerSerializableClass(AnycastDemandGenerator.class);
+				YamlSerializable.registerSerializableClass(TrafficGenerator.class);
+
+				// Load project based on network file
+				ProjectFileFormat.registerFileFormat(new EONProjectFileFormat());
+				EONProjectFileFormat project = new EONProjectFileFormat();
+				File file = new File("euro28.eon"); //file to change
+				Project eon = project.load(file);
+				ApplicationResources.setProject(eon);
+
+				// Set regenerators per node
+				for (NetworkNode n : eon.getNetwork().getNodes()) {
+					n.setRegeneratorsCount(100); //change number of regenerators
+				}
+				generators = setupGenerators(eon);
+				Network network = eon.getNetwork();
+
+				network.setDemandAllocationAlgorithm(new AMRA()); // here to set algorithm
+
+				// Can change modulation between nodes
+				network.setCanSwitchModulation(true);
+				network.setModualtionMetricType(MetricType.DYNAMIC);
+
+				// Setup metrics
+				for (Modulation modulation : Modulation.values()) {
+					network.allowModulation(modulation);
+				}
+				network.setRegeneratorMetricValue(5);
+				network.setRegeneratorMetricType(MetricType.STATIC);
+
+				// Create the simulation, then run it
+				Simulation simulation = new Simulation(network, generators.get(0));
+				SimulationTask task = new SimulationTask(simulation, seed, alpha, erlang, demandsCount, replicaPreservation, rangeList);
+				i = 1;
+				try {
+					network.maxPathsCount = network.calculatePaths(() -> task.updateProgress(i++, network.getNodesPairsCount()));
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
+				network.setBestPathsCount(10);
+				simulation.simulate(seed, demandsCount, alpha, erlang, replicaPreservation, task, rangeList);
+				//			below is GUI code
+				//			ProjectFileFormat.registerFileFormat(new EONProjectFileFormat());
+				//			launch(args);
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "Fatal error occured: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				e.printStackTrace();
 			}
-			network.setBestPathsCount(10);
-			simulation.simulate(seed, demandsCount, alpha, erlang, replicaPreservation,	task);
-//			below is GUI code
-//			ProjectFileFormat.registerFileFormat(new EONProjectFileFormat());
-//			launch(args);
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Fatal error occured: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-			e.printStackTrace();
 		}
 	}
 
+	// How the demands are created. Based on CISCO report in Europe and USA
 	private static List<TrafficGenerator> setupGenerators(Project project) {
 		Network network = project.getNetwork();
 		List<TrafficGenerator> generators = project.getTrafficGenerators();

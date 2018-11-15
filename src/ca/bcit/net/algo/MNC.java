@@ -22,7 +22,7 @@ public class MNC extends RMSAAlgorithm {
 
 	@SuppressWarnings("unused")
 	@Override
-	public DemandAllocationResult allocateDemand(Demand demand, Network network) {
+	public DemandAllocationResult allocateDemand(Demand demand, Network network, String rangeList) {
 		int volume = (int) Math.ceil(demand.getVolume() / 10) - 1;
 		List<PartedPath> candidatePaths = demand.getCandidatePaths(false, network);
 		if (candidatePaths.isEmpty()) return DemandAllocationResult.NO_SPECTRUM;
