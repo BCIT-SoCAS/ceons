@@ -14,6 +14,9 @@ import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Random;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.Writer;
 
 /**
  * Main simulation class (start point)
@@ -81,29 +84,58 @@ public class Simulation {
 
 		network.waitForDemandsDeath();
 
-		Logger.info("Blocked Spectrum: " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
-		Logger.info("Blocked Regenerators: " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
-		Logger.info("Blocked Link Failure: " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
+		String range_class = "Z";
+		Double blockedAll = ((spectrumBlockedVolume / totalVolume) + (regeneratorsBlockedVolume / totalVolume) + (linkFailureBlockedVolume / totalVolume) + (unhandledVolume / totalVolume)) * 100;
+		if (blockedAll <= 0.05) {
+			range_class = "A";
+		} else if (blockedAll <= 1.5) {
+			range_class = "B";
+		} else if (blockedAll <= 4.0) {
+			range_class = "C";
+		} else if (blockedAll <= 10.0) {
+			range_class = "D";
+		} else if (blockedAll <= 20.0){
+			range_class = "E";
+		} else {
+			range_class = "F";
+		}
+
+		try {
+			Writer output = new BufferedWriter(new FileWriter("results.csv", true));
+			output.append(seed+","+demandsCount+","+erlang+","+rangeList+","+range_class+","+blockedAll+"\n");
+			output.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		Logger.info("Range Class: "+range_class+"  Blocked All: "+blockedAll);
+		Logger.info("");
+//		Logger.info("Blocked Spectrum: " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
+//		Logger.info("Blocked Regenerators: " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
+//		Logger.info("Blocked Link Failure: " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
 		File dir = new File("results");
 		if (!dir.isDirectory())
 			dir.mkdir();
 		File save = new File(dir, ApplicationResources.getProject().getName().toUpperCase() + "-" + generator.getName()
 				+ "-ERLANG" + erlang + "-ALPHA" + alpha + ".txt");
+
+
 		try {
 			PrintWriter out = new PrintWriter(save);
-			out.println("Generator: " + generator.getName());
-			out.println("Alpha: " + alpha);
-			out.println("Demands count: " + demandsCount);
-			out.println("Blocked Spectrum: " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
-			out.println("Blocked Regenerators: " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
-			out.println("Blocked Link Failure: " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
-			out.println("Blocked Unhandled: " + (unhandledVolume / totalVolume) * 100 + "%");
-			out.println(
-					"Blocked All: "
-							+ ((spectrumBlockedVolume / totalVolume) + (regeneratorsBlockedVolume / totalVolume)
-									+ (linkFailureBlockedVolume / totalVolume) + (unhandledVolume / totalVolume)) * 100
-							+ "%");
-			out.println("Average regenerators per allocation: " + (regsPerAllocation / allocations));
+			out.println(demandsCount+","+rangeList+","+range_class+","+blockedAll);
+//			out.println("Generator: " + generator.getName());
+//			out.println("Alpha: " + alpha);
+//			out.println("Demands count: " + demandsCount);
+//			out.println("Blocked Spectrum: " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
+//			out.println("Blocked Regenerators: " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
+//			out.println("Blocked Link Failure: " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
+//			out.println("Blocked Unhandled: " + (unhandledVolume / totalVolume) * 100 + "%");
+//			out.println(
+//					"Blocked All: "
+//							+ ((spectrumBlockedVolume / totalVolume) + (regeneratorsBlockedVolume / totalVolume)
+//									+ (linkFailureBlockedVolume / totalVolume) + (unhandledVolume / totalVolume)) * 100
+//							+ "%");
+//			out.println("Average regenerators per allocation: " + (regsPerAllocation / allocations));
 			out.close();
 		} catch (IOException e) {
 			Logger.debug(e);
