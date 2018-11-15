@@ -15,28 +15,19 @@ import java.util.List;
  */
 public class AMRA extends RMSAAlgorithm {
 
-//	Original values: 90, 75, 60, 40, 20;
-// 	Basic Improvement: 90, 70, 50, 40, 20;
-
-	public double slice1 = 90.0;
-	public double slice2 = 75.0;
-	public double slice3 = 60.0;
-	public double slice4 = 40.0;
-	public double slice5 = 20.0;
-
 	@Override
 	public String getName() {
 		return "AMRA";
 	}
 
 	@Override
-	public DemandAllocationResult allocateDemand(Demand demand, Network network) {
+	public DemandAllocationResult allocateDemand(Demand demand, Network network, String rangeList) {
 		int volume = (int) Math.ceil(demand.getVolume() / 10) - 1;
 
 		List<PartedPath> candidatePaths = demand.getCandidatePaths(false, network);
 		if (candidatePaths.isEmpty())
 			return DemandAllocationResult.NO_SPECTRUM;
-		candidatePaths = applyMetrics(network, volume, candidatePaths);
+		candidatePaths = applyMetrics(network, volume, candidatePaths, rangeList);
 
 		if (candidatePaths.isEmpty())
 			return DemandAllocationResult.NO_REGENERATORS;
@@ -59,7 +50,7 @@ public class AMRA extends RMSAAlgorithm {
 			if (demand.allocateBackup()) {
 				volume = (int) Math.ceil(demand.getSqueezedVolume() / 10) - 1;
 
-				candidatePaths = applyMetrics(network, volume, demand.getCandidatePaths(true, network));
+				candidatePaths = applyMetrics(network, volume, demand.getCandidatePaths(true, network), rangeList);
 
 				if (candidatePaths.isEmpty())
 					return new DemandAllocationResult(
@@ -74,7 +65,7 @@ public class AMRA extends RMSAAlgorithm {
 		return new DemandAllocationResult(demand.getWorkingPath());
 	}
 
-	private List<PartedPath> applyMetrics(Network network, int volume, List<PartedPath> candidatePaths) {
+	private List<PartedPath> applyMetrics(Network network, int volume, List<PartedPath> candidatePaths, String rangeList) {
 		pathLoop: for (PartedPath path : candidatePaths) {
 			path.mergeRegeneratorlessParts();
 
@@ -82,7 +73,7 @@ public class AMRA extends RMSAAlgorithm {
 			for (PathPart part : path) {
 				for (Modulation modulation : network.getAllowedModulations())
 					if (modulation.modulationDistances[volume] >= part.getLength()) {
-						part.setModulationIfBetter(modulation, calculateModulationMetric(network, part, modulation));
+						part.setModulationIfBetter(modulation, calculateModulationMetric(network, part, modulation, rangeList));
 					}
 
 				if (part.getModulation() == null)
@@ -95,7 +86,7 @@ public class AMRA extends RMSAAlgorithm {
 			if (!network.canSwitchModulation()) {
 				Modulation modulation = path.getModulationFromLongestPart();
 				for (PathPart part : path)
-					part.setModulation(modulation, calculateModulationMetric(network, part, modulation));
+					part.setModulation(modulation, calculateModulationMetric(network, part, modulation, rangeList));
 				path.calculateMetricFromParts();
 			}
 
@@ -117,18 +108,18 @@ public class AMRA extends RMSAAlgorithm {
 		return candidatePaths;
 	}
 
-	private int calculateModulationMetric(Network network, PathPart part, Modulation modulation) {
+	private int calculateModulationMetric(Network network, PathPart part, Modulation modulation, String rangeList) {
 		int metric;
 		if (network.getModualtionMetricType() == MetricType.STATIC)
 			metric = network.getStaticModulationMetric(modulation);
 		else {
 			double slicesOccupationPercentage = part.getOccupiedSlicesPercentage() * 100;
 			int slicesOccupationMetric;
-			if (slicesOccupationPercentage <= slice1)
-				if (slicesOccupationPercentage <= slice2)
-					if (slicesOccupationPercentage <= slice3)
-						if (slicesOccupationPercentage <= slice4)
-							if (slicesOccupationPercentage <= slice5)
+			if (slicesOccupationPercentage <= Double.valueOf(rangeList.split(",")[0]))
+				if (slicesOccupationPercentage <= Double.valueOf(rangeList.split(",")[1]))
+					if (slicesOccupationPercentage <= Double.valueOf(rangeList.split(",")[2]))
+						if (slicesOccupationPercentage <= Double.valueOf(rangeList.split(",")[3]))
+							if (slicesOccupationPercentage <= Double.valueOf(rangeList.split(",")[4]))
 								slicesOccupationMetric = 0;
 							else
 								slicesOccupationMetric = 1;

@@ -54,7 +54,7 @@ public class RNN {
         net.setListeners(new ScoreIterationListener(1));
 
         /*
-         * CREATE OUR TRAINING DATA
+         * Create training data
          */
 
         

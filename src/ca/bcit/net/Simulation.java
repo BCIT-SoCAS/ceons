@@ -41,7 +41,7 @@ public class Simulation {
 	}
 
 	public void simulate(long seed, int demandsCount, double alpha, int erlang, boolean replicaPreservation,
-			SimulationTask task) {
+			SimulationTask task, String rangeList) {
 		clearVolumeValues();
 		generator.setErlang(erlang);
 		generator.setSeed(seed);
@@ -55,13 +55,13 @@ public class Simulation {
 				if (linkCutter.nextDouble() < alpha / erlang)
 					for (Demand reallocate : network.cutLink())
 						if (reallocate.reallocate())
-							handleDemand(reallocate);
+							handleDemand(reallocate, rangeList);
 						else
 							linkFailureBlockedVolume += reallocate.getVolume();
 				else {
-					handleDemand(demand);
+					handleDemand(demand, rangeList);
 					if (demand instanceof AnycastDemand)
-						handleDemand(generator.next());
+						handleDemand(generator.next(), rangeList);
 				}
 
 				network.update();
@@ -126,8 +126,8 @@ public class Simulation {
 		}
 	}
 
-	private void handleDemand(Demand demand) {
-		DemandAllocationResult result = network.allocateDemand(demand);
+	private void handleDemand(Demand demand, String rangeList) {
+		DemandAllocationResult result = network.allocateDemand(demand, rangeList);
 
 		if (result.workingPath == null)
 			switch (result.type) {
