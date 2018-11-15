@@ -62,3 +62,5 @@ $RECYCLE.BIN/
 /target/
 .idea/
 /results/
+ranges.txt
+results.csv

@@ -86,9 +86,9 @@ public class Simulation {
 
 		String range_class = "Z";
 		Double blockedAll = ((spectrumBlockedVolume / totalVolume) + (regeneratorsBlockedVolume / totalVolume) + (linkFailureBlockedVolume / totalVolume) + (unhandledVolume / totalVolume)) * 100;
-		if (blockedAll <= 0.05) {
+		if (blockedAll <= 0.1) {
 			range_class = "A";
-		} else if (blockedAll <= 1.5) {
+		} else if (blockedAll <= 1.0) {
 			range_class = "B";
 		} else if (blockedAll <= 4.0) {
 			range_class = "C";
