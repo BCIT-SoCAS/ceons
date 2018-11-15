@@ -31,6 +31,7 @@ public class SimulationMenuController {
 	@FXML private TextField alpha;
 	@FXML private UIntField demands;
 	@FXML private CheckBox replicaPreservation;
+	@FXML private String rangeList;
 	
 	@FXML private VBox settings;
 	@FXML private ComboBox<RMSAAlgorithm> algorithms;
@@ -88,7 +89,7 @@ public class SimulationMenuController {
 //		settings.disableProperty().set(true);
 		System.out.println(generators.getValue());
 		Simulation simulation = new Simulation(network, generators.getValue());
-		SimulationTask task = new SimulationTask(simulation, seed.getValue(), Double.parseDouble(alpha.getText()), erlang.getValue(), demands.getValue(), replicaPreservation.isSelected());
+		SimulationTask task = new SimulationTask(simulation, seed.getValue(), Double.parseDouble(alpha.getText()), erlang.getValue(), demands.getValue(), replicaPreservation.isSelected(), rangeList);
 		progressBar.runTask(task, true);
 	}
 }

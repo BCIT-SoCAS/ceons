@@ -33,5 +33,5 @@ public abstract class RMSAAlgorithm {
 	
 	protected abstract String getName();
 	
-	public abstract DemandAllocationResult allocateDemand(Demand demand, Network network);
+	public abstract DemandAllocationResult allocateDemand(Demand demand, Network network, String rangeList);
 }

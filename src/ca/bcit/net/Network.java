@@ -66,8 +66,8 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 		return canSwitchModulation;
 	}
 	
-	public DemandAllocationResult allocateDemand(Demand demand) {
-		DemandAllocationResult result = demandAllocationAlgorithm.allocateDemand(demand, this);
+	public DemandAllocationResult allocateDemand(Demand demand, String rangeList) {
+		DemandAllocationResult result = demandAllocationAlgorithm.allocateDemand(demand, this, rangeList);
 		if (result.type == DemandAllocationResult.Type.SUCCESS) allocatedDemands.add(demand);
 		return result;
 	}
