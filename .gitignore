@@ -66,3 +66,6 @@ ranges.txt
 results.csv
 results-trimmed.csv
 results-trimmed.arff
+results-trimmed-randomized.arff
+results-trimmed-randomized.csv
+results.csv
