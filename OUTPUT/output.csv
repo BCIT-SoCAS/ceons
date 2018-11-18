@@ -1,0 +1,36 @@
+START_OF_SETTINGS
+Erlang: 1000, Seed_Value: 42, Demands_Count: 250000
+END_OF_SETTINGS
+
+START_OF_NODE_DATA
+Name: Node_0, Is_Replica: true, Is_International: false, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 97.7, Number_of_Links: 3, Total_Link_Length: 1744, Avg_Link_Length: 581.33
+Name: Node_1, Is_Replica: true, Is_International: false, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 99.6, Number_of_Links: 5, Total_Link_Length: 2848, Avg_Link_Length: 569.6
+Name: Node_3, Is_Replica: true, Is_International: false, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 97.65, Number_of_Links: 4, Total_Link_Length: 2418, Avg_Link_Length: 604.5
+Name: Node_19, Is_Replica: false, Is_International: true, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 56.76, Number_of_Links: 2, Total_Link_Length: 1152, Avg_Link_Length: 576.0
+Name: Node_2, Is_Replica: false, Is_International: false, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 96.54, Number_of_Links: 3, Total_Link_Length: 1126, Avg_Link_Length: 375.33
+Name: Node_4, Is_Replica: false, Is_International: false, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 85.31, Number_of_Links: 3, Total_Link_Length: 1897, Avg_Link_Length: 632.33
+Name: Node_6, Is_Replica: false, Is_International: false, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 94.88, Number_of_Links: 3, Total_Link_Length: 1089, Avg_Link_Length: 363.0
+Name: Node_17, Is_Replica: false, Is_International: true, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 91.99, Number_of_Links: 2, Total_Link_Length: 1581, Avg_Link_Length: 790.5
+Name: Node_8, Is_Replica: true, Is_International: false, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 90.2, Number_of_Links: 4, Total_Link_Length: 1793, Avg_Link_Length: 448.25
+Name: Node_7, Is_Replica: false, Is_International: false, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 98.66, Number_of_Links: 3, Total_Link_Length: 1525, Avg_Link_Length: 508.33
+Name: Node_20, Is_Replica: false, Is_International: false, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 67.64, Number_of_Links: 2, Total_Link_Length: 1529, Avg_Link_Length: 764.5
+Name: Node_5, Is_Replica: true, Is_International: false, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 88.6, Number_of_Links: 3, Total_Link_Length: 1052, Avg_Link_Length: 350.67
+Name: Node_18, Is_Replica: false, Is_International: false, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 78.06, Number_of_Links: 2, Total_Link_Length: 1556, Avg_Link_Length: 778.0
+Name: Node_9, Is_Replica: false, Is_International: false, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 94.87, Number_of_Links: 3, Total_Link_Length: 1569, Avg_Link_Length: 523.0
+Name: Node_11, Is_Replica: false, Is_International: false, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 99.49, Number_of_Links: 5, Total_Link_Length: 2873, Avg_Link_Length: 574.6
+Name: Node_10, Is_Replica: false, Is_International: false, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 97.54, Number_of_Links: 4, Total_Link_Length: 2269, Avg_Link_Length: 567.25
+Name: Node_12, Is_Replica: false, Is_International: false, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 96.42, Number_of_Links: 3, Total_Link_Length: 3003, Avg_Link_Length: 1001.0
+Name: Node_14, Is_Replica: false, Is_International: false, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 81.34, Number_of_Links: 3, Total_Link_Length: 1310, Avg_Link_Length: 436.67
+Name: Node_15, Is_Replica: false, Is_International: false, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 83.84, Number_of_Links: 3, Total_Link_Length: 1464, Avg_Link_Length: 488.0
+Name: Node_24, Is_Replica: true, Is_International: false, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 84.17, Number_of_Links: 3, Total_Link_Length: 2807, Avg_Link_Length: 935.67
+Name: Node_25, Is_Replica: false, Is_International: false, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 81.25, Number_of_Links: 2, Total_Link_Length: 1262, Avg_Link_Length: 631.0
+Name: Node_13, Is_Replica: false, Is_International: false, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 73.76, Number_of_Links: 3, Total_Link_Length: 1734, Avg_Link_Length: 578.0
+Name: Node_21, Is_Replica: false, Is_International: true, Max_Occupied_Regenerators: 5, Avg_Occupied_Regenerators: 1.18, Number_of_Links: 2, Total_Link_Length: 2709, Avg_Link_Length: 1354.5
+Name: Node_22, Is_Replica: false, Is_International: false, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 86.9, Number_of_Links: 3, Total_Link_Length: 2234, Avg_Link_Length: 744.67
+Name: Node_23, Is_Replica: false, Is_International: false, Max_Occupied_Regenerators: 100, Avg_Occupied_Regenerators: 87.83, Number_of_Links: 3, Total_Link_Length: 1961, Avg_Link_Length: 653.67
+Name: Node_16, Is_Replica: true, Is_International: false, Max_Occupied_Regenerators: 14, Avg_Occupied_Regenerators: 7.06, Number_of_Links: 2, Total_Link_Length: 1594, Avg_Link_Length: 797.0
+Name: Node_26, Is_Replica: false, Is_International: false, Max_Occupied_Regenerators: 41, Avg_Occupied_Regenerators: 27.12, Number_of_Links: 2, Total_Link_Length: 1836, Avg_Link_Length: 918.0
+Name: Node_27, Is_Replica: false, Is_International: false, Max_Occupied_Regenerators: 71, Avg_Occupied_Regenerators: 38.13, Number_of_Links: 2, Total_Link_Length: 1345, Avg_Link_Length: 672.5
+END_OF_NODE_DATA
+
+CREATED_ON:2018-11-18 15:50:15.53

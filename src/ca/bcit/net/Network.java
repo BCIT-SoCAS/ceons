@@ -80,6 +80,42 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 				i--;
 			} else
 				allocatedDemands.get(i).tick();
+
+		//TODO update node stats here
+		this.updateNodesRegStats();
+	}
+
+	private void updateNodesRegStats(){
+		for(NetworkNode n : this.getNodes()){
+			n.recordCurrRegStats();
+		}
+	}
+
+	public void setNodeLinkStats(){
+
+		for(Relation<NetworkNode, NetworkLink, NetworkPath> relationEntry : this.relations)
+			if(relationEntry.hasLink()){
+				relationEntry.nodeA.addLinkLength(relationEntry.getLink().length);
+				relationEntry.nodeB.addLinkLength(relationEntry.getLink().length);
+			}
+
+	}
+
+	public void setNodesFlags(){
+		for(String groupName : this.nodesGroups.keySet())
+			this.setNodeGroupFlagStatus(groupName);
+	}
+
+	private void setNodeGroupFlagStatus(String groupName){
+		for(NetworkNode n : this.getGroup(groupName)){
+			if(groupName.contains("replicas"))
+				n.setReplicaStatus(true);
+			else if(groupName.contains("international"))
+				n.setInternationalStatus(true);
+			else
+				System.out.println("Unknown group: |" + groupName + "|");
+		}
+
 	}
 	
 	public void waitForDemandsDeath() {

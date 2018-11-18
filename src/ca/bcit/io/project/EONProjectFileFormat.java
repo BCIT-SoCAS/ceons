@@ -44,6 +44,12 @@ public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
 			trafficGenerators.add(new YamlConfiguration(zip.getInputStream(zip.getEntry(generatorFileName))).get(""));
 		
 		zip.close();
+
+		//TODO Set additional NetworkNode stats here
+		//Can probably move/modify the next two lines to be more efficient
+		network.setNodeLinkStats();
+		network.setNodesFlags();
+
 		return new EONProject(file, network, new ArrayList<>());
 	}
 

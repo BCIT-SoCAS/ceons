@@ -64,6 +64,8 @@ public class Simulation {
 						handleDemand(generator.next());
 				}
 
+				//Updates the state of the network
+				//TODO record NetworkNode regenerator statues at every update
 				network.update();
 				task.updateProgress(generator.getGeneratedDemandsCount(), demandsCount);
 			}
