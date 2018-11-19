@@ -11,5 +11,3 @@ Set values for erlang, seed, and demand cound in the file: /INPUT/settings.csv
 Set values for regenerators cound for each node in the file: /INPUT/regenerators.csv
 
 Output file will be found in the directory: /OUTPUT/
-
-- Aldrich Huang A01026502
