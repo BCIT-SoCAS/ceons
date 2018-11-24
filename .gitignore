@@ -69,3 +69,4 @@ results-trimmed.arff
 results-trimmed-randomized.arff
 results-trimmed-randomized.csv
 results.csv
+*.csv

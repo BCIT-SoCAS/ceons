@@ -41,7 +41,6 @@ import java.io.FileReader;
 
 public class Main extends Application {
 
-    // Run 100 epochs for each erlang - 500, 600, 700, 800, 900, 1000
 	private static long seed = 120;
 	private static int demandsCount = 100000;
 	private static int erlang = 1000;
@@ -73,21 +72,29 @@ public class Main extends Application {
 	public static void main(String[] args) {
 
 		List<String> ranges = new ArrayList<String>();
+//		try {
+//			BufferedReader reader = new BufferedReader(new FileReader("ranges.txt"));
+//			String line;
+//			while ((line = reader.readLine()) != null) {
+//				ranges.add(line);
+//			}
+//			reader.close();
+//		} catch (Exception e) {
+//			System.err.format("Error reading '%s'.", "ranges.txt");
+//			e.printStackTrace();
+//		}
+
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader("ranges.txt"));
-			String line;
-			while ((line = reader.readLine()) != null) {
-				ranges.add(line);
-			}
-			reader.close();
+			String line = args[0]+","+args[1]+","+args[2]+"," +args[3]+","+args[4];
+			ranges.add(line);
+			demandsCount = Integer.valueOf(args[5]);
+			erlang = Integer.valueOf(args[6]);
+			seed = Integer.valueOf(args[7]);
 		} catch (Exception e) {
-			System.err.format("Error reading '%s'.", "ranges.txt");
-			e.printStackTrace();
+			System.out.println("Format: Usage percentages 1 - 5, Demands count, Erlang, Seed");
 		}
 
 		for (String rangeList : ranges) {
-			// rangeList looks like 70,67,57,22,7
-			System.out.println("Ranges: "+rangeList);
 			try {
 				YamlSerializable.registerSerializableClass(NetworkNode.class);
 				YamlSerializable.registerSerializableClass(NetworkLink.class);
@@ -115,7 +122,7 @@ public class Main extends Application {
 				generators = setupGenerators(eon);
 				Network network = eon.getNetwork();
 
-				network.setDemandAllocationAlgorithm(new AMRA()); // here to set algorithm
+				network.setDemandAllocationAlgorithm(new AMRA());
 
 				// Can change modulation between nodes
 				network.setCanSwitchModulation(true);
@@ -146,6 +153,7 @@ public class Main extends Application {
 				JOptionPane.showMessageDialog(null, "Fatal error occured: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 				e.printStackTrace();
 			}
+			System.exit(0);
 		}
 	}
 
