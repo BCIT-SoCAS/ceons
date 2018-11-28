@@ -1,0 +1,33 @@
+name,isReplica,isInternational,MaxOccupiedReg,AvgOccupeidReg,LinkCount,SumLinkLength,AvgLinkLength
+Node_0,true,false,65,19.32,3,1744,581.33
+Node_1,true,false,100,76.95,5,2848,569.6
+Node_3,true,false,73,31.51,4,2418,604.5
+Node_19,false,true,14,3.11,2,1152,576.0
+Node_2,false,false,52,15.81,3,1126,375.33
+Node_4,false,false,29,10.11,3,1897,632.33
+Node_6,false,false,52,14.22,3,1089,363.0
+Node_17,false,true,49,21.21,2,1581,790.5
+Node_8,true,false,31,7.77,4,1793,448.25
+Node_7,false,false,55,24.1,3,1525,508.33
+Node_20,false,false,14,0.32,2,1529,764.5
+Node_5,true,false,36,13.03,3,1052,350.67
+Node_18,false,false,15,3.71,2,1556,778.0
+Node_9,false,false,65,24.97,3,1569,523.0
+Node_11,false,false,95,56.41,5,2873,574.6
+Node_10,false,false,49,18.17,4,2269,567.25
+Node_12,false,false,50,26.45,3,3003,1001.0
+Node_14,false,false,38,16.15,3,1310,436.67
+Node_15,false,false,21,5.08,3,1464,488.0
+Node_24,true,false,30,11.51,3,2807,935.67
+Node_25,false,false,21,5.62,2,1262,631.0
+Node_13,false,false,23,4.18,3,1734,578.0
+Node_21,false,true,2,0.1,2,2709,1354.5
+Node_22,false,false,36,15.87,3,2234,744.67
+Node_23,false,false,40,17.89,3,1961,653.67
+Node_16,true,false,9,1.46,2,1594,797.0
+Node_26,false,false,27,7.1,2,1836,918.0
+Node_27,false,false,2,0.14,2,1345,672.5
+END_OF_DATA
+Erlang: 500, Seed_Value: 42, Demands_Count: 250000
+
+CREATED_ON:2018-11-22 09:21:50.322

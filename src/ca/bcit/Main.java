@@ -255,50 +255,57 @@ public class Main extends Application {
                 outputDir.mkdir();
             }
 
-            while(outputFile.exists()){
-                if(outputFileNumber == ""){
-                    outputFileNumber = "1";
-                } else {
-                    outputFileNumber = String.valueOf(Integer.parseInt(outputFileNumber) + 1);
-                }
-                outputFilePath = outputDirectoryPath + outputFileName + outputFileNumber +outputFileExtension;
-                outputFile = new File(outputFilePath);
-            }
+            //while(outputFile.exists()){
+            //    if(outputFileNumber == ""){
+            //        outputFileNumber = "1";
+            //    } else {
+            //        outputFileNumber = String.valueOf(Integer.parseInt(outputFileNumber) + 1);
+            //    }
+            //    outputFilePath = outputDirectoryPath + outputFileName + outputFileNumber +outputFileExtension;
+            //    outputFile = new File(outputFilePath);
+            //}
+			
+			if(outputFile.exists()){
+				outputFile.delete();
+				outputFile = new File(outputFilePath);
+			}
 
             String settingsHeader = "START_OF_SETTINGS";
             String settingsFooter = System.lineSeparator() + "END_OF_SETTINGS";
             String dataHeader = System.lineSeparator() + "START_OF_NODE_DATA";
-            String dataFooter = System.lineSeparator() + "END_OF_NODE_DATA";
+            String dataFooter = System.lineSeparator() + "END_OF_DATA";
             String dateLable = System.lineSeparator() + "CREATED_ON:";
 
             FileWriter outputFileWriter = new FileWriter(outputFile, true);
 
+            String dataColName = "name,isReplica,isInternational,MaxOccupiedReg,AvgOccupeidReg,LinkCount,SumLinkLength,AvgLinkLength";
+            outputFileWriter.append(dataColName);
+            for(NetworkNode n : network.getNodes()){
+                String nodeState = System.lineSeparator() +
+                        n.getName() + "," +
+                        n.getReplicaStatus() + "," +
+                        n.getInternationalStatus() + "," +
+                        n.getMaxOccupiedRegenerators() + "," +
+                        n.getAvgOccupiedRegCount() + "," +
+                        n.getLinkCount() + "," +
+                        n.getSumLinkLength() + "," +
+                        n.getAvgLinkLength();
+
+                outputFileWriter.append(nodeState);
+            }
+            outputFileWriter.append(dataFooter);
             String simSettings = System.lineSeparator() +
                     "Erlang: " + erlang +
                     ", Seed_Value: " + seed +
                     ", Demands_Count: "+ demandsCount;
             String separatorRegion = System.lineSeparator();
 
-            outputFileWriter.append(settingsHeader);
+//            outputFileWriter.append(settingsHeader);
+//            outputFileWriter.append(simSettings);
+//            outputFileWriter.append(settingsFooter);
+//            outputFileWriter.append(separatorRegion);
+//            outputFileWriter.append(dataHeader);
             outputFileWriter.append(simSettings);
-            outputFileWriter.append(settingsFooter);
-            outputFileWriter.append(separatorRegion);
-            outputFileWriter.append(dataHeader);
-
-            for(NetworkNode n : network.getNodes()){
-                String nodeState = System.lineSeparator() +
-                        "Name: " + n.getName() +
-                        ", Is_Replica: " + n.getReplicaStatus() +
-                        ", Is_International: " + n.getInternationalStatus() +
-                        ", Max_Occupied_Regenerators: " + n.getMaxOccupiedRegenerators() +
-                        ", Avg_Occupied_Regenerators: " + n.getAvgOccupiedRegCount() +
-                        ", Number_of_Links: " + n.getLinkCount() +
-                        ", Total_Link_Length: " + n.getSumLinkLength() +
-                        ", Avg_Link_Length: " + n.getAvgLinkLength();
-
-                outputFileWriter.append(nodeState);
-            }
-            outputFileWriter.append(dataFooter);
             outputFileWriter.append(separatorRegion);
 
             Date date = new Date();
