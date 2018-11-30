@@ -7,7 +7,7 @@ CURRENT_BEST_LIST = ''
 CURRENT_BEST_COST = 100.0
 
 def cost(list):
-    process = subprocess.Popen(['java', '-jar', 'Elastic-Optical-Network-Simulation.jar', list[0], list[1], list[2], list[3], list[4], '10000', '1100', '120'], stdout=subprocess.PIPE)
+    process = subprocess.Popen(['java', '-jar', 'Elastic-Optical-Network-Simulation.jar', list[0], list[1], list[2], list[3], list[4], '10000', '1200', '0'], stdout=subprocess.PIPE)
     out, err = process.communicate()
     output = out.decode("utf-8")
     cost = float(output.split(",")[5])
@@ -44,7 +44,6 @@ def acceptance_probability(old_cost, new_cost, temp):
 def anneal(solution):
     global CURRENT_BEST_COST
     global CURRENT_BEST_LIST
-    f = open("results.txt", "w+")
 
     old_cost, x = cost(solution)
     temp = 1.0
@@ -53,33 +52,15 @@ def anneal(solution):
     while temp > temp_min:
         i = 1
         while i <= 20:
-            print('Current Best List: {0}'.format(CURRENT_BEST_LIST),end='')
-            f.write('Current Best List: {0}'.format(CURRENT_BEST_LIST))
-            print('Current Best Cost: '+str(CURRENT_BEST_COST))
-            f.write('Current Best Cost: '+str(CURRENT_BEST_COST)+'\n')
             new_solution = neighbor(solution)
-            print_list = ','.join(new_solution)
-            print('---- New Neighbor: {0}'.format(print_list))
-            f.write('---- New Neighbor: {0}\n'.format(print_list))
             new_cost, l = cost(new_solution)
-            print('List: {0}'.format(l),end='')
-            f.write('List: {0}'.format(l))
             ap = acceptance_probability(old_cost, new_cost, temp)
-            print('AP: ' + str(ap))
-            f.write('AP: ' + str(ap)+'\n')
             if ap > random.uniform(0.0, 1.0):
                 solution = new_solution
                 old_cost = new_cost
             i += 1
         temp = temp*alpha
-
-        print('******** Temperature: '+str(temp)+'\n')
-        f.write('******** Temperature: '+str(temp)+'\n')
-
-    f.close()
     return solution, cost
 
 initial_solution = ['90', '75', '60', '40', '20']
 result, cost = anneal(initial_solution)
-print(result)
-print(cost)

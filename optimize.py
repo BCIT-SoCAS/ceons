@@ -24,7 +24,7 @@ for i in range(1000):
     usage4 = 0
     usage5 = 0
     usage5 = random.randint(1,20)
-    usage4 = random.randint((usage5+1), 39)
+    usage4 = random.randint((usage5+1), 40)
     usage3 = random.randint((usage4+1), 60)
     usage2 = random.randint((usage3+1), 80)
     usage1 = random.randint((usage2+1), 99)

@@ -44,6 +44,7 @@ public class Main extends Application {
 	private static long seed = 120;
 	private static int demandsCount = 100000;
 	private static int erlang = 1000;
+	private static String file_name = "euro28.eon";
 	private static double alpha = 0;
 	private static boolean replicaPreservation = false;
 	private static List<TrafficGenerator> generators = new ArrayList<>();
@@ -90,6 +91,7 @@ public class Main extends Application {
 			demandsCount = Integer.valueOf(args[5]);
 			erlang = Integer.valueOf(args[6]);
 			seed = Integer.valueOf(args[7]);
+			file_name = args[8];
 		} catch (Exception e) {
 			System.out.println("Format: Usage percentages 1 - 5, Demands count, Erlang, Seed");
 		}
@@ -111,7 +113,7 @@ public class Main extends Application {
 				// Load project based on network file
 				ProjectFileFormat.registerFileFormat(new EONProjectFileFormat());
 				EONProjectFileFormat project = new EONProjectFileFormat();
-				File file = new File("euro28.eon"); //file to change
+				File file = new File(file_name);
 				Project eon = project.load(file);
 				ApplicationResources.setProject(eon);
 
