@@ -18,6 +18,7 @@ import javafx.scene.control.Accordion;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.Button;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -32,6 +33,7 @@ public class MainWindowController  {
 	@FXML private RadioButton RBNoneChose;
 	@FXML private Accordion accordion;
 	@FXML private TitledPane propertiesTitledPane;
+	@FXML private Button PauseButton;
 	private final static int PROPERTIES_PANE_NUMBER=4;
 	private final static int EDIT_PANE_NUMBER=3;
 	
@@ -150,10 +152,11 @@ public class MainWindowController  {
     // pause button
 	public static boolean paused = false;
 	@FXML public void pauseSimulation(ActionEvent e) {
+		if (paused) {
+			PauseButton.setText("Pause Simulation");
+		} else {
+			PauseButton.setText("Resume Simulation");
+		}
 		paused ^= true; // swap true/false state
-	}
-
-	@FXML public void setDefaults(ActionEvent e) {
-		SimulationMenuController.setDefaults();
 	}
 }

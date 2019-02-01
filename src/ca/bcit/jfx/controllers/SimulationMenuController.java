@@ -98,9 +98,4 @@ public class SimulationMenuController {
 		progressBar.runTask(task, true);
 	}
 
-
-
-	static void setDefaults() {
-		System.out.println("test");
-	}
 }

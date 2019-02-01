@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <!--suppress ALL -->
 <GridPane gridLinesVisible="true" prefWidth="1200.0" prefHeight="800.0" stylesheets="/ca/bcit/jfx/res/application.cssext" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.MainWindowController">
-	<AnchorPane id="AnchorPane" maxHeight="800" maxWidth="600" minHeight="0" minWidth="0" prefHeight="430.0" prefWidth="600.0" style="-fx-background-color: azure;" >
+	<AnchorPane id="AnchorPane" maxHeight="1200" maxWidth="800" minHeight="0" minWidth="0" prefHeight="430.0" prefWidth="600.0" style="-fx-background-color: azure;" >
 		<children>
 			<ImageView  layoutX="0.0" layoutY="0.0" fitHeight="500" fitWidth="800.0" pickOnBounds="true" preserveRatio="true">
 				<image>
@@ -48,12 +48,6 @@
 				<Console fx:id="console" wrapText="true" GridPane.rowIndex="1" />
 				<TaskReadyProgressBar fx:id="progressBar" GridPane.rowIndex="2" />
 			</children>
-			<VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0"
-				  prefWidth="200.0">
-				<children>
-					<Button text="Pause" onAction="#pauseSimulation"/>
-				</children>
-			</VBox>
 		</GridPane>
 		<Accordion fx:id="accordion" GridPane.columnIndex="1">
 			<panes>
@@ -74,9 +68,6 @@
 								<RadioButton fx:id="radioButtonDeleteNode" onAction="#deleteNodeChose" text="Delete node" toggleGroup="$RBGroup" />
 								<RadioButton fx:id="radioButtonDeleteLink" onAction="#deleteLinkChose" text="Delete link" toggleGroup="$RBGroup" />
 								<RadioButton fx:id="radioButtonDeleteFewElements" mnemonicParsing="false" onAction="#deleteFewElementsChose" text="Delete few elements" toggleGroup="$RBGroup" />
-								<Separator />
-								<RadioButton text="Rotate around center" toggleGroup="$RBGroup" onAction="#rotateAroundCenterChose" />
-								<RadioButton text="Rotate around node" toggleGroup="$RBGroup" onAction="#rotateAroundNodeChose" />
 							</children>
 						</VBox>
 					</content>
@@ -91,7 +82,7 @@
 						<VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0"
 							prefWidth="200.0">
 							<children>
-								<Button text="Default Settings" onAction="#setDefaults"/>
+								<Button fx:id="PauseButton" text="Pause Simulation" onAction="#pauseSimulation"/>
 							</children>
 						</VBox>
 					</content>
