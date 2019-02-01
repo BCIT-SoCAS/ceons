@@ -56,6 +56,7 @@
 						<VBox alignment="TOP_CENTER" spacing="8.0">
 							<children>
 								<fx:include fx:id="networkMenu" source="/ca/bcit/jfx/res/NetworkMenu.fxml" />
+								<Button onAction="#onLoad" text="Load" GridPane.columnIndex="1" />
 								<RadioButton fx:id="RBNoneChose" onAction="#noneChose" selected="true" text="None" toggleGroup="$RBGroup">
 									<toggleGroup>
 										<ToggleGroup fx:id="RBGroup" />

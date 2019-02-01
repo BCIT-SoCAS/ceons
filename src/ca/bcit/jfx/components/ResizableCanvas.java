@@ -185,7 +185,7 @@ public class ResizableCanvas extends Canvas {
 		return state == DrawingState.linkAddingState;
 	}
 
-	private void addNode(Vector2F vec2F) {
+	public void addNode(Vector2F vec2F) {
 		list.add(new Node(vec2F, list.getNodeAmount()));
 	}
 
