@@ -7,12 +7,12 @@ import ca.bcit.net.demand.AnycastDemand;
 import ca.bcit.net.demand.Demand;
 import ca.bcit.net.demand.DemandAllocationResult;
 import ca.bcit.net.demand.generator.TrafficGenerator;
+import ca.bcit.jfx.controllers.MainWindowController;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 
 /**
@@ -49,6 +49,7 @@ public class Simulation {
 		network.setSeed(seed);
 		Random linkCutter = new Random(seed);
 		try {
+			int reportCounter = 0;
 			for (; generator.getGeneratedDemandsCount() < demandsCount;) {
 				Demand demand = generator.next();
 
@@ -65,19 +66,89 @@ public class Simulation {
 				}
 
 				network.update();
+
+				// create a GUI update per n simulations.
+				int n = 1000;
+
+				// if paused, force GUI to immediately update to current.
+				if (MainWindowController.paused)  reportCounter = n;
+
+				int nodeCount = network.getNodes().size();
+				ArrayList tempNodeArr = new ArrayList();
+				int[][] tempSliceArr = new int[nodeCount * (nodeCount + 1) / 2][5];
+
+				// GUI updates
+				reportCounter++;
+				if (reportCounter > n) {
+					for (int i = 0; i < nodeCount; i++) {
+						tempNodeArr.add(network.getNodes().get(i).getName()); // name of regenerator at node i
+						int tempOccRegen = network.getNodes().get(i).getOccupiedRegenerators(); // occupied regenerators available at node i
+						int tempFreeRegen = network.getNodes().get(i).getFreeRegenerators(); // free regenerators available at node i
+						tempNodeArr.add(tempOccRegen);
+						tempNodeArr.add(tempFreeRegen);
+						tempNodeArr.add(tempFreeRegen * 100 / (tempOccRegen + tempFreeRegen));
+					}
+
+					for (int i = 0; i < nodeCount*4; i+=4) {
+						String tempStr = "Node: " + tempNodeArr.get(i).toString() + ", Occupied Regenerators: " + tempNodeArr.get(i+1).toString() + ", Free Regenerators: " + tempNodeArr.get(i+2).toString() + ", Available Regenerators: " + tempNodeArr.get(i+3).toString() + '%';
+						System.out.println(tempStr);
+					}
+					System.out.println("---------------------------------------------------------------------------");
+
+					int tempCounter = 0;
+					for (int i = 0; i < nodeCount -1; i++) {
+						for (int j = i + 1; j < nodeCount - 1; j++) {
+							try {
+								tempSliceArr[tempCounter][0] = i;
+								tempSliceArr[tempCounter][1] = j;
+								tempSliceArr[tempCounter][2] = network.getLinkSlices(network.getNodes().get(i), network.getNodes().get(j)).getOccupiedSlices() / 2;
+								tempSliceArr[tempCounter][3] = network.getLinkSlices(network.getNodes().get(i), network.getNodes().get(j)).getSlicesCount() / 2;
+								tempSliceArr[tempCounter][4] = (tempSliceArr[tempCounter][3] - tempSliceArr[tempCounter][2]) * 100 / tempSliceArr[tempCounter][3];
+							} catch (Exception e) {
+								tempSliceArr[tempCounter][0] = -1;
+							}
+							tempCounter++;
+						}
+					}
+					for (int i = 0; i < tempCounter; i++) {
+						if (tempSliceArr[i][0] == -1) {
+							continue;
+						}
+						String tempStr = "Slice beteween " + network.getNodes().get(tempSliceArr[i][0]).getName() + " and " + network.getNodes().get(tempSliceArr[i][1]).getName() + ", Occupied: " + tempSliceArr[i][2] + ", Total Slices: " + tempSliceArr[i][3] + ", Free Slices: " + tempSliceArr[i][4] + '%';
+						System.out.println(tempStr);
+					}
+					System.out.println("---------------------------------------------------------------------------");
+
+					reportCounter -= n;
+				}
+
+				// logic to calculate
+				/*
+				network.getLinkSlices().getOccupiedSlices();
+				network.getLinkSlices().getSlicesCount();
+				*/
+
+				// pause button
+				Pause();
+
 				task.updateProgress(generator.getGeneratedDemandsCount(), demandsCount);
-			}
+			} // loop end here
+			// force call the update again here
 		} catch (NetworkException e) {
+			// error in code
 			Logger.info("Network exception: " + e.getMessage());
 			for (; generator.getGeneratedDemandsCount() < demandsCount;) {
 				Demand demand = generator.next();
 				unhandledVolume += demand.getVolume();
+
 				if (demand instanceof AnycastDemand)
 					unhandledVolume += generator.next().getVolume();
 				task.updateProgress(generator.getGeneratedDemandsCount(), demandsCount);
 			}
 			totalVolume += unhandledVolume;
 		}
+
+
 
 		network.waitForDemandsDeath();
 
@@ -111,6 +182,16 @@ public class Simulation {
 		// for (Modulation modulation : Modulation.values())
 		// Logger.info(modulation.toString() + ": " +
 		// modulationsUsage[modulation.ordinal()]);
+	}
+
+	private void Pause() {
+		while (MainWindowController.paused) {
+			try {
+				Thread.sleep(10);
+			} catch(InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+		}
 	}
 
 	private void clearVolumeValues() {

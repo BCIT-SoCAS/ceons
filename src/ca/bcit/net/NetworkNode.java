@@ -37,6 +37,10 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 		return regeneratorsCount - occupiedRegenerators;
 	}
 
+	public int getOccupiedRegenerators() {
+		return occupiedRegenerators;
+	}
+
 	public boolean hasFreeRegenerators() {
 		return regeneratorsCount - occupiedRegenerators > 0;
 	}
@@ -59,15 +63,13 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 
 	@Override
 	public String toString() {
-		return "{name: " + name + ", regenerators: " + regeneratorsCount + ", xcoordinate: " + getPosition().getX() +
-				", ycoordinate: " + getPosition().getY() + "}";
+		return "{name: " + name + ", regenerators: " + regeneratorsCount + "}";
 	}
 
 	@SuppressWarnings({ "rawtypes", "unused" })
 	private NetworkNode(Map map) {
 		name = (String) map.get("name");
 		regeneratorsCount = (Integer) map.get("regenerators");
-		setPosition((Integer) map.get("xcoordinate"),(Integer) map.get("ycoordinate"));
 	}
 
 	@Override

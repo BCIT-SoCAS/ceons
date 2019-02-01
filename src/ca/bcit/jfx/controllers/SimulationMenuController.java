@@ -20,6 +20,13 @@ import javafx.scene.layout.VBox;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import ca.bcit.net.algo.AMRA;
+import ca.bcit.io.project.EONProject;
+import ca.bcit.io.project.EONProjectFileFormat;
+import ca.bcit.io.project.Project;
+import ca.bcit.io.project.ProjectFileFormat;
+import java.io.File;
+import ca.bcit.io.YamlSerializable;
 
 public class SimulationMenuController {
 	
@@ -89,5 +96,11 @@ public class SimulationMenuController {
 		Simulation simulation = new Simulation(network, generators.getValue());
 		SimulationTask task = new SimulationTask(simulation, seed.getValue(), Double.parseDouble(alpha.getText()), erlang.getValue(), demands.getValue(), replicaPreservation.isSelected());
 		progressBar.runTask(task, true);
+	}
+
+
+
+	static void setDefaults() {
+		System.out.println("test");
 	}
 }

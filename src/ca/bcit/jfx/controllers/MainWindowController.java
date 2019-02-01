@@ -147,4 +147,13 @@ public class MainWindowController  {
             propertiesTitledPane.setContent(null);
     }
 
+    // pause button
+	public static boolean paused = false;
+	@FXML public void pauseSimulation(ActionEvent e) {
+		paused ^= true; // swap true/false state
+	}
+
+	@FXML public void setDefaults(ActionEvent e) {
+		SimulationMenuController.setDefaults();
+	}
 }

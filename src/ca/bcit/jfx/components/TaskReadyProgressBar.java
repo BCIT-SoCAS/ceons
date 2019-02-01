@@ -23,7 +23,7 @@ public class TaskReadyProgressBar extends StackPane {
 	
 	private void bind(Task<?> task) {
 		bar.setVisible(true);
-		bar.progressProperty().bind(task.progressProperty());
+		bar.progressProperty().bind(task.progressProperty()); // possible docking location for pause
 		label.textProperty().bind(task.messageProperty());
 	}
 	
