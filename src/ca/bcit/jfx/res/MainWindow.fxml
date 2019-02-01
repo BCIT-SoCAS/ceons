@@ -5,8 +5,21 @@
 <?import ca.bcit.jfx.components.TaskReadyProgressBar?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 <!--suppress ALL -->
 <GridPane gridLinesVisible="true" prefWidth="800.0" prefHeight="600.0" stylesheets="/ca/bcit/jfx/res/application.cssext" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.MainWindowController">
+	<AnchorPane id="AnchorPane" maxHeight="800" maxWidth="600" minHeight="0" minWidth="0" prefHeight="430.0" prefWidth="600.0" style="-fx-background-color: azure;" >
+		<children>
+			<ImageView  layoutX="0.0" layoutY="0.0" fitHeight="500" fitWidth="800.0" pickOnBounds="true" preserveRatio="true">
+				<image>
+					<Image url="ca\bcit\jfx\res\euro28map.png" />
+				</image>
+			</ImageView>
+		</children>
+	</AnchorPane>
 	<columnConstraints>
 		<ColumnConstraints hgrow="SOMETIMES" />
 		<ColumnConstraints maxWidth="-Infinity" prefWidth="250.0" />
