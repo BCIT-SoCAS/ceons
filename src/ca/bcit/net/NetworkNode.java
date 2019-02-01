@@ -63,13 +63,15 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 
 	@Override
 	public String toString() {
-		return "{name: " + name + ", regenerators: " + regeneratorsCount + "}";
+        return "{name: " + name + ", regenerators: " + regeneratorsCount + ", xcoordinate: " + getPosition().getX() +
+                ", ycoordinate: " + getPosition().getY() + "}";
 	}
 
 	@SuppressWarnings({ "rawtypes", "unused" })
 	private NetworkNode(Map map) {
 		name = (String) map.get("name");
 		regeneratorsCount = (Integer) map.get("regenerators");
+        setPosition((Integer) map.get("xcoordinate"),(Integer) map.get("ycoordinate"));
 	}
 
 	@Override

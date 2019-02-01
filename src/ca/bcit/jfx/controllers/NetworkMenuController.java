@@ -48,6 +48,7 @@ public class NetworkMenuController {
 					Logger.info("Finished loading project.");
 					for (NetworkNode n: project.getNetwork().getNodes()){
 						n.setRegeneratorsCount(100);
+						System.out.println(n.toString());
 					}
 					setupGenerators(project);
 					
