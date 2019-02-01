@@ -24,6 +24,7 @@ import javafx.stage.Stage;
 import javax.swing.*;
 import java.io.IOException;
 // test comment
+// test comment #2
 public class Main extends Application {
 	
 	@Override
