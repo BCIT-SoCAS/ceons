@@ -12,6 +12,7 @@ import ca.bcit.jfx.DrawingState;
 import ca.bcit.jfx.LinkPropertiesController;
 import ca.bcit.jfx.NodePropertiesController;
 import ca.bcit.jfx.components.Console;
+import ca.bcit.jfx.components.SelectNetworkOptionDialog;
 import ca.bcit.jfx.components.ResizableCanvas;
 import ca.bcit.jfx.components.TaskReadyProgressBar;
 import ca.bcit.net.Network;
@@ -45,6 +46,7 @@ import java.util.List;
 public class MainWindowController  {
 	
 	@FXML private Console console;
+	@FXML private SelectNetworkOptionDialog selectNetworkOptionDialog;
 	@FXML private TaskReadyProgressBar progressBar;
 	@FXML private Label progressLabel;
 	@FXML private SimulationMenuController simulationMenuController;
@@ -177,6 +179,12 @@ public class MainWindowController  {
 			PauseButton.setText("Resume Simulation");
 		}
 		paused ^= true; // swap true/false state
+	}
+	/**
+	 * Display dialog window
+	 */
+	@FXML public void showSelectNetworkOptionDialog(ActionEvent e) {
+		selectNetworkOptionDialog.display();
 	}
 
 	@FXML public void onLoad(ActionEvent e) {
