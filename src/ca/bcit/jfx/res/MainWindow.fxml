@@ -15,7 +15,7 @@
 		<children>
 			<ImageView  layoutX="0.0" layoutY="0.0" fitHeight="500" fitWidth="800" pickOnBounds="true" preserveRatio="true">
 				<image>
-					<Image url="ca\bcit\jfx\res\euro28map.png" />
+					<Image url="ca/bcit/jfx/res/euro28map.png" />
 				</image>
 			</ImageView>
 		</children>
@@ -73,17 +73,18 @@
 						</VBox>
 					</content>
 				</TitledPane>
-				<TitledPane animated="true" text="Simulation">
+				<TitledPane animated="true" text="Simulation Settings">
 					<content>
 						<fx:include fx:id="simulationMenu" source="/ca/bcit/jfx/res/SimulationMenu.fxml" />
 					</content>
 				</TitledPane>
-				<TitledPane animated="true" text="Settings">
+				<TitledPane animated="true" text="Live Demo">
 					<content>
 						<VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0"
 							prefWidth="200.0">
 							<children>
 								<Button fx:id="PauseButton" text="Pause Simulation" onAction="#pauseSimulation"/>
+								<Button fx:id="showSelectNetworkOptionDialog" text="Show Dialog" onAction="#showSelectNetworkOptionDialog"/>
 							</children>
 						</VBox>
 					</content>
