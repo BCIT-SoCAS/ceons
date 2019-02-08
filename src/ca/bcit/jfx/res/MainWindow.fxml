@@ -73,16 +73,17 @@
 						</VBox>
 					</content>
 				</TitledPane>
-				<TitledPane animated="true" text="Simulation">
+				<TitledPane animated="true" text="Simulation Settings">
 					<content>
 						<fx:include fx:id="simulationMenu" source="/ca/bcit/jfx/res/SimulationMenu.fxml" />
 					</content>
 				</TitledPane>
-				<TitledPane animated="true" text="Settings">
+				<TitledPane animated="true" text="Live Info">
 					<content>
 						<VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0"
 							prefWidth="200.0">
 							<children>
+								<Label text="Pause to see live simulation statistics" />
 								<Button fx:id="PauseButton" text="Pause Simulation" onAction="#pauseSimulation"/>
 							</children>
 						</VBox>
