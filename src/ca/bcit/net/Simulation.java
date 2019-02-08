@@ -131,6 +131,12 @@ public class Simulation {
 				// pause button
 				Pause();
 
+				// cancel button
+				if (MainWindowController.cancelled) {
+					MainWindowController.cancelled = false;
+					break;
+				}
+
 				task.updateProgress(generator.getGeneratedDemandsCount(), demandsCount);
 			} // loop end here
 			// force call the update again here

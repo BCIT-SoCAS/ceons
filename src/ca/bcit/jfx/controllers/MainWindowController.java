@@ -180,6 +180,11 @@ public class MainWindowController  {
 		}
 		paused ^= true; // swap true/false state
 	}
+
+	public static boolean cancelled = false;
+	@FXML public void cancelSimulation(ActionEvent e) {
+		cancelled = true;
+	}
 	/**
 	 * Display dialog window
 	 */

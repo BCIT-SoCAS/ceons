@@ -87,6 +87,7 @@
 							<children>
 								<Label text="Pause to see live simulation statistics" />
 								<Button fx:id="PauseButton" text="Pause Simulation" onAction="#pauseSimulation"/>
+								<Button fx:id="CancelButton" text="Cancel Simulation" onAction="#cancelSimulation"/>
 								<Button fx:id="showSelectNetworkOptionDialog" text="Show Dialog" onAction="#showSelectNetworkOptionDialog"/>
 							</children>
 						</VBox>
