@@ -199,12 +199,13 @@ public class MainWindowController  {
 						n.setRegeneratorsCount(100);
 						System.out.println(n.toString());
 						graph.addNode(n.getPosition());
+						for (NetworkNode n2: project.getNetwork().getNodes()){
+							if(project.getNetwork().containsLink(n, n2)) {
+								graph.addLink(n.getPosition(), n2.getPosition());
+							}
+						}
 					}
-					for (NetworkNode n: project.getNetwork().getNodes()){
-						n.setRegeneratorsCount(100);
-						System.out.println(n.toString());
-						graph.addNode(n.getPosition());
-					}
+
 					setupGenerators(project);
 
 				} catch (Exception ex) {

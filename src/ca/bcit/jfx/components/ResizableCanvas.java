@@ -193,6 +193,10 @@ public class ResizableCanvas extends Canvas {
 		list.add(new Link(vec2F, vec2F, list.getLinkAmount()));
 	}
 
+	public void addLink(Vector2F start_vec2F, Vector2F end_vec2F) {
+		list.add(new Link(start_vec2F, end_vec2F, list.getLinkAmount()));
+	}
+
 	private Figure findClosestElement(Vector2F vec2F) {
 		return list.findClosestElement(vec2F);
 	}

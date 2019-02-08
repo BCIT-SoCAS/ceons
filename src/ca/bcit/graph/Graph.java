@@ -60,7 +60,7 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 		return oldLink;
 	}
 	
-	protected boolean containsLink(N nodeA, N nodeB) {
+	public boolean containsLink(N nodeA, N nodeB) {
 		if (!contains(nodeA) || !contains(nodeB)) return false;
 		return getLink(nodeA, nodeB) != null;
 	}
