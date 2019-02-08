@@ -132,6 +132,11 @@ public class Simulation {
 				// pause button
 				Pause();
 
+				// cancel button
+				if (MainWindowController.cancelled) {
+					break;
+				}
+
 				task.updateProgress(generator.getGeneratedDemandsCount(), demandsCount);
 			} // loop end here
 			// force call the update again here
@@ -153,6 +158,11 @@ public class Simulation {
 
 		network.waitForDemandsDeath();
 
+
+		if (MainWindowController.cancelled) {
+			Logger.info("Simulation Cancelled!");
+			return;
+		}
 
 		Logger.info("Blocked Spectrum: " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
 		Logger.info("Blocked Regenerators: " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
