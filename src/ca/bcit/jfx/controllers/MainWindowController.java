@@ -170,7 +170,7 @@ public class MainWindowController  {
             propertiesTitledPane.setContent(null);
     }
 
-    // pause button
+	// pause button
 	public static boolean paused = false;
 	@FXML public void pauseSimulation(ActionEvent e) {
 		if (paused) {
@@ -180,6 +180,7 @@ public class MainWindowController  {
 		}
 		paused ^= true; // swap true/false state
 	}
+
 	/**
 	 * Display dialog window
 	 */
@@ -299,4 +300,5 @@ public class MainWindowController  {
 
 		SimulationMenuController.generatorsStatic.setItems(new ObservableListWrapper<>(generators));
 	}
+
 }

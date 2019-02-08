@@ -51,7 +51,8 @@ public class NetworkMenuController {
 						System.out.println(n.toString());
 					}
 					setupGenerators(project);
-					
+
+
 				} catch (Exception ex) {
 					Logger.info("An exception occurred while loading the project.");
 					Logger.debug(ex);

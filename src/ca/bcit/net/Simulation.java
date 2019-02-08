@@ -2,6 +2,7 @@ package ca.bcit.net;
 
 import ca.bcit.ApplicationResources;
 import ca.bcit.io.Logger;
+import ca.bcit.jfx.controllers.SimulationMenuController;
 import ca.bcit.jfx.tasks.SimulationTask;
 import ca.bcit.net.demand.AnycastDemand;
 import ca.bcit.net.demand.Demand;
@@ -151,6 +152,7 @@ public class Simulation {
 
 
 		network.waitForDemandsDeath();
+
 
 		Logger.info("Blocked Spectrum: " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
 		Logger.info("Blocked Regenerators: " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
