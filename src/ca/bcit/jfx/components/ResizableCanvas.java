@@ -185,6 +185,11 @@ public class ResizableCanvas extends Canvas {
 		return state == DrawingState.linkAddingState;
 	}
 
+	/**
+	 * Draw a Node on the given coordinates from the parameter vec2F
+	 *
+	 * @param vec2F		the coordinates of Node
+	 */
 	public void addNode(Vector2F vec2F) {
 		list.add(new Node(vec2F, list.getNodeAmount()));
 	}
@@ -193,6 +198,12 @@ public class ResizableCanvas extends Canvas {
 		list.add(new Link(vec2F, vec2F, list.getLinkAmount()));
 	}
 
+	/**
+	 * Draw a Link between two Nodes given the coordinates of the Nodes
+	 *
+	 * @param start_vec2F	coordinates of the first Node
+	 * @param end_vec2F		coordinates of the second Node
+	 */
 	public void addLink(Vector2F start_vec2F, Vector2F end_vec2F) {
 		list.add(new Link(start_vec2F, end_vec2F, list.getLinkAmount()));
 	}

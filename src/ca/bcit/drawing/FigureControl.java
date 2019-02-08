@@ -40,6 +40,11 @@ public class FigureControl {
 		selectedFigure = temp.selectedFigure;
 	}
 
+	/**
+	 * Draw a new Figure (Node or Link) on the canvas
+	 *
+	 * @param temp		the figure object. It needs to be either node or link.
+	 */
 	public void add(Figure temp) {
 
 		if (temp instanceof Node) {
