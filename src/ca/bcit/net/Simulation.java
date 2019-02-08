@@ -133,7 +133,6 @@ public class Simulation {
 
 				// cancel button
 				if (MainWindowController.cancelled) {
-					MainWindowController.cancelled = false;
 					break;
 				}
 
@@ -157,6 +156,12 @@ public class Simulation {
 
 
 		network.waitForDemandsDeath();
+
+		if (MainWindowController.cancelled) {
+			Logger.info("Simulation Cancelled!");
+			return;
+		}
+
 
 		Logger.info("Blocked Spectrum: " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
 		Logger.info("Blocked Regenerators: " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
