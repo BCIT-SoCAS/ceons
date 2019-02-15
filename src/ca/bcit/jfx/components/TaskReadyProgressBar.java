@@ -11,8 +11,6 @@ import javafx.scene.layout.VBox;
 
 public class TaskReadyProgressBar extends StackPane {
 
-	@FXML private VBox settings;
-
 	private final ProgressBar bar = new ProgressBar();
 	private final Label label = new Label("");
 	

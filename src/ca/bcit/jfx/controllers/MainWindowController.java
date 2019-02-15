@@ -199,6 +199,35 @@ public class MainWindowController  {
 
 	private int i;
 
+	@FXML public void onNew(ActionEvent e) {
+		Logger.debug("new");
+	}
+
+	@FXML public void onSave(ActionEvent e) {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
+		fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+		final File file = fileChooser.showSaveDialog(null);
+
+		if (file == null) return;
+		Task<Void> task = new Task<Void>() {
+
+			@Override
+			protected Void call() {
+				try {
+					Logger.info("Saving project to " + file.getName() + "...");
+					ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).save(file, ApplicationResources.getProject());
+					Logger.info("Finished saving project.");
+				} catch (Exception ex) {
+					Logger.info("An exception occurred while saving the project.");
+					Logger.debug(ex);
+				}
+				return null;
+			}
+		};
+		task.run();
+	}
+
 	@FXML public void onLoad(ActionEvent e) {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
