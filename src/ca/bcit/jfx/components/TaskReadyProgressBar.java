@@ -3,11 +3,15 @@ package ca.bcit.jfx.components;
 import ca.bcit.io.Logger;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
+import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 public class TaskReadyProgressBar extends StackPane {
+
+	@FXML private VBox settings;
 
 	private final ProgressBar bar = new ProgressBar();
 	private final Label label = new Label("");
@@ -42,10 +46,8 @@ public class TaskReadyProgressBar extends StackPane {
 		thread.setDaemon(daemon);
 		thread.start();
 	}
-	
-	private void onSucceeded() {
-		unbind();
-	}
+
+	private void onSucceeded() { unbind(); }
 	
 	private void onFailed(WorkerStateEvent e) {
 		Logger.debug(e.getSource().toString() + " failed!");

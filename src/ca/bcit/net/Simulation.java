@@ -2,6 +2,7 @@ package ca.bcit.net;
 
 import ca.bcit.ApplicationResources;
 import ca.bcit.io.Logger;
+import ca.bcit.jfx.controllers.SimulationMenuController;
 import ca.bcit.jfx.tasks.SimulationTask;
 import ca.bcit.net.demand.AnycastDemand;
 import ca.bcit.net.demand.Demand;
@@ -131,6 +132,11 @@ public class Simulation {
 				// pause button
 				Pause();
 
+				// cancel button
+				if (MainWindowController.cancelled) {
+					break;
+				}
+
 				task.updateProgress(generator.getGeneratedDemandsCount(), demandsCount);
 			} // loop end here
 			// force call the update again here
@@ -151,6 +157,12 @@ public class Simulation {
 
 
 		network.waitForDemandsDeath();
+
+
+		if (MainWindowController.cancelled) {
+			Logger.info("Simulation Cancelled!");
+			return;
+		}
 
 		Logger.info("Blocked Spectrum: " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
 		Logger.info("Blocked Regenerators: " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");

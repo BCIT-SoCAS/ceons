@@ -173,7 +173,7 @@ public class MainWindowController  {
             propertiesTitledPane.setContent(null);
     }
 
-    // pause button
+	// pause button
 	public static boolean paused = false;
 	@FXML public void pauseSimulation(ActionEvent e) {
 		if (paused) {
@@ -183,12 +183,21 @@ public class MainWindowController  {
 		}
 		paused ^= true; // swap true/false state
 	}
+
+
+	public static boolean cancelled = false;
+	@FXML public void cancelSimulation(ActionEvent e) {
+		cancelled = true;
+	}
+
 	/**
 	 * Display dialog window
 	 */
 	@FXML public void showSelectNetworkOptionDialog(ActionEvent e) {
 		selectNetworkOptionDialog.display();
 	}
+
+	private int i;
 
 	@FXML public void onLoad(ActionEvent e) {
 		FileChooser fileChooser = new FileChooser();
@@ -229,6 +238,28 @@ public class MainWindowController  {
 			}
 		};
 		task.run();
+
+
+		Task<Void> task2 = new Task<Void>() {
+
+			@Override
+			protected Void call() {
+				Network network = ApplicationResources.getProject().getNetwork();
+
+				i = 1;
+				try {
+					network.maxPathsCount = network.calculatePaths(() -> updateProgress(i++, network.getNodesPairsCount()));
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
+				Console.cout.println("Max best paths count: " + network.maxPathsCount);
+
+				return null;
+			}
+
+
+		};
+		SimulationMenuController.progressBar.runTask(task2, true);
 	}
 
 	private void setupGenerators(Project project) {
@@ -304,4 +335,5 @@ public class MainWindowController  {
 
 		SimulationMenuController.generatorsStatic.setItems(new ObservableListWrapper<>(generators));
 	}
+
 }

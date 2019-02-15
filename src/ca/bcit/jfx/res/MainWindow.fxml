@@ -79,11 +79,15 @@
 
 					<content>
 						<VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0"
-							prefWidth="200.0">
+							prefWidth="200.0" >
 							<children>
-								<Label text="Pause to see live simulation statistics" />
+
+
 								<Button fx:id="PauseButton" text="Pause Simulation" onAction="#pauseSimulation"/>
+								<Button fx:id="CancelButton" text="Cancel Simulation" onAction="#cancelSimulation"/>
+
 								<Button fx:id="showSelectNetworkOptionDialog" text="Show Dialog" onAction="#showSelectNetworkOptionDialog"/>
+
 							</children>
 						</VBox>
 					</content>

@@ -4,31 +4,17 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
-<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.NetworkMenuController">
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.NetworkMenuController" >
 	<children>
 		<GridPane>
-			<columnConstraints>
-				<ColumnConstraints percentWidth="33.3" />
-				<ColumnConstraints percentWidth="33.3" />
-				<ColumnConstraints percentWidth="33.3" />
-			</columnConstraints>
 			<rowConstraints>
 				<RowConstraints minHeight="10.0"/>
 				<RowConstraints minHeight="10.0"/>
 			</rowConstraints>
 			<children>
-				<Button onAction="#onNew" text="New" />
-				<Button onAction="#onLoad" text="Load" GridPane.columnIndex="1" />
-				<Button onAction="#onSave" text="Save" GridPane.columnIndex="2" />
-				<Button onAction="#testButton" text="Calculate Paths" GridPane.rowIndex="1" GridPane.columnSpan="3" />
+				<Button onAction="#onNew" text="New" GridPane.rowIndex="1" />
+				<Button onAction="#onSave" text="Save" GridPane.rowIndex="2" />
 			</children>
 		</GridPane>
-		<Button visible="false">
-			<graphic>
-				<ImageView>
-					<Image url="@icon_new.png" />
-				</ImageView>
-			</graphic>
-		</Button>
 	</children>
 </VBox>
