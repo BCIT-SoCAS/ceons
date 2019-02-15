@@ -9,6 +9,10 @@ import javafx.scene.control.Button;
 
 public class SelectNetworkOptionDialog {
 
+	public SelectNetworkOptionDialog() {
+	
+	}
+
 	public static void display() {
 		Stage dialogWindow = new Stage();
 		dialogWindow.initModality(Modality.APPLICATION_MODAL);

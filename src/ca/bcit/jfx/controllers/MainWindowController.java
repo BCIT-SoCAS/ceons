@@ -110,6 +110,8 @@ public class MainWindowController  {
 		
 		graph.init(this);
 		simulationMenuController.setProgressBar(progressBar);
+
+		selectNetworkOptionDialog.display();
 	}
 	public void loadProperties(Figure fig, FigureControl list)
 	{
