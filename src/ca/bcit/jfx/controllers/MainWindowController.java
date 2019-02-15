@@ -194,6 +194,8 @@ public class MainWindowController  {
 		selectNetworkOptionDialog.display();
 	}
 
+	private int i;
+
 	@FXML public void onLoad(ActionEvent e) {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
@@ -231,6 +233,28 @@ public class MainWindowController  {
 			}
 		};
 		task.run();
+
+
+		Task<Void> task2 = new Task<Void>() {
+
+			@Override
+			protected Void call() {
+				Network network = ApplicationResources.getProject().getNetwork();
+
+				i = 1;
+				try {
+					network.maxPathsCount = network.calculatePaths(() -> updateProgress(i++, network.getNodesPairsCount()));
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
+				Console.cout.println("Max best paths count: " + network.maxPathsCount);
+
+				return null;
+			}
+
+
+		};
+		SimulationMenuController.progressBar.runTask(task2, true);
 	}
 
 	private void setupGenerators(Project project) {

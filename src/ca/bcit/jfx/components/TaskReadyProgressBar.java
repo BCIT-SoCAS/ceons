@@ -46,11 +46,8 @@ public class TaskReadyProgressBar extends StackPane {
 		thread.setDaemon(daemon);
 		thread.start();
 	}
-	
-	private void onSucceeded() {
-		unbind();
-		settings.setDisable(false);
-	}
+
+	private void onSucceeded() { unbind(); }
 	
 	private void onFailed(WorkerStateEvent e) {
 		Logger.debug(e.getSource().toString() + " failed!");

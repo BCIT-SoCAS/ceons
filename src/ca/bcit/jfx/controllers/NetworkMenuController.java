@@ -29,40 +29,7 @@ public class NetworkMenuController {
 	@FXML public void onNew(ActionEvent e) {
 		Logger.debug("new");
 	}
-	
-	@FXML public void onLoad(ActionEvent e) {
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
-		fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-		final File file = fileChooser.showOpenDialog(null);
-		
-		if (file == null) return;
-		Task<Void> task = new Task<Void>() {
 
-			@Override
-			protected Void call() {
-				try {
-					Logger.info("Loading project from " + file.getName() + "...");
-					Project project = ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).load(file);
-					ApplicationResources.setProject(project);
-					Logger.info("Finished loading project.");
-					for (NetworkNode n: project.getNetwork().getNodes()){
-						n.setRegeneratorsCount(100);
-						System.out.println(n.toString());
-					}
-					setupGenerators(project);
-
-
-				} catch (Exception ex) {
-					Logger.info("An exception occurred while loading the project.");
-					Logger.debug(ex);
-				}
-				return null;
-			}
-		};
-		task.run();
-	}
-	
 	@FXML public void onSave(ActionEvent e) {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
@@ -162,27 +129,4 @@ public class NetworkMenuController {
 		SimulationMenuController.generatorsStatic.setItems(new ObservableListWrapper<>(generators));
 	}
 
-	private int i;
-	@FXML public void testButton(ActionEvent e) {
-		Task<Void> task = new Task<Void>() {
-
-			@Override
-			protected Void call() {
-				Network network = ApplicationResources.getProject().getNetwork();
-				
-				i = 1;
-				try {
-					network.maxPathsCount = network.calculatePaths(() -> updateProgress(i++, network.getNodesPairsCount()));
-				} catch (Throwable e) {
-					e.printStackTrace();
-				}
-				Console.cout.println("Max best paths count: " + network.maxPathsCount);
-				
-				return null;
-			}
-			
-			
-		};
-		SimulationMenuController.progressBar.runTask(task, true);
-	}
 }
