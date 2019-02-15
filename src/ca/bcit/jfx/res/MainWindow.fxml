@@ -10,14 +10,10 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <!--suppress ALL -->
-<GridPane gridLinesVisible="true" prefWidth="1200.0" prefHeight="800.0" stylesheets="/ca/bcit/jfx/res/application.cssext" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.MainWindowController">
-	<AnchorPane id="AnchorPane" maxHeight="1200" maxWidth="800" minHeight="0" minWidth="0" prefHeight="430.0" prefWidth="600.0" style="-fx-background-color: azure;" >
+<GridPane gridLinesVisible="true" prefWidth="1200.0" prefHeight="850.0" stylesheets="/ca/bcit/jfx/res/application.cssext" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.MainWindowController">
+	<AnchorPane id="AnchorPane" maxHeight="1000" maxWidth="1000" minHeight="0" minWidth="0" prefWidth="1000" style="-fx-background-color: azure;" >
 		<children>
-			<ImageView  layoutX="0.0" layoutY="0.0" fitHeight="500" fitWidth="800" pickOnBounds="true" preserveRatio="true">
-				<image>
-					<Image url="ca/bcit/jfx/res/euro28map.png" />
-				</image>
-			</ImageView>
+			<ImageView fx:id="mapViewer" layoutX="0.0" layoutY="0.0" fitHeight="1000" fitWidth="1000" pickOnBounds="true" preserveRatio="true" />
 		</children>
 	</AnchorPane>
 	<columnConstraints>

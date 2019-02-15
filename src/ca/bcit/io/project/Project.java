@@ -21,4 +21,6 @@ public abstract class Project {
 	public abstract Network getNetwork();
 	
 	public abstract List<TrafficGenerator> getTrafficGenerators();
+
+	public abstract String getMap();
 }

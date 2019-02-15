@@ -194,6 +194,24 @@ public class ResizableCanvas extends Canvas {
 		list.add(new Node(vec2F, list.getNodeAmount()));
 	}
 
+	/**
+	 * Draw a Node on the given coordinates from the parameter vec2F
+	 *
+	 * @param vec2F		the coordinates of Node
+	 * @param name		name of the node
+	 */
+	public void addNode(Vector2F vec2F, String name) {
+		System.out.println(vec2F.getX());
+		list.add(new Node(vec2F, name));
+	}
+
+	/**
+	 * Clear all drawn figure on the canvas
+	 */
+	public void resetCanvas() {
+		list.deleteElementsFromRectangle(new Vector2F(0,0), new Vector2F((float) getWidth(), (float) getHeight()));
+	}
+
 	private void addLink(Vector2F vec2F) {
 		list.add(new Link(vec2F, vec2F, list.getLinkAmount()));
 	}

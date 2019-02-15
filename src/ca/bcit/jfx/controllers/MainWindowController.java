@@ -30,6 +30,8 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
@@ -55,6 +57,7 @@ public class MainWindowController  {
 	@FXML private Accordion accordion;
 	@FXML private TitledPane propertiesTitledPane;
 	@FXML private Button PauseButton;
+	@FXML private ImageView mapViewer;
 	private final static int PROPERTIES_PANE_NUMBER=4;
 	private final static int EDIT_PANE_NUMBER=3;
 	
@@ -203,10 +206,12 @@ public class MainWindowController  {
 					Project project = ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).load(file);
 					ApplicationResources.setProject(project);
 					Logger.info("Finished loading project.");
+					graph.resetCanvas();
+					mapViewer.setImage(new Image(project.getMap()));
 					for (NetworkNode n: project.getNetwork().getNodes()){
 						n.setRegeneratorsCount(100);
 						System.out.println(n.toString());
-						graph.addNode(n.getPosition());
+						graph.addNode(n.getPosition(), n.getName());
 						for (NetworkNode n2: project.getNetwork().getNodes()){
 							if(project.getNetwork().containsLink(n, n2)) {
 								graph.addLink(n.getPosition(), n2.getPosition());

@@ -31,7 +31,9 @@ public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
 		
 		YamlConfiguration topology = new YamlConfiguration(zip.getInputStream(zip.getEntry(projectConfig.get("topology"))));
 		Network network = topology.get("");
-		
+
+		String map = projectConfig.get("map");
+
 		YamlConfiguration modulations = new YamlConfiguration(zip.getInputStream(zip.getEntry(projectConfig.get("modulations"))));
 		for (Modulation modulation : Modulation.values())
 			for (int i = 0; i < 40; i++) {
@@ -44,7 +46,7 @@ public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
 			trafficGenerators.add(new YamlConfiguration(zip.getInputStream(zip.getEntry(generatorFileName))).get(""));
 		
 		zip.close();
-		return new EONProject(file, network, new ArrayList<>());
+		return new EONProject(file, network, new ArrayList<>(), map);
 	}
 
 	@Override
