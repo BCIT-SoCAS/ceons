@@ -5,7 +5,6 @@
 <?import ca.bcit.jfx.components.TaskReadyProgressBar?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -45,16 +44,15 @@
 				<TaskReadyProgressBar fx:id="progressBar" GridPane.rowIndex="2" />
 			</children>
 		</GridPane>
-		<Accordion fx:id="accordion" GridPane.columnIndex="1">
+		<Accordion fx:id="accordion" GridPane.columnIndex="1" >
 			<panes>
-				<TitledPane animated="true" text="Network">
+				<TitledPane animated="true" text="Network Settings">
 					<content>
 						<VBox alignment="TOP_CENTER" spacing="8.0">
 							<children>
-								<!--<fx:include fx:id="networkMenu" source="/ca/bcit/jfx/res/NetworkMenu.fxml" />-->
-								<Button onAction="#onNew" text="New" GridPane.rowIndex="1" />
-								<Button onAction="#onSave" text="Save" GridPane.rowIndex="2" />
-								<Button onAction="#onLoad" text="Load" GridPane.columnIndex="1" />
+								<Button onAction="#onNew" text="Create Topology" GridPane.rowIndex="1" />
+								<Button onAction="#onLoad" text="Load Topolgoy" GridPane.columnIndex="1" />
+								<Button onAction="#onSave" text="Save Topology" GridPane.rowIndex="2" />
 								<RadioButton fx:id="RBNoneChose" onAction="#noneChose" selected="true" text="None" toggleGroup="$RBGroup">
 									<toggleGroup>
 										<ToggleGroup fx:id="RBGroup" />
@@ -83,10 +81,6 @@
 						<VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0"
 							prefWidth="200.0" >
 							<children>
-
-
-								<Button fx:id="PauseButton" text="Pause Simulation" onAction="#pauseSimulation"/>
-								<Button fx:id="CancelButton" text="Cancel Simulation" onAction="#cancelSimulation"/>
 
 								<Button fx:id="showSelectNetworkOptionDialog" text="Show Dialog" onAction="#showSelectNetworkOptionDialog"/>
 

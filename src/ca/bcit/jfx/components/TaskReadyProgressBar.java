@@ -1,6 +1,7 @@
 package ca.bcit.jfx.components;
 
 import ca.bcit.io.Logger;
+import ca.bcit.jfx.controllers.SimulationMenuController;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
@@ -37,7 +38,9 @@ public class TaskReadyProgressBar extends StackPane {
 	
 	public void runTask(Task<?> task, boolean daemon) {
 		bind(task);
-		task.setOnSucceeded(e -> onSucceeded());
+		task.setOnSucceeded(e -> {
+			onSucceeded();
+		});
 		task.setOnFailed(this::onFailed);
 		task.setOnCancelled(this::onCancelled);
 		Thread thread = new Thread(task);
@@ -45,8 +48,10 @@ public class TaskReadyProgressBar extends StackPane {
 		thread.start();
 	}
 
-	private void onSucceeded() { unbind(); }
-	
+	public void onSucceeded() {
+		unbind();
+	}
+
 	private void onFailed(WorkerStateEvent e) {
 		Logger.debug(e.getSource().toString() + " failed!");
 		unbind();

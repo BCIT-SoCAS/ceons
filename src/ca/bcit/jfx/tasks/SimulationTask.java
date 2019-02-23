@@ -1,6 +1,7 @@
 package ca.bcit.jfx.tasks;
 
 import ca.bcit.io.Logger;
+import ca.bcit.jfx.controllers.SimulationMenuController;
 import ca.bcit.net.Simulation;
 import javafx.concurrent.Task;
 
@@ -30,7 +31,6 @@ public class SimulationTask extends Task<Void> {
 			Logger.info("Simulation finished!");
 		} catch (Throwable e) {
 			e.printStackTrace();
-			throw e;
 		}
 		return null;
 	}

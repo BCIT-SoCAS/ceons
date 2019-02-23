@@ -12,6 +12,7 @@ import ca.bcit.net.Simulation;
 import ca.bcit.net.algo.RMSAAlgorithm;
 import ca.bcit.net.demand.generator.TrafficGenerator;
 import com.sun.javafx.collections.ObservableListWrapper;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -27,6 +28,8 @@ import ca.bcit.io.project.EONProjectFileFormat;
 import ca.bcit.io.project.Project;
 import ca.bcit.io.project.ProjectFileFormat;
 import java.io.File;
+import java.util.Optional;
+
 import ca.bcit.io.YamlSerializable;
 
 public class SimulationMenuController {
@@ -39,7 +42,6 @@ public class SimulationMenuController {
 	@FXML private TextField alpha;
 	@FXML private UIntField demands;
 	@FXML private CheckBox replicaPreservation;
-	
 	@FXML private VBox settings;
 	@FXML private ComboBox<RMSAAlgorithm> algorithms;
 	@FXML private ToggleGroup regeneratorsMetric;
@@ -47,10 +49,16 @@ public class SimulationMenuController {
 	@FXML private CheckBox allowModulationChange;
 	@FXML private UIntField bestPaths;
 	@FXML private UIntField regeneratorsMetricValue;
+	@FXML private Button PauseButton;
+	@FXML private Button CancelButton;
 	private CheckBox[] modulations;
 
 	public static TaskReadyProgressBar progressBar;
-	
+
+	/**
+	 * To disable and enable Main Controller settings while simulation is running
+	 */
+
 	@FXML public void initialize() {
 		for (Field field : MainWindowController.class.getDeclaredFields()) if (field.isAnnotationPresent(FXML.class))
 			try {
@@ -70,7 +78,8 @@ public class SimulationMenuController {
 	void setProgressBar(TaskReadyProgressBar progressBar) {
 		SimulationMenuController.progressBar = progressBar;
 	}
-	
+
+	public static boolean finished = false;
 	@FXML public void startSimulationAction(ActionEvent e) {
 		Network network = ApplicationResources.getProject().getNetwork();
 
@@ -80,28 +89,97 @@ public class SimulationMenuController {
 		}
 
 		network.setDemandAllocationAlgorithm(algorithms.getValue());
-
-		network.setCanSwitchModulation(allowModulationChange.isSelected());
-		for (Toggle toggle : modulationMetric.getToggles())
-			if (toggle.isSelected())
-				network.setModualtionMetricType(MetricType.valueOf2(((RadioButton) toggle).getText()));
 		for (Modulation modulation : network.getAllowedModulations()) network.disallowModulation(modulation);
 		for (Modulation modulation : Modulation.values())
 			if (modulations[modulation.ordinal()].isSelected())
 				network.allowModulation(modulation);
-
-		network.setRegeneratorMetricValue(regeneratorsMetricValue.getValue());
-		for (Toggle toggle : regeneratorsMetric.getToggles())
-			if (toggle.isSelected())
-				network.setRegeneratorMetricType(MetricType.valueOf2(((RadioButton) toggle).getText()));
-
 		network.setBestPathsCount(bestPaths.getValue());
 
-//		settings.disableProperty().set(true);
+		//Modulation Metric is always dynamic
+		network.setModualtionMetricType(MetricType.DYNAMIC);
+		//Regenerator Metric value is always set to 5
+		network.setRegeneratorMetricValue(5);
+		//Regenerator Metric is always static
+		network.setRegeneratorMetricType(MetricType.STATIC);
+
+
+//		network.setCanSwitchModulation(allowModulationChange.isSelected());
+//		for (Toggle toggle : modulationMetric.getToggles())
+//			if (toggle.isSelected())
+//				network.setModualtionMetricType(MetricType.valueOf2(((RadioButton) toggle).getText()));
+
+//
+//		network.setRegeneratorMetricValue(regeneratorsMetricValue.getValue());
+//		for (Toggle toggle : regeneratorsMetric.getToggles())
+//			if (toggle.isSelected())
+//				network.setRegeneratorMetricType(MetricType.valueOf2(((RadioButton) toggle).getText()));
+
 		Simulation simulation = new Simulation(network, generators.getValue());
 		SimulationTask task = new SimulationTask(simulation, seed.getValue(), Double.parseDouble(alpha.getText()), erlang.getValue(), demands.getValue(), replicaPreservation.isSelected());
+		//gray out settings
 		settings.setDisable(true);
 		progressBar.runTask(task, true);
 	}
 
+	public static boolean cancelled = false;
+	@FXML public void cancelSimulation(ActionEvent e) {
+
+		paused = true;
+
+		if (!finished){
+			Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+			alert.setTitle("Confirmation");
+			alert.setHeaderText("Cancel current simulation");
+			alert.setContentText("Are you ok with this?");
+
+			Optional<ButtonType> result = alert.showAndWait();
+			if (result.get() == ButtonType.OK){
+				cancelled = true;
+				paused = false;
+				PauseButton.setText("Pause Simulation");
+				finished = true;
+			} else {
+				paused = false;
+				PauseButton.setText("Pause Simulation");
+				return;
+			}
+		} else {
+			Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+			alert.setTitle("Confirmation");
+			alert.setHeaderText("Finish simulation");
+			alert.setContentText("Are you ok with this?");
+
+			Optional<ButtonType> result = alert.showAndWait();
+			if (result.get() == ButtonType.OK){
+				cancelled = true;
+				paused = false;
+				PauseButton.setText("Pause Simulation");
+				finished = true;
+			} else {
+				paused = false;
+				PauseButton.setText("Pause Simulation");
+				return;
+			}
+		}
+
+		settings.setDisable(false);
+	}
+
+	// pause button
+	public static boolean paused = false;
+	@FXML public void pauseSimulation(ActionEvent e) {
+		if (paused && !finished) {
+			PauseButton.setText("Pause Simulation");
+		} else if (!paused && !finished) {
+			PauseButton.setText("Resume Simulation");
+		} else {
+			return;
+		}
+		paused ^= true; // swap true/false state
+	}
+
+
+	public void changeCancelToFinish(){
+		CancelButton.setText("Finish Simulation");
+	}
 }

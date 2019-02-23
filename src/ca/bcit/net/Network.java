@@ -31,7 +31,7 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	private final int[][] modulationMetrics = new int[6][6];
 	
 	private MetricType regeneratorMetricType;
-	private int regeneratorMetricValue;
+	private int regeneratorMetricValue = 5;
 	
 	private RMSAAlgorithm demandAllocationAlgorithm;
 	private int bestPathsCount;

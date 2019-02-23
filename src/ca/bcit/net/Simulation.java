@@ -43,6 +43,9 @@ public class Simulation {
 
 	public void simulate(long seed, int demandsCount, double alpha, int erlang, boolean replicaPreservation,
 			SimulationTask task) {
+
+		SimulationMenuController.finished = false;
+		SimulationMenuController.cancelled = false;
 		clearVolumeValues();
 		generator.setErlang(erlang);
 		generator.setSeed(seed);
@@ -72,7 +75,7 @@ public class Simulation {
 				int n = 1000;
 
 				// if paused, force GUI to immediately update to current.
-				if (MainWindowController.paused)  reportCounter = n;
+				if (SimulationMenuController.paused)  reportCounter = n;
 
 				int nodeCount = network.getNodes().size();
 				ArrayList tempNodeArr = new ArrayList();
@@ -133,7 +136,7 @@ public class Simulation {
 				Pause();
 
 				// cancel button
-				if (MainWindowController.cancelled) {
+				if (SimulationMenuController.cancelled) {
 					break;
 				}
 
@@ -157,11 +160,11 @@ public class Simulation {
 
 
 		network.waitForDemandsDeath();
+		SimulationMenuController.finished = true;
 
-
-		if (MainWindowController.cancelled) {
-			Logger.info("Simulation Cancelled!");
-			return;
+		if (SimulationMenuController.cancelled) {
+			Logger.info("Simulation cancelled!");
+			throw new RuntimeException("Simulation was cancelled by user");
 		}
 
 		Logger.info("Blocked Spectrum: " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
@@ -197,7 +200,7 @@ public class Simulation {
 	}
 
 	private void Pause() {
-		while (MainWindowController.paused) {
+		while (SimulationMenuController.paused) {
 			try {
 				Thread.sleep(10);
 			} catch(InterruptedException ex) {

@@ -6,6 +6,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.Scene;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import ca.bcit.jfx.controllers.MainWindowController;
 
 public class SelectNetworkOptionDialog {
 
@@ -19,7 +20,7 @@ public class SelectNetworkOptionDialog {
 		dialogWindow.setTitle("Choose Topology Option");
 
 		Button loadNetworkBtn = new Button("Load Network Topology");
-		Button createNewBtn = new Button("Create New Network Topology");	
+		Button createNewBtn = new Button("Create Network Topology");
 
 		loadNetworkBtn.setPrefWidth(220);
 		createNewBtn.setPrefWidth(220);

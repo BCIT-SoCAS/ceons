@@ -30,20 +30,23 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class MainWindowController  {
 	
@@ -58,6 +61,7 @@ public class MainWindowController  {
 	@FXML private TitledPane propertiesTitledPane;
 	@FXML private Button PauseButton;
 	@FXML private ImageView mapViewer;
+	@FXML private Alert alert;
 	private final static int PROPERTIES_PANE_NUMBER=4;
 	private final static int EDIT_PANE_NUMBER=3;
 	
@@ -111,7 +115,7 @@ public class MainWindowController  {
 		graph.init(this);
 		simulationMenuController.setProgressBar(progressBar);
 
-		selectNetworkOptionDialog.display();
+//		selectNetworkOptionDialog.display();
 	}
 	public void loadProperties(Figure fig, FigureControl list)
 	{
@@ -175,23 +179,6 @@ public class MainWindowController  {
             propertiesTitledPane.setContent(null);
     }
 
-	// pause button
-	public static boolean paused = false;
-	@FXML public void pauseSimulation(ActionEvent e) {
-		if (paused) {
-			PauseButton.setText("Pause Simulation");
-		} else {
-			PauseButton.setText("Resume Simulation");
-		}
-		paused ^= true; // swap true/false state
-	}
-
-
-	public static boolean cancelled = false;
-	@FXML public void cancelSimulation(ActionEvent e) {
-		cancelled = true;
-	}
-
 	/**
 	 * Display dialog window
 	 */
@@ -201,8 +188,27 @@ public class MainWindowController  {
 
 	private int i;
 
-	@FXML public void onNew(ActionEvent e) {
-		Logger.debug("new");
+	@FXML public void onNew(ActionEvent a) {
+		Stage dialogWindow = new Stage();
+		dialogWindow.initModality(Modality.APPLICATION_MODAL);
+		dialogWindow.setTitle("Choose Topology Option");
+
+		Button loadNetworkBtn = new Button("Load Network Topology");
+		Button createNewBtn = new Button("Create Network Topology");
+
+		loadNetworkBtn.setPrefWidth(220);
+		createNewBtn.setPrefWidth(220);
+
+		loadNetworkBtn.setOnAction(e -> dialogWindow.close());
+		createNewBtn.setOnAction(e -> dialogWindow.close());
+
+		HBox layout = new HBox(10);
+		layout.getChildren().addAll(loadNetworkBtn, createNewBtn);
+		layout.setAlignment(Pos.CENTER);
+		layout.setSpacing(20);
+		Scene scene = new Scene(layout, 520, 300);
+		dialogWindow.setScene(scene);
+		dialogWindow.showAndWait();
 	}
 
 	@FXML public void onSave(ActionEvent e) {
@@ -310,7 +316,7 @@ public class MainWindowController  {
 		subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
 				new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
 
-		generators.add(new TrafficGenerator("No_Backup", new MappedRandomVariable<>(subGenerators)));
+		generators.add(new TrafficGenerator("No Backup", new MappedRandomVariable<>(subGenerators)));
 
 		subGenerators = new ArrayList<>();
 
@@ -325,7 +331,7 @@ public class MainWindowController  {
 		subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
 				new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
 
-		generators.add(new TrafficGenerator("Direct_Backup", new MappedRandomVariable<>(subGenerators)));
+		generators.add(new TrafficGenerator("Dedicated Backup", new MappedRandomVariable<>(subGenerators)));
 
 		subGenerators = new ArrayList<>();
 
@@ -362,7 +368,7 @@ public class MainWindowController  {
 		subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
 				new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
 
-		generators.add(new TrafficGenerator("Classed", new MappedRandomVariable<>(subGenerators)));
+		generators.add(new TrafficGenerator("Shared Backup", new MappedRandomVariable<>(subGenerators)));
 
 		SimulationMenuController.generatorsStatic.setItems(new ObservableListWrapper<>(generators));
 	}
