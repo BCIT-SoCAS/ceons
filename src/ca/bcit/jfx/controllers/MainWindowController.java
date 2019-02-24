@@ -12,7 +12,7 @@ import ca.bcit.jfx.DrawingState;
 import ca.bcit.jfx.LinkPropertiesController;
 import ca.bcit.jfx.NodePropertiesController;
 import ca.bcit.jfx.components.Console;
-import ca.bcit.jfx.components.SelectNetworkOptionDialog;
+import ca.bcit.jfx.components.CreateNetworkDialog;
 import ca.bcit.jfx.components.ResizableCanvas;
 import ca.bcit.jfx.components.TaskReadyProgressBar;
 import ca.bcit.net.Network;
@@ -51,7 +51,7 @@ import java.util.Optional;
 public class MainWindowController  {
 	
 	@FXML private Console console;
-	@FXML private SelectNetworkOptionDialog selectNetworkOptionDialog;
+	@FXML private CreateNetworkDialog CreateNetworkDialog;
 	@FXML private TaskReadyProgressBar progressBar;
 	@FXML private Label progressLabel;
 	@FXML private SimulationMenuController simulationMenuController;
@@ -115,7 +115,6 @@ public class MainWindowController  {
 		graph.init(this);
 		simulationMenuController.setProgressBar(progressBar);
 
-//		selectNetworkOptionDialog.display();
 	}
 	public void loadProperties(Figure fig, FigureControl list)
 	{
@@ -179,14 +178,14 @@ public class MainWindowController  {
             propertiesTitledPane.setContent(null);
     }
 
+
+    private int i;
 	/**
 	 * Display dialog window
 	 */
 	@FXML public void showSelectNetworkOptionDialog(ActionEvent e) {
-		selectNetworkOptionDialog.display();
+		CreateNetworkDialog.display();
 	}
-
-	private int i;
 
 	@FXML public void onNew(ActionEvent a) {
 		Stage dialogWindow = new Stage();

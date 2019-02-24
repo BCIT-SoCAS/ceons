@@ -8,10 +8,10 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import ca.bcit.jfx.controllers.MainWindowController;
 
-public class SelectNetworkOptionDialog {
+public class CreateNetworkDialog {
 
-	public SelectNetworkOptionDialog() {
-	
+	public CreateNetworkDialog() {
+
 	}
 
 	public static void display() {
@@ -19,17 +19,17 @@ public class SelectNetworkOptionDialog {
 		dialogWindow.initModality(Modality.APPLICATION_MODAL);
 		dialogWindow.setTitle("Choose Topology Option");
 
-		Button loadNetworkBtn = new Button("Load Network Topology");
-		Button createNewBtn = new Button("Create Network Topology");
+		Button confirmAPIKey = new Button("Confirm");
+		Button cancelButton = new Button("Cancel");
 
-		loadNetworkBtn.setPrefWidth(220);
-		createNewBtn.setPrefWidth(220);
+		confirmAPIKey.setPrefWidth(220);
+		cancelButton.setPrefWidth(220);
 
-		loadNetworkBtn.setOnAction(e -> dialogWindow.close());
-		createNewBtn.setOnAction(e -> dialogWindow.close());
+		confirmAPIKey.setOnAction(e -> dialogWindow.close());
+		cancelButton.setOnAction(e -> dialogWindow.close());
 			
 		HBox layout = new HBox(10);
-		layout.getChildren().addAll(loadNetworkBtn, createNewBtn);
+		layout.getChildren().addAll(confirmAPIKey, cancelButton);
 		layout.setAlignment(Pos.CENTER);
 		layout.setSpacing(20);
 		Scene scene = new Scene(layout, 520, 300);
