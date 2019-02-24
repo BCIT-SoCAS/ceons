@@ -12,7 +12,6 @@ import ca.bcit.jfx.DrawingState;
 import ca.bcit.jfx.LinkPropertiesController;
 import ca.bcit.jfx.NodePropertiesController;
 import ca.bcit.jfx.components.Console;
-import ca.bcit.jfx.components.SelectNetworkOptionDialog;
 import ca.bcit.jfx.components.ResizableCanvas;
 import ca.bcit.jfx.components.TaskReadyProgressBar;
 import ca.bcit.net.Network;
@@ -39,6 +38,8 @@ import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.scene.layout.GridPane;
+import javafx.geometry.Insets;
 
 import javax.swing.*;
 import java.io.File;
@@ -47,11 +48,11 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.io.PrintWriter;
 
 public class MainWindowController  {
 	
 	@FXML private Console console;
-	@FXML private SelectNetworkOptionDialog selectNetworkOptionDialog;
 	@FXML private TaskReadyProgressBar progressBar;
 	@FXML private Label progressLabel;
 	@FXML private SimulationMenuController simulationMenuController;
@@ -114,8 +115,6 @@ public class MainWindowController  {
 		
 		graph.init(this);
 		simulationMenuController.setProgressBar(progressBar);
-
-//		selectNetworkOptionDialog.display();
 	}
 	public void loadProperties(Figure fig, FigureControl list)
 	{
@@ -177,15 +176,43 @@ public class MainWindowController  {
             propertiesTitledPane.setContent(tp.getContent());
         else
             propertiesTitledPane.setContent(null);
+	}
+	
+	private void writeAPIkeyToFile(String content, File file) {
+		try {
+            PrintWriter writer;
+            writer = new PrintWriter(file);
+            writer.println(content);
+            writer.close();
+        } catch (IOException ex) {
+            Logger.info("An exception occurred while saving api key");
+			Logger.debug(ex);
+        }
     }
 
-	/**
-	 * Display dialog window
-	 */
-	@FXML public void showSelectNetworkOptionDialog(ActionEvent e) {
-		selectNetworkOptionDialog.display();
+	private void saveAPIkey(ActionEvent e, TextField inputField) {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setInitialFileName("api_key");
+		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TEXT files (*.txt)", "*.txt");
+		fileChooser.getExtensionFilters().add(extFilter);
+		fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+		final File file = fileChooser.showSaveDialog(null);
+
+		if (file == null) return;
+		Task<Void> task = new Task<Void>() {
+
+			@Override
+			protected Void call() {
+				Logger.info("Saving API key to " + file.getName() + "file");
+				writeAPIkeyToFile(inputField.getText(), file);
+				Logger.info("Finished saving API key");
+				return null;
+			}
+		};
+		task.run();
 	}
 
+	
 	private int i;
 
 	@FXML public void onNew(ActionEvent a) {
@@ -193,20 +220,27 @@ public class MainWindowController  {
 		dialogWindow.initModality(Modality.APPLICATION_MODAL);
 		dialogWindow.setTitle("Choose Topology Option");
 
-		Button loadNetworkBtn = new Button("Load Network Topology");
-		Button createNewBtn = new Button("Create Network Topology");
+		TextField saveKeyInput = new TextField();
+		saveKeyInput.setPromptText("Please enter Google Maps API key");
+		Button saveAPIkeyBtn = new Button("Save API key");
+		Button closeBtn = new Button("Close");
 
-		loadNetworkBtn.setPrefWidth(220);
-		createNewBtn.setPrefWidth(220);
+		saveAPIkeyBtn.setPrefWidth(220);
+		closeBtn.setPrefWidth(220);
 
-		loadNetworkBtn.setOnAction(e -> dialogWindow.close());
-		createNewBtn.setOnAction(e -> dialogWindow.close());
+		saveAPIkeyBtn.setOnAction(e -> saveAPIkey(e, saveKeyInput));
+		closeBtn.setOnAction(e -> dialogWindow.close());
 
-		HBox layout = new HBox(10);
-		layout.getChildren().addAll(loadNetworkBtn, createNewBtn);
-		layout.setAlignment(Pos.CENTER);
-		layout.setSpacing(20);
-		Scene scene = new Scene(layout, 520, 300);
+		GridPane grid = new GridPane();
+		grid.setAlignment(Pos.CENTER);
+		grid.setHgap(10);
+		grid.setVgap(20);
+		grid.setPadding(new Insets(25, 25, 25, 25));
+
+		grid.add(saveKeyInput, 0, 0, 2, 1);
+		grid.add(saveAPIkeyBtn, 0, 1);
+		grid.add(closeBtn, 1, 1);
+		Scene scene = new Scene(grid, 520, 300);
 		dialogWindow.setScene(scene);
 		dialogWindow.showAndWait();
 	}
