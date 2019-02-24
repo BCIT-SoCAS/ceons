@@ -206,6 +206,17 @@ public class ResizableCanvas extends Canvas {
 	}
 
 	/**
+	 * Draw a Node on the given coordinates from the parameter vec2F
+	 *
+	 * @param vec2F		the coordinates of Node
+	 * @param name		name of the node
+	 * @param Regens	percentage regenerator remaining
+	 */
+	public void addNode(Vector2F vec2F, String name, int Regens) {
+		list.add(new Node(vec2F, name, Regens));
+	}
+
+	/**
 	 * Clear all drawn figure on the canvas
 	 */
 	public void resetCanvas() {

@@ -13,6 +13,7 @@ public class Node extends Figure {
 	private static final LinearGradient nodeFill = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,	new Stop[] {new Stop(0, Color.MAGENTA), new Stop(0.5f, Color.PURPLE)});
 	
 	public static float imageSize = 45;
+	private int Regens = 100;
 
 	public Node(Node node) {
 		startPoint = node.startPoint.clone();
@@ -32,13 +33,25 @@ public class Node extends Figure {
 		loadImage();
 	}
 
+	public Node(Vector2F startPoint, String _name, int Regens) {
+		super(new Vector2F(startPoint.getX() - imageSize / 2, startPoint.getY() - imageSize / 2), _name);
+		this.Regens = Regens;
+		loadImage();
+	}
+
 	@Override
 	public void draw(GraphicsContext gc) {
 		// loadImage();
 		//gc.drawImage(image, startPoint.getX(), startPoint.getY());
 		gc.setFill(Color.PINK);
 		gc.fillOval(startPoint.getX() - imageSize / 16f, startPoint.getY() - imageSize / 16f, imageSize + imageSize / 8f, imageSize + imageSize / 8f);
-		gc.setFill(nodeFill);
+		if (this.Regens > 70) {
+			gc.setFill(Color.GREEN);
+		} else if (this.Regens > 40){
+			gc.setFill(Color.YELLOW);
+		} else {
+			gc.setFill(Color.RED);
+		}
 		gc.fillOval(startPoint.getX(), startPoint.getY(), imageSize, imageSize);
 		gc.setFill(Color.WHITE);
 		gc.fillOval(startPoint.getX() + imageSize / 8f, startPoint.getY() + imageSize / 8f, imageSize - imageSize / 4f, imageSize - imageSize / 4f);
