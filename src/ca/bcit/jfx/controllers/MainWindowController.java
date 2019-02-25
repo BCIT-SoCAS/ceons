@@ -12,7 +12,6 @@ import ca.bcit.jfx.DrawingState;
 import ca.bcit.jfx.LinkPropertiesController;
 import ca.bcit.jfx.NodePropertiesController;
 import ca.bcit.jfx.components.Console;
-import ca.bcit.jfx.components.CreateNetworkDialog;
 import ca.bcit.jfx.components.ResizableCanvas;
 import ca.bcit.jfx.components.TaskReadyProgressBar;
 import ca.bcit.net.Network;
@@ -54,7 +53,6 @@ import java.io.PrintWriter;
 public class MainWindowController  {
 	
 	@FXML private Console console;
-	@FXML private CreateNetworkDialog CreateNetworkDialog;
 	@FXML private TaskReadyProgressBar progressBar;
 	@FXML private Label progressLabel;
 	@FXML private SimulationMenuController simulationMenuController;
@@ -194,12 +192,6 @@ public class MainWindowController  {
     }
 
     private int i;
-	/**
-	 * Display dialog window
-	 */
-	@FXML public void showSelectNetworkOptionDialog(ActionEvent e) {
-		CreateNetworkDialog.display();
-	}
 
 	private void saveAPIkey(ActionEvent e, TextField inputField) {
 		FileChooser fileChooser = new FileChooser();

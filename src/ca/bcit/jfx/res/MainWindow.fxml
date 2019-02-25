@@ -74,7 +74,14 @@
 						<fx:include fx:id="simulationMenu" source="/ca/bcit/jfx/res/SimulationMenu.fxml" />
 					</content>
 				</TitledPane>
+				<TitledPane animated="true" text="Live Info">
 
+					<content>
+						<VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0"
+							  prefWidth="200.0" >
+						</VBox>
+					</content>
+				</TitledPane>
 				<TitledPane fx:id="propertiesTitledPane" animated="true" text="Full Summary">
 					<content>
 						<AnchorPane prefHeight="180.0" prefWidth="200.0" />
