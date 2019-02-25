@@ -34,21 +34,23 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.layout.GridPane;
 import javafx.geometry.Insets;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.io.PrintWriter;
+
+import com.google.maps.GeoApiContext;
+import com.google.maps.StaticMapsApi;
+import com.google.maps.model.Size;
+import com.google.maps.ImageResult;
 
 public class MainWindowController  {
 	
@@ -179,14 +181,29 @@ public class MainWindowController  {
             propertiesTitledPane.setContent(null);
 	}
 	
-	private void writeAPIkeyToFile(String content, File file) {
+	private boolean validateAPIkey(String key) {
+		GeoApiContext context = new GeoApiContext.Builder()
+		.apiKey(key)
+		.build();
+		Size mapSize = new Size(200,200);
+		try {
+			ImageResult map = StaticMapsApi.newRequest(context, mapSize).center("Vancouver").zoom(100).await();
+			System.out.println(map.contentType);
+			return true;
+		} catch (Exception ex) {
+			Logger.info("Invalid API key");
+			return false;
+		}
+	}
+	
+	private void writeAPIkeyToFile(String apiKey, File file) {
 		try {
             PrintWriter writer;
             writer = new PrintWriter(file);
-            writer.println(content);
+            writer.println(apiKey);
             writer.close();
         } catch (IOException ex) {
-            Logger.info("An exception occurred while saving api key");
+            Logger.info("An exception occurred while saving API key");
 			Logger.debug(ex);
         }
     }
@@ -194,6 +211,11 @@ public class MainWindowController  {
     private int i;
 
 	private void saveAPIkey(ActionEvent e, TextField inputField) {
+		String apiKey = inputField.getText();
+		if (!validateAPIkey(apiKey)) {
+			return;
+		}
+		
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setInitialFileName("api_key");
 		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TEXT files (*.txt)", "*.txt");
@@ -206,8 +228,8 @@ public class MainWindowController  {
 
 			@Override
 			protected Void call() {
-				Logger.info("Saving API key to " + file.getName() + "file");
-				writeAPIkeyToFile(inputField.getText(), file);
+				Logger.info("Saving API key to " + file.getName() + " file");
+				writeAPIkeyToFile(apiKey, file);
 				Logger.info("Finished saving API key");
 				return null;
 			}
