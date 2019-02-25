@@ -42,8 +42,9 @@ public class Node extends Figure {
 	@Override
 	public void draw(GraphicsContext gc) {
 		// loadImage();
-		//gc.drawImage(image, startPoint.getX(), startPoint.getY());
-		gc.setFill(Color.PINK);
+    	//gc.drawImage(image, startPoint.getX(), startPoint.getY());
+    	Color outlineBlue = Color.web("88D1F1");
+		gc.setFill(outlineBlue);
 		gc.fillOval(startPoint.getX() - imageSize / 16f, startPoint.getY() - imageSize / 16f, imageSize + imageSize / 8f, imageSize + imageSize / 8f);
 		if (this.Regens > 70) {
 			gc.setFill(Color.GREEN);

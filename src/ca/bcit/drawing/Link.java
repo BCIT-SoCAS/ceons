@@ -43,13 +43,17 @@ public class Link extends Figure {
 
 	@Override
 	public void draw(GraphicsContext gc) {
+		Color bcitBlue = Color.web("0x003C79");
+		Color lightBlue = Color.web("0x3399FF");
+		Color outlineBlue = Color.web("88D1F1");
+
 		gc.setLineWidth(Node.imageSize / 2);
-		gc.setStroke(Color.PINK);
+		gc.setStroke(outlineBlue);
 		gc.strokeLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
 		gc.setLineWidth(Node.imageSize / 2 - Node.imageSize / 12);
-		Vector2F temp = startPoint.subtract(endPoint).unit().multiply(Node.imageSize / 4f - Node.imageSize / 24f);
+    Vector2F temp = startPoint.subtract(endPoint).unit().multiply(Node.imageSize / 4f - Node.imageSize / 24f);
 		gc.setStroke(new LinearGradient(startPoint.getX() - temp.getY(), startPoint.getY() + temp.getX(), startPoint.getX() + temp.getY(), startPoint.getY() -temp.getX(), false, CycleMethod.NO_CYCLE,
-				new Stop(0, Color.MAGENTA), new Stop(0.15f, Color.PURPLE), new Stop(0.85f, Color.PURPLE), new Stop(1f, Color.MAGENTA)));
+				new Stop(0, lightBlue), new Stop(0.15f, bcitBlue), new Stop(0.85f, bcitBlue), new Stop(1f, lightBlue)));
 		gc.strokeLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
 		gc.setLineWidth(Node.imageSize / 2 - Node.imageSize / 4);
 		gc.setStroke(Color.WHITE);
