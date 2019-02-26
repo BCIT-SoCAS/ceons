@@ -11,6 +11,7 @@ import javafx.scene.paint.Stop;
 public class Link extends Figure {
 	private Vector2F endPoint;
 	private int length;
+	private int Percentage = 100;
 
 	public Link(Link link) {
 		length = link.length;
@@ -27,6 +28,15 @@ public class Link extends Figure {
 		loadImage();
 	}
 
+	public Link(Vector2F stPoint, Vector2F _endPoint, int number, int Percentage) {
+		super(stPoint, "Link" + number);
+		this.Percentage = Percentage;
+		endPoint = _endPoint;
+		length = 0;
+		loadImage();
+	}
+
+
 	public Link(Vector2F _startPoint, Vector2F _endPoint, String _name) {
 		super(_startPoint, _name);
 		endPoint = _endPoint;
@@ -41,6 +51,8 @@ public class Link extends Figure {
 		loadImage();
 	}
 
+
+
 	@Override
 	public void draw(GraphicsContext gc) {
 		Color bcitBlue = Color.web("0x003C79");
@@ -48,12 +60,18 @@ public class Link extends Figure {
 		Color outlineBlue = Color.web("88D1F1");
 
 		gc.setLineWidth(Node.imageSize / 2);
-		gc.setStroke(outlineBlue);
+		if (this.Percentage > 70) {
+			gc.setStroke(Color.GREEN);
+		} else if (this.Percentage > 40){
+			gc.setStroke(Color.YELLOW);
+		} else {
+			gc.setStroke(Color.RED);
+		}
 		gc.strokeLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
-		gc.setLineWidth(Node.imageSize / 2 - Node.imageSize / 12);
-    Vector2F temp = startPoint.subtract(endPoint).unit().multiply(Node.imageSize / 4f - Node.imageSize / 24f);
+		/*gc.setLineWidth(Node.imageSize / 2 - Node.imageSize / 12);
+    	Vector2F temp = startPoint.subtract(endPoint).unit().multiply(Node.imageSize / 4f - Node.imageSize / 24f);
 		gc.setStroke(new LinearGradient(startPoint.getX() - temp.getY(), startPoint.getY() + temp.getX(), startPoint.getX() + temp.getY(), startPoint.getY() -temp.getX(), false, CycleMethod.NO_CYCLE,
-				new Stop(0, lightBlue), new Stop(0.15f, bcitBlue), new Stop(0.85f, bcitBlue), new Stop(1f, lightBlue)));
+				new Stop(0, lightBlue), new Stop(0.15f, bcitBlue), new Stop(0.85f, bcitBlue), new Stop(1f, lightBlue)));*/
 		gc.strokeLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
 		gc.setLineWidth(Node.imageSize / 2 - Node.imageSize / 4);
 		gc.setStroke(Color.WHITE);

@@ -316,7 +316,7 @@ public class MainWindowController  {
 						graph.addNode(n.getPosition(), n.getName(), 100);
 						for (NetworkNode n2: project.getNetwork().getNodes()){
 							if(project.getNetwork().containsLink(n, n2)) {
-								graph.addLink(n.getPosition(), n2.getPosition());
+								graph.addLink(n.getPosition(), n2.getPosition(), 100);
 							}
 						}
 					}

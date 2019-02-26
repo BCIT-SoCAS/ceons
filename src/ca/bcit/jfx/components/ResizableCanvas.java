@@ -237,6 +237,16 @@ public class ResizableCanvas extends Canvas {
 		list.add(new Link(start_vec2F, end_vec2F, list.getLinkAmount()));
 	}
 
+	/**
+	 * Draw a Link between two Nodes given the coordinates of the Nodes
+	 *
+	 * @param start_vec2F	coordinates of the first Node
+	 * @param end_vec2F		coordinates of the second Node
+	 * @param Percentage    percentage of the slice being free
+	 */
+	public void addLink(Vector2F start_vec2F, Vector2F end_vec2F, int Percentage) {
+		list.add(new Link(start_vec2F, end_vec2F, list.getLinkAmount(), Percentage));
+	}
 	private Figure findClosestElement(Vector2F vec2F) {
 		return list.findClosestElement(vec2F);
 	}
