@@ -67,7 +67,7 @@ public class MainWindowController  {
 	@FXML private Alert alert;
 	private final static int PROPERTIES_PANE_NUMBER=4;
 	private final static int EDIT_PANE_NUMBER=3;
-	
+
 	@FXML private void nodeChose(ActionEvent e) 
 	{
         graph.changeState(DrawingState.nodeAddingState);
@@ -292,6 +292,28 @@ public class MainWindowController  {
 		task.run();
 	}
 
+	@FXML public void onUpdate(ActionEvent e) {
+		Task<Void> task = new Task<Void>() {
+
+			@Override
+			protected Void call() {
+				try {
+					graph.resetCanvas();
+					for (NetworkNode n: ApplicationResources.getProject().getNetwork().getNodes()){
+//						System.out.println(n.toString());
+						graph.addNetworkNode(n);
+					}
+
+				} catch (Exception ex) {
+					Logger.info("An exception occurred while updating the project.");
+					Logger.debug(ex);
+				}
+				return null;
+			}
+		};
+		task.run();
+	}
+
 	@FXML public void onLoad(ActionEvent e) {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
@@ -311,7 +333,7 @@ public class MainWindowController  {
 					graph.resetCanvas();
 					mapViewer.setImage(new Image(project.getMap()));
 					for (NetworkNode n: project.getNetwork().getNodes()){
-						n.setRegeneratorsCount(100);
+						n.setRegeneratorsCount(75);
 						n.setFigure(n);
 //						System.out.println(n.toString());
 						graph.addNetworkNode(n);
