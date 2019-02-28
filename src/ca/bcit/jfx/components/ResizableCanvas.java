@@ -6,6 +6,7 @@ import ca.bcit.drawing.Link;
 import ca.bcit.drawing.Node;
 import ca.bcit.jfx.DrawingState;
 import ca.bcit.jfx.controllers.MainWindowController;
+import ca.bcit.net.NetworkNode;
 import ca.bcit.utils.draw.DashedDrawing;
 import ca.bcit.utils.draw.Rotation;
 import ca.bcit.utils.draw.Zooming;
@@ -203,6 +204,10 @@ public class ResizableCanvas extends Canvas {
 	public void addNode(Vector2F vec2F, String name) {
 		System.out.println(vec2F.getX());
 		list.add(new Node(vec2F, name));
+	}
+
+	public void addNetworkNode(NetworkNode n) {
+		list.add(n.getFigure());
 	}
 
 	/**

@@ -6,6 +6,8 @@ import ca.bcit.io.YamlSerializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import ca.bcit.drawing.Node;
+
 /**
  * Network Node with information about the regenerators
  * 
@@ -16,6 +18,7 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 
 	private final String name;
 	int regeneratorsCount, occupiedRegenerators;
+	private Node figureNode;
 
 	/**
 	 * Class constructor specifying name of the NetworkNode
@@ -23,6 +26,18 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 	 */
 	public NetworkNode(String name) {
 		this.name = name;
+	}
+
+	public void setFigure(NetworkNode n) {
+		this.figureNode = new Node(getPosition(), getName(), getFreeRegenerators());
+	}
+
+	public Node getFigure() {
+		return this.figureNode;
+	}
+
+	public void updateFigure() {
+		this.figureNode.setRegens(getFreeRegenerators());
 	}
 
 	/**
@@ -122,6 +137,8 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 		regeneratorsCount = (Integer) map.get("regenerators");
         setPosition((Integer) map.get("xcoordinate"),(Integer) map.get("ycoordinate"));
 	}
+
+
 
 	/**
 	 * Method that serialize NetworkNode variables into map object for

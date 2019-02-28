@@ -1,6 +1,7 @@
 package ca.bcit.net;
 
 import ca.bcit.ApplicationResources;
+import ca.bcit.drawing.FigureControl;
 import ca.bcit.io.Logger;
 import ca.bcit.jfx.controllers.SimulationMenuController;
 import ca.bcit.jfx.tasks.SimulationTask;
@@ -26,6 +27,7 @@ public class Simulation {
 
 	private final Network network;
 	private final TrafficGenerator generator;
+	private FigureControl list;
 
 	private double totalVolume;
 	private double spectrumBlockedVolume;
@@ -88,6 +90,7 @@ public class Simulation {
 						tempNodeArr.add(network.getNodes().get(i).getName()); // name of regenerator at node i
 						int tempOccRegen = network.getNodes().get(i).getOccupiedRegenerators(); // occupied regenerators available at node i
 						int tempFreeRegen = network.getNodes().get(i).getFreeRegenerators(); // free regenerators available at node i
+						network.getNodes().get(i).updateFigure();
 						tempNodeArr.add(tempOccRegen);
 						tempNodeArr.add(tempFreeRegen);
 						tempNodeArr.add(tempFreeRegen * 100 / (tempOccRegen + tempFreeRegen));
