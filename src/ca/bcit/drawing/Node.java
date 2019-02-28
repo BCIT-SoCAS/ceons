@@ -43,16 +43,20 @@ public class Node extends Figure {
 	public void draw(GraphicsContext gc) {
 		// loadImage();
     	//gc.drawImage(image, startPoint.getX(), startPoint.getY());
-    	Color outlineBlue = Color.web("88D1F1");
+		int red = 0;
+		int green = 0;
+		if (this.Regens > 50) {
+			red = (50 - (this.Regens - 50)) * 5;
+			green = 255;
+		} else {
+			red = 255;
+			green = this.Regens * 5;
+		}
+
+		Color outlineBlue = Color.web("88D1F1");
 		gc.setFill(outlineBlue);
 		gc.fillOval(startPoint.getX() - imageSize / 16f, startPoint.getY() - imageSize / 16f, imageSize + imageSize / 8f, imageSize + imageSize / 8f);
-		if (this.Regens > 70) {
-			gc.setFill(Color.GREEN);
-		} else if (this.Regens > 40){
-			gc.setFill(Color.YELLOW);
-		} else {
-			gc.setFill(Color.RED);
-		}
+		gc.setFill(Color.web("rgb(" + red + ',' + green + ",0)"));
 		gc.fillOval(startPoint.getX(), startPoint.getY(), imageSize, imageSize);
 		gc.setFill(Color.WHITE);
 		gc.fillOval(startPoint.getX() + imageSize / 8f, startPoint.getY() + imageSize / 8f, imageSize - imageSize / 4f, imageSize - imageSize / 4f);

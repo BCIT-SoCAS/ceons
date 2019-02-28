@@ -55,23 +55,19 @@ public class Link extends Figure {
 
 	@Override
 	public void draw(GraphicsContext gc) {
-		Color bcitBlue = Color.web("0x003C79");
-		Color lightBlue = Color.web("0x3399FF");
-		Color outlineBlue = Color.web("88D1F1");
+		int red = 0;
+		int green = 0;
+		if (this.Percentage > 50) {
+			red = (50 - (this.Percentage - 50)) * 5;
+			green = 255;
+		} else {
+			red = 255;
+			green = this.Percentage * 5;
+		}
 
 		gc.setLineWidth(Node.imageSize / 2);
-		if (this.Percentage > 70) {
-			gc.setStroke(Color.GREEN);
-		} else if (this.Percentage > 40){
-			gc.setStroke(Color.YELLOW);
-		} else {
-			gc.setStroke(Color.RED);
-		}
+		gc.setStroke(Color.web("rgb(" + red + ',' + green + ",0)"));
 		gc.strokeLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
-		/*gc.setLineWidth(Node.imageSize / 2 - Node.imageSize / 12);
-    	Vector2F temp = startPoint.subtract(endPoint).unit().multiply(Node.imageSize / 4f - Node.imageSize / 24f);
-		gc.setStroke(new LinearGradient(startPoint.getX() - temp.getY(), startPoint.getY() + temp.getX(), startPoint.getX() + temp.getY(), startPoint.getY() -temp.getX(), false, CycleMethod.NO_CYCLE,
-				new Stop(0, lightBlue), new Stop(0.15f, bcitBlue), new Stop(0.85f, bcitBlue), new Stop(1f, lightBlue)));*/
 		gc.strokeLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
 		gc.setLineWidth(Node.imageSize / 2 - Node.imageSize / 4);
 		gc.setStroke(Color.WHITE);
