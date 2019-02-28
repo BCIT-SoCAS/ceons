@@ -78,8 +78,9 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 				allocatedDemands.get(i).deallocate();
 				allocatedDemands.remove(i);
 				i--;
-			} else
+			} else {
 				allocatedDemands.get(i).tick();
+			}
 	}
 	
 	public void waitForDemandsDeath() {

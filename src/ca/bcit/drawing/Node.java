@@ -39,6 +39,16 @@ public class Node extends Figure {
 		loadImage();
 	}
 
+	public int getRegens() {
+		return this.Regens;
+	}
+
+	public void setRegens(int regens) {
+		this.Regens = regens;
+		String tempStr = "Node Figure: " + this.getName() + ", Free Regenerators: " + this.getRegens();
+		System.out.println(tempStr);
+	}
+
 	@Override
 	public void draw(GraphicsContext gc) {
 		// loadImage();
