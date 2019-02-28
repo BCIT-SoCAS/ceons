@@ -12,25 +12,17 @@ import ca.bcit.net.Simulation;
 import ca.bcit.net.algo.RMSAAlgorithm;
 import ca.bcit.net.demand.generator.TrafficGenerator;
 import com.sun.javafx.collections.ObservableListWrapper;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.List;
-import ca.bcit.net.algo.AMRA;
-import ca.bcit.io.project.EONProject;
-import ca.bcit.io.project.EONProjectFileFormat;
-import ca.bcit.io.project.Project;
-import ca.bcit.io.project.ProjectFileFormat;
-import java.io.File;
 import java.util.Optional;
-
-import ca.bcit.io.YamlSerializable;
 
 public class SimulationMenuController {
 	
@@ -178,8 +170,14 @@ public class SimulationMenuController {
 		paused ^= true; // swap true/false state
 	}
 
+	public static boolean updated = false;
 
-	public void changeCancelToFinish(){
-		CancelButton.setText("Finish Simulation");
+	public static void updateSimulation() throws IOException {
+		System.out.println("Here");
+		FXMLLoader loader = new FXMLLoader(SimulationMenuController.class.getResource("/ca/bcit/jfx/res/MainWindow.fxml"));
+		Parent root = (Parent) loader.load();
+		MainWindowController mainWindowController = loader.getController();
+		mainWindowController.updateGraph();
+
 	}
 }

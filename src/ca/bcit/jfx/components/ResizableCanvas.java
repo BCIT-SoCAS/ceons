@@ -20,7 +20,7 @@ public class ResizableCanvas extends Canvas {
 	private FigureControl listBeforeChanges;
 	private boolean isDrawingLink;
 	private DrawingState state;
-	private MainWindowController parent;
+	private static MainWindowController parent;
 	private Vector2F startTempPoint;
 	private Vector2F endTempPoint;
 	private Rotation rotation;
@@ -32,6 +32,10 @@ public class ResizableCanvas extends Canvas {
 		setOnMousePressed(this::canvasOnMousePressed);
 		setOnMouseReleased(this::canvasOnMouseReleased);
 		setOnScroll(this::canvasOnMouseScroll);
+	}
+
+	public static MainWindowController getParentController() {
+		return parent;
 	}
 
 	private void canvasOnMousePressed(MouseEvent e) {

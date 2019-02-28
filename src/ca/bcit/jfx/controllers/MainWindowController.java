@@ -65,6 +65,8 @@ public class MainWindowController  {
 	@FXML private Button PauseButton;
 	@FXML private ImageView mapViewer;
 	@FXML private Alert alert;
+
+	@FXML private Button updateButton;
 	private final static int PROPERTIES_PANE_NUMBER=4;
 	private final static int EDIT_PANE_NUMBER=3;
 
@@ -314,6 +316,30 @@ public class MainWindowController  {
 		task.run();
 	}
 
+	public void updateGraph() {
+//		System.out.println("Clicked");
+//		updateButton.fire();
+		Task<Void> task = new Task<Void>() {
+
+			@Override
+			protected Void call() {
+				try {
+					graph.resetCanvas();
+					for (NetworkNode n: ApplicationResources.getProject().getNetwork().getNodes()){
+//						System.out.println(n.toString());
+						graph.addNetworkNode(n);
+					}
+
+				} catch (Exception ex) {
+					Logger.info("An exception occurred while updating the project.");
+					Logger.debug(ex);
+				}
+				return null;
+			}
+		};
+		task.run();
+	}
+
 	@FXML public void onLoad(ActionEvent e) {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
@@ -354,7 +380,6 @@ public class MainWindowController  {
 			}
 		};
 		task.run();
-
 
 		Task<Void> task2 = new Task<Void>() {
 

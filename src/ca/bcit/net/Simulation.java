@@ -3,13 +3,13 @@ package ca.bcit.net;
 import ca.bcit.ApplicationResources;
 import ca.bcit.drawing.FigureControl;
 import ca.bcit.io.Logger;
+import ca.bcit.jfx.components.ResizableCanvas;
 import ca.bcit.jfx.controllers.SimulationMenuController;
 import ca.bcit.jfx.tasks.SimulationTask;
 import ca.bcit.net.demand.AnycastDemand;
 import ca.bcit.net.demand.Demand;
 import ca.bcit.net.demand.DemandAllocationResult;
 import ca.bcit.net.demand.generator.TrafficGenerator;
-import ca.bcit.jfx.controllers.MainWindowController;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,6 +57,7 @@ public class Simulation {
 		try {
 			int reportCounter = 0;
 			for (; generator.getGeneratedDemandsCount() < demandsCount;) {
+
 				Demand demand = generator.next();
 
 				if (linkCutter.nextDouble() < alpha / erlang)
@@ -86,6 +87,8 @@ public class Simulation {
 				// GUI updates
 				reportCounter++;
 				if (reportCounter > n) {
+					ResizableCanvas.getParentController().updateGraph();
+
 					for (int i = 0; i < nodeCount; i++) {
 						tempNodeArr.add(network.getNodes().get(i).getName()); // name of regenerator at node i
 						int tempOccRegen = network.getNodes().get(i).getOccupiedRegenerators(); // occupied regenerators available at node i

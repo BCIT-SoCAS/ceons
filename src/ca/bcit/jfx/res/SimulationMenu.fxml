@@ -21,7 +21,7 @@
 					<TextField fx:id="alpha" text="0.0" />
 					<Label text="Demands Count" />
 					<UIntField fx:id="demands" />
-					<CheckBox fx:id="replicaPreservation" text="Anycast backup replica preservation." />
+					<CheckBox fx:id="replicaPreservation" text="Anycast backup replica preservation." selected="true"/>
 					<Separator />
 					<CheckBox fx:id="allowModulationChange" text="Allow changing modulation on path?" selected="true" />
 					<Label text="Allowed Modulations" />
