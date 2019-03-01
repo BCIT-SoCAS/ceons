@@ -296,8 +296,17 @@ public class MainWindowController  {
 			protected Void call() {
 				try {
 					graph.resetCanvas();
-					for (NetworkNode n: ApplicationResources.getProject().getNetwork().getNodes()){
+					Project project = ApplicationResources.getProject();
+					for (NetworkNode n: project.getNetwork().getNodes()){
 						graph.addNetworkNode(n);
+						for (NetworkNode n2: project.getNetwork().getNodes()){
+							if(project.getNetwork().containsLink(n, n2)) {
+								int totalSlices = project.getNetwork().getLinkSlices(n,n2).getSlicesCount();
+								int occupiedSlices = project.getNetwork().getLinkSlices(n,n2).getOccupiedSlices();
+								int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
+								graph.addLink(n.getPosition(), n2.getPosition(), currentPercentage);
+							}
+						}
 					}
 
 				} catch (Exception ex) {
@@ -316,7 +325,6 @@ public class MainWindowController  {
 			@Override
 			protected Void call() {
 				try {
-					Project project = ApplicationResources.getProject();
 					graph.resetCanvas();
 					for (NetworkNode n: ApplicationResources.getProject().getNetwork().getNodes()){
 						n.clearOccupied();
