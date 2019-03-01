@@ -59,14 +59,9 @@ public class MainWindowController  {
 	@FXML private Label progressLabel;
 	@FXML private SimulationMenuController simulationMenuController;
 	@FXML private ResizableCanvas graph;
-	@FXML private RadioButton RBNoneChose;
 	@FXML private Accordion accordion;
 	@FXML private TitledPane propertiesTitledPane;
-	@FXML private Button PauseButton;
 	@FXML private ImageView mapViewer;
-	@FXML private Alert alert;
-
-	@FXML private Button updateButton;
 	private final static int PROPERTIES_PANE_NUMBER=4;
 	private final static int EDIT_PANE_NUMBER=3;
 
@@ -294,7 +289,7 @@ public class MainWindowController  {
 		task.run();
 	}
 
-	@FXML public void onUpdate(ActionEvent e) {
+	public void updateGraph() {
 		Task<Void> task = new Task<Void>() {
 
 			@Override
@@ -302,7 +297,6 @@ public class MainWindowController  {
 				try {
 					graph.resetCanvas();
 					for (NetworkNode n: ApplicationResources.getProject().getNetwork().getNodes()){
-//						System.out.println(n.toString());
 						graph.addNetworkNode(n);
 					}
 
@@ -316,9 +310,7 @@ public class MainWindowController  {
 		task.run();
 	}
 
-	public void updateGraph() {
-//		System.out.println("Clicked");
-//		updateButton.fire();
+	public void resetGraph() {
 		Task<Void> task = new Task<Void>() {
 
 			@Override
@@ -326,8 +318,15 @@ public class MainWindowController  {
 				try {
 					graph.resetCanvas();
 					for (NetworkNode n: ApplicationResources.getProject().getNetwork().getNodes()){
-//						System.out.println(n.toString());
+						n.clearOccupied();
+						n.setRegeneratorsCount(100);
+						n.setFigure(n);
 						graph.addNetworkNode(n);
+						for (NetworkNode n2: ApplicationResources.getProject().getNetwork().getNodes()){
+							if(ApplicationResources.getProject().getNetwork().containsLink(n, n2)) {
+								graph.addLink(n.getPosition(), n2.getPosition(), 100);
+							}
+						}
 					}
 
 				} catch (Exception ex) {
@@ -359,9 +358,8 @@ public class MainWindowController  {
 					graph.resetCanvas();
 					mapViewer.setImage(new Image(project.getMap()));
 					for (NetworkNode n: project.getNetwork().getNodes()){
-						n.setRegeneratorsCount(75);
+						n.setRegeneratorsCount(100);
 						n.setFigure(n);
-//						System.out.println(n.toString());
 						graph.addNetworkNode(n);
 						for (NetworkNode n2: project.getNetwork().getNodes()){
 							if(project.getNetwork().containsLink(n, n2)) {

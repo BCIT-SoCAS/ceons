@@ -132,12 +132,6 @@ public class Simulation {
 					reportCounter -= n;
 				}
 
-				// logic to calculate
-				/*
-				network.getLinkSlices().getOccupiedSlices();
-				network.getLinkSlices().getSlicesCount();
-				*/
-
 				// pause button
 				Pause();
 

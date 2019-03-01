@@ -3,6 +3,7 @@ package ca.bcit.jfx.controllers;
 import ca.bcit.ApplicationResources;
 import ca.bcit.io.Logger;
 import ca.bcit.jfx.components.TaskReadyProgressBar;
+import ca.bcit.jfx.components.ResizableCanvas;
 import ca.bcit.jfx.components.UIntField;
 import ca.bcit.jfx.tasks.SimulationTask;
 import ca.bcit.net.MetricType;
@@ -14,12 +15,9 @@ import ca.bcit.net.demand.generator.TrafficGenerator;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -41,8 +39,8 @@ public class SimulationMenuController {
 	@FXML private CheckBox allowModulationChange;
 	@FXML private UIntField bestPaths;
 	@FXML private UIntField regeneratorsMetricValue;
-	@FXML private Button PauseButton;
-	@FXML private Button CancelButton;
+	@FXML private Button pauseButton;
+	@FXML private Button cancelButton;
 	private CheckBox[] modulations;
 
 	public static TaskReadyProgressBar progressBar;
@@ -128,28 +126,30 @@ public class SimulationMenuController {
 			if (result.get() == ButtonType.OK){
 				cancelled = true;
 				paused = false;
-				PauseButton.setText("Pause Simulation");
+				pauseButton.setText("Pause Simulation");
 				finished = true;
+				ResizableCanvas.getParentController().resetGraph();
 			} else {
 				paused = false;
-				PauseButton.setText("Pause Simulation");
+				pauseButton.setText("Pause Simulation");
 				return;
 			}
 		} else {
 			Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 			alert.setTitle("Confirmation");
-			alert.setHeaderText("Finish simulation");
+			alert.setHeaderText("Reset simulation");
 			alert.setContentText("Are you ok with this?");
 
 			Optional<ButtonType> result = alert.showAndWait();
 			if (result.get() == ButtonType.OK){
 				cancelled = true;
 				paused = false;
-				PauseButton.setText("Pause Simulation");
+				pauseButton.setText("Pause Simulation");
 				finished = true;
+				ResizableCanvas.getParentController().resetGraph();
 			} else {
 				paused = false;
-				PauseButton.setText("Pause Simulation");
+				pauseButton.setText("Pause Simulation");
 				return;
 			}
 		}
@@ -161,23 +161,13 @@ public class SimulationMenuController {
 	public static boolean paused = false;
 	@FXML public void pauseSimulation(ActionEvent e) {
 		if (paused && !finished) {
-			PauseButton.setText("Pause Simulation");
+			pauseButton.setText("Pause Simulation");
 		} else if (!paused && !finished) {
-			PauseButton.setText("Resume Simulation");
+			pauseButton.setText("Resume Simulation");
 		} else {
 			return;
 		}
 		paused ^= true; // swap true/false state
 	}
 
-	public static boolean updated = false;
-
-	public static void updateSimulation() throws IOException {
-		System.out.println("Here");
-		FXMLLoader loader = new FXMLLoader(SimulationMenuController.class.getResource("/ca/bcit/jfx/res/MainWindow.fxml"));
-		Parent root = (Parent) loader.load();
-		MainWindowController mainWindowController = loader.getController();
-		mainWindowController.updateGraph();
-
-	}
 }
