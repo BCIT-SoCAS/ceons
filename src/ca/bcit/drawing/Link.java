@@ -55,28 +55,29 @@ public class Link extends Figure {
 
 	@Override
 	public void draw(GraphicsContext gc) {
-		int red = 0;
-		int green = 0;
-		if (this.Percentage > 50) {
-			red = (50 - (this.Percentage - 50)) * 5;
-			green = 255;
-		} else {
-			red = 255;
-			green = this.Percentage * 5;
-		}
+		int[] rgb = getColor();
 
 		gc.setLineWidth(Node.imageSize / 2);
-		gc.setStroke(Color.web("rgb(" + red + ',' + green + ",0)"));
+		gc.setStroke(Color.web("rgb(" + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')'));
 		gc.strokeLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
 		gc.strokeLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
 		gc.setLineWidth(Node.imageSize / 2 - Node.imageSize / 4);
 		gc.setStroke(Color.WHITE);
 		gc.strokeLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
-		//(float) Math.random();
 		float fill = 1f;
 		gc.setLineWidth((Node.imageSize / 2 - Node.imageSize / 4) * fill);
-//		gc.setStroke(Color.hsb(120.0 + fill * 180, 0.5 + 0.5 * fill, 1  - 0.5 * fill));
-//		gc.strokeLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
+	}
+
+	private int[] getColor() {
+		int[] rgb = new int[3];
+		if (this.Percentage > 50) {
+			rgb[0] = (50 - (this.Percentage - 50)) * 5;
+			rgb[1] = 255;
+		} else {
+			rgb[0] = 255;
+			rgb[1] = this.Percentage * 5;
+		}
+		return rgb;
 	}
 
 	@Override
