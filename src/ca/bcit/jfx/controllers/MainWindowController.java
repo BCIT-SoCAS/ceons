@@ -25,6 +25,8 @@ import ca.bcit.utils.random.ConstantRandomVariable;
 import ca.bcit.utils.random.MappedRandomVariable;
 import ca.bcit.utils.random.UniformRandomVariable;
 import com.sun.javafx.collections.ObservableListWrapper;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -51,92 +53,109 @@ import com.google.maps.GeoApiContext;
 import com.google.maps.StaticMapsApi;
 import com.google.maps.model.Size;
 import com.google.maps.ImageResult;
+import javafx.util.Duration;
 
-public class MainWindowController  {
-	
-	@FXML private Console console;
-	@FXML private TaskReadyProgressBar progressBar;
-	@FXML private Label progressLabel;
-	@FXML private SimulationMenuController simulationMenuController;
-	@FXML private ResizableCanvas graph;
-	@FXML private Accordion accordion;
-	@FXML private Label info;
-	@FXML private TitledPane propertiesTitledPane;
-	@FXML private ImageView mapViewer;
-	private final static int PROPERTIES_PANE_NUMBER=4;
-	private final static int EDIT_PANE_NUMBER=3;
+public class MainWindowController {
 
-	@FXML private void nodeChose(ActionEvent e) 
-	{
+    @FXML
+    private Console console;
+    @FXML
+    private TaskReadyProgressBar progressBar;
+    @FXML
+    private Label progressLabel;
+    @FXML
+    private SimulationMenuController simulationMenuController;
+    @FXML
+    private ResizableCanvas graph;
+    @FXML
+    private Accordion accordion;
+    @FXML
+    private Label info;
+    @FXML
+    private TitledPane propertiesTitledPane;
+    @FXML
+    private ImageView mapViewer;
+    private final static int PROPERTIES_PANE_NUMBER = 4;
+    private final static int EDIT_PANE_NUMBER = 3;
+
+    @FXML
+    private void nodeChose(ActionEvent e) {
         graph.changeState(DrawingState.nodeAddingState);
-	}
-	@FXML private void linkChose(ActionEvent e) 
-	{
-		graph.changeState(DrawingState.linkAddingState);
-	}
-	@FXML private void noneChose(ActionEvent e) 
-	{
-		graph.changeState(DrawingState.clickingState);
-	}
-	@FXML private void deleteNodeChose(ActionEvent e)
-	{
-		graph.changeState(DrawingState.nodeDeleteState);
-	}
-	@FXML private void deleteLinkChose(ActionEvent e)
-	{
-		graph.changeState(DrawingState.linkDeleteState);
-	}
-	@FXML private void deleteFewElementsChose(ActionEvent e)
-	{
-		graph.changeState(DrawingState.fewElementsDeleteState);
-	}
-	@FXML private void rotateAroundCenterChose(ActionEvent e)
-	{
-		graph.changeState(DrawingState.rotateAroundCenter);
-	}	
-	@FXML private void rotateAroundNodeChose(ActionEvent e)
-	{
-		graph.changeState(DrawingState.rotateAroundNode);
-	}
-	@FXML public void initialize() {
-		for (Field field : MainWindowController.class.getDeclaredFields()) if (field.isAnnotationPresent(FXML.class))
-			try {
-				assert field.get(this) != null : "Id '" + field.getName() + "' was not injected!";
-			} catch (IllegalArgumentException | IllegalAccessException e) {
-				throw new RuntimeException(e);
-			}
-		
-		try {
-			Utils.setStaticFinal(Console.class, "cout", console.out);
-			Utils.setStaticFinal(Console.class, "cin", console.in);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		
-		graph.init(this);
-		simulationMenuController.setProgressBar(progressBar);
+    }
 
-	}
-	public void loadProperties(Figure fig, FigureControl list)
-	{
-		 {
-			    if(fig instanceof Node)
-			    {
-			        loadNodeProperties(fig,list);
-			    }
-			    else if (fig instanceof Link)
-			    {
-			        loadLinkProperties(fig,list);
-			    }
-			    else
-			        loadEmptyProperties();
-			    }
-	}
-	private void loadEmptyProperties()
-	{
-		setExpandedPane(EDIT_PANE_NUMBER);
-	}
-	private void loadNodeProperties(Figure temp,FigureControl list) {
+    @FXML
+    private void linkChose(ActionEvent e) {
+        graph.changeState(DrawingState.linkAddingState);
+    }
+
+    @FXML
+    private void noneChose(ActionEvent e) {
+        graph.changeState(DrawingState.clickingState);
+    }
+
+    @FXML
+    private void deleteNodeChose(ActionEvent e) {
+        graph.changeState(DrawingState.nodeDeleteState);
+    }
+
+    @FXML
+    private void deleteLinkChose(ActionEvent e) {
+        graph.changeState(DrawingState.linkDeleteState);
+    }
+
+    @FXML
+    private void deleteFewElementsChose(ActionEvent e) {
+        graph.changeState(DrawingState.fewElementsDeleteState);
+    }
+
+    @FXML
+    private void rotateAroundCenterChose(ActionEvent e) {
+        graph.changeState(DrawingState.rotateAroundCenter);
+    }
+
+    @FXML
+    private void rotateAroundNodeChose(ActionEvent e) {
+        graph.changeState(DrawingState.rotateAroundNode);
+    }
+
+    @FXML
+    public void initialize() {
+        for (Field field : MainWindowController.class.getDeclaredFields())
+            if (field.isAnnotationPresent(FXML.class))
+                try {
+                    assert field.get(this) != null : "Id '" + field.getName() + "' was not injected!";
+                } catch (IllegalArgumentException | IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+
+        try {
+            Utils.setStaticFinal(Console.class, "cout", console.out);
+            Utils.setStaticFinal(Console.class, "cin", console.in);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        graph.init(this);
+        simulationMenuController.setProgressBar(progressBar);
+
+    }
+
+    public void loadProperties(Figure fig, FigureControl list) {
+        {
+            if (fig instanceof Node) {
+                loadNodeProperties(fig, list);
+            } else if (fig instanceof Link) {
+                loadLinkProperties(fig, list);
+            } else
+                loadEmptyProperties();
+        }
+    }
+
+    private void loadEmptyProperties() {
+        setExpandedPane(EDIT_PANE_NUMBER);
+    }
+
+    private void loadNodeProperties(Figure temp, FigureControl list) {
         TitledPane properties = new TitledPane();
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/NodeProperties.fxml"));
         try {
@@ -151,7 +170,8 @@ public class MainWindowController  {
         setSelectedPaneContent(properties);
         setExpandedPane(PROPERTIES_PANE_NUMBER);
     }
-	private void loadLinkProperties(Figure temp,FigureControl list) {
+
+    private void loadLinkProperties(Figure temp, FigureControl list) {
         TitledPane properties = new TitledPane();
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/LinkProperties.fxml"));
         try {
@@ -166,337 +186,341 @@ public class MainWindowController  {
         setSelectedPaneContent(properties);
         setExpandedPane(PROPERTIES_PANE_NUMBER);
     }
-    public void setExpandedPane(int idx)
-    {
+
+    public void setExpandedPane(int idx) {
         accordion.getPanes().get(idx).setExpanded(true);
     }
 
-    private void setSelectedPaneContent(TitledPane tp)
-    {
-        if(tp!=null)
+    private void setSelectedPaneContent(TitledPane tp) {
+        if (tp != null)
             propertiesTitledPane.setContent(tp.getContent());
         else
             propertiesTitledPane.setContent(null);
-	}
-	
-	private boolean validateAPIkey(String key) {
-		GeoApiContext context = new GeoApiContext.Builder()
-		.apiKey(key)
-		.build();
-		Size mapSize = new Size(200,200);
-		try {
-			ImageResult map = StaticMapsApi.newRequest(context, mapSize).center("Vancouver").zoom(100).await();
-			System.out.println(map.contentType);
-			return true;
-		} catch (Exception ex) {
-			Logger.info("Invalid API key");
-			return false;
-		}
-	}
-	
-	private void writeAPIkeyToFile(String apiKey, File file) {
-		try {
+    }
+
+    private boolean validateAPIkey(String key) {
+        GeoApiContext context = new GeoApiContext.Builder()
+                .apiKey(key)
+                .build();
+        Size mapSize = new Size(200, 200);
+        try {
+            ImageResult map = StaticMapsApi.newRequest(context, mapSize).center("Vancouver").zoom(100).await();
+            System.out.println(map.contentType);
+            return true;
+        } catch (Exception ex) {
+            Logger.info("Invalid API key");
+            return false;
+        }
+    }
+
+    private void writeAPIkeyToFile(String apiKey, File file) {
+        try {
             PrintWriter writer;
             writer = new PrintWriter(file);
             writer.println(apiKey);
             writer.close();
         } catch (IOException ex) {
             Logger.info("An exception occurred while saving API key");
-			Logger.debug(ex);
+            Logger.debug(ex);
         }
     }
 
     private int i;
 
-	private void saveAPIkey(ActionEvent e, TextField inputField) {
-		String apiKey = inputField.getText();
-		if (!validateAPIkey(apiKey)) {
-			return;
-		}
-		
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setInitialFileName("api_key");
-		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TEXT files (*.txt)", "*.txt");
-		fileChooser.getExtensionFilters().add(extFilter);
-		fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-		final File file = fileChooser.showSaveDialog(null);
+    private void saveAPIkey(ActionEvent e, TextField inputField) {
+        String apiKey = inputField.getText();
+        if (!validateAPIkey(apiKey)) {
+            return;
+        }
 
-		if (file == null) return;
-		Task<Void> task = new Task<Void>() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialFileName("api_key");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TEXT files (*.txt)", "*.txt");
+        fileChooser.getExtensionFilters().add(extFilter);
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        final File file = fileChooser.showSaveDialog(null);
 
-			@Override
-			protected Void call() {
-				Logger.info("Saving API key to " + file.getName() + " file");
-				writeAPIkeyToFile(apiKey, file);
-				Logger.info("Finished saving API key");
-				return null;
-			}
-		};
-		task.run();
-	}
+        if (file == null) return;
+        Task<Void> task = new Task<Void>() {
 
-	@FXML public void onNew(ActionEvent a) {
-		Stage dialogWindow = new Stage();
-		dialogWindow.initModality(Modality.APPLICATION_MODAL);
-		dialogWindow.setTitle("Choose Topology Option");
+            @Override
+            protected Void call() {
+                Logger.info("Saving API key to " + file.getName() + " file");
+                writeAPIkeyToFile(apiKey, file);
+                Logger.info("Finished saving API key");
+                return null;
+            }
+        };
+        task.run();
+    }
 
-		TextField saveKeyInput = new TextField();
-		saveKeyInput.setPromptText("Please enter Google Maps API key");
-		Button saveAPIkeyBtn = new Button("Save API key");
-		Button closeBtn = new Button("Close");
+    @FXML
+    public void onNew(ActionEvent a) {
+        Stage dialogWindow = new Stage();
+        dialogWindow.initModality(Modality.APPLICATION_MODAL);
+        dialogWindow.setTitle("Choose Topology Option");
 
-		saveAPIkeyBtn.setPrefWidth(220);
-		closeBtn.setPrefWidth(220);
+        TextField saveKeyInput = new TextField();
+        saveKeyInput.setPromptText("Please enter Google Maps API key");
+        Button saveAPIkeyBtn = new Button("Save API key");
+        Button closeBtn = new Button("Close");
 
-		saveAPIkeyBtn.setOnAction(e -> saveAPIkey(e, saveKeyInput));
-		closeBtn.setOnAction(e -> dialogWindow.close());
+        saveAPIkeyBtn.setPrefWidth(220);
+        closeBtn.setPrefWidth(220);
 
-		GridPane grid = new GridPane();
-		grid.setAlignment(Pos.CENTER);
-		grid.setHgap(10);
-		grid.setVgap(20);
-		grid.setPadding(new Insets(25, 25, 25, 25));
+        saveAPIkeyBtn.setOnAction(e -> saveAPIkey(e, saveKeyInput));
+        closeBtn.setOnAction(e -> dialogWindow.close());
 
-		grid.add(saveKeyInput, 0, 0, 2, 1);
-		grid.add(saveAPIkeyBtn, 0, 1);
-		grid.add(closeBtn, 1, 1);
-		Scene scene = new Scene(grid, 520, 300);
-		dialogWindow.setScene(scene);
-		dialogWindow.showAndWait();
-	}
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.CENTER);
+        grid.setHgap(10);
+        grid.setVgap(20);
+        grid.setPadding(new Insets(25, 25, 25, 25));
 
-	@FXML public void onSave(ActionEvent e) {
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
-		fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-		final File file = fileChooser.showSaveDialog(null);
+        grid.add(saveKeyInput, 0, 0, 2, 1);
+        grid.add(saveAPIkeyBtn, 0, 1);
+        grid.add(closeBtn, 1, 1);
+        Scene scene = new Scene(grid, 520, 300);
+        dialogWindow.setScene(scene);
+        dialogWindow.showAndWait();
+    }
 
-		if (file == null) return;
-		Task<Void> task = new Task<Void>() {
+    @FXML
+    public void onSave(ActionEvent e) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        final File file = fileChooser.showSaveDialog(null);
 
-			@Override
-			protected Void call() {
-				try {
-					Logger.info("Saving project to " + file.getName() + "...");
-					ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).save(file, ApplicationResources.getProject());
-					Logger.info("Finished saving project.");
-				} catch (Exception ex) {
-					Logger.info("An exception occurred while saving the project.");
-					Logger.debug(ex);
-				}
-				return null;
-			}
-		};
-		task.run();
-	}
+        if (file == null) return;
+        Task<Void> task = new Task<Void>() {
 
-	public void updateGraph() {
-		Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() {
+                try {
+                    Logger.info("Saving project to " + file.getName() + "...");
+                    ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).save(file, ApplicationResources.getProject());
+                    Logger.info("Finished saving project.");
+                } catch (Exception ex) {
+                    Logger.info("An exception occurred while saving the project.");
+                    Logger.debug(ex);
+                }
+                return null;
+            }
+        };
+        task.run();
+    }
 
-			@Override
-			protected Void call() {
-				try {
-					graph.resetCanvas();
-					Project project = ApplicationResources.getProject();
-					for (NetworkNode n: project.getNetwork().getNodes()){
-						graph.addNetworkNode(n);
-						for (NetworkNode n2: project.getNetwork().getNodes()){
-							if(project.getNetwork().containsLink(n, n2)) {
-								int totalSlices = project.getNetwork().getLinkSlices(n,n2).getSlicesCount();
-								int occupiedSlices = project.getNetwork().getLinkSlices(n,n2).getOccupiedSlices();
-								int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
-								graph.addLink(n.getPosition(), n2.getPosition(), currentPercentage);
-							}
-						}
-					}
+    public void updateGraph() {
+        Timeline timeline = new Timeline(
+                new KeyFrame(
+                        Duration.seconds(0),
+                        event -> {
+                            try {
+                                graph.resetCanvas();
+                                Project project = ApplicationResources.getProject();
+                                for (NetworkNode n : project.getNetwork().getNodes()) {
+                                    graph.addNetworkNode(n);
+                                    for (NetworkNode n2 : project.getNetwork().getNodes()) {
+                                        if (project.getNetwork().containsLink(n, n2)) {
+                                            int totalSlices = project.getNetwork().getLinkSlices(n, n2).getSlicesCount();
+                                            int occupiedSlices = project.getNetwork().getLinkSlices(n, n2).getOccupiedSlices();
+                                            int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
+                                            graph.addLink(n.getPosition(), n2.getPosition(), currentPercentage);
+                                        }
+                                    }
+                                }
 
-				} catch (Exception ex) {
-					Logger.info("An exception occurred while updating the project.");
-					Logger.debug(ex);
-				}
-				return null;
-			}
-		};
-		task.run();
-	}
+                            } catch (Exception ex) {
+                                Logger.debug("An exception on updating the network UI");
+                            }
+                        }
+                ),
+                new KeyFrame(Duration.seconds(0.5))
+        );
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
+    }
 
-	public void resetGraph() {
-		Task<Void> task = new Task<Void>() {
+    public void resetGraph() {
+        Task<Void> task = new Task<Void>() {
 
-			@Override
-			protected Void call() {
-				try {
-					graph.resetCanvas();
-					for (NetworkNode n: ApplicationResources.getProject().getNetwork().getNodes()){
-						n.clearOccupied();
-						n.setRegeneratorsCount(100);
-						n.setFigure(n);
-						graph.addNetworkNode(n);
-						for (NetworkNode n2: ApplicationResources.getProject().getNetwork().getNodes()){
-							if(ApplicationResources.getProject().getNetwork().containsLink(n, n2)) {
-								graph.addLink(n.getPosition(), n2.getPosition(), 100);
-							}
-						}
-					}
+            @Override
+            protected Void call() {
+                try {
+                    graph.resetCanvas();
+                    for (NetworkNode n : ApplicationResources.getProject().getNetwork().getNodes()) {
+                        n.clearOccupied();
+                        n.setRegeneratorsCount(100);
+                        n.setFigure(n);
+                        graph.addNetworkNode(n);
+                        for (NetworkNode n2 : ApplicationResources.getProject().getNetwork().getNodes()) {
+                            if (ApplicationResources.getProject().getNetwork().containsLink(n, n2)) {
+                                graph.addLink(n.getPosition(), n2.getPosition(), 100);
+                            }
+                        }
+                    }
 
-				} catch (Exception ex) {
-					Logger.info("An exception occurred while updating the project.");
-					Logger.debug(ex);
-				}
-				return null;
-			}
-		};
-		task.run();
-	}
+                } catch (Exception ex) {
+                    Logger.info("An exception occurred while updating the project.");
+                    Logger.debug(ex);
+                }
+                return null;
+            }
+        };
+        task.run();
+    }
 
-	@FXML public void onLoad(ActionEvent e) {
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
-		fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-		final File file = fileChooser.showOpenDialog(null);
+    @FXML
+    public void onLoad(ActionEvent e) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        final File file = fileChooser.showOpenDialog(null);
 
-		if (file == null) return;
-		Task<Void> task = new Task<Void>() {
+        if (file == null) return;
+        Task<Void> task = new Task<Void>() {
 
-			@Override
-			protected Void call() {
-				try {
-					Logger.info("Loading project from " + file.getName() + "...");
-					Project project = ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).load(file);
-					ApplicationResources.setProject(project);
-					Logger.info("Finished loading project.");
-					graph.resetCanvas();
-					mapViewer.setImage(new Image(project.getMap()));
-					for (NetworkNode n: project.getNetwork().getNodes()){
-						n.setRegeneratorsCount(100);
-						n.setFigure(n);
-						graph.addNetworkNode(n);
-						for (NetworkNode n2: project.getNetwork().getNodes()){
-							if(project.getNetwork().containsLink(n, n2)) {
-								graph.addLink(n.getPosition(), n2.getPosition(), 100);
-							}
-						}
-					}
+            @Override
+            protected Void call() {
+                try {
+                    Logger.info("Loading project from " + file.getName() + "...");
+                    Project project = ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).load(file);
+                    ApplicationResources.setProject(project);
+                    Logger.info("Finished loading project.");
+                    graph.resetCanvas();
+                    mapViewer.setImage(new Image(project.getMap()));
+                    for (NetworkNode n : project.getNetwork().getNodes()) {
+                        n.setRegeneratorsCount(100);
+                        n.setFigure(n);
+                        graph.addNetworkNode(n);
+                        for (NetworkNode n2 : project.getNetwork().getNodes()) {
+                            if (project.getNetwork().containsLink(n, n2)) {
+                                graph.addLink(n.getPosition(), n2.getPosition(), 100);
+                            }
+                        }
+                    }
 
-					setupGenerators(project);
+                    setupGenerators(project);
 
-				} catch (Exception ex) {
-					Logger.info("An exception occurred while loading the project.");
-					Logger.debug(ex);
-				}
-				return null;
-			}
-		};
-		task.run();
+                } catch (Exception ex) {
+                    Logger.info("An exception occurred while loading the project.");
+                    Logger.debug(ex);
+                }
+                return null;
+            }
+        };
+        task.run();
 
-		Task<Void> task2 = new Task<Void>() {
+        Task<Void> task2 = new Task<Void>() {
 
-			@Override
-			protected Void call() {
-				Network network = ApplicationResources.getProject().getNetwork();
+            @Override
+            protected Void call() {
+                Network network = ApplicationResources.getProject().getNetwork();
 
-				i = 1;
-				try {
-					network.maxPathsCount = network.calculatePaths(() -> updateProgress(i++, network.getNodesPairsCount()));
-				} catch (Throwable e) {
-					e.printStackTrace();
-				}
-				Console.cout.println("Max best paths count: " + network.maxPathsCount);
+                i = 1;
+                try {
+                    network.maxPathsCount = network.calculatePaths(() -> updateProgress(i++, network.getNodesPairsCount()));
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+                Console.cout.println("Max best paths count: " + network.maxPathsCount);
 
-				return null;
-			}
+                return null;
+            }
 
 
-		};
-		SimulationMenuController.progressBar.runTask(task2, true);
-	}
+        };
+        SimulationMenuController.progressBar.runTask(task2, true);
+    }
 
-	@FXML public void whilePaused() {
-		Project project = ApplicationResources.getProject();
-		for (NetworkNode n: project.getNetwork().getNodes()){
-			info.setText(info.getText() + n.getName() + " has " + n.getFreeRegenerators() + " free regenerators " + '\n');
-			for (NetworkNode n2: project.getNetwork().getNodes()){
-				if(project.getNetwork().containsLink(n, n2)) {
-					int totalSlices = project.getNetwork().getLinkSlices(n,n2).getSlicesCount();
-					int occupiedSlices = project.getNetwork().getLinkSlices(n,n2).getOccupiedSlices();
-					int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
-				}
-			}
-		}
-	}
+    @FXML
+    public void whilePaused() {
+        Project project = ApplicationResources.getProject();
+        for (NetworkNode n : project.getNetwork().getNodes()) {
+            info.setText(info.getText() + n.getName() + " has " + n.getFreeRegenerators() + " free regenerators " + '\n');
+            for (NetworkNode n2 : project.getNetwork().getNodes()) {
+                if (project.getNetwork().containsLink(n, n2)) {
+                    int totalSlices = project.getNetwork().getLinkSlices(n, n2).getSlicesCount();
+                    int occupiedSlices = project.getNetwork().getLinkSlices(n, n2).getOccupiedSlices();
+                    int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
+                }
+            }
+        }
+    }
 
-	private void setupGenerators(Project project) {
-		Network network = project.getNetwork();
-		List<TrafficGenerator> generators = project.getTrafficGenerators();
+    private void setupGenerators(Project project) {
+        Network network = project.getNetwork();
+        List<TrafficGenerator> generators = project.getTrafficGenerators();
 
-		List<MappedRandomVariable.Entry<DemandGenerator<?>>> subGenerators = new ArrayList<>();
+        List<MappedRandomVariable.Entry<DemandGenerator<?>>> subGenerators = new ArrayList<>();
 
-		subGenerators.add(new MappedRandomVariable.Entry<>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new ConstantRandomVariable<>(false),
-				new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 210, 10), new ConstantRandomVariable<>(1f))));
-		subGenerators.add(new MappedRandomVariable.Entry<>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getNodes()),
-				new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
-		subGenerators.add(new MappedRandomVariable.Entry<>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("replicas")), new UniformRandomVariable.Generic<>(network.getGroup("replicas")),
-				new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(40, 410, 10), new ConstantRandomVariable<>(1f))));
-		subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getGroup("international")),
-				new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
-		subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
-				new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new ConstantRandomVariable<>(false),
+                new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 210, 10), new ConstantRandomVariable<>(1f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getNodes()),
+                new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("replicas")), new UniformRandomVariable.Generic<>(network.getGroup("replicas")),
+                new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(40, 410, 10), new ConstantRandomVariable<>(1f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getGroup("international")),
+                new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
+                new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
 
-		generators.add(new TrafficGenerator("No Backup", new MappedRandomVariable<>(subGenerators)));
+        generators.add(new TrafficGenerator("No Backup", new MappedRandomVariable<>(subGenerators)));
 
-		subGenerators = new ArrayList<>();
+        subGenerators = new ArrayList<>();
 
-		subGenerators.add(new MappedRandomVariable.Entry<>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new ConstantRandomVariable<>(false),
-				new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 210, 10), new ConstantRandomVariable<>(1f))));
-		subGenerators.add(new MappedRandomVariable.Entry<>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getNodes()),
-				new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
-		subGenerators.add(new MappedRandomVariable.Entry<>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("replicas")), new UniformRandomVariable.Generic<>(network.getGroup("replicas")),
-				new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(40, 410, 10), new ConstantRandomVariable<>(1f))));
-		subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getGroup("international")),
-				new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
-		subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
-				new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new ConstantRandomVariable<>(false),
+                new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 210, 10), new ConstantRandomVariable<>(1f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getNodes()),
+                new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("replicas")), new UniformRandomVariable.Generic<>(network.getGroup("replicas")),
+                new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(40, 410, 10), new ConstantRandomVariable<>(1f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getGroup("international")),
+                new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
+                new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
 
-		generators.add(new TrafficGenerator("Dedicated Backup", new MappedRandomVariable<>(subGenerators)));
+        generators.add(new TrafficGenerator("Dedicated Backup", new MappedRandomVariable<>(subGenerators)));
 
-		subGenerators = new ArrayList<>();
+        subGenerators = new ArrayList<>();
 
-		subGenerators.add(new MappedRandomVariable.Entry<>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new ConstantRandomVariable<>(false),
-				new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 210, 10), new ConstantRandomVariable<>(1f))));
-		subGenerators.add(new MappedRandomVariable.Entry<>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getNodes()),
-				new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
-		subGenerators.add(new MappedRandomVariable.Entry<>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("replicas")), new UniformRandomVariable.Generic<>(network.getGroup("replicas")),
-				new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(40, 410, 10), new ConstantRandomVariable<>(1f))));
-		subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getGroup("international")),
-				new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
-		subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
-				new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new ConstantRandomVariable<>(false),
+                new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 210, 10), new ConstantRandomVariable<>(1f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getNodes()),
+                new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("replicas")), new UniformRandomVariable.Generic<>(network.getGroup("replicas")),
+                new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(40, 410, 10), new ConstantRandomVariable<>(1f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getGroup("international")),
+                new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
+                new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
 
-		subGenerators.add(new MappedRandomVariable.Entry<>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new ConstantRandomVariable<>(false),
-				new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 210, 10), new ConstantRandomVariable<>(0.5f))));
-		subGenerators.add(new MappedRandomVariable.Entry<>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getNodes()),
-				new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(0.5f))));
-		subGenerators.add(new MappedRandomVariable.Entry<>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("replicas")), new UniformRandomVariable.Generic<>(network.getGroup("replicas")),
-				new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(40, 410, 10), new ConstantRandomVariable<>(0.5f))));
-		subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getGroup("international")),
-				new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(0.5f))));
-		subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
-				new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(0.5f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new ConstantRandomVariable<>(false),
+                new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 210, 10), new ConstantRandomVariable<>(0.5f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getNodes()),
+                new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(0.5f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("replicas")), new UniformRandomVariable.Generic<>(network.getGroup("replicas")),
+                new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(40, 410, 10), new ConstantRandomVariable<>(0.5f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getGroup("international")),
+                new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(0.5f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
+                new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(0.5f))));
 
-		subGenerators.add(new MappedRandomVariable.Entry<>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new ConstantRandomVariable<>(true),
-				new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 210, 10), new ConstantRandomVariable<>(1f))));
-		subGenerators.add(new MappedRandomVariable.Entry<>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getNodes()),
-				new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
-		subGenerators.add(new MappedRandomVariable.Entry<>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("replicas")), new UniformRandomVariable.Generic<>(network.getGroup("replicas")),
-				new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(40, 410, 10), new ConstantRandomVariable<>(1f))));
-		subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getGroup("international")),
-				new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
-		subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
-				new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new ConstantRandomVariable<>(true),
+                new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 210, 10), new ConstantRandomVariable<>(1f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getNodes()),
+                new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("replicas")), new UniformRandomVariable.Generic<>(network.getGroup("replicas")),
+                new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(40, 410, 10), new ConstantRandomVariable<>(1f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getGroup("international")),
+                new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+        subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
+                new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
 
-		generators.add(new TrafficGenerator("Shared Backup", new MappedRandomVariable<>(subGenerators)));
+        generators.add(new TrafficGenerator("Shared Backup", new MappedRandomVariable<>(subGenerators)));
 
-		SimulationMenuController.generatorsStatic.setItems(new ObservableListWrapper<>(generators));
-	}
+        SimulationMenuController.generatorsStatic.setItems(new ObservableListWrapper<>(generators));
+    }
 
 }

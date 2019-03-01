@@ -48,12 +48,15 @@ public class Simulation {
 		SimulationMenuController.finished = false;
 		SimulationMenuController.cancelled = false;
 		clearVolumeValues();
+		//For development set to debug, for release set to info
+		Logger.setLoggerLevel(Logger.LoggerLevel.INFO);
 		generator.setErlang(erlang);
 		generator.setSeed(seed);
 		generator.setReplicaPreservation(replicaPreservation);
 		network.setSeed(seed);
 		Random linkCutter = new Random(seed);
 		try {
+			ResizableCanvas.getParentController().updateGraph();
 			int reportCounter = 0;
 			for (; generator.getGeneratedDemandsCount() < demandsCount;) {
 				SimulationMenuController.started = true;
@@ -87,7 +90,6 @@ public class Simulation {
 				// GUI updates
 				reportCounter++;
 				if (reportCounter > n) {
-					ResizableCanvas.getParentController().updateGraph();
 
 					for (int i = 0; i < nodeCount; i++) {
 						tempNodeArr.add(network.getNodes().get(i).getName()); // name of regenerator at node i

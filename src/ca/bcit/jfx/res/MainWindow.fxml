@@ -10,15 +10,14 @@
 <?import javafx.scene.layout.AnchorPane?>
 <!--suppress ALL -->
 <GridPane gridLinesVisible="true" prefWidth="1200.0" prefHeight="850.0" stylesheets="/ca/bcit/jfx/res/application.cssext" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.MainWindowController">
-
 	<AnchorPane id="AnchorPane" maxHeight="1000" maxWidth="1000" minHeight="0" minWidth="0" prefWidth="1000" style="-fx-background-color: azure;" >
 		<children>
 			<ImageView fx:id="mapViewer" layoutX="0.0" layoutY="0.0" fitHeight="1000" fitWidth="1000" pickOnBounds="true" preserveRatio="true" />
 		</children>
 	</AnchorPane>
 	<columnConstraints>
-		<ColumnConstraints hgrow="ALWAYS" />
-		<ColumnConstraints maxWidth="-Infinity" prefWidth="400.0" />
+		<ColumnConstraints hgrow="SOMETIMES" />
+		<ColumnConstraints maxWidth="-Infinity" prefWidth="250.0" />
 	</columnConstraints>
 	<rowConstraints>
 		<RowConstraints minHeight="10.0" prefHeight="30.0"
@@ -47,7 +46,7 @@
 		</GridPane>
 		<Accordion fx:id="accordion" GridPane.columnIndex="1" >
 			<panes>
-				<TitledPane animated="true" text="Network Settings" >
+				<TitledPane animated="true" text="Network Settings">
 					<content>
 						<VBox alignment="TOP_CENTER" spacing="8.0">
 							<children>

@@ -21,9 +21,9 @@
 					<TextField fx:id="alpha" text="0.0" />
 					<Label text="Demands Count" />
 					<UIntField fx:id="demands" />
-					<CheckBox fx:id="replicaPreservation" text="Anycast backup replica preservation." selected="true"/>
+					<CheckBox fx:id="replicaPreservation" text="Backup replica preservation?" selected="true"/>
 					<Separator />
-					<CheckBox fx:id="allowModulationChange" text="Allow changing modulation on path?" selected="true" />
+					<CheckBox fx:id="allowModulationChange" text="Change modulation on path?" selected="true" />
 					<Label text="Allowed Modulations" />
 					<GridPane fx:id="modulationSelection">
 						<columnConstraints>
@@ -40,7 +40,7 @@
 						</children>
 						</GridPane>
 					<Separator />
-					<Label text="Best paths" />
+					<Label text="Number of candidate paths" />
 					<UIntField fx:id="bestPaths" />
 					<Separator />
 					<Button fx:id="StartButton" text="Start Simulation" onAction="#startSimulationAction" />
