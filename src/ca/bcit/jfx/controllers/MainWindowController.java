@@ -316,6 +316,7 @@ public class MainWindowController  {
 			@Override
 			protected Void call() {
 				try {
+					Project project = ApplicationResources.getProject();
 					graph.resetCanvas();
 					for (NetworkNode n: ApplicationResources.getProject().getNetwork().getNodes()){
 						n.clearOccupied();
