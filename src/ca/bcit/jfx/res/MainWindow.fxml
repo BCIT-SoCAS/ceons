@@ -16,8 +16,8 @@
 		</children>
 	</AnchorPane>
 	<columnConstraints>
-		<ColumnConstraints hgrow="SOMETIMES" />
-		<ColumnConstraints maxWidth="-Infinity" prefWidth="250.0" />
+		<ColumnConstraints hgrow="ALWAYS" />
+		<ColumnConstraints maxWidth="-Infinity" prefWidth="400.0" />
 	</columnConstraints>
 	<rowConstraints>
 		<RowConstraints minHeight="10.0" prefHeight="30.0"
@@ -46,7 +46,7 @@
 		</GridPane>
 		<Accordion fx:id="accordion" GridPane.columnIndex="1" >
 			<panes>
-				<TitledPane animated="true" text="Network Settings">
+				<TitledPane animated="true" text="Network Settings" >
 					<content>
 						<VBox alignment="TOP_CENTER" spacing="8.0">
 							<children>
@@ -74,11 +74,11 @@
 						<fx:include fx:id="simulationMenu" source="/ca/bcit/jfx/res/SimulationMenu.fxml" />
 					</content>
 				</TitledPane>
-				<TitledPane animated="true" text="Live Info">
-
+				<TitledPane fx:id="liveInfoPane" animated="true" text="Live Info">
 					<content>
 						<VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0"
 							  prefWidth="200.0" >
+							<Label fx:id="info"></Label>
 						</VBox>
 					</content>
 				</TitledPane>

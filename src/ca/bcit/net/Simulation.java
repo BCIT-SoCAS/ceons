@@ -45,7 +45,6 @@ public class Simulation {
 
 	public void simulate(long seed, int demandsCount, double alpha, int erlang, boolean replicaPreservation,
 			SimulationTask task) {
-
 		SimulationMenuController.finished = false;
 		SimulationMenuController.cancelled = false;
 		clearVolumeValues();
@@ -57,6 +56,7 @@ public class Simulation {
 		try {
 			int reportCounter = 0;
 			for (; generator.getGeneratedDemandsCount() < demandsCount;) {
+				SimulationMenuController.started = true;
 
 				Demand demand = generator.next();
 

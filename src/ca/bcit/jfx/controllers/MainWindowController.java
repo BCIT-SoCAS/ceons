@@ -60,6 +60,7 @@ public class MainWindowController  {
 	@FXML private SimulationMenuController simulationMenuController;
 	@FXML private ResizableCanvas graph;
 	@FXML private Accordion accordion;
+	@FXML private Label info;
 	@FXML private TitledPane propertiesTitledPane;
 	@FXML private ImageView mapViewer;
 	private final static int PROPERTIES_PANE_NUMBER=4;
@@ -133,7 +134,7 @@ public class MainWindowController  {
 	}
 	private void loadEmptyProperties()
 	{
-		setExpadedPane(EDIT_PANE_NUMBER);
+		setExpandedPane(EDIT_PANE_NUMBER);
 	}
 	private void loadNodeProperties(Figure temp,FigureControl list) {
         TitledPane properties = new TitledPane();
@@ -148,7 +149,7 @@ public class MainWindowController  {
             controller.initDate(list, temp);
         }
         setSelectedPaneContent(properties);
-        setExpadedPane(PROPERTIES_PANE_NUMBER);
+        setExpandedPane(PROPERTIES_PANE_NUMBER);
     }
 	private void loadLinkProperties(Figure temp,FigureControl list) {
         TitledPane properties = new TitledPane();
@@ -163,9 +164,9 @@ public class MainWindowController  {
             controller.initDate(list, temp);
         }
         setSelectedPaneContent(properties);
-        setExpadedPane(PROPERTIES_PANE_NUMBER);
+        setExpandedPane(PROPERTIES_PANE_NUMBER);
     }
-    private void setExpadedPane(int idx)
+    public void setExpandedPane(int idx)
     {
         accordion.getPanes().get(idx).setExpanded(true);
     }
@@ -408,6 +409,20 @@ public class MainWindowController  {
 
 		};
 		SimulationMenuController.progressBar.runTask(task2, true);
+	}
+
+	@FXML public void whilePaused() {
+		Project project = ApplicationResources.getProject();
+		for (NetworkNode n: project.getNetwork().getNodes()){
+			info.setText(info.getText() + n.getName() + " has " + n.getFreeRegenerators() + " free regenerators " + '\n');
+			for (NetworkNode n2: project.getNetwork().getNodes()){
+				if(project.getNetwork().containsLink(n, n2)) {
+					int totalSlices = project.getNetwork().getLinkSlices(n,n2).getSlicesCount();
+					int occupiedSlices = project.getNetwork().getLinkSlices(n,n2).getOccupiedSlices();
+					int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
+				}
+			}
+		}
 	}
 
 	private void setupGenerators(Project project) {

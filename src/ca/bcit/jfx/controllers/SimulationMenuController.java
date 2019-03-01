@@ -69,6 +69,7 @@ public class SimulationMenuController {
 		SimulationMenuController.progressBar = progressBar;
 	}
 
+	public static boolean started = false;
 	public static boolean finished = false;
 	@FXML public void startSimulationAction(ActionEvent e) {
 		Network network = ApplicationResources.getProject().getNetwork();
@@ -91,18 +92,6 @@ public class SimulationMenuController {
 		network.setRegeneratorMetricValue(5);
 		//Regenerator Metric is always static
 		network.setRegeneratorMetricType(MetricType.STATIC);
-
-
-//		network.setCanSwitchModulation(allowModulationChange.isSelected());
-//		for (Toggle toggle : modulationMetric.getToggles())
-//			if (toggle.isSelected())
-//				network.setModualtionMetricType(MetricType.valueOf2(((RadioButton) toggle).getText()));
-
-//
-//		network.setRegeneratorMetricValue(regeneratorsMetricValue.getValue());
-//		for (Toggle toggle : regeneratorsMetric.getToggles())
-//			if (toggle.isSelected())
-//				network.setRegeneratorMetricType(MetricType.valueOf2(((RadioButton) toggle).getText()));
 
 		Simulation simulation = new Simulation(network, generators.getValue());
 		SimulationTask task = new SimulationTask(simulation, seed.getValue(), Double.parseDouble(alpha.getText()), erlang.getValue(), demands.getValue(), replicaPreservation.isSelected());
@@ -128,6 +117,7 @@ public class SimulationMenuController {
 				paused = false;
 				pauseButton.setText("Pause Simulation");
 				finished = true;
+				started = false;
 				ResizableCanvas.getParentController().resetGraph();
 			} else {
 				paused = false;
@@ -146,6 +136,7 @@ public class SimulationMenuController {
 				paused = false;
 				pauseButton.setText("Pause Simulation");
 				finished = true;
+				started = false;
 				ResizableCanvas.getParentController().resetGraph();
 			} else {
 				paused = false;
@@ -160,9 +151,11 @@ public class SimulationMenuController {
 	// pause button
 	public static boolean paused = false;
 	@FXML public void pauseSimulation(ActionEvent e) {
-		if (paused && !finished) {
+		if (paused && !finished && started) {
 			pauseButton.setText("Pause Simulation");
-		} else if (!paused && !finished) {
+		} else if (!paused && !finished && started) {
+			ResizableCanvas.getParentController().setExpandedPane(2);
+			ResizableCanvas.getParentController().whilePaused();
 			pauseButton.setText("Resume Simulation");
 		} else {
 			return;
