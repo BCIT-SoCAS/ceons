@@ -57,6 +57,8 @@ import javafx.util.Duration;
 
 public class MainWindowController {
 
+
+
     @FXML
     private Console console;
     @FXML
@@ -311,11 +313,13 @@ public class MainWindowController {
         task.run();
     }
 
+
     public void updateGraph() {
         Timeline timeline = new Timeline(
                 new KeyFrame(
                         Duration.seconds(0),
                         event -> {
+                            System.out.println("hi");
                             try {
                                 graph.resetCanvas();
                                 Project project = ApplicationResources.getProject();

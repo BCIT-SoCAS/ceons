@@ -163,6 +163,7 @@ public class Simulation {
 
 		network.waitForDemandsDeath();
 		SimulationMenuController.finished = true;
+		ResizableCanvas.getParentController().updateGraph();
 
 		if (SimulationMenuController.cancelled) {
 			Logger.info("Simulation cancelled!");
