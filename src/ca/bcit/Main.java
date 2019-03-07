@@ -20,11 +20,24 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import com.sun.javafx.application.LauncherImpl;
 
 import javax.swing.*;
 import java.io.IOException;
 
 public class Main extends Application {
+
+	private int SPLASH_SCREEN_TIMER = 3000;
+
+	@Override
+	public void init() throws Exception {
+		// timer for splash screen
+		try {
+			Thread.sleep(SPLASH_SCREEN_TIMER);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} 
+	}
 	
 	@Override
 	public void start(Stage primaryStage) throws IOException {
@@ -42,8 +55,6 @@ public class Main extends Application {
 		canvas.widthProperty().bind(pane.widthProperty());
 		canvas.heightProperty().bind(pane.heightProperty());
 		System.out.println(canvas.getBoundsInParent());
-//		canvas.getGraphicsContext2D().fillRect(10, 10, 20, 20);
-//		canvas.setOnMouseDragged(e -> { canvas.getGraphicsContext2D().fillRect(e.getX(), e.getY(), 10, 10); });
 	}
 	
 	public static void main(String[] args) {
@@ -61,12 +72,11 @@ public class Main extends Application {
 			YamlSerializable.registerSerializableClass(TrafficGenerator.class);
 			
 			ProjectFileFormat.registerFileFormat(new EONProjectFileFormat());
-			launch(args);
+
+			LauncherImpl.launchApplication(Main.class, SplashScreen.class, args);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Fatal error occured: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
 	}
-	
-
 }

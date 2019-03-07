@@ -59,8 +59,7 @@ public class Node extends Figure {
 	public void draw(GraphicsContext gc) {
 		int[] rgb = getColor();
 
-		Color outlineBlue = Color.web("88D1F1");
-		gc.setFill(outlineBlue);
+		gc.setFill(Color.WHITE);
 		gc.fillOval(startPoint.getX() - imageSize / 16f, startPoint.getY() - imageSize / 16f, imageSize + imageSize / 8f, imageSize + imageSize / 8f);
 		gc.setFill(Color.web("rgb(" + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')'));
 		gc.fillOval(startPoint.getX(), startPoint.getY(), imageSize, imageSize);

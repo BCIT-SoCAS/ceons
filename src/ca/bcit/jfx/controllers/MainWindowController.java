@@ -229,6 +229,10 @@ public class MainWindowController {
     private void saveAPIkey(ActionEvent e, TextField inputField) {
         String apiKey = inputField.getText();
         if (!validateAPIkey(apiKey)) {
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle("Warning");
+			alert.setHeaderText("API key is Invalid");
+            alert.showAndWait();
             return;
         }
 

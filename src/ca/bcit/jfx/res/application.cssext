@@ -70,3 +70,20 @@
 	-fx-background-color: transparent;
 	-fx-padding-left: 15px;
 }
+
+#splash-screen-pane {
+	-fx-background-image: url("SplashScreenBG.png");
+	-fx-background-size: cover;
+}
+
+#splash-screen-title {
+	-fx-font-size: 52px; 
+	-fx-fill: #e5e3e3;
+	-fx-font-weight: bold;
+}
+
+#splash-screen-version {
+	-fx-font-size: 16px; 
+	-fx-fill: #e5e3e3;
+	-fx-font-weight: bold;
+}
