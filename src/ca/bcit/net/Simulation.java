@@ -144,6 +144,7 @@ public class Simulation {
 
 				task.updateProgress(generator.getGeneratedDemandsCount(), demandsCount);
 			} // loop end here
+			ResizableCanvas.getParentController().stopUpdateGraph();
 			// force call the update again here
 		} catch (NetworkException e) {
 			// error in code
