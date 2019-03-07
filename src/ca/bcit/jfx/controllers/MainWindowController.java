@@ -315,8 +315,10 @@ public class MainWindowController {
         task.run();
     }
 
+    private static Timeline updateTimeline;
+
     public void updateGraph() {
-        Timeline timeline = new Timeline(
+        updateTimeline = new Timeline(
                 new KeyFrame(
                         Duration.seconds(0),
                         event -> {
@@ -342,8 +344,13 @@ public class MainWindowController {
                 ),
                 new KeyFrame(Duration.seconds(0.5))
         );
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
+        updateTimeline.setCycleCount(Timeline.INDEFINITE);
+        updateTimeline.play();
+    }
+
+    public void stopUpdateGraph() {
+        System.out.println("Timeline stopped");
+        updateTimeline.stop();
     }
 
     public void resetGraph() {
@@ -352,6 +359,7 @@ public class MainWindowController {
             @Override
             protected Void call() {
                 try {
+                    stopUpdateGraph();
                     graph.resetCanvas();
                     for (NetworkNode n : ApplicationResources.getProject().getNetwork().getNodes()) {
                         n.clearOccupied();
