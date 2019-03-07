@@ -95,6 +95,7 @@ public class SimulationMenuController {
 
 		Simulation simulation = new Simulation(network, generators.getValue());
 		SimulationTask task = new SimulationTask(simulation, seed.getValue(), Double.parseDouble(alpha.getText()), erlang.getValue(), demands.getValue(), replicaPreservation.isSelected());
+
 		//gray out settings
 		settings.setDisable(true);
 		progressBar.runTask(task, true);

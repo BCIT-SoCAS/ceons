@@ -16,6 +16,7 @@ import ca.bcit.jfx.components.ResizableCanvas;
 import ca.bcit.jfx.components.TaskReadyProgressBar;
 import ca.bcit.net.Network;
 import ca.bcit.net.NetworkNode;
+import ca.bcit.net.Simulation;
 import ca.bcit.net.demand.generator.AnycastDemandGenerator;
 import ca.bcit.net.demand.generator.DemandGenerator;
 import ca.bcit.net.demand.generator.TrafficGenerator;
@@ -58,7 +59,6 @@ import javafx.util.Duration;
 public class MainWindowController {
 
 
-
     @FXML
     private Console console;
     @FXML
@@ -81,19 +81,17 @@ public class MainWindowController {
     private final static int EDIT_PANE_NUMBER = 3;
 
     @FXML
-    private void nodeChose(ActionEvent e) {
+    private void nodeAdd(ActionEvent e) {
         graph.changeState(DrawingState.nodeAddingState);
     }
 
     @FXML
-    private void linkChose(ActionEvent e) {
+    private void linkAdd(ActionEvent e) {
         graph.changeState(DrawingState.linkAddingState);
     }
 
     @FXML
-    private void noneChose(ActionEvent e) {
-        graph.changeState(DrawingState.clickingState);
-    }
+    private void nodeSelect(ActionEvent e) { graph.changeState(DrawingState.clickingState); }
 
     @FXML
     private void deleteNodeChose(ActionEvent e) {
@@ -139,7 +137,6 @@ public class MainWindowController {
 
         graph.init(this);
         simulationMenuController.setProgressBar(progressBar);
-
     }
 
     public void loadProperties(Figure fig, FigureControl list) {
@@ -314,12 +311,12 @@ public class MainWindowController {
     }
 
     private static Timeline updateTimeline;
+
     public void updateGraph() {
         updateTimeline = new Timeline(
                 new KeyFrame(
                         Duration.seconds(0),
                         event -> {
-                            System.out.println("hi");
                             try {
                                 graph.resetCanvas();
                                 Project project = ApplicationResources.getProject();
@@ -444,19 +441,28 @@ public class MainWindowController {
         SimulationMenuController.progressBar.runTask(task2, true);
     }
 
+    public double totalVolume;
+    public double spectrumBlockedVolume;
+    public double regeneratorsBlockedVolume;
+    public double linkFailureBlockedVolume;
+
     @FXML
     public void whilePaused() {
-        Project project = ApplicationResources.getProject();
-        for (NetworkNode n : project.getNetwork().getNodes()) {
-            info.setText(info.getText() + n.getName() + " has " + n.getFreeRegenerators() + " free regenerators " + '\n');
-            for (NetworkNode n2 : project.getNetwork().getNodes()) {
-                if (project.getNetwork().containsLink(n, n2)) {
-                    int totalSlices = project.getNetwork().getLinkSlices(n, n2).getSlicesCount();
-                    int occupiedSlices = project.getNetwork().getLinkSlices(n, n2).getOccupiedSlices();
-                    int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
-                }
-            }
-        }
+        info.setText("Blocked Spectrum: " + this.spectrumBlockedVolume / this.totalVolume * 100 + "%" + "\n"
+                + "Blocked Regenerators: " + this.regeneratorsBlockedVolume / this.totalVolume * 100 + "%" + "\n"
+                + "Blocked Link Failure: " + this.linkFailureBlockedVolume / this.totalVolume * 100 + "%");
+
+//        Project project = ApplicationResources.getProject();
+//        for (NetworkNode n : project.getNetwork().getNodes()) {
+//            info.setText(info.getText() + n.getName() + " has " + n.getFreeRegenerators() + " free regenerators " + '\n');
+//            for (NetworkNode n2 : project.getNetwork().getNodes()) {
+//                if (project.getNetwork().containsLink(n, n2)) {
+//                    int totalSlices = project.getNetwork().getLinkSlices(n, n2).getSlicesCount();
+//                    int occupiedSlices = project.getNetwork().getLinkSlices(n, n2).getOccupiedSlices();
+//                    int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
+//                }
+//            }
+//        }
     }
 
     private void setupGenerators(Project project) {

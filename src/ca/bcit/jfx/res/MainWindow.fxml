@@ -9,15 +9,18 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <!--suppress ALL -->
-<GridPane gridLinesVisible="true" prefWidth="1200.0" prefHeight="850.0" stylesheets="/ca/bcit/jfx/res/application.cssext" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.MainWindowController">
-	<AnchorPane id="AnchorPane" maxHeight="1000" maxWidth="1000" minHeight="0" minWidth="0" prefWidth="1000" style="-fx-background-color: azure;" >
+<GridPane gridLinesVisible="true" prefWidth="1300.0" prefHeight="850.0" stylesheets="/ca/bcit/jfx/res/application.cssext" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.MainWindowController">
+	<!-- TO HOLD THE MAP -->
+	<AnchorPane id="AnchorPane" maxHeight="1500" maxWidth="1500" prefWidth="1000" style="-fx-background-color: azure;" >
 		<children>
 			<ImageView fx:id="mapViewer" layoutX="0.0" layoutY="0.0" fitHeight="1000" fitWidth="1000" pickOnBounds="true" preserveRatio="true" />
 		</children>
 	</AnchorPane>
+
+	<!-- FOR THE MENU CONTROLLERS-->
 	<columnConstraints>
 		<ColumnConstraints hgrow="SOMETIMES" />
-		<ColumnConstraints maxWidth="-Infinity" prefWidth="250.0" />
+		<ColumnConstraints maxWidth="-Infinity" minWidth="350"/>
 	</columnConstraints>
 	<rowConstraints>
 		<RowConstraints minHeight="10.0" prefHeight="30.0"
@@ -26,12 +29,13 @@
 	<children>
 		<GridPane>
 			<columnConstraints>
-				<ColumnConstraints hgrow="ALWAYS" percentWidth="100.0"
-					prefWidth="100.0" />
+				<ColumnConstraints hgrow="SOMETIMES" percentWidth="100.0" />
 			</columnConstraints>
 			<rowConstraints>
 				<RowConstraints vgrow="SOMETIMES" />
+				<!-- FOR THE CONSOLE-->
 				<RowConstraints minHeight="150.0" prefHeight="150.0" />
+				<!-- FOR THE STATUS BAR-->
 				<RowConstraints minHeight="0.0" prefHeight="20.0" />
 			</rowConstraints>
 			<children>
@@ -53,14 +57,15 @@
 								<Button onAction="#onNew" text="Create Topology" GridPane.rowIndex="1" />
 								<Button onAction="#onLoad" text="Load Topolgoy" GridPane.columnIndex="1" />
 								<Button onAction="#onSave" text="Save Topology" GridPane.rowIndex="2" />
-								<RadioButton fx:id="RBNoneChose" onAction="#noneChose" selected="true" text="None" toggleGroup="$RBGroup">
+								<RadioButton fx:id="RBNoneChose" selected="true" text="None" toggleGroup="$RBGroup">
 									<toggleGroup>
 										<ToggleGroup fx:id="RBGroup" />
 									</toggleGroup>
 								</RadioButton>
 								<Separator />
-								<RadioButton onAction="#linkChose" text="Add link" toggleGroup="$RBGroup" />
-								<RadioButton onAction="#nodeChose" text="Add node" toggleGroup="$RBGroup" />
+								<RadioButton onAction="#nodeSelect" text="Select a Node" toggleGroup="$RBGroup" />
+								<RadioButton onAction="#linkAdd" text="Add link" toggleGroup="$RBGroup" />
+								<RadioButton onAction="#nodeAdd" text="Add node" toggleGroup="$RBGroup" />
 								<Separator />
 								<RadioButton fx:id="radioButtonDeleteNode" onAction="#deleteNodeChose" text="Delete node" toggleGroup="$RBGroup" />
 								<RadioButton fx:id="radioButtonDeleteLink" onAction="#deleteLinkChose" text="Delete link" toggleGroup="$RBGroup" />

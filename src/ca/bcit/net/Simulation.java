@@ -5,6 +5,7 @@ import ca.bcit.drawing.FigureControl;
 import ca.bcit.io.Logger;
 import ca.bcit.jfx.components.ResizableCanvas;
 import ca.bcit.jfx.controllers.SimulationMenuController;
+import ca.bcit.jfx.controllers.MainWindowController;
 import ca.bcit.jfx.tasks.SimulationTask;
 import ca.bcit.net.demand.AnycastDemand;
 import ca.bcit.net.demand.Demand;
@@ -25,10 +26,10 @@ import java.util.*;
  */
 public class Simulation {
 
-	private final Network network;
-	private final TrafficGenerator generator;
+	//final keyword removed from network and traffic generator - please confirm to see if it will cause any problems?
+	private Network network;
+	private TrafficGenerator generator;
 	private FigureControl list;
-
 	private double totalVolume;
 	private double spectrumBlockedVolume;
 	private double regeneratorsBlockedVolume;
@@ -37,6 +38,10 @@ public class Simulation {
 	private double allocations;
 	private double unhandledVolume;
 	private final double[] modulationsUsage = new double[6];
+
+	public Simulation(){
+
+	}
 
 	public Simulation(Network network, TrafficGenerator generator) {
 		this.network = network;
@@ -48,6 +53,7 @@ public class Simulation {
 		SimulationMenuController.finished = false;
 		SimulationMenuController.cancelled = false;
 		clearVolumeValues();
+
 		//For development set to debug, for release set to info
 		Logger.setLoggerLevel(Logger.LoggerLevel.INFO);
 		generator.setErlang(erlang);
@@ -55,6 +61,7 @@ public class Simulation {
 		generator.setReplicaPreservation(replicaPreservation);
 		network.setSeed(seed);
 		Random linkCutter = new Random(seed);
+
 		try {
 			ResizableCanvas.getParentController().updateGraph();
 			int reportCounter = 0;
@@ -158,6 +165,7 @@ public class Simulation {
 				task.updateProgress(generator.getGeneratedDemandsCount(), demandsCount);
 			}
 			totalVolume += unhandledVolume;
+			ResizableCanvas.getParentController().totalVolume += unhandledVolume;
 		}
 
 
@@ -198,9 +206,6 @@ public class Simulation {
 		} catch (IOException e) {
 			Logger.debug(e);
 		}
-		// for (Modulation modulation : Modulation.values())
-		// Logger.info(modulation.toString() + ": " +
-		// modulationsUsage[modulation.ordinal()]);
 	}
 
 	private void Pause() {
@@ -221,6 +226,10 @@ public class Simulation {
 		this.regsPerAllocation = 0;
 		this.allocations = 0;
 		this.unhandledVolume = 0;
+		ResizableCanvas.getParentController().totalVolume = 0;
+		ResizableCanvas.getParentController().spectrumBlockedVolume = 0;
+		ResizableCanvas.getParentController().regeneratorsBlockedVolume = 0;
+		ResizableCanvas.getParentController().linkFailureBlockedVolume = 0;
 		for (Map.Entry<String, NetworkNode> entries: network.nodes.entrySet()){
 			entries.getValue().clearOccupied();
 		}
@@ -233,9 +242,11 @@ public class Simulation {
 			switch (result.type) {
 			case NO_REGENERATORS:
 				regeneratorsBlockedVolume += demand.getVolume();
+				ResizableCanvas.getParentController().regeneratorsBlockedVolume += demand.getVolume();
 				break;
 			case NO_SPECTRUM:
 				spectrumBlockedVolume += demand.getVolume();
+				ResizableCanvas.getParentController().spectrumBlockedVolume += demand.getVolume();
 				break;
 			default:
 				break;
@@ -254,5 +265,6 @@ public class Simulation {
 			}
 		}
 		totalVolume += demand.getVolume();
+		ResizableCanvas.getParentController().totalVolume += demand.getVolume();
 	}
 }
