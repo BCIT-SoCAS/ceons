@@ -8,7 +8,6 @@ import ca.bcit.jfx.DrawingState;
 import ca.bcit.jfx.controllers.MainWindowController;
 import ca.bcit.net.NetworkNode;
 import ca.bcit.utils.draw.DashedDrawing;
-import ca.bcit.utils.draw.Rotation;
 import ca.bcit.utils.draw.Zooming;
 import ca.bcit.utils.geom.Vector2F;
 import javafx.scene.canvas.Canvas;
@@ -23,7 +22,6 @@ public class ResizableCanvas extends Canvas {
 	private static MainWindowController parent;
 	private Vector2F startTempPoint;
 	private Vector2F endTempPoint;
-	private Rotation rotation;
 
 	public ResizableCanvas() {
 		list = new FigureControl(this);
@@ -50,25 +48,13 @@ public class ResizableCanvas extends Canvas {
 				|| isRotationAroundNodeChose())
 		{
 			startTempPoint=pressedPoint;
-			if (isRotationAroundNodeChose()&& !list.isEmpty())
-				{
-					
-					Figure activeRotateNode=list.get(list.findClosestNode(startTempPoint));
-					Vector2F centerPoint =((Node)activeRotateNode).getStartPoint();
-					rotation = new Rotation(centerPoint,listBeforeChanges);
-				}
-			else if(isRotationAroundCenterChose()&& !list.isEmpty())
-				{
-					Vector2F centerPoint=new Vector2F((float)getHeight()/2,(float)getWidth()/2);
-					rotation=new Rotation(centerPoint,listBeforeChanges);
-				}
 		}
 		else if (isClickingState()&& !list.isEmpty())
 		{
 				Figure temp = findClosestElement(pressedPoint);
 				setSelectedFigure(temp);
 				//Odkomentować w razie jak zostaną dodane Propertiesy
-				//loadProperties(temp);
+				loadProperties(temp);
 		}
 	}
 
@@ -117,6 +103,8 @@ public class ResizableCanvas extends Canvas {
 			 setSelectedFigure(null);
 			 addNode(clickedPoint);
 		 } else if (isClickingState()) {
+			 System.out.println("hi");
+
 			 if (isDrawingLink)
 				 isDrawingLink = false;
 		 }
@@ -140,13 +128,6 @@ public class ResizableCanvas extends Canvas {
 	            endTempPoint = draggedPoint;
 	            list.redraw();
 	            DashedDrawing.drawDashedRectangle(getGraphicsContext2D(), startTempPoint, endTempPoint);
-	        } else {
-	            if ((isRotationAroundCenterChose() || isRotationAroundNodeChose())&& !list.isEmpty()) {
-	                endTempPoint = draggedPoint;
-	                list=rotation.rotate(startTempPoint, endTempPoint);
-	                list.redraw();
-	                startTempPoint=endTempPoint;
-	            }
 	        }
 		}
 
@@ -178,6 +159,7 @@ public class ResizableCanvas extends Canvas {
 	{
 		state=chosenState;
 	}
+
 	private boolean isClickingState() {
 		return state == DrawingState.clickingState;
 	}
@@ -288,7 +270,14 @@ public class ResizableCanvas extends Canvas {
 	{
 	    list.setSelectedFigure(temp);
 	}
+
 	@SuppressWarnings("unused")
+
+	/**
+	 * Load either a link or node
+	 * @param temp		either a link or node
+	 *
+	 */
 	private void loadProperties(Figure temp)
 	{
 		parent.loadProperties(temp, list);

@@ -87,7 +87,7 @@
 						</VBox>
 					</content>
 				</TitledPane>
-				<TitledPane fx:id="propertiesTitledPane" animated="true" text="Full Summary">
+				<TitledPane fx:id="fullSummaryPane" animated="true" text="Full Summary">
 					<content>
 						<AnchorPane prefHeight="180.0" prefWidth="200.0" />
 					</content>

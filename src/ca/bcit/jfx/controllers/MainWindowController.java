@@ -16,7 +16,6 @@ import ca.bcit.jfx.components.ResizableCanvas;
 import ca.bcit.jfx.components.TaskReadyProgressBar;
 import ca.bcit.net.Network;
 import ca.bcit.net.NetworkNode;
-import ca.bcit.net.Simulation;
 import ca.bcit.net.demand.generator.AnycastDemandGenerator;
 import ca.bcit.net.demand.generator.DemandGenerator;
 import ca.bcit.net.demand.generator.TrafficGenerator;
@@ -74,11 +73,12 @@ public class MainWindowController {
     @FXML
     private Label info;
     @FXML
-    private TitledPane propertiesTitledPane;
+    private TitledPane liveInfoPane;
     @FXML
     private ImageView mapViewer;
-    private final static int PROPERTIES_PANE_NUMBER = 4;
-    private final static int EDIT_PANE_NUMBER = 3;
+
+    private final static int PROPERTIES_PANE_NUMBER = 2;
+    private final static int EDIT_PANE_NUMBER = 2;
 
     @FXML
     private void nodeAdd(ActionEvent e) {
@@ -109,16 +109,6 @@ public class MainWindowController {
     }
 
     @FXML
-    private void rotateAroundCenterChose(ActionEvent e) {
-        graph.changeState(DrawingState.rotateAroundCenter);
-    }
-
-    @FXML
-    private void rotateAroundNodeChose(ActionEvent e) {
-        graph.changeState(DrawingState.rotateAroundNode);
-    }
-
-    @FXML
     public void initialize() {
         for (Field field : MainWindowController.class.getDeclaredFields())
             if (field.isAnnotationPresent(FXML.class))
@@ -139,6 +129,12 @@ public class MainWindowController {
         simulationMenuController.setProgressBar(progressBar);
     }
 
+    /**
+     * Opens up live info tab with the node/link information
+     *
+     * @param fig   node or link that is selected
+     * @param list  list of all links & nodes
+     */
     public void loadProperties(Figure fig, FigureControl list) {
         {
             if (fig instanceof Node) {
@@ -192,9 +188,9 @@ public class MainWindowController {
 
     private void setSelectedPaneContent(TitledPane tp) {
         if (tp != null)
-            propertiesTitledPane.setContent(tp.getContent());
+            liveInfoPane.setContent(tp.getContent());
         else
-            propertiesTitledPane.setContent(null);
+            liveInfoPane.setContent(null);
     }
 
     private boolean validateAPIkey(String key) {
@@ -452,6 +448,7 @@ public class MainWindowController {
 
     @FXML
     public void whilePaused() {
+        graph.changeState(DrawingState.clickingState);
         info.setText("Blocked Spectrum: " + this.spectrumBlockedVolume / this.totalVolume * 100 + "%" + "\n"
                 + "Blocked Regenerators: " + this.regeneratorsBlockedVolume / this.totalVolume * 100 + "%" + "\n"
                 + "Blocked Link Failure: " + this.linkFailureBlockedVolume / this.totalVolume * 100 + "%");

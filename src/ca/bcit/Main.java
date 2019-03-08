@@ -27,7 +27,7 @@ import java.io.IOException;
 
 public class Main extends Application {
 
-	private int SPLASH_SCREEN_TIMER = 3000;
+	private int SPLASH_SCREEN_TIMER = 500;
 
 	@Override
 	public void init() throws Exception {

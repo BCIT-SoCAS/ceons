@@ -25,8 +25,6 @@ import java.util.*;
  *
  */
 public class Simulation {
-
-	//final keyword removed from network and traffic generator - please confirm to see if it will cause any problems?
 	private Network network;
 	private TrafficGenerator generator;
 	private FigureControl list;

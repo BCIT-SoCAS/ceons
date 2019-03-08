@@ -282,6 +282,7 @@ public class FigureControl {
 		selectedFigure = _selectedFigure;
 		redraw();
 	}
+
 	public Figure getSelectedFigure() {
 		return selectedFigure;
 	}
