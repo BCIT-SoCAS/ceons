@@ -1,11 +1,9 @@
 package ca.bcit.net;
 
 import ca.bcit.ApplicationResources;
-import ca.bcit.drawing.FigureControl;
 import ca.bcit.io.Logger;
 import ca.bcit.jfx.components.ResizableCanvas;
 import ca.bcit.jfx.controllers.SimulationMenuController;
-import ca.bcit.jfx.controllers.MainWindowController;
 import ca.bcit.jfx.tasks.SimulationTask;
 import ca.bcit.net.demand.AnycastDemand;
 import ca.bcit.net.demand.Demand;
@@ -27,7 +25,6 @@ import java.util.*;
 public class Simulation {
 	private Network network;
 	private TrafficGenerator generator;
-	private FigureControl list;
 	private double totalVolume;
 	private double spectrumBlockedVolume;
 	private double regeneratorsBlockedVolume;
@@ -72,8 +69,10 @@ public class Simulation {
 					for (Demand reallocate : network.cutLink())
 						if (reallocate.reallocate())
 							handleDemand(reallocate);
-						else
+						else {
 							linkFailureBlockedVolume += reallocate.getVolume();
+							ResizableCanvas.getParentController().linkFailureBlockedVolume += reallocate.getVolume();
+						}
 				else {
 					handleDemand(demand);
 					if (demand instanceof AnycastDemand)

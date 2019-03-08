@@ -215,7 +215,7 @@ public class FigureControl {
 	}
 
 	public void changeNodePoint(Figure node, Vector2F vec2f) {
-		vec2f = fitPointToCanva(vec2f);
+		vec2f = fitPointToCanvas(vec2f);
 		vec2f=fixNodePoint(vec2f);
 		changeLinksPoint(node, vec2f);
 		node.setStartPoint(vec2f);
@@ -264,7 +264,7 @@ public class FigureControl {
 		return list.get(idx);
 	}
 
-	private Vector2F fitPointToCanva(Vector2F vec2F) {
+	private Vector2F fitPointToCanvas(Vector2F vec2F) {
 		float x = vec2F.getX();
 		float y = vec2F.getY();
 		if (x > canvas.getWidth())

@@ -2,6 +2,7 @@ package ca.bcit.jfx.controllers;
 
 import ca.bcit.ApplicationResources;
 import ca.bcit.io.Logger;
+import ca.bcit.jfx.DrawingState;
 import ca.bcit.jfx.components.TaskReadyProgressBar;
 import ca.bcit.jfx.components.ResizableCanvas;
 import ca.bcit.jfx.components.UIntField;
@@ -153,6 +154,7 @@ public class SimulationMenuController {
 	public static boolean paused = false;
 	@FXML public void pauseSimulation(ActionEvent e) {
 		if (paused && !finished && started) {
+			ResizableCanvas.getParentController().graph.changeState(DrawingState.noActionState);
 			pauseButton.setText("Pause Simulation");
 		} else if (!paused && !finished && started) {
 			ResizableCanvas.getParentController().setExpandedPane(2);

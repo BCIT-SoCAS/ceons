@@ -67,7 +67,7 @@ public class MainWindowController {
     @FXML
     private SimulationMenuController simulationMenuController;
     @FXML
-    private ResizableCanvas graph;
+    public ResizableCanvas graph;
     @FXML
     private Accordion accordion;
     @FXML
@@ -397,6 +397,7 @@ public class MainWindowController {
                     Logger.info("Finished loading project.");
                     graph.resetCanvas();
                     mapViewer.setImage(new Image(project.getMap()));
+                    //for every node in the network place onto map and for each node add links between
                     for (NetworkNode n : project.getNetwork().getNodes()) {
                         n.setRegeneratorsCount(100);
                         n.setFigure(n);

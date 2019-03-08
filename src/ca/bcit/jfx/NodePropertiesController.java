@@ -72,6 +72,7 @@ public class NodePropertiesController implements Initializable {
             textFieldX.setText(((Float)node.getStartPoint().getX()).toString());
             textFieldY.setText(((Float)node.getStartPoint().getY()).toString());
     }
+
     @FXML
     private void onActionTextField(ActionEvent event)
     {
@@ -84,6 +85,7 @@ public class NodePropertiesController implements Initializable {
     {
         return new Vector2F(Float.parseFloat(textFieldX.getText()),Float.parseFloat(textFieldY.getText()));
     }
+
     public TitledPane getTitledPane()
     {
         return titledPane;
