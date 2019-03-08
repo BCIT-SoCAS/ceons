@@ -49,7 +49,12 @@ public class Node extends Figure {
 		return this.Regens;
 	}
 
-	public void setRegens(int regens) {
+    @Override
+    public int getInfo() {
+        return this.getRegens();
+    }
+
+    public void setRegens(int regens) {
 		this.Regens = regens;
 		String tempStr = "Node Figure: " + this.getName() + ", Free Regenerators: " + this.getRegens();
 		System.out.println(tempStr);

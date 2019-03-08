@@ -27,8 +27,10 @@
                   <TextField fx:id="textFieldName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <Label text="Start node:" GridPane.rowIndex="3"  />
                   <Label text="End node:" GridPane.rowIndex="4"  />
+                  <Label text="Usage:" GridPane.rowIndex="5"  />
                   <Label GridPane.columnIndex="1" GridPane.rowIndex="4" fx:id="labelEndNode" onMouseClicked="#labelEndNodeMouseClicked"/>
                   <Label GridPane.columnIndex="1" GridPane.rowIndex="3" fx:id="labelStartNode" onMouseClicked="#labelStartNodeMouseClicked" />
+                  <Label GridPane.columnIndex="1" GridPane.rowIndex="5" fx:id="labelUsage" onMouseClicked="#labelUsageMouseClicked" />
                   <Label text="Length" GridPane.rowIndex="2" />
                   <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="textFieldLength"  />
                </children>

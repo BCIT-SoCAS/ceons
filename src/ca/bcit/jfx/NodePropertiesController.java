@@ -2,6 +2,7 @@ package ca.bcit.jfx;
 
 import ca.bcit.drawing.Figure;
 import ca.bcit.drawing.FigureControl;
+import ca.bcit.drawing.Node;
 import ca.bcit.utils.geom.Vector2F;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -23,6 +24,8 @@ import java.util.ResourceBundle;
 public class NodePropertiesController implements Initializable {
     @FXML
     private TextField textFieldName;
+    @FXML
+    private TextField textFieldRegenNum;
     @FXML
     private ListView<String> listView;
     @FXML
@@ -71,6 +74,7 @@ public class NodePropertiesController implements Initializable {
             listView.setItems(obList);
             textFieldX.setText(((Float)node.getStartPoint().getX()).toString());
             textFieldY.setText(((Float)node.getStartPoint().getY()).toString());
+            textFieldRegenNum.setText(String.valueOf(node.getInfo()));
     }
 
     @FXML
