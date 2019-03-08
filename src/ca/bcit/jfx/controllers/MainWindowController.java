@@ -9,8 +9,6 @@ import ca.bcit.io.Logger;
 import ca.bcit.io.project.Project;
 import ca.bcit.io.project.ProjectFileFormat;
 import ca.bcit.jfx.DrawingState;
-import ca.bcit.jfx.LinkPropertiesController;
-import ca.bcit.jfx.NodePropertiesController;
 import ca.bcit.jfx.components.Console;
 import ca.bcit.jfx.components.ResizableCanvas;
 import ca.bcit.jfx.components.TaskReadyProgressBar;
@@ -78,7 +76,6 @@ public class MainWindowController {
     private ImageView mapViewer;
 
     private final static int PROPERTIES_PANE_NUMBER = 2;
-    private final static int EDIT_PANE_NUMBER = 2;
 
     @FXML
     private void nodeAdd(ActionEvent e) {
@@ -142,12 +139,24 @@ public class MainWindowController {
             } else if (fig instanceof Link) {
                 loadLinkProperties(fig, list);
             } else
-                loadEmptyProperties();
+                loadCurrentSummary(this.spectrumBlockedVolume, this.regeneratorsBlockedVolume, this.linkFailureBlockedVolume, this.totalVolume);
         }
     }
 
-    private void loadEmptyProperties() {
-        setExpandedPane(EDIT_PANE_NUMBER);
+    private void loadCurrentSummary(double spectrumBlocked, double regeneratorsBlocked, double linkFailureBlocked, double totalVolume) {
+        TitledPane properties = new TitledPane();
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/LiveInfoSummary.fxml"));
+        try {
+            properties = (TitledPane) fxmlLoader.load();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        LiveInfoSummaryController controller = fxmlLoader.<LiveInfoSummaryController>getController();
+        if (controller != null) {
+            controller.fillInformation(spectrumBlocked, regeneratorsBlocked, linkFailureBlocked, totalVolume);
+        }
+        setLiveInfoPaneContent(properties);
+        setExpandedPane(PROPERTIES_PANE_NUMBER);
     }
 
     private void loadNodeProperties(Figure temp, FigureControl list) {
@@ -160,9 +169,9 @@ public class MainWindowController {
         }
         NodePropertiesController controller = fxmlLoader.<NodePropertiesController>getController();
         if (controller != null) {
-            controller.initDate(list, temp);
+            controller.initData(list, temp);
         }
-        setSelectedPaneContent(properties);
+        setLiveInfoPaneContent(properties);
         setExpandedPane(PROPERTIES_PANE_NUMBER);
     }
 
@@ -176,9 +185,9 @@ public class MainWindowController {
         }
         LinkPropertiesController controller = fxmlLoader.<LinkPropertiesController>getController();
         if (controller != null) {
-            controller.initDate(list, temp);
+            controller.initData(list, temp);
         }
-        setSelectedPaneContent(properties);
+        setLiveInfoPaneContent(properties);
         setExpandedPane(PROPERTIES_PANE_NUMBER);
     }
 
@@ -186,7 +195,7 @@ public class MainWindowController {
         accordion.getPanes().get(idx).setExpanded(true);
     }
 
-    private void setSelectedPaneContent(TitledPane tp) {
+    private void setLiveInfoPaneContent(TitledPane tp) {
         if (tp != null)
             liveInfoPane.setContent(tp.getContent());
         else
@@ -258,6 +267,7 @@ public class MainWindowController {
         Stage dialogWindow = new Stage();
         dialogWindow.initModality(Modality.APPLICATION_MODAL);
         dialogWindow.setTitle("Choose Topology Option");
+        dialogWindow.getIcons().add(new Image("/ca/bcit/jfx/res/LogoBCIT.png"));
 
         TextField saveKeyInput = new TextField();
         saveKeyInput.setPromptText("Please enter Google Maps API key");

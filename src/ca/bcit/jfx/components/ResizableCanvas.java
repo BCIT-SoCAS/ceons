@@ -51,6 +51,18 @@ public class ResizableCanvas extends Canvas {
         }
     }
 
+    private void canvasOnMouseClicked(MouseEvent e) {
+        Vector2F clickedPoint = new Vector2F((float) e.getX(), (float) e.getY());
+        if (isNodeAddingState()) {
+            setSelectedFigure(null);
+            addNode(clickedPoint);
+        } else if (isClickingState()) {
+            if (isDrawingLink)
+                isDrawingLink = false;
+        }
+        updateListBeforeChanges();
+    }
+
     private void canvasOnMouseScroll(ScrollEvent e) {
         if (!list.isEmpty()) {
             listBeforeChanges.setSelectedFigure(null);
@@ -76,20 +88,6 @@ public class ResizableCanvas extends Canvas {
             list.deleteElementsFromRectangle(startTempPoint, endTempPoint);
         } else if (isLinkDeleteState()) {
             list.deleteLinks(startTempPoint, endTempPoint);
-        }
-        updateListBeforeChanges();
-    }
-
-    private void canvasOnMouseClicked(MouseEvent e) {
-        Vector2F clickedPoint = new Vector2F((float) e.getX(), (float) e.getY());
-        if (isNodeAddingState()) {
-            setSelectedFigure(null);
-            addNode(clickedPoint);
-        } else if (isClickingState()) {
-            System.out.println("hi");
-
-            if (isDrawingLink)
-                isDrawingLink = false;
         }
         updateListBeforeChanges();
     }

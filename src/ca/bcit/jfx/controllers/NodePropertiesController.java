@@ -1,11 +1,8 @@
-package ca.bcit.jfx;
+package ca.bcit.jfx.controllers;
 
 import ca.bcit.drawing.Figure;
 import ca.bcit.drawing.FigureControl;
-import ca.bcit.drawing.Node;
 import ca.bcit.utils.geom.Vector2F;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -57,24 +54,24 @@ public class NodePropertiesController implements Initializable {
         {
             String selectedNode=listView.getSelectionModel().getSelectedItem();
             Figure node= list.findFigureByName(selectedNode);
-            fillInformations(node);
+            fillInformation(node);
             listView.getSelectionModel().clearSelection();
         }
     }
-    public void initDate(FigureControl _list, Figure _node) {
+    public void initData(FigureControl _list, Figure _node) {
         list = _list;
         actualNode = _node;
-        fillInformations(_node);
+        fillInformation(_node);
     }
 
-    private void fillInformations(Figure node)
+    private void fillInformation(Figure node)
     {
             textFieldName.setText(node.getName());
             ObservableList<String> obList=list.generateNodeConnections(node);
             listView.setItems(obList);
             textFieldX.setText(((Float)node.getStartPoint().getX()).toString());
             textFieldY.setText(((Float)node.getStartPoint().getY()).toString());
-            textFieldRegenNum.setText(String.valueOf(node.getInfo()));
+            textFieldRegenNum.setText(node.getInfo() + "/100");
     }
 
     @FXML
@@ -83,8 +80,9 @@ public class NodePropertiesController implements Initializable {
         Vector2F vec2F= getVector2FFromTextFields();
         Figure node=list.findFigureByName(textFieldName.getText());
         list.changeNodePoint(node,vec2F);
-        fillInformations(node);
+        fillInformation(node);
     }
+
     private Vector2F getVector2FFromTextFields()
     {
         return new Vector2F(Float.parseFloat(textFieldX.getText()),Float.parseFloat(textFieldY.getText()));

@@ -3,7 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<TitledPane animated="true" prefHeight="350.0" prefWidth="194.0" text="Properties" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:id="titledPane" fx:controller="ca.bcit.jfx.NodePropertiesController">
+<TitledPane animated="true" prefHeight="350.0" prefWidth="194.0" text="Properties" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:id="titledPane" fx:controller="ca.bcit.jfx.controllers.NodePropertiesController">
   <content>
     <AnchorPane prefHeight="180.0" prefWidth="200.0">
          <children>
@@ -23,7 +23,7 @@
                   <Label text="Type:" />
                   <Label text="Node" GridPane.columnIndex="1" />
                   <Label text="Name" GridPane.rowIndex="1" />
-                  <Label text="Regenerator" GridPane.rowIndex="5" />
+                  <Label text="Regenerators Remaining" GridPane.rowIndex="5" />
                   <TextField fx:id="textFieldRegenNum" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                   <TextField fx:id="textFieldName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <Label alignment="BOTTOM_CENTER" contentDisplay="RIGHT" text="Connected with:" textAlignment="CENTER" GridPane.rowIndex="3" />

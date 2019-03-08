@@ -56,7 +56,7 @@
 
 .accordion {
 	-fx-background-color: radial-gradient(center 50% 50%, radius 100%, #004B9E, #004B9E, #003C79);
-	-fx-background-image: url("LogoBCIT.png"), url("LogoEON.png");
+	-fx-background-image: url("LogoEON.png");
 	-fx-background-position: bottom center, center center;
 	-fx-background-repeat: no-repeat;
 	-fx-background-size: contain;

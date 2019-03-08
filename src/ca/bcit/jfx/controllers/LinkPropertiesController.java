@@ -1,10 +1,8 @@
-package ca.bcit.jfx;
+package ca.bcit.jfx.controllers;
 
 import ca.bcit.drawing.Figure;
 import ca.bcit.drawing.FigureControl;
 import ca.bcit.drawing.Link;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -63,21 +61,21 @@ public class LinkPropertiesController implements Initializable {
         });
     }
 
-    public void initDate(FigureControl _list,Figure _actualLink )
+    public void initData(FigureControl _list, Figure _actualLink )
     {
         list=_list;
         actualLink =_actualLink;
-        fillInformations(_actualLink);
+        fillInformation(_actualLink);
     }
 
-    private void fillInformations(Figure temp) {
+    private void fillInformation(Figure temp) {
         textFieldName.setText(temp.getName());
         textFieldLength.setText(Integer.toString(((Link) temp).getLength()));
         String startNode=list.findNodeAtPoint(temp.getStartPoint()).getName();
         String endNode=list.findNodeAtPoint(((Link) temp).getEndPoint()).getName();
         labelStartNode.setText(startNode);
         labelEndNode.setText(endNode);
-        labelUsage.setText(String.valueOf(temp.getInfo()) + "%");
+        labelUsage.setText(temp.getInfo() + "%");
     }
     @FXML
     private void labelEndNodeMouseClicked(MouseEvent e)

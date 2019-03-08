@@ -21,13 +21,14 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import com.sun.javafx.application.LauncherImpl;
+import javafx.scene.image.Image;
 
 import javax.swing.*;
 import java.io.IOException;
 
 public class Main extends Application {
 
-	private int SPLASH_SCREEN_TIMER = 500;
+	private int SPLASH_SCREEN_TIMER = 3000;
 
 	@Override
 	public void init() throws Exception {
@@ -46,6 +47,7 @@ public class Main extends Application {
 		GridPane root = (GridPane)loader.load();
 		Scene scene = new Scene(root);
 		primaryStage.setScene(scene);
+		primaryStage.getIcons().add(new Image("/ca/bcit/jfx/res/LogoBCIT.png"));
 		primaryStage.show();
 		primaryStage.setMinWidth(primaryStage.getWidth());
 		primaryStage.setMinHeight(primaryStage.getHeight());

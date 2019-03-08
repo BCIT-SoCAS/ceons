@@ -121,6 +121,7 @@ public class SimulationMenuController {
 				finished = true;
 				started = false;
 				ResizableCanvas.getParentController().resetGraph();
+				ResizableCanvas.getParentController().graph.changeState(DrawingState.noActionState);
 			} else {
 				paused = false;
 				pauseButton.setText("Pause Simulation");

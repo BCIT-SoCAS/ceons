@@ -3,7 +3,7 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<TitledPane fx:id="titledPane" animated="true" prefHeight="342.0" prefWidth="194.0" text="Properties" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.LinkPropertiesController">
+<TitledPane fx:id="titledPane" animated="true" prefHeight="342.0" prefWidth="194.0" text="Properties" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.LinkPropertiesController">
   <content>
     <AnchorPane prefHeight="180.0" prefWidth="200.0">
          <children>
@@ -27,7 +27,7 @@
                   <TextField fx:id="textFieldName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <Label text="Start node:" GridPane.rowIndex="3"  />
                   <Label text="End node:" GridPane.rowIndex="4"  />
-                  <Label text="Usage:" GridPane.rowIndex="5"  />
+                  <Label text="Link Usage:" GridPane.rowIndex="5"  />
                   <Label GridPane.columnIndex="1" GridPane.rowIndex="4" fx:id="labelEndNode" onMouseClicked="#labelEndNodeMouseClicked"/>
                   <Label GridPane.columnIndex="1" GridPane.rowIndex="3" fx:id="labelStartNode" onMouseClicked="#labelStartNodeMouseClicked" />
                   <Label GridPane.columnIndex="1" GridPane.rowIndex="5" fx:id="labelUsage" onMouseClicked="#labelUsageMouseClicked" />
