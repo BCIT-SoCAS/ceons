@@ -51,7 +51,10 @@ public class Link extends Figure {
 		loadImage();
 	}
 
-
+	@Override
+	public int getInfo() {
+		return this.Percentage;
+	}
 
 	@Override
 	public void draw(GraphicsContext gc) {

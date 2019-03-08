@@ -23,6 +23,8 @@
                   <Label text="Type:" />
                   <Label text="Node" GridPane.columnIndex="1" />
                   <Label text="Name" GridPane.rowIndex="1" />
+                  <Label text="Regenerator" GridPane.rowIndex="5" />
+                  <TextField fx:id="textFieldRegenNum" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                   <TextField fx:id="textFieldName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <Label alignment="BOTTOM_CENTER" contentDisplay="RIGHT" text="Connected with:" textAlignment="CENTER" GridPane.rowIndex="3" />
                   <ListView fx:id="listView" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="TOP" onMouseClicked="#listViewMouseClicked">

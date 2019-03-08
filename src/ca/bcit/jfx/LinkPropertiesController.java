@@ -27,6 +27,8 @@ public class LinkPropertiesController implements Initializable {
     @FXML
     private Label labelEndNode;
     @FXML
+    private Label labelUsage;
+    @FXML
     private TextField textFieldLength;
     public void initialize(URL location, ResourceBundle resources) {
         addListenerToTextFieldName();
@@ -75,6 +77,7 @@ public class LinkPropertiesController implements Initializable {
         String endNode=list.findNodeAtPoint(((Link) temp).getEndPoint()).getName();
         labelStartNode.setText(startNode);
         labelEndNode.setText(endNode);
+        labelUsage.setText(String.valueOf(temp.getInfo()) + "%");
     }
     @FXML
     private void labelEndNodeMouseClicked(MouseEvent e)
@@ -83,6 +86,12 @@ public class LinkPropertiesController implements Initializable {
     }
     @FXML
     private void labelStartNodeMouseClicked(MouseEvent e)
+    {
+
+    }
+
+    @FXML
+    private void labelUsageMouseClicked(MouseEvent e)
     {
 
     }
