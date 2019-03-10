@@ -76,7 +76,7 @@
 				</TitledPane>
 				<TitledPane animated="true" text="Simulation Settings">
 					<content>
-						<fx:include fx:id="simulationMenu" source="/ca/bcit/jfx/res/SimulationMenu.fxml" />
+						<fx:include fx:id="simulationMenu" source="/ca/bcit/jfx/res/views/SimulationMenu.fxml" />
 					</content>
 				</TitledPane>
 				<TitledPane fx:id="liveInfoPane" animated="true" text="Live Info">

@@ -11,7 +11,7 @@
 	<children>
 		<ImageView fitHeight="100.0" fitWidth="100.0" layoutX="30.0" layoutY="30.0" pickOnBounds="true" preserveRatio="true">
 			<image>
-				<Image url="/ca/bcit/jfx/res/LogoBCIT.png" /> 
+				<Image url="/ca/bcit/jfx/res/images/LogoBCIT.png" /> 
 			</image>
 		</ImageView>
 		<Text id="splash-screen-title" layoutX="150.0" layoutY="100.0" strokeType="OUTSIDE" strokeWidth="0.0" text="CEONS">
@@ -27,7 +27,7 @@
 		</Text>
 		<ImageView fitHeight="125.0" fitWidth="125.0" layoutX="450.0" layoutY="250.0" pickOnBounds="true" preserveRatio="true">
 			<image>
-				<Image url="/ca/bcit/jfx/res/LogoEON.png" /> 
+				<Image url="/ca/bcit/jfx/res/images/LogoEON.png" /> 
 			</image>
 		</ImageView>
 	</children>

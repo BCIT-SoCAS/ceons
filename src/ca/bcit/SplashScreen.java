@@ -22,7 +22,7 @@ public class SplashScreen extends Preloader {
 		Platform.runLater(() -> {
 			try {
 				FXMLLoader loader = new FXMLLoader();
-				loader.setLocation(SplashScreen.class.getResource("/ca/bcit/jfx/res/SplashScreen.fxml"));
+				loader.setLocation(SplashScreen.class.getResource("/ca/bcit/jfx/res/views/SplashScreen.fxml"));
 				
 				AnchorPane root = (AnchorPane)loader.load();
 				scene = new Scene(root);

@@ -145,7 +145,7 @@ public class MainWindowController {
 
     private void loadCurrentSummary(double spectrumBlocked, double regeneratorsBlocked, double linkFailureBlocked, double totalVolume) {
         TitledPane properties = new TitledPane();
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/LiveInfoSummary.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/LiveInfoSummary.fxml"));
         try {
             properties = (TitledPane) fxmlLoader.load();
         } catch (IOException e1) {
@@ -161,7 +161,7 @@ public class MainWindowController {
 
     private void loadNodeProperties(Figure temp, FigureControl list) {
         TitledPane properties = new TitledPane();
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/NodeProperties.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/NodeProperties.fxml"));
         try {
             properties = (TitledPane) fxmlLoader.load();
         } catch (IOException e1) {
@@ -177,7 +177,7 @@ public class MainWindowController {
 
     private void loadLinkProperties(Figure temp, FigureControl list) {
         TitledPane properties = new TitledPane();
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/LinkProperties.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/LinkProperties.fxml"));
         try {
             properties = fxmlLoader.load();
         } catch (IOException e1) {
@@ -267,7 +267,7 @@ public class MainWindowController {
         Stage dialogWindow = new Stage();
         dialogWindow.initModality(Modality.APPLICATION_MODAL);
         dialogWindow.setTitle("Choose Topology Option");
-        dialogWindow.getIcons().add(new Image("/ca/bcit/jfx/res/LogoBCIT.png"));
+        dialogWindow.getIcons().add(new Image("/ca/bcit/jfx/res/images/LogoBCIT.png"));
 
         TextField saveKeyInput = new TextField();
         saveKeyInput.setPromptText("Please enter Google Maps API key");
