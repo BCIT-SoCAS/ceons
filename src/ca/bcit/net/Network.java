@@ -95,6 +95,7 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 		if (!contains(node)) return false;
 		List<NetworkNode> group = nodesGroups.computeIfAbsent(groupName, k -> new ArrayList<>());
 		if (group.contains(node)) return false;
+		node.setGroupName(groupName);
 		group.add(node);
 		return true;
 	}
@@ -104,6 +105,7 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 		List<NetworkNode> group = nodesGroups.get(groupName);
 		if (group == null) return false;
 		if (!group.contains(node)) return false;
+		node.setGroupName("");
 		group.remove(node);
 		if (group.isEmpty()) nodesGroups.remove(groupName);
 		return true;

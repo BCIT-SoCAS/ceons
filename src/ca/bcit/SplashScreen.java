@@ -14,7 +14,6 @@ public class SplashScreen extends Preloader {
 
 	private Stage preloaderStage;
 	private Scene scene;
-	private Label progress;
 	
 	@Override
 	public void init() throws Exception {

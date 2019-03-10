@@ -183,8 +183,8 @@ public class ResizableCanvas extends Canvas {
      * @param name   name of the node
      * @param Regens percentage regenerator remaining
      */
-    public void addNode(Vector2F vec2F, String name, int Regens) {
-        list.add(new Node(vec2F, name, Regens));
+    public void addNode(Vector2F vec2F, String name, int Regens, String groupName) {
+        list.add(new Node(vec2F, name, Regens, groupName));
     }
 
     /**
