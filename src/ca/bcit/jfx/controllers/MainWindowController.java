@@ -98,11 +98,26 @@ public class MainWindowController {
     @FXML
     private void deleteLinkChose(ActionEvent e) {
         graph.changeState(DrawingState.linkDeleteState);
+	}
+	
+	@FXML
+    private void deleteFewElementsChose(ActionEvent e) {
+        graph.changeState(DrawingState.fewElementsDeleteState);
     }
 
     @FXML
-    private void deleteFewElementsChose(ActionEvent e) {
-        graph.changeState(DrawingState.fewElementsDeleteState);
+    private void nodeMarkReplica(ActionEvent e) {
+        graph.changeState(DrawingState.nodeMarkReplicaState);
+	}
+
+	@FXML
+    private void nodeMarkInternational(ActionEvent e) {
+        graph.changeState(DrawingState.nodeMarkInternationalState);
+	}
+	
+	@FXML
+    private void nodeUnmark(ActionEvent e) {
+        graph.changeState(DrawingState.nodeUnmarkState);
     }
 
     @FXML

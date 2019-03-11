@@ -13,6 +13,7 @@ import ca.bcit.utils.geom.Vector2F;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import java.util.Map;
 
 public class ResizableCanvas extends Canvas {
     private FigureControl list;
@@ -46,7 +47,6 @@ public class ResizableCanvas extends Canvas {
         } else if (isClickingState() && !list.isEmpty()) {
             Figure temp = findClosestElement(pressedPoint);
             setSelectedFigure(temp);
-            //Odkomentować w razie jak zostaną dodane Propertiesy
             loadProperties(temp);
         }
     }
@@ -59,7 +59,11 @@ public class ResizableCanvas extends Canvas {
         } else if (isClickingState()) {
             if (isDrawingLink)
                 isDrawingLink = false;
-        }
+        } else if (isNodeMarkReplicaState()) {
+			markNode(clickedPoint, "replicas");
+		} else if (isNodeMarkInternationalState()) {
+			markNode(clickedPoint, "international");
+		}
         updateListBeforeChanges();
     }
 
@@ -67,8 +71,6 @@ public class ResizableCanvas extends Canvas {
         if (!list.isEmpty()) {
             listBeforeChanges.setSelectedFigure(null);
             Zooming zooming = new Zooming(listBeforeChanges);
-            //Odkomentować w razie jak zostaną dodane Propertiesy
-            //parent.loadProperties(null,list);
             if (e.getDeltaY() > 0)
                 list = new FigureControl(zooming.zoom(true));
             else
@@ -83,8 +85,10 @@ public class ResizableCanvas extends Canvas {
             list.changeLinkEndPointAfterDrag(releasedPoint);
             setSelectedFigure(null);
         } else if (isNodeDeleteState()) {
-            deleteNode(releasedPoint);
-        } else if (isFewElementsDeleteState()) {
+			deleteNode(releasedPoint);
+        } else if (isNodeUnmarkState()) {
+			unmarkNode(releasedPoint);
+		} else if (isFewElementsDeleteState()) {
             list.deleteElementsFromRectangle(startTempPoint, endTempPoint);
         } else if (isLinkDeleteState()) {
             list.deleteLinks(startTempPoint, endTempPoint);
@@ -138,6 +142,18 @@ public class ResizableCanvas extends Canvas {
 
     private void setState(DrawingState chosenState) {
         state = chosenState;
+	}
+
+	private boolean isNodeMarkReplicaState() {
+        return state == DrawingState.nodeMarkReplicaState;
+	}
+	
+	private boolean isNodeMarkInternationalState() {
+        return state == DrawingState.nodeMarkInternationalState;
+	}
+	
+	private boolean isNodeUnmarkState() {
+        return state == DrawingState.nodeUnmarkState;
     }
 
     private boolean isClickingState() {
@@ -183,8 +199,8 @@ public class ResizableCanvas extends Canvas {
      * @param name   name of the node
      * @param Regens percentage regenerator remaining
      */
-    public void addNode(Vector2F vec2F, String name, int Regens, String groupName) {
-        list.add(new Node(vec2F, name, Regens, groupName));
+    public void addNode(Vector2F vec2F, String name, int Regens, Map nodeGroups) {
+        list.add(new Node(vec2F, name, Regens, nodeGroups));
     }
 
     /**
@@ -225,6 +241,14 @@ public class ResizableCanvas extends Canvas {
 
     private boolean isNodeDeleteState() {
         return state == DrawingState.nodeDeleteState;
+	}
+	
+	private void markNode(Vector2F clickedPoint, String groupName) {
+        list.markNode(clickedPoint, groupName);
+	}
+	
+	private void unmarkNode(Vector2F clickedPoint) {
+        list.unmarkNode(clickedPoint);
     }
 
     private boolean isLinkDeleteState() {

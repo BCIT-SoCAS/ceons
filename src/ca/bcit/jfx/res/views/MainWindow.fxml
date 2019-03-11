@@ -63,13 +63,17 @@
 									</toggleGroup>
 								</RadioButton>
 								<Separator />
-								<RadioButton onAction="#nodeSelect" text="Select a Node" toggleGroup="$RBGroup" />
+								<RadioButton onAction="#nodeSelect" text="Select a node" toggleGroup="$RBGroup" />
 								<RadioButton onAction="#linkAdd" text="Add link" toggleGroup="$RBGroup" />
 								<RadioButton onAction="#nodeAdd" text="Add node" toggleGroup="$RBGroup" />
 								<Separator />
 								<RadioButton fx:id="radioButtonDeleteNode" onAction="#deleteNodeChose" text="Delete node" toggleGroup="$RBGroup" />
 								<RadioButton fx:id="radioButtonDeleteLink" onAction="#deleteLinkChose" text="Delete link" toggleGroup="$RBGroup" />
 								<RadioButton fx:id="radioButtonDeleteFewElements" mnemonicParsing="false" onAction="#deleteFewElementsChose" text="Delete few elements" toggleGroup="$RBGroup" />
+								<Separator />
+								<RadioButton onAction="#nodeMarkReplica" text="Mark node as data center" toggleGroup="$RBGroup" />
+								<RadioButton onAction="#nodeMarkInternational" text="Mark node as international" toggleGroup="$RBGroup" />
+								<RadioButton onAction="#nodeUnmark" text="Unmark node" toggleGroup="$RBGroup" />
 							</children>
 						</VBox>
 					</content>

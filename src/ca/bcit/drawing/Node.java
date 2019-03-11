@@ -7,6 +7,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Node extends Figure {
 	
@@ -14,7 +16,7 @@ public class Node extends Figure {
 	
 	public static float imageSize = 45;
 	private int Regens = 100;
-	private String groupName = "";
+	private Map<String, Boolean> nodeGroups = new HashMap<>();
 
 	public Node(Node node) {
 		startPoint = node.startPoint.clone();
@@ -40,15 +42,31 @@ public class Node extends Figure {
 	 * @param startPoint		the coordinates of Node
 	 * @param Regens			the percentage of free regenerators of the Node
 	 */
-	public Node(Vector2F startPoint, String _name, int Regens, String groupName) {
+	public Node(Vector2F startPoint, String _name, int Regens, Map nodeGroups) {
 		super(new Vector2F(startPoint.getX() - imageSize / 2, startPoint.getY() - imageSize / 2), _name);
 		this.Regens = Regens;
-		this.groupName = groupName;
+		this.nodeGroups = nodeGroups;
 		loadImage();
 	}
 
 	public int getRegens() {
 		return this.Regens;
+	}
+
+	/**
+	 * Getter Method for nodeGroups variable
+	 */
+	public Map getNodeGroups() {
+		return this.nodeGroups;
+	}
+
+	/**
+	 * Setter Method for nodeGroups variable
+	 * @param groupName
+	 * @param value
+	 */
+	public void setNodeGroup(String groupName, Boolean value) {
+		this.nodeGroups.put(groupName, value);
 	}
 
     @Override
@@ -67,26 +85,31 @@ public class Node extends Figure {
 		int[] rgb = getColor();
 
 		// node outline
-		switch (this.groupName) {
-			case "international":  
-				gc.setFill(Color.web("#448ef6"));
-				break;
-			case "replicas":  
-				gc.setFill(Color.GRAY);
-				break;
-			default: 
-				gc.setFill(Color.WHITE);
-				break;
+		Boolean isReplica = this.nodeGroups.get("replicas");
+		Boolean isInternational = this.nodeGroups.get("international");
+		if (Boolean.TRUE.equals(isReplica) && Boolean.TRUE.equals(isInternational)) {
+			gc.setFill(Color.web("#448ef6"));
+			gc.fillOval(startPoint.getX() - imageSize / 8f, startPoint.getY() - imageSize / 8f, imageSize + imageSize / 4f, imageSize + imageSize / 4f);
+			gc.setFill(Color.GRAY);
+			gc.fillOval(startPoint.getX() - imageSize / 16f, startPoint.getY() - imageSize / 16f, imageSize + imageSize / 8f, imageSize + imageSize / 8f);
+		} else if (Boolean.TRUE.equals(isReplica)) {
+			gc.setFill(Color.GRAY);
+			gc.fillOval(startPoint.getX() - imageSize / 16f, startPoint.getY() - imageSize / 16f, imageSize + imageSize / 8f, imageSize + imageSize / 8f);
+		} else if (Boolean.TRUE.equals(isInternational)) {
+			gc.setFill(Color.web("#448ef6"));
+			gc.fillOval(startPoint.getX() - imageSize / 16f, startPoint.getY() - imageSize / 16f, imageSize + imageSize / 8f, imageSize + imageSize / 8f);
+		} else {
+			gc.setFill(Color.WHITE);
+			gc.fillOval(startPoint.getX() - imageSize / 16f, startPoint.getY() - imageSize / 16f, imageSize + imageSize / 8f, imageSize + imageSize / 8f);
 		}
-
-		gc.fillOval(startPoint.getX() - imageSize / 16f, startPoint.getY() - imageSize / 16f, imageSize + imageSize / 8f, imageSize + imageSize / 8f);
+		
 		gc.setFill(Color.web("rgb(" + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')'));
 		gc.fillOval(startPoint.getX(), startPoint.getY(), imageSize, imageSize);
 
 		// node center color
 		gc.setFill(Color.WHITE);
-
 		gc.fillOval(startPoint.getX() + imageSize / 8f, startPoint.getY() + imageSize / 8f, imageSize - imageSize / 4f, imageSize - imageSize / 4f);
+
 		float fill = 0;
 		gc.setFill(Color.hsb(120.0 + fill * 180, 0.5 + 0.5 * fill, 1  - 0.5 * fill));
 		gc.fillOval(getCenterPoint().getX() - imageSize * (3f / 8f) * fill, getCenterPoint().getY() - imageSize * (3f  / 8f) * fill, imageSize * (6f / 8f) * fill, imageSize * (6f / 8f) * fill);

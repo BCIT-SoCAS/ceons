@@ -19,7 +19,7 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 	private final String name;
 	int regeneratorsCount, occupiedRegenerators;
 	private Node figureNode;
-	private String groupName = "";
+	private Map<String, Boolean> nodeGroups = new HashMap<>();
 
 	/**
 	 * Class constructor specifying name of the NetworkNode
@@ -30,7 +30,8 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 	}
 
 	public void setFigure(NetworkNode n) {
-		this.figureNode = new Node(getPosition(), getName(), getFreeRegenerators(), getGroupName());
+		this.figureNode = new Node(getPosition(), getName(), getFreeRegenerators(), getNodeGroups());
+
 	}
 
 	public Node getFigure() {
@@ -65,19 +66,20 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 	}
 
 	/**
-	 * Setter Method for groupName variable
+	 * Setter Method for nodeGroups variable
 	 * @param groupName
+	 * @param value
 	 */
-	public void setGroupName(String groupName) {
-		this.groupName = groupName;
+	public void setNodeGroup(String groupName, Boolean value) {
+		this.nodeGroups.put(groupName, value);
 	}
 
 	/**
 	 * Getter method that return name of the group the node belongs to
 	 * @return
 	 */
-	public String getGroupName() {
-		return this.groupName;
+	public Map getNodeGroups() {
+		return this.nodeGroups;
 	}
 
 	/**

@@ -6,6 +6,9 @@ public enum DrawingState {
     linkAddingState,
     clickingState,
     nodeDeleteState,
-    linkDeleteState,
-    fewElementsDeleteState,
+	linkDeleteState,
+	fewElementsDeleteState,
+	nodeMarkReplicaState,
+	nodeMarkInternationalState,
+	nodeUnmarkState,
 }
