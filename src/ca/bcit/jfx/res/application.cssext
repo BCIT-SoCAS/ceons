@@ -72,7 +72,7 @@
 }
 
 #splash-screen-pane {
-	-fx-background-image: url("./images/SplashScreenBG.png");
+	-fx-background-image: url("./images/bg.png");
 	-fx-background-size: cover;
 }
 

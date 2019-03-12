@@ -34,10 +34,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.text.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.geometry.Insets;
 
 import java.io.File;
@@ -46,6 +48,10 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.PrintWriter;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.Files;
 
 import com.google.maps.GeoApiContext;
 import com.google.maps.StaticMapsApi;
@@ -246,7 +252,7 @@ public class MainWindowController {
 
     private int i;
 
-    private void saveAPIkey(ActionEvent e, TextField inputField) {
+    private void saveAPIkey(ActionEvent e, TextField inputField, Stage dialogWindow) {
         String apiKey = inputField.getText();
         if (!validateAPIkey(apiKey)) {
 			Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -270,43 +276,63 @@ public class MainWindowController {
             protected Void call() {
                 Logger.info("Saving API key to " + file.getName() + " file");
                 writeAPIkeyToFile(apiKey, file);
-                Logger.info("Finished saving API key");
+				Logger.info("Finished saving API key");
+				dialogWindow.close();
                 return null;
             }
         };
         task.run();
-    }
+	}
+	
+	private void displaySaveAPIKeyDialog() {
+		Stage dialogWindow = new Stage();
+		dialogWindow.initModality(Modality.APPLICATION_MODAL);
+		dialogWindow.setTitle("Save Google Maps API key");
+		dialogWindow.getIcons().add(new Image("/ca/bcit/jfx/res/images/LogoBCIT.png"));
+
+		Text title = new Text("Save Google Maps API key to a file");
+		title.setFill(Color.web("#e5e3e3"));
+		title.setFont(new Font(20));
+
+		TextField saveKeyInput = new TextField();
+		saveKeyInput.setPromptText("Please enter Google Maps API key");
+		Button saveAPIkeyBtn = new Button("Save");
+		Button closeBtn = new Button("Cancel");
+
+		saveAPIkeyBtn.setPrefWidth(220);
+		closeBtn.setPrefWidth(220);
+
+		saveAPIkeyBtn.setOnAction(e -> saveAPIkey(e, saveKeyInput, dialogWindow));
+		closeBtn.setOnAction(e -> dialogWindow.close());
+
+		GridPane grid = new GridPane();
+		grid.setStyle("-fx-background-image: url(\"/ca/bcit/jfx/res/images/bg.png\");"
+					+ " -fx-background-size: cover;");
+		dialogWindow.getIcons().add(new Image("/ca/bcit/jfx/res/images/LogoBCIT.png"));
+		grid.setAlignment(Pos.CENTER);
+		grid.setHgap(10);
+		grid.setVgap(20);
+		grid.setPadding(new Insets(25, 25, 25, 25));
+
+		grid.add(title, 0, 0, 2, 1);
+		grid.add(saveKeyInput, 0, 1, 2, 1);
+		grid.add(saveAPIkeyBtn, 0, 2);
+		grid.add(closeBtn, 1, 2);
+		Scene scene = new Scene(grid, 520, 300);
+		dialogWindow.setScene(scene);
+		dialogWindow.showAndWait();
+	}
 
     @FXML
     public void onNew(ActionEvent a) {
-        Stage dialogWindow = new Stage();
-        dialogWindow.initModality(Modality.APPLICATION_MODAL);
-        dialogWindow.setTitle("Choose Topology Option");
-        dialogWindow.getIcons().add(new Image("/ca/bcit/jfx/res/images/LogoBCIT.png"));
-
-        TextField saveKeyInput = new TextField();
-        saveKeyInput.setPromptText("Please enter Google Maps API key");
-        Button saveAPIkeyBtn = new Button("Save API key");
-        Button closeBtn = new Button("Close");
-
-        saveAPIkeyBtn.setPrefWidth(220);
-        closeBtn.setPrefWidth(220);
-
-        saveAPIkeyBtn.setOnAction(e -> saveAPIkey(e, saveKeyInput));
-        closeBtn.setOnAction(e -> dialogWindow.close());
-
-        GridPane grid = new GridPane();
-        grid.setAlignment(Pos.CENTER);
-        grid.setHgap(10);
-        grid.setVgap(20);
-        grid.setPadding(new Insets(25, 25, 25, 25));
-
-        grid.add(saveKeyInput, 0, 0, 2, 1);
-        grid.add(saveAPIkeyBtn, 0, 1);
-        grid.add(closeBtn, 1, 1);
-        Scene scene = new Scene(grid, 520, 300);
-        dialogWindow.setScene(scene);
-        dialogWindow.showAndWait();
+		String rootPath = System.getProperty("user.dir");
+		Path apiKeyPath = Paths.get(rootPath + "/api_key.txt");
+		if (Files.exists(apiKeyPath)){
+			// logic for saving new topology
+			return;
+		} else {
+			displaySaveAPIKeyDialog();
+		}
     }
 
     @FXML
@@ -333,7 +359,7 @@ public class MainWindowController {
             }
         };
         task.run();
-    }
+	}
 
     private static Timeline updateTimeline;
 
