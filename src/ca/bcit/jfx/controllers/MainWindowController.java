@@ -29,45 +29,32 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
+
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.text.*;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
-import javafx.geometry.Insets;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.PrintWriter;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
 
-import com.google.maps.GeoApiContext;
-import com.google.maps.StaticMapsApi;
-import com.google.maps.model.Size;
-import com.google.maps.ImageResult;
 import javafx.util.Duration;
 
+
 public class MainWindowController {
-
-
+	private int i;
     @FXML
     private Console console;
     @FXML
     private TaskReadyProgressBar progressBar;
-    @FXML
-    private Label progressLabel;
     @FXML
     private SimulationMenuController simulationMenuController;
     @FXML
@@ -223,115 +210,25 @@ public class MainWindowController {
             liveInfoPane.setContent(null);
     }
 
-    private boolean validateAPIkey(String key) {
-        GeoApiContext context = new GeoApiContext.Builder()
-                .apiKey(key)
-                .build();
-        Size mapSize = new Size(200, 200);
-        try {
-            ImageResult map = StaticMapsApi.newRequest(context, mapSize).center("Vancouver").zoom(100).await();
-            System.out.println(map.contentType);
-            return true;
-        } catch (Exception ex) {
-            Logger.info("Invalid API key");
-            return false;
-        }
-    }
-
-    private void writeAPIkeyToFile(String apiKey, File file) {
-        try {
-            PrintWriter writer;
-            writer = new PrintWriter(file);
-            writer.println(apiKey);
-            writer.close();
-        } catch (IOException ex) {
-            Logger.info("An exception occurred while saving API key");
-            Logger.debug(ex);
-        }
-    }
-
-    private int i;
-
-    private void saveAPIkey(ActionEvent e, TextField inputField, Stage dialogWindow) {
-        String apiKey = inputField.getText();
-        if (!validateAPIkey(apiKey)) {
-			Alert alert = new Alert(Alert.AlertType.ERROR);
-			alert.setTitle("Warning");
-			alert.setHeaderText("API key is Invalid");
-            alert.showAndWait();
-            return;
-        }
-
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialFileName("api_key");
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TEXT files (*.txt)", "*.txt");
-        fileChooser.getExtensionFilters().add(extFilter);
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-        final File file = fileChooser.showSaveDialog(null);
-
-        if (file == null) return;
-        Task<Void> task = new Task<Void>() {
-
-            @Override
-            protected Void call() {
-                Logger.info("Saving API key to " + file.getName() + " file");
-                writeAPIkeyToFile(apiKey, file);
-				Logger.info("Finished saving API key");
-				dialogWindow.close();
-                return null;
-            }
-        };
-        task.run();
-	}
-	
-	private void displaySaveAPIKeyDialog() {
-		Stage dialogWindow = new Stage();
-		dialogWindow.initModality(Modality.APPLICATION_MODAL);
-		dialogWindow.setTitle("Save Google Maps API key");
-		dialogWindow.getIcons().add(new Image("/ca/bcit/jfx/res/images/LogoBCIT.png"));
-
-		Text title = new Text("Save Google Maps API key to a file");
-		title.setFill(Color.web("#e5e3e3"));
-		title.setFont(new Font(20));
-
-		TextField saveKeyInput = new TextField();
-		saveKeyInput.setPromptText("Please enter Google Maps API key");
-		Button saveAPIkeyBtn = new Button("Save");
-		Button closeBtn = new Button("Cancel");
-
-		saveAPIkeyBtn.setPrefWidth(220);
-		closeBtn.setPrefWidth(220);
-
-		saveAPIkeyBtn.setOnAction(e -> saveAPIkey(e, saveKeyInput, dialogWindow));
-		closeBtn.setOnAction(e -> dialogWindow.close());
-
-		GridPane grid = new GridPane();
-		grid.setStyle("-fx-background-image: url(\"/ca/bcit/jfx/res/images/bg.png\");"
-					+ " -fx-background-size: cover;");
-		dialogWindow.getIcons().add(new Image("/ca/bcit/jfx/res/images/LogoBCIT.png"));
-		grid.setAlignment(Pos.CENTER);
-		grid.setHgap(10);
-		grid.setVgap(20);
-		grid.setPadding(new Insets(25, 25, 25, 25));
-
-		grid.add(title, 0, 0, 2, 1);
-		grid.add(saveKeyInput, 0, 1, 2, 1);
-		grid.add(saveAPIkeyBtn, 0, 2);
-		grid.add(closeBtn, 1, 2);
-		Scene scene = new Scene(grid, 520, 300);
-		dialogWindow.setScene(scene);
-		dialogWindow.showAndWait();
-	}
-
     @FXML
-    public void onNew(ActionEvent a) {
+    public void onNew(ActionEvent a) throws IOException {
 		String rootPath = System.getProperty("user.dir");
 		Path apiKeyPath = Paths.get(rootPath + "/api_key.txt");
+		GridPane grid = new GridPane();
 		if (Files.exists(apiKeyPath)){
-			// logic for saving new topology
-			return;
+			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SaveMapWindow.fxml"));
+			grid = fxmlLoader.load();
+			SaveMapController controller = fxmlLoader.getController();
+			if (controller != null) {
+				controller.displaySaveMapWindow(grid);
+			}
 		} else {
-			displaySaveAPIKeyDialog();
+			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/APIKeyWindow.fxml"));
+			grid = fxmlLoader.load();
+			APIKeyController controller = fxmlLoader.getController();
+			if (controller != null) {
+				controller.displaySaveAPIKeyWindow(grid);
+			}
 		}
     }
 
