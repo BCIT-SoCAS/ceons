@@ -12,7 +12,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.layout.GridPane;
 
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ResourceBundle;
@@ -32,7 +35,15 @@ public class SaveMapController implements Initializable {
 	
 	private void saveMap(ActionEvent e, TextField inputField, Stage dialogWindow) {
         String requestUrl = inputField.getText();
-		StaticMap staticMap = new StaticMap("AIzaSyAj9PoX7gLtIJyhpeMH3X3FlkUj1RMwXFg");
+		String apiPath = "api_key.txt";
+		String key = "";
+		try {
+			key = new String(Files.readAllBytes(Paths.get(apiPath)));
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+		
+		StaticMap staticMap = new StaticMap(key);
 		staticMap.addLocation("vancouver");
 		staticMap.addLocation("burnaby");
 		staticMap.addLocation("west van");
