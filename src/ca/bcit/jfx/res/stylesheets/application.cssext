@@ -71,6 +71,13 @@
 	-fx-padding-left: 15px;
 }
 
+.persistent-prompt:focused {
+    -fx-prompt-text-fill: derive(-fx-control-inner-background,-30%);
+}
+.no-prompt {
+    -fx-prompt-text-fill: transparent !important;
+}
+
 #splash-screen-pane {
 	-fx-background-image: url("../images/bg.png");
 	-fx-background-size: cover;
