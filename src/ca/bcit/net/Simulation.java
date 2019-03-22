@@ -65,6 +65,7 @@ public class Simulation {
 
 				Demand demand = generator.next();
 
+				// handle the demand for the specific simulation
 				if (linkCutter.nextDouble() < alpha / erlang)
 					for (Demand reallocate : network.cutLink())
 						if (reallocate.reallocate())
@@ -91,7 +92,7 @@ public class Simulation {
 				ArrayList tempNodeArr = new ArrayList();
 				int[][] tempSliceArr = new int[nodeCount * (nodeCount + 1) / 2][5];
 
-				// GUI updates
+				// GUI updates, ------------ cleanup required after gui live is complete --------------
 				reportCounter++;
 				if (reportCounter > n) {
 
@@ -165,20 +166,25 @@ public class Simulation {
 			ResizableCanvas.getParentController().totalVolume += unhandledVolume;
 		}
 
-
-
+		// wait for internal cleanup after simulation is done
 		network.waitForDemandsDeath();
+
+		// signal GUI menus that simulation is complete
 		SimulationMenuController.finished = true;
 		ResizableCanvas.getParentController().updateGraph();
 
+		// throw error to avoid printing out data report for cancelled simulations
 		if (SimulationMenuController.cancelled) {
 			Logger.info("Simulation cancelled!");
 			throw new RuntimeException("Simulation was cancelled by user");
 		}
 
+		// print basic data in the internal console
 		Logger.info("Blocked Spectrum: " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
 		Logger.info("Blocked Regenerators: " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
 		Logger.info("Blocked Link Failure: " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
+
+		// write the resulting data of a successful simulation to file
 		File dir = new File("results");
 		if (!dir.isDirectory())
 			dir.mkdir();
@@ -205,6 +211,9 @@ public class Simulation {
 		}
 	}
 
+	/**
+	 * For use during an active simulation only. Place the simulation thread to sleep while pause is active.
+	 */
 	private void Pause() {
 		while (SimulationMenuController.paused) {
 			try {
@@ -215,6 +224,9 @@ public class Simulation {
 		}
 	}
 
+	/**
+	 * Reset parameters to be used in a new simulation. Called before a set of simulations start.
+	 */
 	private void clearVolumeValues() {
 		this.totalVolume = 0;
 		this.spectrumBlockedVolume = 0;
@@ -232,6 +244,11 @@ public class Simulation {
 		}
 	}
 
+	/**
+	 * Process a specific demand request. If the demand is impossible to fulfill, the cause is recorded.
+	 * If the demand can be fulfilled, resources will be consumed.
+	 * @param demand the demand in question
+	 */
 	private void handleDemand(Demand demand) {
 		DemandAllocationResult result = network.allocateDemand(demand);
 

@@ -10,6 +10,9 @@ import javafx.scene.paint.Stop;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class for (drawing) Nodes on the map
+ */
 public class Node extends Figure {
 	
 	private static final LinearGradient nodeFill = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,	new Stop[] {new Stop(0, Color.MAGENTA), new Stop(0.5f, Color.PURPLE)});
@@ -24,6 +27,12 @@ public class Node extends Figure {
 		loadImage();
 	}
 
+
+	/**
+	 * Old method to draw nodes by index number instead of node name.
+	 * @param startPoint 		the coordinates of Node
+	 * @param number			index number of the Node
+	 */
 	public Node(Vector2F startPoint, int number) {
 
 		super(new Vector2F(startPoint.getX() - imageSize / 2, startPoint.getY()
@@ -31,16 +40,25 @@ public class Node extends Figure {
 		loadImage();
 	}
 
+	/**
+	 * Older method to draw non-updating nodes.
+	 * The color used will be the same as the last node drawn.
+	 * Default color is green.
+	 * @param startPoint 		the coordinates of Node
+	 * @param _name				name of the node passed in
+	 */
 	public Node(Vector2F startPoint, String _name) {
 		super(new Vector2F(startPoint.getX() - imageSize / 2, startPoint.getY() - imageSize / 2), _name);
 		loadImage();
 	}
 
 	/**
-	 * Draw a Node on the given coordinates
+	 * Draw a Node on the given coordinates, the color will be based on the Regens percentage passed in
 	 *
 	 * @param startPoint		the coordinates of Node
+	 * @param _name				name of the node passed in
 	 * @param Regens			the percentage of free regenerators of the Node
+	 * @param nodeGroups        the type of the node in question
 	 */
 	public Node(Vector2F startPoint, String _name, int Regens, Map nodeGroups) {
 		super(new Vector2F(startPoint.getX() - imageSize / 2, startPoint.getY() - imageSize / 2), _name);
@@ -49,6 +67,10 @@ public class Node extends Figure {
 		loadImage();
 	}
 
+	/**
+	 * The number returnd is a percentage, used only for coloring the node
+	 * @return the percentage currently stored in this node.
+	 */
 	public int getRegens() {
 		return this.Regens;
 	}
@@ -74,12 +96,20 @@ public class Node extends Figure {
         return this.getRegens();
     }
 
+	/**
+	 * Setter Method to change the max number of regenerators for the specific Node
+	 * @param regens number of regenerators for the particular node
+	 */
     public void setRegens(int regens) {
 		this.Regens = regens;
 		String tempStr = "Node Figure: " + this.getName() + ", Free Regenerators: " + this.getRegens();
 		System.out.println(tempStr);
 	}
 
+	/**
+	 * Method to draw the specific node on the map, with the correct color.
+	 * @param gc GraphicsContext object with methods to draw with
+	 */
 	@Override
 	public void draw(GraphicsContext gc) {
 		int[] rgb = getColor();
@@ -141,6 +171,10 @@ public class Node extends Figure {
 
 	protected void loadImage() {}
 
+	/**
+	 * Private method used in drawing Nodes
+	 * @return the coordinate of the center pixel of the Node
+	 */
 	private Vector2F getCenterPoint() {
 		float x = startPoint.getX() + imageSize / 2;
 		float y = startPoint.getY() + imageSize / 2;
