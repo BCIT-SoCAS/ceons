@@ -1,0 +1,116 @@
+nodes:
+- {name: Node_0, regenerators: 100, xcoordinate: 257, ycoordinate: 324, class: ca.bcit.net.NetworkNode}
+- {name: Node_1, regenerators: 100, xcoordinate: 302, ycoordinate: 398, class: ca.bcit.net.NetworkNode}
+- {name: Node_3, regenerators: 100, xcoordinate: 346, ycoordinate: 298, class: ca.bcit.net.NetworkNode}
+- {name: Node_19, regenerators: 100, xcoordinate: 149, ycoordinate: 268, class: ca.bcit.net.NetworkNode}
+- {name: Node_2, regenerators: 100, xcoordinate: 336, ycoordinate: 341, class: ca.bcit.net.NetworkNode}
+- {name: Node_4, regenerators: 100, xcoordinate: 345, ycoordinate: 477, class: ca.bcit.net.NetworkNode}
+- {name: Node_6, regenerators: 100, xcoordinate: 397, ycoordinate: 404, class: ca.bcit.net.NetworkNode}
+- {name: Node_17, regenerators: 100, xcoordinate: 249, ycoordinate: 501, class: ca.bcit.net.NetworkNode}
+- {name: Node_8, regenerators: 100, xcoordinate: 414, ycoordinate: 361, class: ca.bcit.net.NetworkNode}
+- {name: Node_7, regenerators: 100, xcoordinate: 436, ycoordinate: 263, class: ca.bcit.net.NetworkNode}
+- {name: Node_20, regenerators: 100, xcoordinate: 183, ycoordinate: 192, class: ca.bcit.net.NetworkNode}
+- {name: Node_5, regenerators: 100, xcoordinate: 411, ycoordinate: 436, class: ca.bcit.net.NetworkNode}
+- {name: Node_18, regenerators: 100, xcoordinate: 296, ycoordinate: 585, class: ca.bcit.net.NetworkNode}
+- {name: Node_9, regenerators: 100, xcoordinate: 422, ycoordinate: 485, class: ca.bcit.net.NetworkNode}
+- {name: Node_11, regenerators: 100, xcoordinate: 497, ycoordinate: 295, class: ca.bcit.net.NetworkNode}
+- {name: Node_10, regenerators: 100, xcoordinate: 466, ycoordinate: 416, class: ca.bcit.net.NetworkNode}
+- {name: Node_12, regenerators: 100, xcoordinate: 481, ycoordinate: 574, class: ca.bcit.net.NetworkNode}
+- {name: Node_14, regenerators: 100, xcoordinate: 550, ycoordinate: 415, class: ca.bcit.net.NetworkNode}
+- {name: Node_15, regenerators: 100, xcoordinate: 516, ycoordinate: 364, class: ca.bcit.net.NetworkNode}
+- {name: Node_24, regenerators: 100, xcoordinate: 632, ycoordinate: 304, class: ca.bcit.net.NetworkNode}
+- {name: Node_25, regenerators: 100, xcoordinate: 481, ycoordinate: 197, class: ca.bcit.net.NetworkNode}
+- {name: Node_13, regenerators: 100, xcoordinate: 543, ycoordinate: 476, class: ca.bcit.net.NetworkNode}
+- {name: Node_21, regenerators: 100, xcoordinate: 681, ycoordinate: 663, class: ca.bcit.net.NetworkNode}
+- {name: Node_22, regenerators: 100, xcoordinate: 622, ycoordinate: 503, class: ca.bcit.net.NetworkNode}
+- {name: Node_23, regenerators: 100, xcoordinate: 597, ycoordinate: 432, class: ca.bcit.net.NetworkNode}
+- {name: Node_16, regenerators: 100, xcoordinate: 193, ycoordinate: 610, class: ca.bcit.net.NetworkNode}
+- {name: Node_26, regenerators: 100, xcoordinate: 580, ycoordinate: 77, class: ca.bcit.net.NetworkNode}
+- {name: Node_27, regenerators: 100, xcoordinate: 450, ycoordinate: 56, class: ca.bcit.net.NetworkNode}
+groups:
+  replicas: [Node_0, Node_1, Node_3, Node_5, Node_8, Node_16, Node_24]
+  international: [Node_17, Node_19, Node_21]
+links:
+  ? [Node_0, Node_3]
+  : {length: 540, class: ca.bcit.net.NetworkLink}
+  ? [Node_9, Node_10]
+  : {length: 522, class: ca.bcit.net.NetworkLink}
+  ? [Node_2, Node_8]
+  : {length: 474, class: ca.bcit.net.NetworkLink}
+  ? [Node_9, Node_12]
+  : {length: 720, class: ca.bcit.net.NetworkLink}
+  ? [Node_7, Node_11]
+  : {length: 381, class: ca.bcit.net.NetworkLink}
+  ? [Node_6, Node_5]
+  : {length: 218, class: ca.bcit.net.NetworkLink}
+  ? [Node_8, Node_7]
+  : {length: 592, class: ca.bcit.net.NetworkLink}
+  ? [Node_6, Node_8]
+  : {length: 271, class: ca.bcit.net.NetworkLink}
+  ? [Node_0, Node_1]
+  : {length: 514, class: ca.bcit.net.NetworkLink}
+  ? [Node_4, Node_5]
+  : {length: 507, class: ca.bcit.net.NetworkLink}
+  ? [Node_10, Node_14]
+  : {length: 534, class: ca.bcit.net.NetworkLink}
+  ? [Node_11, Node_25]
+  : {length: 540, class: ca.bcit.net.NetworkLink}
+  ? [Node_11, Node_24]
+  : {length: 775, class: ca.bcit.net.NetworkLink}
+  ? [Node_25, Node_27]
+  : {length: 722, class: ca.bcit.net.NetworkLink}
+  ? [Node_12, Node_13]
+  : {length: 783, class: ca.bcit.net.NetworkLink}
+  ? [Node_14, Node_15]
+  : {length: 376, class: ca.bcit.net.NetworkLink}
+  ? [Node_21, Node_22]
+  : {length: 1209, class: ca.bcit.net.NetworkLink}
+  ? [Node_14, Node_13]
+  : {length: 400, class: ca.bcit.net.NetworkLink}
+  ? [Node_1, Node_17]
+  : {length: 747, class: ca.bcit.net.NetworkLink}
+  ? [Node_12, Node_21]
+  : {length: 1500, class: ca.bcit.net.NetworkLink}
+  ? [Node_3, Node_7]
+  : {length: 552, class: ca.bcit.net.NetworkLink}
+  ? [Node_5, Node_9]
+  : {length: 327, class: ca.bcit.net.NetworkLink}
+  ? [Node_1, Node_4]
+  : {length: 594, class: ca.bcit.net.NetworkLink}
+  ? [Node_8, Node_10]
+  : {length: 456, class: ca.bcit.net.NetworkLink}
+  ? [Node_1, Node_6]
+  : {length: 600, class: ca.bcit.net.NetworkLink}
+  ? [Node_3, Node_2]
+  : {length: 259, class: ca.bcit.net.NetworkLink}
+  ? [Node_3, Node_20]
+  : {length: 1067, class: ca.bcit.net.NetworkLink}
+  ? [Node_1, Node_2]
+  : {length: 393, class: ca.bcit.net.NetworkLink}
+  ? [Node_11, Node_15]
+  : {length: 420, class: ca.bcit.net.NetworkLink}
+  ? [Node_24, Node_26]
+  : {length: 1213, class: ca.bcit.net.NetworkLink}
+  ? [Node_22, Node_23]
+  : {length: 474, class: ca.bcit.net.NetworkLink}
+  ? [Node_26, Node_27]
+  : {length: 623, class: ca.bcit.net.NetworkLink}
+  ? [Node_4, Node_18]
+  : {length: 796, class: ca.bcit.net.NetworkLink}
+  ? [Node_17, Node_16]
+  : {length: 834, class: ca.bcit.net.NetworkLink}
+  ? [Node_11, Node_10]
+  : {length: 757, class: ca.bcit.net.NetworkLink}
+  ? [Node_24, Node_23]
+  : {length: 819, class: ca.bcit.net.NetworkLink}
+  ? [Node_18, Node_16]
+  : {length: 760, class: ca.bcit.net.NetworkLink}
+  ? [Node_13, Node_22]
+  : {length: 551, class: ca.bcit.net.NetworkLink}
+  ? [Node_15, Node_23]
+  : {length: 668, class: ca.bcit.net.NetworkLink}
+  ? [Node_0, Node_19]
+  : {length: 690, class: ca.bcit.net.NetworkLink}
+  ? [Node_19, Node_20]
+  : {length: 462, class: ca.bcit.net.NetworkLink}
+class: ca.bcit.net.Network

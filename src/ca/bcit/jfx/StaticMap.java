@@ -81,7 +81,7 @@ public class StaticMap {
 
         // System.out.println(markers.toUrlValue());
         try {
-            ImageResult map = StaticMapsApi.newRequest(context, mapSize).markers(markers).zoom(10).scale(2).await();
+            ImageResult map = StaticMapsApi.newRequest(context, mapSize).center(this.centerPoint).markers(markers).zoom(10).scale(2).await();
             BufferedImage img = ImageIO.read(new ByteArrayInputStream(map.imageData));
 
             File outputfile = new File("image.png");

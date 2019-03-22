@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
 
 
@@ -34,7 +35,9 @@ public class SaveMapController implements Initializable {
 	} 
 	
 	private void saveMap(ActionEvent e, TextField inputField, Stage dialogWindow) {
-        String requestUrl = inputField.getText();
+        String requestLocation = inputField.getText();
+		List<String> locationList = Arrays.asList(requestLocation.split(","));
+
 		String apiPath = "api_key.txt";
 		String key = "";
 		try {
@@ -42,15 +45,21 @@ public class SaveMapController implements Initializable {
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
-		
+
 		StaticMap staticMap = new StaticMap(key);
-		staticMap.addLocation("vancouver");
-		staticMap.addLocation("burnaby");
-		staticMap.addLocation("west van");
+		for(String s: locationList) {
+			if(s.equals(locationList.get(0))){
+				System.out.println("here");
+				staticMap.setCenterPoint(s);
+			}
+			staticMap.addLocation(s);
+		}
+
 		ArrayList<String> locations = staticMap.getLocations();
 		System.out.println(Arrays.toString(locations.toArray()));
 		staticMap.generateMap();
-        if (!getMap(requestUrl)) {
+
+        if (!getMap(requestLocation)) {
 			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Warning");
 			alert.setHeaderText("Provided url is invalid");
