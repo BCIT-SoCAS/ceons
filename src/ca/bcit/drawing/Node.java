@@ -68,7 +68,7 @@ public class Node extends Figure {
 	}
 
 	/**
-	 * The number returnd is a percentage, used only for coloring the node
+	 * The number returned is a percentage, used only for coloring the node
 	 * @return the percentage currently stored in this node.
 	 */
 	public int getRegens() {
@@ -143,6 +143,10 @@ public class Node extends Figure {
 		float fill = 0;
 		gc.setFill(Color.hsb(120.0 + fill * 180, 0.5 + 0.5 * fill, 1  - 0.5 * fill));
 		gc.fillOval(getCenterPoint().getX() - imageSize * (3f / 8f) * fill, getCenterPoint().getY() - imageSize * (3f  / 8f) * fill, imageSize * (6f / 8f) * fill, imageSize * (6f / 8f) * fill);
+
+		// node name
+		gc.setFill(Color.BLACK);
+		gc.fillText(this.getName(), getCenterPoint().getX() - imageSize / 2f , getCenterPoint().getY());
 	}
 	
 
