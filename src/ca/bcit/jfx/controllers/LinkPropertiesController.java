@@ -19,7 +19,7 @@ public class LinkPropertiesController implements Initializable {
     private FigureControl list;
     private Figure actualLink;
     @FXML
-    private TextField textFieldName;
+    private Label nameID;
     @FXML
     private Label labelStartNode;
     @FXML
@@ -27,15 +27,15 @@ public class LinkPropertiesController implements Initializable {
     @FXML
     private Label labelUsage;
     @FXML
-    private TextField textFieldLength;
+    private Label lengthID;
     public void initialize(URL location, ResourceBundle resources) {
         addListenerToTextFieldName();
         addListenerToTextFieldLength();
     }
 
     private void addListenerToTextFieldLength() {
-        textFieldLength.textProperty().addListener((observable, oldValue, newValue) -> {
-            actualLink = list.findFigureByName(textFieldName.getText());
+        lengthID.textProperty().addListener((observable, oldValue, newValue) -> {
+            actualLink = list.findFigureByName(nameID.getText());
             int newLength=0;
             try {
                 newLength = Integer.parseInt(newValue);
@@ -44,14 +44,14 @@ public class LinkPropertiesController implements Initializable {
             }
             if (newLength<0) {
                 newLength=0;
-                textFieldLength.setText("0");
+                lengthID.setText("0");
             }
             ((Link) actualLink).setLength(newLength);
         });
     }
 
     private void addListenerToTextFieldName() {
-        textFieldName.textProperty().addListener((observable, oldValue, newValue) -> {
+        nameID.textProperty().addListener((observable, oldValue, newValue) -> {
             actualLink = list.findFigureByName(oldValue);
             if (!list.containsFigureWithName(newValue)) {
                 actualLink.setName(newValue);
@@ -69,13 +69,13 @@ public class LinkPropertiesController implements Initializable {
     }
 
     private void fillInformation(Figure temp) {
-        textFieldName.setText(temp.getName());
-        textFieldLength.setText(Integer.toString(((Link) temp).getLength()));
+        nameID.setText(temp.getName());
+        lengthID.setText(Integer.toString(((Link) temp).getLength()));
         String startNode=list.findNodeAtPoint(temp.getStartPoint()).getName();
         String endNode=list.findNodeAtPoint(((Link) temp).getEndPoint()).getName();
         labelStartNode.setText(startNode);
         labelEndNode.setText(endNode);
-        labelUsage.setText(temp.getInfo() + "%");
+        labelUsage.setText(100- temp.getInfo() + "%");
     }
     @FXML
     private void labelEndNodeMouseClicked(MouseEvent e)

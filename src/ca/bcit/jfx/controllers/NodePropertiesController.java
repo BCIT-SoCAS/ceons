@@ -8,7 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 
@@ -20,15 +20,15 @@ import java.util.ResourceBundle;
  */
 public class NodePropertiesController implements Initializable {
     @FXML
-    private TextField textFieldName;
+    private Label nodeName;
     @FXML
-    private TextField textFieldRegenNum;
+    private Label regenNum;
     @FXML
     private ListView<String> listView;
     @FXML
-    private TextField textFieldX;
+    private Label xID;
     @FXML
-    private TextField textFieldY;
+    private Label yID;
     @FXML
     private TitledPane titledPane;
     private FigureControl list;
@@ -40,7 +40,7 @@ public class NodePropertiesController implements Initializable {
                 list.setSelectedFigure(list.findFigureByName(newValue));
             }
         });
-        textFieldName.textProperty().addListener((observable, oldValue, newValue) -> {
+        nodeName.textProperty().addListener((observable, oldValue, newValue) -> {
             actualNode = list.findFigureByName(oldValue);
             if (!list.containsFigureWithName(newValue)) {
                 actualNode.setName(newValue);
@@ -66,26 +66,26 @@ public class NodePropertiesController implements Initializable {
 
     private void fillInformation(Figure node)
     {
-            textFieldName.setText(node.getName());
+            nodeName.setText(node.getName());
             ObservableList<String> obList=list.generateNodeConnections(node);
             listView.setItems(obList);
-            textFieldX.setText(((Float)node.getStartPoint().getX()).toString());
-            textFieldY.setText(((Float)node.getStartPoint().getY()).toString());
-            textFieldRegenNum.setText(node.getInfo() + "/100");
+            xID.setText(((Float)node.getStartPoint().getX()).toString());
+            yID.setText(((Float)node.getStartPoint().getY()).toString());
+            regenNum.setText(Integer.toString(node.getInfo()));
     }
 
     @FXML
     private void onActionTextField(ActionEvent event)
     {
         Vector2F vec2F= getVector2FFromTextFields();
-        Figure node=list.findFigureByName(textFieldName.getText());
+        Figure node=list.findFigureByName(nodeName.getText());
         list.changeNodePoint(node,vec2F);
         fillInformation(node);
     }
 
     private Vector2F getVector2FFromTextFields()
     {
-        return new Vector2F(Float.parseFloat(textFieldX.getText()),Float.parseFloat(textFieldY.getText()));
+        return new Vector2F(Float.parseFloat(xID.getText()),Float.parseFloat(yID.getText()));
     }
 
     public TitledPane getTitledPane()

@@ -47,6 +47,8 @@ public class AMRA extends RMSAAlgorithm {
 		}
 		if (!workingPathSuccess)
 			return DemandAllocationResult.NO_SPECTRUM;
+
+		try {
 			if (demand.allocateBackup()) {
 				volume = (int) Math.ceil(demand.getSqueezedVolume() / 10) - 1;
 
@@ -54,13 +56,18 @@ public class AMRA extends RMSAAlgorithm {
 
 				if (candidatePaths.isEmpty())
 					return new DemandAllocationResult(
-                            demand.getWorkingPath());
+							demand.getWorkingPath());
 				for (PartedPath path : candidatePaths)
 					if (demand.allocate(network, path))
 						return new DemandAllocationResult(demand.getWorkingPath(), demand.getBackupPath());
 
 				return new DemandAllocationResult(demand.getWorkingPath());
 			}
+		} catch (NetworkException e) {
+			workingPathSuccess = false;
+			return DemandAllocationResult.NO_REGENERATORS;
+		}
+
 
 		return new DemandAllocationResult(demand.getWorkingPath());
 	}

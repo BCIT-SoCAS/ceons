@@ -3,14 +3,14 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<TitledPane fx:id="titledPane" animated="true" prefHeight="342.0" prefWidth="194.0" text="Properties" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.LinkPropertiesController">
+<TitledPane fx:id="titledPane" animated="true" prefHeight="342.0" prefWidth="350.0" text="Properties" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.LinkPropertiesController">
   <content>
-    <AnchorPane prefHeight="180.0" prefWidth="200.0">
+    <AnchorPane prefHeight="180.0" prefWidth="350.0">
          <children>
-            <GridPane layoutX="2.0" layoutY="-1.0" prefHeight="319.0" prefWidth="194.0">
+            <GridPane layoutX="2.0" layoutY="-1.0" prefHeight="319.0" prefWidth="350.0">
               <columnConstraints>
-                <ColumnConstraints prefWidth="92.0" />
-                <ColumnConstraints prefWidth="102.0" />
+                <ColumnConstraints prefWidth="200.0" />
+                <ColumnConstraints prefWidth="110.0" />
               </columnConstraints>
               <rowConstraints>
                  <RowConstraints prefHeight="27.0" />
@@ -24,7 +24,7 @@
                   <Label text="Type:" />
                   <Label text="Link" GridPane.columnIndex="1" />
                   <Label text="Name" GridPane.rowIndex="1" />
-                  <TextField fx:id="textFieldName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Label fx:id="nameID" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <Label text="Start node:" GridPane.rowIndex="3"  />
                   <Label text="End node:" GridPane.rowIndex="4"  />
                   <Label text="Link Usage:" GridPane.rowIndex="5"  />
@@ -32,7 +32,7 @@
                   <Label GridPane.columnIndex="1" GridPane.rowIndex="3" fx:id="labelStartNode" onMouseClicked="#labelStartNodeMouseClicked" />
                   <Label GridPane.columnIndex="1" GridPane.rowIndex="5" fx:id="labelUsage" onMouseClicked="#labelUsageMouseClicked" />
                   <Label text="Length" GridPane.rowIndex="2" />
-                  <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="textFieldLength"  />
+                  <Label GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="lengthID"/>
                </children>
             </GridPane>
          </children></AnchorPane>

@@ -102,8 +102,6 @@ public class Node extends Figure {
 	 */
     public void setRegens(int regens) {
 		this.Regens = regens;
-		String tempStr = "Node Figure: " + this.getName() + ", Free Regenerators: " + this.getRegens();
-		System.out.println(tempStr);
 	}
 
 	/**

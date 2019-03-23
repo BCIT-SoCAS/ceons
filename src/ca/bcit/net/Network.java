@@ -6,6 +6,7 @@ import ca.bcit.io.YamlSerializable;
 import ca.bcit.net.algo.RMSAAlgorithm;
 import ca.bcit.net.demand.Demand;
 import ca.bcit.net.demand.DemandAllocationResult;
+import ca.bcit.net.demand.generator.TrafficGenerator;
 import ca.bcit.net.spectrum.BackupSpectrumSegment;
 import ca.bcit.net.spectrum.Spectrum;
 import ca.bcit.net.spectrum.SpectrumSegment;
@@ -34,9 +35,15 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	private int regeneratorMetricValue = 5;
 	
 	private RMSAAlgorithm demandAllocationAlgorithm;
+
+	public void setTrafficGenerator(TrafficGenerator trafficGenerator) {
+		this.trafficGenerator = trafficGenerator;
+	}
+
+	private TrafficGenerator trafficGenerator;
 	private int bestPathsCount;
 	private boolean canSwitchModulation;
-	private final ArrayList<Demand> allocatedDemands = new ArrayList<>();
+	private ArrayList<Demand> allocatedDemands = new ArrayList<>();
 	
 	public int maxPathsCount;
 	
@@ -85,6 +92,10 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	
 	public void waitForDemandsDeath() {
 		while (!allocatedDemands.isEmpty()) update();
+		allocatedDemands = new ArrayList<>();
+		for (Map.Entry<String, NetworkNode> entry: nodes.entrySet()) {
+			entry.getValue().occupiedRegenerators = 0;
+		}
 		inactiveLinks.clear();
 		inactivePaths.clear();
 	}

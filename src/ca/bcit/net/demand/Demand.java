@@ -86,7 +86,9 @@ public abstract class Demand {
 	}
 	
 	public boolean onWorkingFailure() {
-		workingPath.deallocate(this);
+		if (workingPath != null) {
+			workingPath.deallocate(this);
+		}
 		if (backupPath == null) {
 			workingPath = null;
 			this.ttl = initialTTL;

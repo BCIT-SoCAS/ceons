@@ -68,6 +68,10 @@ public class MainWindowController {
     @FXML
     private ImageView mapViewer;
 
+    FileChooser fileChooser;
+
+    File file;
+
     private final static int PROPERTIES_PANE_NUMBER = 2;
 
     @FXML
@@ -234,10 +238,10 @@ public class MainWindowController {
 
     @FXML
     public void onSave(ActionEvent e) {
-        FileChooser fileChooser = new FileChooser();
+        fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-        final File file = fileChooser.showSaveDialog(null);
+        file = fileChooser.showSaveDialog(null);
 
         if (file == null) return;
         Task<Void> task = new Task<Void>() {
@@ -269,6 +273,7 @@ public class MainWindowController {
                                 graph.resetCanvas();
                                 Project project = ApplicationResources.getProject();
                                 for (NetworkNode n : project.getNetwork().getNodes()) {
+                                    n.updateFigure();
                                     graph.addNetworkNode(n);
                                     for (NetworkNode n2 : project.getNetwork().getNodes()) {
                                         if (project.getNetwork().containsLink(n, n2)) {
@@ -328,26 +333,30 @@ public class MainWindowController {
 
     @FXML
     public void onLoad(ActionEvent e) {
-        FileChooser fileChooser = new FileChooser();
+        fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-        final File file = fileChooser.showOpenDialog(null);
+        file = fileChooser.showOpenDialog(null);
 
         if (file == null) return;
+        initalizeSimulationsAndNetworks();
+    }
+
+    public synchronized void initalizeSimulationsAndNetworks() {
         Task<Void> task = new Task<Void>() {
 
             @Override
             protected Void call() {
                 try {
-                    Logger.info("Loading project from " + file.getName() + "...");
+                    Logger.debug("Loading project from " + file.getName() + "...");
                     Project project = ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).load(file);
                     ApplicationResources.setProject(project);
-                    Logger.info("Finished loading project.");
+                    Logger.debug("Finished loading project.");
                     graph.resetCanvas();
                     mapViewer.setImage(new Image(project.getMap()));
                     //for every node in the network place onto map and for each node add links between
                     for (NetworkNode n : project.getNetwork().getNodes()) {
-                        n.setRegeneratorsCount(100);
+//                        n.setRegeneratorsCount(100);
                         n.setFigure(n);
                         graph.addNetworkNode(n);
                         for (NetworkNode n2 : project.getNetwork().getNodes()) {

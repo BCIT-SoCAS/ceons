@@ -33,6 +33,7 @@ public class Simulation {
 	private double allocations;
 	private double unhandledVolume;
 	private final double[] modulationsUsage = new double[6];
+	private boolean runAgain;
 
 	public Simulation(){
 
@@ -50,7 +51,7 @@ public class Simulation {
 		clearVolumeValues();
 
 		//For development set to debug, for release set to info
-		Logger.setLoggerLevel(Logger.LoggerLevel.INFO);
+		Logger.setLoggerLevel(Logger.LoggerLevel.DEBUG);
 		generator.setErlang(erlang);
 		generator.setSeed(seed);
 		generator.setReplicaPreservation(replicaPreservation);
@@ -92,7 +93,6 @@ public class Simulation {
 				ArrayList tempNodeArr = new ArrayList();
 				int[][] tempSliceArr = new int[nodeCount * (nodeCount + 1) / 2][5];
 
-				// GUI updates, ------------ cleanup required after gui live is complete --------------
 				reportCounter++;
 				if (reportCounter > n) {
 
@@ -100,47 +100,32 @@ public class Simulation {
 						tempNodeArr.add(network.getNodes().get(i).getName()); // name of regenerator at node i
 						int tempOccRegen = network.getNodes().get(i).getOccupiedRegenerators(); // occupied regenerators available at node i
 						int tempFreeRegen = network.getNodes().get(i).getFreeRegenerators(); // free regenerators available at node i
-						network.getNodes().get(i).updateFigure();
+						//network.getNodes().get(i).updateFigure();
 						tempNodeArr.add(tempOccRegen);
 						tempNodeArr.add(tempFreeRegen);
 						tempNodeArr.add(tempFreeRegen * 100 / (tempOccRegen + tempFreeRegen));
 					}
 
-					for (int i = 0; i < nodeCount*4; i+=4) {
-						String tempStr = "Node: " + tempNodeArr.get(i).toString() + ", Occupied Regenerators: " + tempNodeArr.get(i+1).toString() + ", Free Regenerators: " + tempNodeArr.get(i+2).toString() + ", Available Regenerators: " + tempNodeArr.get(i+3).toString() + '%';
-						System.out.println(tempStr);
-					}
-					System.out.println("---------------------------------------------------------------------------");
-
-					int tempCounter = 0;
-					for (int i = 0; i < nodeCount -1; i++) {
-						for (int j = i + 1; j < nodeCount - 1; j++) {
-							try {
-								tempSliceArr[tempCounter][0] = i;
-								tempSliceArr[tempCounter][1] = j;
-								tempSliceArr[tempCounter][2] = network.getLinkSlices(network.getNodes().get(i), network.getNodes().get(j)).getOccupiedSlices() / 2;
-								tempSliceArr[tempCounter][3] = network.getLinkSlices(network.getNodes().get(i), network.getNodes().get(j)).getSlicesCount() / 2;
-								tempSliceArr[tempCounter][4] = (tempSliceArr[tempCounter][3] - tempSliceArr[tempCounter][2]) * 100 / tempSliceArr[tempCounter][3];
-							} catch (Exception e) {
-								tempSliceArr[tempCounter][0] = -1;
-							}
-							tempCounter++;
-						}
-					}
-					for (int i = 0; i < tempCounter; i++) {
-						if (tempSliceArr[i][0] == -1) {
-							continue;
-						}
-						String tempStr = "Slice beteween " + network.getNodes().get(tempSliceArr[i][0]).getName() + " and " + network.getNodes().get(tempSliceArr[i][1]).getName() + ", Occupied: " + tempSliceArr[i][2] + ", Total Slices: " + tempSliceArr[i][3] + ", Free Slices: " + tempSliceArr[i][4] + '%';
-						System.out.println(tempStr);
-					}
-					System.out.println("---------------------------------------------------------------------------");
-
+//					int tempCounter = 0;
+//					for (int i = 0; i < nodeCount -1; i++) {
+//						for (int j = i + 1; j < nodeCount - 1; j++) {
+//							try {
+//								tempSliceArr[tempCounter][0] = i;
+//								tempSliceArr[tempCounter][1] = j;
+//								tempSliceArr[tempCounter][2] = network.getLinkSlices(network.getNodes().get(i), network.getNodes().get(j)).getOccupiedSlices() / 2;
+//								tempSliceArr[tempCounter][3] = network.getLinkSlices(network.getNodes().get(i), network.getNodes().get(j)).getSlicesCount() / 2;
+//								tempSliceArr[tempCounter][4] = (tempSliceArr[tempCounter][3] - tempSliceArr[tempCounter][2]) * 100 / tempSliceArr[tempCounter][3];
+//							} catch (Exception e) {
+//								tempSliceArr[tempCounter][0] = -1;
+//							}
+//							tempCounter++;
+//						}
+//					}
 					reportCounter -= n;
 				}
 
 				// pause button
-				Pause();
+				pause();
 
 				// cancel button
 				if (SimulationMenuController.cancelled) {
@@ -167,7 +152,7 @@ public class Simulation {
 		}
 
 		// wait for internal cleanup after simulation is done
-		network.waitForDemandsDeath();
+//		network.waitForDemandsDeath();
 
 		// signal GUI menus that simulation is complete
 		SimulationMenuController.finished = true;
@@ -176,7 +161,6 @@ public class Simulation {
 		// throw error to avoid printing out data report for cancelled simulations
 		if (SimulationMenuController.cancelled) {
 			Logger.info("Simulation cancelled!");
-			throw new RuntimeException("Simulation was cancelled by user");
 		}
 
 		// print basic data in the internal console
@@ -214,7 +198,7 @@ public class Simulation {
 	/**
 	 * For use during an active simulation only. Place the simulation thread to sleep while pause is active.
 	 */
-	private void Pause() {
+	private void pause() {
 		while (SimulationMenuController.paused) {
 			try {
 				Thread.sleep(10);

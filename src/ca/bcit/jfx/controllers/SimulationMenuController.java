@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public class SimulationMenuController {
-	
+
 	public static ComboBox<TrafficGenerator> generatorsStatic;
 	
 	@FXML private ComboBox<TrafficGenerator> generators;
@@ -45,7 +45,6 @@ public class SimulationMenuController {
 	private CheckBox[] modulations;
 
 	public static TaskReadyProgressBar progressBar;
-
 	/**
 	 * To disable and enable Main Controller settings while simulation is running
 	 */
@@ -81,6 +80,7 @@ public class SimulationMenuController {
 		}
 
 		network.setDemandAllocationAlgorithm(algorithms.getValue());
+		network.setTrafficGenerator(generators.getValue());
 		for (Modulation modulation : network.getAllowedModulations()) network.disallowModulation(modulation);
 		for (Modulation modulation : Modulation.values())
 			if (modulations[modulation.ordinal()].isSelected())
@@ -94,9 +94,9 @@ public class SimulationMenuController {
 		//Regenerator Metric is always static
 		network.setRegeneratorMetricType(MetricType.STATIC);
 
+
 		Simulation simulation = new Simulation(network, generators.getValue());
 		SimulationTask task = new SimulationTask(simulation, seed.getValue(), Double.parseDouble(alpha.getText()), erlang.getValue(), demands.getValue(), replicaPreservation.isSelected());
-
 		//gray out settings
 		settings.setDisable(true);
 		progressBar.runTask(task, true);
@@ -122,6 +122,7 @@ public class SimulationMenuController {
 				started = false;
 				ResizableCanvas.getParentController().resetGraph();
 				ResizableCanvas.getParentController().graph.changeState(DrawingState.noActionState);
+				ResizableCanvas.getParentController().initalizeSimulationsAndNetworks();
 			} else {
 				paused = false;
 				pauseButton.setText("Pause Simulation");
@@ -141,6 +142,7 @@ public class SimulationMenuController {
 				finished = true;
 				started = false;
 				ResizableCanvas.getParentController().resetGraph();
+				ResizableCanvas.getParentController().initalizeSimulationsAndNetworks();
 			} else {
 				paused = false;
 				pauseButton.setText("Pause Simulation");
