@@ -1,6 +1,6 @@
 package ca.bcit.jfx.controllers;
 
-import ca.bcit.jfx.StaticMap;
+import ca.bcit.jfx.NewTopology;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -46,14 +46,16 @@ public class SaveMapController implements Initializable {
 			ex.printStackTrace();
 		}
 
-		StaticMap staticMap = new StaticMap(key);
+		NewTopology staticMap = new NewTopology(key);
 		for(String s: locationList) {
 			if(s.equals(locationList.get(0))){
 				System.out.println("here");
-				staticMap.setCenterPoint(s);
 			}
 			staticMap.addLocation(s);
 		}
+
+		NewTopology.distance(staticMap.getLocationsLatLng().get(0).lat, staticMap.getLocationsLatLng().get(1).lat,
+				staticMap.getLocationsLatLng().get(0).lng, staticMap.getLocationsLatLng().get(1).lng);
 
 		ArrayList<String> locations = staticMap.getLocations();
 		System.out.println(Arrays.toString(locations.toArray()));

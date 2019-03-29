@@ -137,17 +137,29 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 			pathBuilder.addNode(relation.nodeA);
 			depthFirstSearch(relation.nodeA);
 //			Collections.sort(relation.paths);
-			if (relation.paths.size() > maxPathsPerPair) relation.paths.subList(maxPathsPerPair, relation.paths.size()).clear();
+			if (relation.paths.size() > maxPathsPerPair){
+				if (relation.paths.size() > maxPathsPerPair && maxPathsPerPair > 0) {
+					relation.paths.clear();
+				} else if (relation.paths.size() > maxPathsPerPair){
+					relation.paths.subList(0, relation.paths.size()).clear();
+				}
+			}
 			if (Runtime.getRuntime().freeMemory() < 1024 * 1024 * 1000) {
 				int max = 0;
 				if (maxPathsPerPair == Integer.MAX_VALUE) {
-					for (Relation<N, L, P> rel : relations) if (rel.paths.size() > max) max = rel.paths.size();
+					for (Relation<N, L, P> rel : relations) {
+						if (rel.paths.size() > max) max = rel.paths.size();
+					}
 					maxPathsPerPair = max;
 				}
 				maxPathsPerPair -= 2;
 				for (Relation<N, L, P> rel : relations)
-					if (rel.paths.size() > maxPathsPerPair)
-						rel.paths.subList(maxPathsPerPair, rel.paths.size()).clear();
+					if (rel.paths.size() > maxPathsPerPair && maxPathsPerPair > 0) {
+						rel.paths.clear();
+					} else if (rel.paths.size() > maxPathsPerPair){
+						rel.paths.subList(0, rel.paths.size()).clear();
+					}
+
 			}
 			progressUpdate.run();
 		}

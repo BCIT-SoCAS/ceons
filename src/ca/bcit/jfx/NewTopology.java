@@ -1,6 +1,7 @@
 package ca.bcit.jfx;
 
 
+import ca.bcit.utils.geom.Vector2F;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.maps.*;
@@ -13,18 +14,20 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Map;
 
-public class StaticMap {
+public class NewTopology {
 
     private ArrayList<String> locations;
-    private LatLng centerPoint;
+    //    private LatLng centerPoint;
     private ArrayList<LatLng> locationsLatLng;
+    private ArrayList<Vector2F> NodesCoords;
     private GeoApiContext context;
     private String ApiKey;
-    final private Size mapSize = new Size(800,500);
+    final private Size mapSize = new Size(500,365);
 
 
-    public StaticMap(String apiKey) {
+    public NewTopology(String apiKey) {
         this.ApiKey = apiKey;
         this.context = new GeoApiContext.Builder().apiKey(apiKey).build();
         this.locations = new ArrayList<String>();
@@ -81,7 +84,7 @@ public class StaticMap {
 
         // System.out.println(markers.toUrlValue());
         try {
-            ImageResult map = StaticMapsApi.newRequest(context, mapSize).center(this.centerPoint).markers(markers).zoom(10).scale(2).await();
+            ImageResult map = StaticMapsApi.newRequest(context, mapSize).markers(markers).scale(2).await();
             BufferedImage img = ImageIO.read(new ByteArrayInputStream(map.imageData));
 
             File outputfile = new File("image.png");
@@ -90,6 +93,10 @@ public class StaticMap {
         } catch (Exception e) {
 
         }
+    }
+
+    public ArrayList<LatLng> getLocationsLatLng() {
+        return locationsLatLng;
     }
 
     public void removeLocation(String location) {
@@ -104,21 +111,51 @@ public class StaticMap {
         return this.locations;
     }
 
-    public void setCenterPoint(LatLng centerPoint) {
-        this.centerPoint = centerPoint;
-    }
+//    public void setCenterPoint(LatLng centerPoint) {
+//        this.centerPoint = centerPoint;
+//    }
+//
+//    public void setCenterPoint(String location) {
+//        GeocodingApiRequest request = GeocodingApi.geocode(this.context, location);
+//        try {
+//            GeocodingResult[] result = request.await();
+//            double lat = result[0].geometry.location.lat;
+//            double lng = result[0].geometry.location.lng;
+//            centerPoint = new LatLng(lat,lng);
+//            System.out.println("set centerPoint");
+//            // Handle successful request.
+//        } catch (Exception e) {
+//            // Handle error
+//        }
+//    }
 
-    public void setCenterPoint(String location) {
-        GeocodingApiRequest request = GeocodingApi.geocode(this.context, location);
-        try {
-            GeocodingResult[] result = request.await();
-            double lat = result[0].geometry.location.lat;
-            double lng = result[0].geometry.location.lng;
-            centerPoint = new LatLng(lat,lng);
-            System.out.println("set centerPoint");
-            // Handle successful request.
-        } catch (Exception e) {
-            // Handle error
-        }
+    /**
+     * Calculate distance between two points in latitude and longitude taking
+     * into account height difference. If you are not interested in height
+     * difference pass 0.0. Uses Haversine method as its base.
+     *
+     * lat1, lon1 Start point lat2, lon2 End point el1 Start altitude in meters
+     * el2 End altitude in meters
+     * @returns Distance in Meters
+     */
+    public static double distance(double lat1, double lat2, double lon1,
+                                  double lon2) {
+
+        final int R = 6371; // Radius of the earth
+
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = R * c; // convert to meters
+
+        double height = 0;
+
+        distance = Math.pow(distance, 2) + Math.pow(height, 2);
+        System.out.println(Math.round(Math.sqrt(distance)));
+
+        return Math.round(Math.sqrt(distance));
     }
 }
