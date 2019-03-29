@@ -264,6 +264,7 @@ public class MainWindowController {
 
     private static Timeline updateTimeline;
 
+    // live GUI updates during simulation
     public void updateGraph() {
         updateTimeline = new Timeline(
                 new KeyFrame(
@@ -296,11 +297,13 @@ public class MainWindowController {
         updateTimeline.play();
     }
 
+    // stop GUI update
     public void stopUpdateGraph() {
         System.out.println("Timeline stopped");
         updateTimeline.stop();
     }
 
+    // reset the GUI after stop/finish
     public void resetGraph() {
         Task<Void> task = new Task<Void>() {
 
