@@ -1,4 +1,4 @@
-package ca.bcit.jfx;
+package ca.bcit.jfx.components;
 
 
 import com.google.gson.Gson;

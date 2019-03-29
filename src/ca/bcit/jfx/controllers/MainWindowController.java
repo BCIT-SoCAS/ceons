@@ -224,7 +224,7 @@ public class MainWindowController {
 			grid = fxmlLoader.load();
 			SaveMapController controller = fxmlLoader.getController();
 			if (controller != null) {
-				controller.displaySaveMapWindow(grid);
+				controller.displaySaveMapWindow();
 			}
 		} else {
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/APIKeyWindow.fxml"));
