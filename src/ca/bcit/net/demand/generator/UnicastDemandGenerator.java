@@ -29,8 +29,16 @@ public class UnicastDemandGenerator extends DemandGenerator<UnicastDemand> {
 	
 	@Override
 	public UnicastDemand next() {
-		NetworkNode source = this.source.next(), destination;
-		do destination = this.destination.next(); while (source.equals(destination));
+		int i = 0;
+		NetworkNode source = this.source.next();
+		NetworkNode destination = this.destination.next();
+		while (source.equals(destination)){
+			destination = this.destination.next();
+			i++;
+			if (i > 3) {
+				source = this.source.next();
+			}
+		}
 		generatedDemandsCount++;
 		return new UnicastDemand(source, destination, reallocate.next(), allocateBackup.next(), volume.next(), squeezeRatio.next(), ttl.next());
 	}
