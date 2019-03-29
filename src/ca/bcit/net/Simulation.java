@@ -60,7 +60,6 @@ public class Simulation {
 
 		try {
 			ResizableCanvas.getParentController().updateGraph();
-			int reportCounter = 0;
 			for (; generator.getGeneratedDemandsCount() < demandsCount;) {
 				SimulationMenuController.started = true;
 
@@ -82,47 +81,6 @@ public class Simulation {
 				}
 
 				network.update();
-
-				// create a GUI update per n simulations.
-				int n = 1000;
-
-				// if paused, force GUI to immediately update to current.
-				if (SimulationMenuController.paused)  reportCounter = n;
-
-				int nodeCount = network.getNodes().size();
-				ArrayList tempNodeArr = new ArrayList();
-				int[][] tempSliceArr = new int[nodeCount * (nodeCount + 1) / 2][5];
-
-				reportCounter++;
-				if (reportCounter > n) {
-
-					for (int i = 0; i < nodeCount; i++) {
-						tempNodeArr.add(network.getNodes().get(i).getName()); // name of regenerator at node i
-						int tempOccRegen = network.getNodes().get(i).getOccupiedRegenerators(); // occupied regenerators available at node i
-						int tempFreeRegen = network.getNodes().get(i).getFreeRegenerators(); // free regenerators available at node i
-						//network.getNodes().get(i).updateFigure();
-						tempNodeArr.add(tempOccRegen);
-						tempNodeArr.add(tempFreeRegen);
-						tempNodeArr.add(tempFreeRegen * 100 / (tempOccRegen + tempFreeRegen));
-					}
-
-//					int tempCounter = 0;
-//					for (int i = 0; i < nodeCount -1; i++) {
-//						for (int j = i + 1; j < nodeCount - 1; j++) {
-//							try {
-//								tempSliceArr[tempCounter][0] = i;
-//								tempSliceArr[tempCounter][1] = j;
-//								tempSliceArr[tempCounter][2] = network.getLinkSlices(network.getNodes().get(i), network.getNodes().get(j)).getOccupiedSlices() / 2;
-//								tempSliceArr[tempCounter][3] = network.getLinkSlices(network.getNodes().get(i), network.getNodes().get(j)).getSlicesCount() / 2;
-//								tempSliceArr[tempCounter][4] = (tempSliceArr[tempCounter][3] - tempSliceArr[tempCounter][2]) * 100 / tempSliceArr[tempCounter][3];
-//							} catch (Exception e) {
-//								tempSliceArr[tempCounter][0] = -1;
-//							}
-//							tempCounter++;
-//						}
-//					}
-					reportCounter -= n;
-				}
 
 				// pause button
 				pause();
