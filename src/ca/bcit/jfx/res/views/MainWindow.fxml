@@ -11,9 +11,9 @@
 <!--suppress ALL -->
 <GridPane gridLinesVisible="true" prefWidth="1300.0" prefHeight="900.0" stylesheets="/ca/bcit/jfx/res/stylesheets/application.cssext" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.MainWindowController">
 	<!-- TO HOLD THE MAP -->
-	<AnchorPane id="AnchorPane" maxHeight="1300" maxWidth="900" prefWidth="900" style="-fx-background-color: azure;" >
+	<AnchorPane id="AnchorPane" maxHeight="1500" maxWidth="1500" prefWidth="1000" style="-fx-background-color: azure;" >
 		<children>
-			<ImageView fx:id="mapViewer" layoutX="0.0" layoutY="0.0" fitHeight="730" fitWidth="1000" pickOnBounds="true" preserveRatio="true" />
+			<ImageView fx:id="mapViewer" layoutX="0.0" layoutY="0.0" fitHeight="1000" fitWidth="1000" pickOnBounds="true" preserveRatio="true" />
 		</children>
 	</AnchorPane>
 
