@@ -1,4 +1,4 @@
-package ca.bcit.jfx.tasks;
+package ca.bcit.jfx;
 
 public class SavedNodeDetails {
 

@@ -1,13 +1,9 @@
 package ca.bcit.jfx.controllers;
 
-import ca.bcit.ApplicationResources;
-import ca.bcit.io.Logger;
-import ca.bcit.io.project.ProjectFileFormat;
-import ca.bcit.jfx.tasks.SavedNodeDetails;
+import ca.bcit.jfx.SavedNodeDetails;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import ca.bcit.jfx.NewTopology;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 
 import javafx.geometry.Insets;
@@ -21,6 +17,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -115,38 +112,44 @@ public class SaveMapController {
 	}
 
 	/*
-	*Writes to .eon file when clicked
+	*Makes calls to google API to save a map and also calculate distances, finally writes to .eon file when clicked
 	 */
 	public void saveButtonClicked(){
-		fileChooser = new FileChooser();
-		fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
-		fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-		file = fileChooser.showSaveDialog(null);
-	}
+		SavedNodeDetails savedNodeDetails = new SavedNodeDetails();
 
-	/*
-	*Makes calls to google API to save a map and also calculate distances
-	 */
-	public void calDistancesButtonClicked(){
-		Logger.info("Calculating distances between all connected nodes");
+		//Will get all row objects
+		System.out.println(saveTable.getItems());
+
+		//Add all fields to the list for each object
+		List<List<String>> arrList=new ArrayList<>();
+
+		//Implement data manipulation here
+		for (int i = 0; i < saveTable.getItems().size() ; i++) {
+			savedNodeDetails=saveTable.getItems().get(i);
+			arrList.add(new ArrayList<>());
+			arrList.get(i).add(savedNodeDetails.getCityName());
+			arrList.get(i).add(savedNodeDetails.getNodeType());
+			arrList.get(i).add(""+savedNodeDetails.getConnectedNodeNum());
+			arrList.get(i).add(""+savedNodeDetails.getNumRegenerators());
+		}
+
+		//Printing
+		for (int i = 0; i < arrList.size(); i++) {
+			for (int j = 0; j < arrList.get(i).size(); j++){
+				System.out.println(arrList.get(i).get(j));
+			}
+		}
+
+//		fileChooser = new FileChooser();
+//		fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
+//		fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+//		file = fileChooser.showSaveDialog(null);
 	}
 
 	/*
 	*Used to display a table view with inputs to allow user to build a network topology
 	 */
 	public void displaySaveMapWindow() {
-//		Stage dialogWindow = new Stage();
-//		dialogWindow.initModality(Modality.APPLICATION_MODAL);
-//		dialogWindow.setTitle("Save Map");
-//		dialogWindow.getIcons().add(new Image("/ca/bcit/jfx/res/images/LogoBCIT.png"));
-//
-//		saveMapBtn.setOnAction(e -> saveMap(saveMapInput, dialogWindow));
-//		closeMapWindowBtn.setOnAction(e -> dialogWindow.close());
-//
-//		Scene scene = new Scene(grid, 520, 300);
-//		dialogWindow.setScene(scene);
-//		dialogWindow.showAndWait();
-
 		saveWindow = new Stage();
 		saveWindow.initModality(Modality.APPLICATION_MODAL);
 
@@ -194,9 +197,6 @@ public class SaveMapController {
 		Button deleteButton = new Button("Delete");
 		deleteButton.setOnAction(e -> deleteButtonClicked());
 
-		Button calculateDistancesButton = new Button("Calculate Distances");
-		calculateDistancesButton.setOnAction(e-> calDistancesButtonClicked());
-
 		Button saveButton = new Button("Save Map");
 		saveButton.setOnAction(e -> saveButtonClicked());
 
@@ -204,7 +204,7 @@ public class SaveMapController {
 		//Insets: Padding around entire layout
 		hBox.setPadding(new Insets(10, 10, 10, 10));
 		hBox.setSpacing(20);
-		hBox.getChildren().addAll(nameInput, connNodeInput, numRegeneratorInput, nodeTypeInput, addButton, deleteButton, calculateDistancesButton, saveButton);
+		hBox.getChildren().addAll(nameInput, connNodeInput, numRegeneratorInput, nodeTypeInput, addButton, deleteButton, saveButton);
 
 		saveTable = new TableView<>();
 		saveTable.setItems(getSavedNodeDeatils());

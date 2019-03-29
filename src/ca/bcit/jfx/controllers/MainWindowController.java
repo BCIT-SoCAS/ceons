@@ -477,7 +477,7 @@ public class MainWindowController {
 
             @Override
             protected Void call() {
-                try {  
+                try {
                     Logger.info("Saving project to " + file.getName() + "...");
                     ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).save(file, ApplicationResources.getProject());
                     Logger.info("Finished saving project.");
