@@ -69,6 +69,7 @@ public class SimulationMenuController {
 		SimulationMenuController.progressBar = progressBar;
 	}
 
+	// start simulation button
 	public static boolean started = false;
 	public static boolean finished = false;
 	@FXML public void startSimulationAction(ActionEvent e) {
@@ -102,6 +103,7 @@ public class SimulationMenuController {
 		progressBar.runTask(task, true);
 	}
 
+	// Cancel simulation button
 	public static boolean cancelled = false;
 	@FXML public void cancelSimulation(ActionEvent e) {
 
@@ -153,7 +155,7 @@ public class SimulationMenuController {
 		settings.setDisable(false);
 	}
 
-	// pause button
+	// pause simulation button
 	public static boolean paused = false;
 	@FXML public void pauseSimulation(ActionEvent e) {
 		if (paused && !finished && started) {

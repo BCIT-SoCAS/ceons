@@ -244,6 +244,7 @@ public class MainWindowController {
 		}
     }
 
+    // live GUI updates during simulation
     public void updateGraph() {
         updateTimeline = new Timeline(
                 new KeyFrame(
@@ -276,11 +277,13 @@ public class MainWindowController {
         updateTimeline.play();
     }
 
+    // stop GUI update
     public void stopUpdateGraph() {
         System.out.println("Timeline stopped");
         updateTimeline.stop();
     }
 
+    // reset the GUI after stop/finish
     public void resetGraph() {
         Task<Void> task = new Task<Void>() {
 
@@ -474,7 +477,7 @@ public class MainWindowController {
 
             @Override
             protected Void call() {
-                try {
+                try {  
                     Logger.info("Saving project to " + file.getName() + "...");
                     ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).save(file, ApplicationResources.getProject());
                     Logger.info("Finished saving project.");
