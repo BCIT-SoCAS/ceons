@@ -9,8 +9,8 @@
          <children>
             <GridPane layoutX="2.0" layoutY="-1.0" prefHeight="319.0" prefWidth="350.0">
               <columnConstraints>
-                <ColumnConstraints prefWidth="200.0" />
                 <ColumnConstraints prefWidth="110.0" />
+                <ColumnConstraints prefWidth="200.0" />
               </columnConstraints>
               <rowConstraints>
                 <RowConstraints prefHeight="27.0" />
@@ -21,7 +21,7 @@
               </rowConstraints>
                <children>
                   <Label text="Type:" />
-                  <Label text="Node" GridPane.columnIndex="1" />
+                  <Label fx:id="nodeGroup" GridPane.columnIndex="1" />
                   <Label text="Name" GridPane.rowIndex="1" />
                   <Label text="Regenerators Remaining" GridPane.rowIndex="5" />
                   <Label fx:id="regenNum" GridPane.columnIndex="1" GridPane.rowIndex="5" />

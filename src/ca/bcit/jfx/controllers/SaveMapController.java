@@ -35,7 +35,7 @@ public class SaveMapController implements Initializable {
 	} 
 	
 	private void saveMap(ActionEvent e, TextField inputField, Stage dialogWindow) {
-        String requestLocation = inputField.getText();
+    String requestLocation = inputField.getText();
 		List<String> locationList = Arrays.asList(requestLocation.split(","));
 
 		String apiPath = "api_key.txt";
@@ -61,7 +61,7 @@ public class SaveMapController implements Initializable {
 		System.out.println(Arrays.toString(locations.toArray()));
 		staticMap.generateMap();
 
-        if (!getMap(requestLocation)) {
+    if (!getMap(requestLocation)) {
 			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Warning");
 			alert.setHeaderText("Provided url is invalid");
@@ -78,7 +78,7 @@ public class SaveMapController implements Initializable {
 	public void displaySaveMapWindow(GridPane grid) {
 		Stage dialogWindow = new Stage();
 		dialogWindow.initModality(Modality.APPLICATION_MODAL);
-		dialogWindow.setTitle("Save Map");
+		dialogWindow.setTitle("Save Topology");
 		dialogWindow.getIcons().add(new Image("/ca/bcit/jfx/res/images/LogoBCIT.png"));
 
 		saveMapBtn.setOnAction(e -> saveMap(e, saveMapInput, dialogWindow));
