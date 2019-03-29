@@ -56,7 +56,6 @@
 							<children>
 								<Button onAction="#onNew" text="Create Topology" GridPane.rowIndex="1" />
 								<Button onAction="#onLoad" text="Load Topolgoy" GridPane.columnIndex="1" />
-								<Button onAction="#onSave" text="Save Topology" GridPane.rowIndex="2" />
 								<RadioButton fx:id="RBNoneChose" selected="true" text="None" toggleGroup="$RBGroup">
 									<toggleGroup>
 										<ToggleGroup fx:id="RBGroup" />

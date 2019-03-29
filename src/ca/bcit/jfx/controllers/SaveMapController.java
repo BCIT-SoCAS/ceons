@@ -1,9 +1,13 @@
 package ca.bcit.jfx.controllers;
 
+import ca.bcit.ApplicationResources;
+import ca.bcit.io.Logger;
+import ca.bcit.io.project.ProjectFileFormat;
 import ca.bcit.jfx.tasks.SavedNodeDetails;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import ca.bcit.jfx.NewTopology;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 
 import javafx.geometry.Insets;
@@ -13,9 +17,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -35,6 +41,9 @@ public class SaveMapController {
 	Stage saveWindow;
 	TableView<SavedNodeDetails> saveTable;
 	TextField nameInput, connNodeInput, numRegeneratorInput, nodeTypeInput;
+	FileChooser fileChooser;
+	File file;
+
 
 	private void saveMap(TextField inputField, Stage dialogWindow) {
         String requestLocation = inputField.getText();
@@ -106,6 +115,23 @@ public class SaveMapController {
 	}
 
 	/*
+	*Writes to .eon file when clicked
+	 */
+	public void saveButtonClicked(){
+		fileChooser = new FileChooser();
+		fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
+		fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+		file = fileChooser.showSaveDialog(null);
+	}
+
+	/*
+	*Makes calls to google API to save a map and also calculate distances
+	 */
+	public void calDistancesButtonClicked(){
+		Logger.info("Calculating distances between all connected nodes");
+	}
+
+	/*
 	*Used to display a table view with inputs to allow user to build a network topology
 	 */
 	public void displaySaveMapWindow() {
@@ -161,17 +187,24 @@ public class SaveMapController {
 		nodeTypeInput = new TextField();
 		nodeTypeInput.setPromptText("Enter the node type");
 
-		//Button
+		//Buttons
 		Button addButton = new Button("Add");
 		addButton.setOnAction(e -> addButtonClicked());
+
 		Button deleteButton = new Button("Delete");
 		deleteButton.setOnAction(e -> deleteButtonClicked());
+
+		Button calculateDistancesButton = new Button("Calculate Distances");
+		calculateDistancesButton.setOnAction(e-> calDistancesButtonClicked());
+
+		Button saveButton = new Button("Save Map");
+		saveButton.setOnAction(e -> saveButtonClicked());
 
 		HBox hBox = new HBox();
 		//Insets: Padding around entire layout
 		hBox.setPadding(new Insets(10, 10, 10, 10));
 		hBox.setSpacing(20);
-		hBox.getChildren().addAll(nameInput, connNodeInput, numRegeneratorInput, nodeTypeInput, addButton, deleteButton);
+		hBox.getChildren().addAll(nameInput, connNodeInput, numRegeneratorInput, nodeTypeInput, addButton, deleteButton, calculateDistancesButton, saveButton);
 
 		saveTable = new TableView<>();
 		saveTable.setItems(getSavedNodeDeatils());

@@ -147,7 +147,7 @@ public class Node extends Figure {
 		
 		String nodeName = this.getName();
 		String nodeNumber = nodeName.substring(nodeName.indexOf("_") + 1);
-		gc.fillText(nodeNumber, getCenterPoint().getX() - imageSize / 6f , getCenterPoint().getY() + imageSize / 16f);
+		gc.fillText(nodeNumber, getCenterPoint().getX() - imageSize / 16f , getCenterPoint().getY() + imageSize / 16f);
 	}
 	
 
@@ -192,6 +192,8 @@ public class Node extends Figure {
 				+ imageSize / 2, startPoint.getY() + imageSize / 2),
 				imageSize / 2 + 3, Color.GRAY);
 	}
+
+
 
 	public static void changeNodeSize(float newNodeSize) {
 		imageSize = newNodeSize;

@@ -74,6 +74,14 @@ public class MainWindowController {
 
     private final static int PROPERTIES_PANE_NUMBER = 2;
 
+    public double totalVolume;
+    public double spectrumBlockedVolume;
+    public double regeneratorsBlockedVolume;
+    public double linkFailureBlockedVolume;
+
+
+    private static Timeline updateTimeline;
+
     @FXML
     private void nodeAdd(ActionEvent e) {
         graph.changeState(DrawingState.nodeAddingState);
@@ -96,7 +104,7 @@ public class MainWindowController {
     private void deleteLinkChose(ActionEvent e) {
         graph.changeState(DrawingState.linkDeleteState);
 	}
-	
+
 	@FXML
     private void deleteFewElementsChose(ActionEvent e) {
         graph.changeState(DrawingState.fewElementsDeleteState);
@@ -111,7 +119,7 @@ public class MainWindowController {
     private void nodeMarkInternational(ActionEvent e) {
         graph.changeState(DrawingState.nodeMarkInternationalState);
 	}
-	
+
 	@FXML
     private void nodeUnmark(ActionEvent e) {
         graph.changeState(DrawingState.nodeUnmarkState);
@@ -235,34 +243,6 @@ public class MainWindowController {
 			}
 		}
     }
-
-    @FXML
-    public void onSave(ActionEvent e) {
-        fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-        file = fileChooser.showSaveDialog(null);
-
-        if (file == null) return;
-        Task<Void> task = new Task<Void>() {
-
-            @Override
-            protected Void call() {
-                try {
-                    Logger.info("Saving project to " + file.getName() + "...");
-                    ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).save(file, ApplicationResources.getProject());
-                    Logger.info("Finished saving project.");
-                } catch (Exception ex) {
-                    Logger.info("An exception occurred while saving the project.");
-                    Logger.debug(ex);
-                }
-                return null;
-            }
-        };
-        task.run();
-	}
-
-    private static Timeline updateTimeline;
 
     public void updateGraph() {
         updateTimeline = new Timeline(
@@ -399,29 +379,12 @@ public class MainWindowController {
         SimulationMenuController.progressBar.runTask(task2, true);
     }
 
-    public double totalVolume;
-    public double spectrumBlockedVolume;
-    public double regeneratorsBlockedVolume;
-    public double linkFailureBlockedVolume;
-
     @FXML
     public void whilePaused() {
         graph.changeState(DrawingState.clickingState);
         info.setText("Blocked Spectrum: " + this.spectrumBlockedVolume / this.totalVolume * 100 + "%" + "\n"
                 + "Blocked Regenerators: " + this.regeneratorsBlockedVolume / this.totalVolume * 100 + "%" + "\n"
                 + "Blocked Link Failure: " + this.linkFailureBlockedVolume / this.totalVolume * 100 + "%");
-
-//        Project project = ApplicationResources.getProject();
-//        for (NetworkNode n : project.getNetwork().getNodes()) {
-//            info.setText(info.getText() + n.getName() + " has " + n.getFreeRegenerators() + " free regenerators " + '\n');
-//            for (NetworkNode n2 : project.getNetwork().getNodes()) {
-//                if (project.getNetwork().containsLink(n, n2)) {
-//                    int totalSlices = project.getNetwork().getLinkSlices(n, n2).getSlicesCount();
-//                    int occupiedSlices = project.getNetwork().getLinkSlices(n, n2).getOccupiedSlices();
-//                    int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
-//                }
-//            }
-//        }
     }
 
     private void setupGenerators(Project project) {
@@ -496,6 +459,33 @@ public class MainWindowController {
         generators.add(new TrafficGenerator("Shared Backup", new MappedRandomVariable<>(subGenerators)));
 
         SimulationMenuController.generatorsStatic.setItems(new ObservableListWrapper<>(generators));
+    }
+
+    @SuppressWarnings("unused")
+    @FXML
+    public void onSave(ActionEvent e) {
+        fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        file = fileChooser.showSaveDialog(null);
+
+        if (file == null) return;
+        Task<Void> task = new Task<Void>() {
+
+            @Override
+            protected Void call() {
+                try {
+                    Logger.info("Saving project to " + file.getName() + "...");
+                    ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).save(file, ApplicationResources.getProject());
+                    Logger.info("Finished saving project.");
+                } catch (Exception ex) {
+                    Logger.info("An exception occurred while saving the project.");
+                    Logger.debug(ex);
+                }
+                return null;
+            }
+        };
+        task.run();
     }
 
 }

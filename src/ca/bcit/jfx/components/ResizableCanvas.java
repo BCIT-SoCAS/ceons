@@ -254,8 +254,6 @@ public class ResizableCanvas extends Canvas {
         list.setSelectedFigure(temp);
     }
 
-    @SuppressWarnings("unused")
-
     /**
      * Load either a link or node
      * @param temp        either a link or node
@@ -265,9 +263,9 @@ public class ResizableCanvas extends Canvas {
         parent.loadProperties(temp, list);
     }
 
+
     private void updateListBeforeChanges() {
         listBeforeChanges = new FigureControl(list);
         Zooming.clearFactory();
     }
-
 }
