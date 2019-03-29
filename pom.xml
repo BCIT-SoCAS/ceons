@@ -33,6 +33,24 @@
 		</resources>
 		<plugins>
 			<plugin>
+				<groupId>com.jolira</groupId>
+				<artifactId>onejar-maven-plugin</artifactId>
+				<executions>
+						<execution>
+								<configuration>
+										<mainClass>ca.bcit.Main</mainClass>
+										<attachToBuild>true</attachToBuild>
+										<filename>
+											ceons.jar
+										</filename>
+								</configuration>
+								<goals>
+										<goal>one-jar</goal>
+								</goals>
+						</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.3</version>
 				<configuration>

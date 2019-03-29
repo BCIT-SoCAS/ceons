@@ -144,7 +144,10 @@ public class Node extends Figure {
 
 		// node name
 		gc.setFill(Color.BLACK);
-		gc.fillText(this.getName(), getCenterPoint().getX() - imageSize / 2f , getCenterPoint().getY());
+		
+		String nodeName = this.getName();
+		String nodeNumber = nodeName.substring(nodeName.indexOf("_") + 1);
+		gc.fillText(nodeNumber, getCenterPoint().getX() - imageSize / 6f , getCenterPoint().getY() + imageSize / 16f);
 	}
 	
 

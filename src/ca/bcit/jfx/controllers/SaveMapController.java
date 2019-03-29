@@ -1,9 +1,9 @@
 package ca.bcit.jfx.controllers;
 
-import ca.bcit.jfx.components.SavedNodeDetails;
-import ca.bcit.jfx.components.StaticMap;
+import ca.bcit.jfx.tasks.SavedNodeDetails;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import ca.bcit.jfx.NewTopology;
 import javafx.fxml.FXML;
 
 import javafx.geometry.Insets;
@@ -15,7 +15,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.scene.layout.GridPane;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,6 +38,7 @@ public class SaveMapController {
 
 	private void saveMap(TextField inputField, Stage dialogWindow) {
         String requestLocation = inputField.getText();
+
 		List<String> locationList = Arrays.asList(requestLocation.split(","));
 
 		String apiPath = "api_key.txt";
@@ -49,20 +49,22 @@ public class SaveMapController {
 			ex.printStackTrace();
 		}
 
-		StaticMap staticMap = new StaticMap(key);
+		NewTopology staticMap = new NewTopology(key);
 		for(String s: locationList) {
 			if(s.equals(locationList.get(0))){
 				System.out.println("here");
-				staticMap.setCenterPoint(s);
 			}
 			staticMap.addLocation(s);
 		}
+
+		NewTopology.distance(staticMap.getLocationsLatLng().get(0).lat, staticMap.getLocationsLatLng().get(1).lat,
+				staticMap.getLocationsLatLng().get(0).lng, staticMap.getLocationsLatLng().get(1).lng);
 
 		ArrayList<String> locations = staticMap.getLocations();
 		System.out.println(Arrays.toString(locations.toArray()));
 		staticMap.generateMap();
 
-        if (!getMap(requestLocation)) {
+    if (!getMap(requestLocation)) {
 			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Warning");
 			alert.setHeaderText("Provided url is invalid");
@@ -132,7 +134,7 @@ public class SaveMapController {
 		nameColumn.setCellValueFactory(new PropertyValueFactory<>("cityName"));
 
 		//Connected to Node Column
-		TableColumn<SavedNodeDetails, String> connectedNodeNumColumn = new TableColumn<>("Connected Node # (Separate multiple links with a comma");
+		TableColumn<SavedNodeDetails, String> connectedNodeNumColumn = new TableColumn<>("Connected Node # (Separate multiple links with a comma)");
 		connectedNodeNumColumn.setMinWidth(450);
 		connectedNodeNumColumn.setCellValueFactory(new PropertyValueFactory<>("connectedNodeNum"));
 

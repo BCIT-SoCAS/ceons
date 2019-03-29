@@ -1,6 +1,7 @@
 package ca.bcit.jfx.controllers;
 
 import ca.bcit.drawing.Figure;
+import ca.bcit.drawing.Node;
 import ca.bcit.drawing.FigureControl;
 import ca.bcit.utils.geom.Vector2F;
 import javafx.collections.ObservableList;
@@ -20,7 +21,9 @@ import java.util.ResourceBundle;
  */
 public class NodePropertiesController implements Initializable {
     @FXML
-    private Label nodeName;
+		private Label nodeName;
+		@FXML
+    private Label nodeGroup;
     @FXML
     private Label regenNum;
     @FXML
@@ -64,14 +67,28 @@ public class NodePropertiesController implements Initializable {
         fillInformation(_node);
     }
 
-    private void fillInformation(Figure node)
+    private void fillInformation(Figure fig)
     {
-            nodeName.setText(node.getName());
-            ObservableList<String> obList=list.generateNodeConnections(node);
-            listView.setItems(obList);
-            xID.setText(((Float)node.getStartPoint().getX()).toString());
-            yID.setText(((Float)node.getStartPoint().getY()).toString());
-            regenNum.setText(Integer.toString(node.getInfo()));
+			Node node = (Node) fig;
+			nodeName.setText(node.getName());
+
+			Boolean isReplica = (Boolean) node.getNodeGroups().get("replicas");
+			Boolean isInternational = (Boolean) node.getNodeGroups().get("international");
+			if (Boolean.TRUE.equals(isReplica) && Boolean.TRUE.equals(isInternational)) {
+				nodeGroup.setText("Data Center, International");
+			} else if (Boolean.TRUE.equals(isReplica)) {
+				nodeGroup.setText("Data Center");
+			} else if (Boolean.TRUE.equals(isInternational)) {
+				nodeGroup.setText("International");
+			} else {
+				nodeGroup.setText("None");
+			}
+
+			ObservableList<String> obList=list.generateNodeConnections(node);
+			listView.setItems(obList);
+			xID.setText(((Float)node.getStartPoint().getX()).toString());
+			yID.setText(((Float)node.getStartPoint().getY()).toString());
+			regenNum.setText(Integer.toString(node.getInfo()));
     }
 
     @FXML
