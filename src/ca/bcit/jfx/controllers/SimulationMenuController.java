@@ -128,6 +128,7 @@ public class SimulationMenuController {
 			Optional<ButtonType> result = alert.showAndWait();
 			if (result.get() == ButtonType.OK){
 				cancelled = true;
+				cancelButton.setText("Clear Simulation");
 				paused = false;
 				cancelButton.setText("Clear Simulation");
 				pauseButton.setText("Pause Simulation");
@@ -150,6 +151,7 @@ public class SimulationMenuController {
 			Optional<ButtonType> result = alert.showAndWait();
 			if (result.get() == ButtonType.OK){
 				cancelled = true;
+				cancelButton.setText("Cancel Simulation");
 				paused = false;
 				pauseButton.setText("Pause Simulation");
 				finished = true;

@@ -81,7 +81,7 @@ public class NodePropertiesController implements Initializable {
 			} else if (Boolean.TRUE.equals(isInternational)) {
 				nodeGroup.setText("International");
 			} else {
-				nodeGroup.setText("None");
+				nodeGroup.setText("Standard");
 			}
 
 			ObservableList<String> obList=list.generateNodeConnections(node);

@@ -47,7 +47,7 @@ public class Main extends Application {
 		GridPane root = (GridPane)loader.load();
 		Scene scene = new Scene(root);
 		primaryStage.setScene(scene);
-		primaryStage.getIcons().add(new Image("/ca/bcit/jfx/res/images/LogoBCIT.png"));
+		primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/ca/bcit/jfx/res/images/LogoBCIT.png")));
 		primaryStage.show();
 		primaryStage.setMinWidth(primaryStage.getWidth());
 		primaryStage.setMinHeight(primaryStage.getHeight());

@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import java.lang.ClassLoader;
+
 
 public class SaveMapController {
 	@FXML
@@ -89,9 +91,10 @@ public class SaveMapController {
 	 */
 	public void addButtonClicked(){
 		SavedNodeDetails savedNodeDetails = new SavedNodeDetails();
+		
 		savedNodeDetails.setNodeNum(getNextNodeNum());
-		savedNodeDetails.setLocationName(nameInput.getText());
-		savedNodeDetails.setConnectedNodeNum(connNodeInput.getText());
+		savedNodeDetails.setLocation(nameInput.getText());
+		savedNodeDetails.setConnectedNodeNum((connNodeInput.getText()));
 		savedNodeDetails.setNumRegenerators(Integer.parseInt((numRegeneratorInput.getText())));
 		savedNodeDetails.setNodeType(getSelectedNodeType());
 		saveTable.getItems().add(savedNodeDetails);
@@ -130,7 +133,7 @@ public class SaveMapController {
 		for (int i = 0; i < saveTable.getItems().size() ; i++) {
 			savedNodeDetails=saveTable.getItems().get(i);
 			arrList.add(new ArrayList<>());
-			arrList.get(i).add(savedNodeDetails.getLocationName());
+			arrList.get(i).add(savedNodeDetails.getLocation());
 			arrList.get(i).add(savedNodeDetails.getNodeType());
 			arrList.get(i).add(""+savedNodeDetails.getConnectedNodeNum());
 			arrList.get(i).add(""+savedNodeDetails.getNumRegenerators());
@@ -157,7 +160,8 @@ public class SaveMapController {
 		saveWindow.initModality(Modality.APPLICATION_MODAL);
 
 		saveWindow.setTitle("Save Network Topology");
-		saveWindow.getIcons().add(new Image("/ca/bcit/jfx/res/images/LogoBCIT.png"));
+		// String path = getClass().getResource("/ca/bcit/jfx/res/images/LogoBCIT.png").toExternalForm();
+		saveWindow.getIcons().add(new Image(getClass().getResourceAsStream("/ca/bcit/jfx/res/images/LogoBCIT.png")));
 
 		//Node Number
 		TableColumn<SavedNodeDetails, String> nodeNumColumn = new TableColumn<>("Node Number");
@@ -167,8 +171,8 @@ public class SaveMapController {
 		//Name Column
 		TableColumn<SavedNodeDetails, String> nameColumn = new TableColumn<>("Location");
 		nameColumn.setMinWidth(200);
-		//use the cityName property of our objects
-		nameColumn.setCellValueFactory(new PropertyValueFactory<>("locationName"));
+		//use the location property of our objects
+		nameColumn.setCellValueFactory(new PropertyValueFactory<>("location"));
 
 		//Connected to Node Column
 		TableColumn<SavedNodeDetails, String> connectedNodeNumColumn = new TableColumn<>("Connected Node # (Separate multiple links with a comma)");
@@ -187,7 +191,7 @@ public class SaveMapController {
 
 		//Inputs
 		nameInput = new TextField();
-		nameInput.setPromptText("Enter name of location");
+		nameInput.setPromptText("Enter location");
 
 		connNodeInput = new TextField();
 		connNodeInput.setPromptText("Enter connected node(s)");

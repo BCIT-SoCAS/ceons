@@ -34,7 +34,8 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
-import javafx.scene.layout.GridPane;
+
+import javafx.scene.layout.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -82,11 +83,19 @@ public class MainWindowController {
 
     private static Timeline updateTimeline;
 
+		/**
+		* Changes state to add Node to a map
+		* @deprecated currently not in use
+		*/
     @FXML
     private void nodeAdd(ActionEvent e) {
         graph.changeState(DrawingState.nodeAddingState);
     }
 
+		/**
+		* Changes state to add Link to a map
+		* @deprecated currently not in use
+		*/
     @FXML
     private void linkAdd(ActionEvent e) {
         graph.changeState(DrawingState.linkAddingState);
@@ -95,32 +104,57 @@ public class MainWindowController {
     @FXML
     private void nodeSelect(ActionEvent e) { graph.changeState(DrawingState.clickingState); }
 
+		/**
+		* Changes state to delete Node from a map
+		* @deprecated currently not in use
+		*/
     @FXML
     private void deleteNodeChose(ActionEvent e) {
         graph.changeState(DrawingState.nodeDeleteState);
     }
 
+		/**
+		* Changes state to delete Link from a map
+		* @deprecated currently not in use
+		*/
     @FXML
     private void deleteLinkChose(ActionEvent e) {
         graph.changeState(DrawingState.linkDeleteState);
-	}
+		}
 
-	@FXML
+		/**
+		* Changes state to delete multiple elements from a map
+		* @deprecated currently not in use
+		*/
+		@FXML
     private void deleteFewElementsChose(ActionEvent e) {
         graph.changeState(DrawingState.fewElementsDeleteState);
     }
 
+		/**
+		* Changes state to mark Node as Replica on a map
+		* @deprecated currently not in use
+		*/
+
     @FXML
     private void nodeMarkReplica(ActionEvent e) {
         graph.changeState(DrawingState.nodeMarkReplicaState);
-	}
+		}
 
-	@FXML
+		/**
+		* Changes state to mark Node as International on a map
+		* @deprecated currently not in use
+		*/
+		@FXML
     private void nodeMarkInternational(ActionEvent e) {
         graph.changeState(DrawingState.nodeMarkInternationalState);
-	}
-
-	@FXML
+		}
+	
+		/**
+		* Changes state to unmark Node on a map
+		* @deprecated currently not in use
+		*/
+		@FXML
     private void nodeUnmark(ActionEvent e) {
         graph.changeState(DrawingState.nodeUnmarkState);
     }
@@ -142,9 +176,13 @@ public class MainWindowController {
             throw new RuntimeException(e);
         }
 
-        graph.init(this);
-        simulationMenuController.setProgressBar(progressBar);
-    }
+				graph.init(this);
+				
+				String path = getClass().getResource("/ca/bcit/jfx/res/images/LogoEON.png").toString();
+				accordion.setStyle("-fx-background-image: url(\"" + path + "\");");
+
+				simulationMenuController.setProgressBar(progressBar);
+		}
 
     /**
      * Opens up live info tab with the node/link information
@@ -212,7 +250,7 @@ public class MainWindowController {
     }
 
     public void setExpandedPane(int idx) {
-        accordion.getPanes().get(idx).setExpanded(true);
+				accordion.getPanes().get(idx).setExpanded(true);
     }
 
     private void setLiveInfoPaneContent(TitledPane tp) {

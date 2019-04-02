@@ -105,8 +105,8 @@ public class APIKeyController implements Initializable {
 		Stage dialogWindow = new Stage();
 		dialogWindow.initModality(Modality.APPLICATION_MODAL);
 		dialogWindow.setTitle("Save Google Maps API key");
-		dialogWindow.getIcons().add(new Image("/ca/bcit/jfx/res/images/LogoBCIT.png"));
-
+		dialogWindow.getIcons().add(new Image(getClass().getResourceAsStream("/ca/bcit/jfx/res/images/LogoBCIT.png")));
+		
 		saveAPIKeyBtn.setOnAction(e -> saveAPIkey(e, saveKeyInput, dialogWindow));
 		closeAPIKeyWindowBtn.setOnAction(e -> dialogWindow.close());
 		Scene scene = new Scene(grid, 520, 300);

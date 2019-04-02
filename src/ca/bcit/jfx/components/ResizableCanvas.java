@@ -36,6 +36,9 @@ public class ResizableCanvas extends Canvas {
         return parent;
     }
 
+		/**
+		* @deprecated currently not in use
+		*/
     private void canvasOnMousePressed(MouseEvent e) {
         updateListBeforeChanges();
         Vector2F pressedPoint = new Vector2F((float) e.getX(), (float) e.getY());
@@ -66,6 +69,9 @@ public class ResizableCanvas extends Canvas {
         updateListBeforeChanges();
     }
 
+		/**
+		* @deprecated currently not in use
+		*/
     private void canvasOnMouseReleased(MouseEvent e) {
         Vector2F releasedPoint = new Vector2F((float) e.getX(), (float) e.getY());
         if (isLinkAddingState()) {
@@ -83,6 +89,9 @@ public class ResizableCanvas extends Canvas {
         updateListBeforeChanges();
     }
 
+		/**
+		* @deprecated currently not in use
+		*/
     private void canvasOnMouseDragged(MouseEvent e) {
         Vector2F draggedPoint = new Vector2F((float) e.getX(), (float) e.getY());
         if (isLinkAddingState()) {

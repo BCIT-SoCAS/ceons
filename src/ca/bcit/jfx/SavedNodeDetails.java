@@ -2,23 +2,23 @@ package ca.bcit.jfx;
 
 public class SavedNodeDetails {
 
-    private String nodeNum;
-    private String locationName;
-    private String connectedNodeNum;
+    private String location;
+		private String connectedNodeNum;
+		private String nodeNum;
     private int numRegenerators;
     private String nodeType;
 
     public SavedNodeDetails(){
-        this.nodeNum = "";
-        this.locationName = "";
-        this.connectedNodeNum = "";
+        this.location = "";
+				this.connectedNodeNum = "";
+				this.nodeNum = "";
         this.numRegenerators = 100;
         this.nodeType = "Standard";
     }
 
-    public SavedNodeDetails(String nodeNum, String locationName, String connectedNodeNum, int numRegernators, String nodeType){
-        this.nodeNum = nodeNum;
-        this.locationName = locationName;
+    public SavedNodeDetails(String nodeNum, String location, String connectedNodeNum, int numRegernators, String nodeType){
+				this.nodeNum = nodeNum;
+        this.location = location;
         this.connectedNodeNum = connectedNodeNum;
         this.numRegenerators = numRegernators;
         this.nodeType = nodeType;
@@ -32,12 +32,12 @@ public class SavedNodeDetails {
         this.nodeNum = nodeNum;
     }
 
-    public String getLocationName() {
-        return locationName;
+    public String getLocation() {
+        return location;
     }
 
-    public void setLocationName(String locationName) {
-        this.locationName = locationName;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public String getConnectedNodeNum() {
