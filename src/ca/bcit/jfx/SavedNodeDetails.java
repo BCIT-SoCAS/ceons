@@ -2,38 +2,49 @@ package ca.bcit.jfx;
 
 public class SavedNodeDetails {
 
-    private String cityName;
-    private int connectedNodeNum;
+    private String nodeNum;
+    private String locationName;
+    private String connectedNodeNum;
     private int numRegenerators;
     private String nodeType;
 
     public SavedNodeDetails(){
-        this.cityName = "";
-        this.connectedNodeNum = 0;
+        this.nodeNum = "";
+        this.locationName = "";
+        this.connectedNodeNum = "";
         this.numRegenerators = 100;
-        this.nodeType = "Normal";
+        this.nodeType = "Standard";
     }
 
-    public SavedNodeDetails(String cityName, int connectedNodeNum, int numRegernators, String nodeType){
-        this.cityName = cityName;
+    public SavedNodeDetails(String nodeNum, String locationName, String connectedNodeNum, int numRegernators, String nodeType){
+        this.nodeNum = nodeNum;
+        this.locationName = locationName;
         this.connectedNodeNum = connectedNodeNum;
         this.numRegenerators = numRegernators;
         this.nodeType = nodeType;
     }
 
-    public String getCityName() {
-        return cityName;
+    public String getNodeNum() {
+        return nodeNum;
     }
 
-    public void setCityName(String cityName) {
-        this.cityName = cityName;
+    public void setNodeNum(String nodeNum) {
+        this.nodeNum = nodeNum;
     }
 
-    public int getConnectedNodeNum() {
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
+    }
+
+    public String getConnectedNodeNum() {
         return connectedNodeNum;
     }
 
-    public void setConnectedNodeNum(int connectedNodeNum) {
+    public void setConnectedNodeNum(String connectedNodeNum) {
         this.connectedNodeNum = connectedNodeNum;
     }
 

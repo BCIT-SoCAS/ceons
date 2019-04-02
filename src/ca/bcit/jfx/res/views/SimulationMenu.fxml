@@ -49,7 +49,7 @@
 			<VBox fx:id="simulatorControl" spacing="8.0" alignment="BOTTOM_CENTER"  minHeight="0.0" minWidth="0.0" >
 				<children>
 					<Button fx:id="pauseButton" text="Pause Simulation" onAction="#pauseSimulation"/>
-					<Button fx:id="cancelButton" text="Cancel/Clear Simulation" onAction="#cancelSimulation"/>
+					<Button fx:id="cancelButton" text="Clear Simulation" onAction="#cancelSimulation"/>
 					<Label text="Pause to see statistics in 'Live Info tab'!" wrapText="true"/>
 				</children>
 			</VBox>

@@ -78,6 +78,15 @@ public class SimulationMenuController {
 		if (algorithms.getValue() == null) {
 			Logger.info("No algorithm selected!");
 			return;
+		} else if (generators.getValue() == null) {
+			Alert alert = new Alert(Alert.AlertType.INFORMATION);
+			alert.setTitle("Set Generators Traffic");
+			alert.setHeaderText(null);
+			alert.setContentText("Traffic generator must be selected between simulations!");
+			alert.setResizable(true);
+			alert.getDialogPane().setPrefSize(480.0, 100);
+			alert.showAndWait();
+			return;
 		}
 
 		network.setDemandAllocationAlgorithm(algorithms.getValue());
@@ -99,6 +108,7 @@ public class SimulationMenuController {
 		Simulation simulation = new Simulation(network, generators.getValue());
 		SimulationTask task = new SimulationTask(simulation, seed.getValue(), Double.parseDouble(alpha.getText()), erlang.getValue(), demands.getValue(), replicaPreservation.isSelected());
 		//gray out settings
+		cancelButton.setText("Cancel Simulation");
 		settings.setDisable(true);
 		progressBar.runTask(task, true);
 	}
@@ -119,6 +129,7 @@ public class SimulationMenuController {
 			if (result.get() == ButtonType.OK){
 				cancelled = true;
 				paused = false;
+				cancelButton.setText("Clear Simulation");
 				pauseButton.setText("Pause Simulation");
 				finished = true;
 				started = false;
