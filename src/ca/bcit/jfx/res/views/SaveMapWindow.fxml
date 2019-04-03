@@ -5,7 +5,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.Text?>
 
-<GridPane styleClass="grid-pane" alignment="CENTER" hgap="10.0" vgap="20.0" prefWidth="520.0" prefHeight="300.0" stylesheets="/ca/bcit/jfx/res/stylesheets/dialogWindow.cssext" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.SaveMapController">
+<GridPane fx:id="saveMapPane" styleClass="grid-pane" alignment="CENTER" hgap="10.0" vgap="20.0" prefWidth="520.0" prefHeight="300.0" stylesheets="/ca/bcit/jfx/res/stylesheets/dialogWindow.cssext" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.SaveMapController">
 	<padding><Insets top="25" right="25" bottom="25" left="25"/></padding> 
 	<children>
 		<Text styleClass="title-text" text="Save Topology" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2" GridPane.rowSpan="1" />

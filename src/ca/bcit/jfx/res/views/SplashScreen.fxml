@@ -7,13 +7,9 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.ProgressIndicator?>
 
-<AnchorPane fx:id="splashScreenPane" id="splash-screen-pane" stylesheets="/ca/bcit/jfx/res/stylesheets/application.cssext" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:id="splashScreenPane" stylesheets="/ca/bcit/jfx/res/stylesheets/application.cssext" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.SplashScreenController">
 	<children>
-		<ImageView fitHeight="100.0" fitWidth="100.0" layoutX="30.0" layoutY="30.0" pickOnBounds="true" preserveRatio="true">
-			<image>
-				<Image url="/ca/bcit/jfx/res/images/LogoBCIT.png" /> 
-			</image>
-		</ImageView>
+		<ImageView fx:id="splashScreenBCITLogo" />
 		<Text id="splash-screen-title" layoutX="150.0" layoutY="100.0" strokeType="OUTSIDE" strokeWidth="0.0" text="CEONS">
 			<font>
 				<Font name="Roboto Medium" />
@@ -25,10 +21,6 @@
 				<Font name="Roboto Medium" />
 			</font>
 		</Text>
-		<ImageView fitHeight="125.0" fitWidth="125.0" layoutX="450.0" layoutY="250.0" pickOnBounds="true" preserveRatio="true">
-			<image>
-				<Image url="/ca/bcit/jfx/res/images/LogoEON.png" /> 
-			</image>
-		</ImageView>
+		<ImageView fx:id="splashScreenEONLogo" />
 	</children>
 </AnchorPane>

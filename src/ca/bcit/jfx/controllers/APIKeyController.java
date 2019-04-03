@@ -18,11 +18,9 @@ import javafx.scene.layout.GridPane;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-
 
 import com.google.maps.GeoApiContext;
 import com.google.maps.StaticMapsApi;
@@ -33,6 +31,8 @@ import com.google.maps.ImageResult;
 
 public class APIKeyController implements Initializable {
 	@FXML
+	private GridPane saveAPIKeyPane;
+	@FXML
 	private TextField saveKeyInput;
 	@FXML
 	private Button saveAPIKeyBtn;
@@ -40,7 +40,8 @@ public class APIKeyController implements Initializable {
 	private Button closeAPIKeyWindowBtn;
 
 	public void initialize(URL location, ResourceBundle resources) {
-        
+		String path = "file:" + System.getProperty("user.dir") + "/src/ca/bcit/jfx/res/images/bg.png";
+        saveAPIKeyPane.setStyle("-fx-background-image: url(\"" + path + "\"); -fx-background-size: cover;");
     } 
 	private boolean validateAPIkey(String key) {
         GeoApiContext context = new GeoApiContext.Builder()

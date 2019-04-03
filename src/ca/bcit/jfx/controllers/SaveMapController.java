@@ -13,6 +13,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
+
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -160,7 +162,6 @@ public class SaveMapController {
 		saveWindow.initModality(Modality.APPLICATION_MODAL);
 
 		saveWindow.setTitle("Save Network Topology");
-		// String path = getClass().getResource("/ca/bcit/jfx/res/images/LogoBCIT.png").toExternalForm();
 		saveWindow.getIcons().add(new Image(getClass().getResourceAsStream("/ca/bcit/jfx/res/images/LogoBCIT.png")));
 
 		//Node Number

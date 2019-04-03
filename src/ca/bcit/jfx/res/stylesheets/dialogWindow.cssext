@@ -1,7 +1,3 @@
-.grid-pane {
-	-fx-background-image: url("/ca/bcit/jfx/res/images/bg.png");
-	-fx-background-size: cover;
-}
 
 .title-text {
 	-fx-font-size: 20;

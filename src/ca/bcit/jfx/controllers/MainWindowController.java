@@ -176,12 +176,12 @@ public class MainWindowController {
             throw new RuntimeException(e);
         }
 
-				graph.init(this);
-				
-				String path = getClass().getResource("/ca/bcit/jfx/res/images/LogoEON.png").toString();
-				accordion.setStyle("-fx-background-image: url(\"" + path + "\");");
+		graph.init(this);
+		
+		String path = "file:" + System.getProperty("user.dir") + "/src/ca/bcit/jfx/res/images/LogoEON.png";
+		accordion.setStyle("-fx-background-image: url(\"" + path + "\");");
 
-				simulationMenuController.setProgressBar(progressBar);
+		simulationMenuController.setProgressBar(progressBar);
 		}
 
     /**
