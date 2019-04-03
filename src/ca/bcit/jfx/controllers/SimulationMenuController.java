@@ -41,7 +41,7 @@ public class SimulationMenuController {
 	@FXML private UIntField bestPaths;
 	@FXML private UIntField regeneratorsMetricValue;
 	@FXML private Button pauseButton;
-	@FXML private Button cancelButton;
+	@FXML private Button clearCancelButton;
 	private CheckBox[] modulations;
 
 	public static TaskReadyProgressBar progressBar;
@@ -108,14 +108,18 @@ public class SimulationMenuController {
 		Simulation simulation = new Simulation(network, generators.getValue());
 		SimulationTask task = new SimulationTask(simulation, seed.getValue(), Double.parseDouble(alpha.getText()), erlang.getValue(), demands.getValue(), replicaPreservation.isSelected());
 		//gray out settings
-		cancelButton.setText("Cancel Simulation");
+		clearCancelButton.setText("Cancel Simulation");
 		settings.setDisable(true);
 		progressBar.runTask(task, true);
 	}
 
+	public void isFinished() {
+		clearCancelButton.setText("Clear Simulation");
+	}
+
 	// Cancel simulation button
 	public static boolean cancelled = false;
-	@FXML public void cancelSimulation(ActionEvent e) {
+	@FXML public void clearCancelSimulation(ActionEvent e) {
 
 		paused = true;
 
@@ -128,9 +132,8 @@ public class SimulationMenuController {
 			Optional<ButtonType> result = alert.showAndWait();
 			if (result.get() == ButtonType.OK){
 				cancelled = true;
-				cancelButton.setText("Clear Simulation");
 				paused = false;
-				cancelButton.setText("Clear Simulation");
+				clearCancelButton.setText("Clear Simulation");
 				pauseButton.setText("Pause Simulation");
 				finished = true;
 				started = false;
@@ -151,8 +154,8 @@ public class SimulationMenuController {
 			Optional<ButtonType> result = alert.showAndWait();
 			if (result.get() == ButtonType.OK){
 				cancelled = true;
-				cancelButton.setText("Cancel Simulation");
 				paused = false;
+				clearCancelButton.setText("Clear Simulation");
 				pauseButton.setText("Pause Simulation");
 				finished = true;
 				started = false;
