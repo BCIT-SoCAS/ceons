@@ -29,10 +29,11 @@ public class Node extends Figure {
 
 
 	/**
-	 * Old method to draw nodes by index number instead of node name.
+	 * @deprecated Old method to draw nodes by index number instead of node name.
 	 * @param startPoint 		the coordinates of Node
 	 * @param number			index number of the Node
 	 */
+	@Deprecated
 	public Node(Vector2F startPoint, int number) {
 
 		super(new Vector2F(startPoint.getX() - imageSize / 2, startPoint.getY()
@@ -41,12 +42,13 @@ public class Node extends Figure {
 	}
 
 	/**
-	 * Older method to draw non-updating nodes.
+	 * @deprecated Older method to draw non-updating nodes.
 	 * The color used will be the same as the last node drawn.
 	 * Default color is green.
 	 * @param startPoint 		the coordinates of Node
 	 * @param _name				name of the node passed in
 	 */
+	@Deprecated
 	public Node(Vector2F startPoint, String _name) {
 		super(new Vector2F(startPoint.getX() - imageSize / 2, startPoint.getY() - imageSize / 2), _name);
 		loadImage();

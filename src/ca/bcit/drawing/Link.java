@@ -21,6 +21,13 @@ public class Link extends Figure {
 		loadImage();
 	}
 
+	/**
+	 * @deprecatd Old method to draw link with the previous used color (default green)
+	 * @param stPoint starting location of the link
+	 * @param _endPoint end location of the link
+	 * @param number the number tag identifying the link
+	 */
+	@Deprecated
 	public Link(Vector2F stPoint, Vector2F _endPoint, int number) {
 		super(stPoint, "Link" + number);
 		endPoint = _endPoint;
@@ -28,6 +35,13 @@ public class Link extends Figure {
 		loadImage();
 	}
 
+	/**
+	 * Draw link with a gradient color acording to avaliable free slices
+	 * @param stPoint starting location of the link
+	 * @param _endPoint end location of the link
+	 * @param number the number tag identifying the link
+	 * @param Percentage percentage of free slices left in the link
+	 */
 	public Link(Vector2F stPoint, Vector2F _endPoint, int number, int Percentage) {
 		super(stPoint, "Link" + number);
 		this.Percentage = Percentage;
@@ -36,7 +50,13 @@ public class Link extends Figure {
 		loadImage();
 	}
 
-
+	/**
+	 * @deprecated Old method to draw link with the previous used color (default green)
+	 * @param _startPoint starting location of the link
+	 * @param _endPoint end location of the link
+	 * @param _name the name identifying the link
+	 */
+	@Deprecated
 	public Link(Vector2F _startPoint, Vector2F _endPoint, String _name) {
 		super(_startPoint, _name);
 		endPoint = _endPoint;
@@ -44,6 +64,14 @@ public class Link extends Figure {
 		loadImage();
 	}
 
+	/**
+	 * @deprecated Old method to draw link with the previous used color of specified length(default green)
+	 * @param _startPoint starting location of the link
+	 * @param _endPoint end location of the link
+	 * @param _name the name identifying the link
+	 * @param _length the length of the link to b drawn
+	 */
+	@Deprecated
 	public Link(Vector2F _startPoint, Vector2F _endPoint, String _name, int _length) {
 		super(_startPoint, _name);
 		endPoint = _endPoint;
@@ -56,6 +84,10 @@ public class Link extends Figure {
 		return this.Percentage;
 	}
 
+	/**
+	 * Method to draw the actual links. Color parameters are passed in from other methods
+	 * @param gc graphic context objct with the draw functions
+	 */
 	@Override
 	public void draw(GraphicsContext gc) {
 		int[] rgb = getColor();
@@ -71,6 +103,10 @@ public class Link extends Figure {
 		gc.setLineWidth((Node.imageSize / 2 - Node.imageSize / 4) * fill);
 	}
 
+	/**
+	 * Takes the link's free slice percentage, and convert it to an rgb gradient.
+	 * @return an array with rgb color
+	 */
 	private int[] getColor() {
 		int[] rgb = new int[3];
 		if (this.Percentage > 50) {
