@@ -9,7 +9,7 @@
          <children>
             <GridPane layoutX="2.0" layoutY="-1.0" prefHeight="319.0" prefWidth="350.0">
               <columnConstraints>
-                <ColumnConstraints prefWidth="200.0" />
+                <ColumnConstraints prefWidth="175.0" />
                 <ColumnConstraints prefWidth="150.0" />
               </columnConstraints>
               <rowConstraints>
