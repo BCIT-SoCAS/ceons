@@ -374,7 +374,7 @@ public class MainWindowController {
                     ApplicationResources.setProject(project);
                     Logger.debug("Finished loading project.");
                     graph.resetCanvas();
-                    mapViewer.setImage(new Image(project.getMap()));
+                    mapViewer.setImage(new Image(getClass().getResourceAsStream("/" + project.getMap())));
                     //for every node in the network place onto map and for each node add links between
                     for (NetworkNode n : project.getNetwork().getNodes()) {
 //                        n.setRegeneratorsCount(100);
