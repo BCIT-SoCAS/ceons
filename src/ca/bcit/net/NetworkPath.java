@@ -1,6 +1,7 @@
 package ca.bcit.net;
 
 import ca.bcit.graph.Path;
+import ca.bcit.io.Logger;
 
 /**
  * Path between nodes
@@ -22,12 +23,16 @@ public class NetworkPath extends Path<NetworkNode> {
 	}
 	
 	public boolean isDisjoint(PartedPath path) {
-		for (int i = 0; i < size(); i++) {
-			int index = path.path.indexOf(get(i));
-			if (index == -1) continue;
-			if (i != 0 && index != 0 && get(i - 1).equals(path.path.get(index - 1)) || i != 0 && index != path.path.size() - 1 && get(i - 1).equals(path.path.get(index + 1)) ||
-				i != size() - 1 && index != 0 && get(i + 1).equals(path.path.get(index - 1)) || i != size() - 1 && index != path.path.size() - 1 && get(i + 1).equals(path.path.get(index + 1)))
-				return false;
+		try {
+			for (int i = 0; i < size(); i++) {
+				int index = path.path.indexOf(get(i));
+				if (index == -1) continue;
+				if (i != 0 && index != 0 && get(i - 1).equals(path.path.get(index - 1)) || i != 0 && index != path.path.size() - 1 && get(i - 1).equals(path.path.get(index + 1)) ||
+						i != size() - 1 && index != 0 && get(i + 1).equals(path.path.get(index - 1)) || i != size() - 1 && index != path.path.size() - 1 && get(i + 1).equals(path.path.get(index + 1)))
+					return false;
+			}
+		} catch (Exception e) {
+			return false;
 		}
 		return true;
 	}

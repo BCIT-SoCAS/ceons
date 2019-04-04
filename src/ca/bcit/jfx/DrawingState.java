@@ -1,12 +1,14 @@
 package ca.bcit.jfx;
 
 public enum DrawingState {
+    noActionState,
     nodeAddingState,
     linkAddingState,
     clickingState,
     nodeDeleteState,
-    linkDeleteState,
-    fewElementsDeleteState,
-    rotateAroundCenter,
-    rotateAroundNode
+	linkDeleteState,
+	fewElementsDeleteState,
+	nodeMarkReplicaState,
+	nodeMarkInternationalState,
+	nodeUnmarkState,
 }

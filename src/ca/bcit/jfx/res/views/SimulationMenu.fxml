@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import ca.bcit.jfx.components.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<ScrollPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.SimulationMenuController" fitToWidth="true"  >
+	<content>
+		<VBox>
+			<VBox fx:id="settings" spacing="8.0" alignment="CENTER" minHeight="0.0" minWidth="0.0" >
+				<children>
+					<Label text="Algorithm" />
+					<ComboBox fx:id="algorithms" promptText="Choose algorithm... " />
+					<Separator />
+					<Label text="Traffic Generator" />
+					<ComboBox fx:id="generators" promptText="Choose generator... " />
+					<Label text="Erlang" />
+					<UIntField fx:id="erlang" />
+					<Label text="Seed" />
+					<UIntField fx:id="seed" />
+					<Label text="Alpha" />
+					<TextField fx:id="alpha" text="0.0" />
+					<Label text="Demands Count" />
+					<UIntField fx:id="demands" />
+					<CheckBox fx:id="replicaPreservation" text="Backup replica preservation?" selected="true"/>
+					<Separator />
+					<CheckBox fx:id="allowModulationChange" text="Change modulation on path?" selected="true" />
+					<Label text="Allowed Modulations" />
+					<GridPane fx:id="modulationSelection">
+						<columnConstraints>
+							<ColumnConstraints percentWidth="50" />
+							<ColumnConstraints percentWidth="50" />
+						</columnConstraints>
+						<children>
+							<CheckBox id="modulation0" text="BPSK" selected="true"/>
+							<CheckBox id="modulation1" text="QPSK" GridPane.rowIndex="1" selected="true"/>
+							<CheckBox id="modulation2" text="8QAM" GridPane.rowIndex="2" selected="true"/>
+							<CheckBox id="modulation3" text="16QAM" GridPane.columnIndex="1" selected="true"/>
+							<CheckBox id="modulation4" text="32QAM" GridPane.columnIndex="1" GridPane.rowIndex="1" selected="true"/>
+							<CheckBox id="modulation5" text="64QAM" GridPane.columnIndex="1" GridPane.rowIndex="2" selected="true"/>
+						</children>
+						</GridPane>
+					<Separator />
+					<Label text="Number of candidate paths" />
+					<UIntField fx:id="bestPaths" />
+					<Separator />
+					<Button fx:id="StartButton" text="Start Simulation" onAction="#startSimulationAction" />
+				</children>
+			</VBox>
+			<VBox fx:id="simulatorControl" spacing="8.0" alignment="BOTTOM_CENTER"  minHeight="0.0" minWidth="0.0" >
+				<children>
+					<Button fx:id="pauseButton" text="Pause Simulation" onAction="#pauseSimulation"/>
+					<Button fx:id="clearCancelButton" text="Clear Simulation" onAction="#clearCancelSimulation"/>
+					<Label text="Pause to see statistics in 'Live Info tab'!" wrapText="true"/>
+				</children>
+			</VBox>
+		</VBox>
+	</content>
+</ScrollPane>

@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Path<N>, G extends Graph<N, L, P, G>> {
-	
+
 	private final IdentifiableSet<N> nodes;
 	protected final HashArray<Relation<N, L, P>> relations;
 	private final PathBuilder<N, P, G> pathBuilder;
-	
+
 	@SuppressWarnings("unchecked")
 	protected Graph(PathBuilder<N, P, G> pathBuilder) {
 		nodes = new IdentifiableSet<>();
@@ -20,11 +20,11 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 		this.pathBuilder = pathBuilder;
 		pathBuilder.graph = (G) this;
 	}
-	
+
 	protected boolean contains(N node) {
 		return nodes.contains(node);
 	}
-	
+
 	protected boolean addNode(N node) {
 		if (!nodes.add(node)) return false;
 		relations.resize(getNodesPairsCount());
@@ -35,11 +35,11 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 			}
 		return true;
 	}
-	
+
 	public List<N> getNodes() {
 		return new ArrayList<>(nodes);
 	}
-	
+
 	public boolean removeNode(N node) {
 		if (!contains(node)) return false;
 		for (N n : nodes)
@@ -50,7 +50,7 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 		relations.resize(getNodesPairsCount());
 		return true;
 	}
-	
+
 	protected L putLink(N nodeA, N nodeB, L link) {
 		if (!nodes.contains(nodeA)) addNode(nodeA);
 		if (!nodes.contains(nodeB)) addNode(nodeB);
@@ -59,12 +59,20 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 		relation.link = link;
 		return oldLink;
 	}
-	
-	protected boolean containsLink(N nodeA, N nodeB) {
+
+	/**
+	 * Check if there is a link between two NetworkNodes
+	 *
+	 * @param nodeA		the first NetworkNode
+	 * @param nodeB		the second NetworkNode
+	 * @return			<code>true</code> if there is a link between the two NetworkNodes
+	 * 					<code>false</code> otherwise
+	 */
+	public boolean containsLink(N nodeA, N nodeB) {
 		if (!contains(nodeA) || !contains(nodeB)) return false;
 		return getLink(nodeA, nodeB) != null;
 	}
-	
+
 	public L getLink(N nodeA, N nodeB) {
 		if (nodeA == nodeB) return null;
 		Relation<N, L, P> relation = relations.get(Relation.hash(nodeA.hashCode(), nodeB.hashCode()));
@@ -81,25 +89,25 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 
 	public ArrayList<N> getAdjacentNodes(N node) {
 		ArrayList<N> nodes = new ArrayList<>();
-		
+
 		for (N n : this.nodes)
 			if (n != node) {
 				L link = getLink(n, node);
 				if (link != null) nodes.add(n);
 			}
-		
+
 		return nodes;
 	}
 
 	public int getNodesPairsCount() {
 		return nodes.size() * (nodes.size() - 1) / 2;
 	}
-	
+
 	// Pathfinding
-	
+
 	private N finishNode;
 	private Relation<N, L, P> currentRelation;
-	
+
 	private void depthFirstSearch(N currentNode) {
 		ArrayList<N> adjacentNodes = getAdjacentNodes(currentNode);
 		for (N node : adjacentNodes) {
@@ -118,7 +126,7 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 			pathBuilder.removeTail();
 		}
 	}
-	
+
 	public int calculatePaths(Runnable progressUpdate) {
 		int maxPathsPerPair = Integer.MAX_VALUE;
 		for (Relation<N, L, P> relation : relations) {

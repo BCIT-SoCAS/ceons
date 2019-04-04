@@ -38,18 +38,24 @@ public class SPF extends RMSAAlgorithm {
         }
         if (!workingPathSuccess)
             return DemandAllocationResult.NO_SPECTRUM;
-        if (demand.allocateBackup()) {
-            volume = (int) Math.ceil(demand.getSqueezedVolume() / 10) - 1;
+        try {
+            if (demand.allocateBackup()) {
+                volume = (int) Math.ceil(demand.getSqueezedVolume() / 10) - 1;
 
-            if (candidatePaths.isEmpty())
-                return new DemandAllocationResult(
-                        demand.getWorkingPath());
-            for (PartedPath path : candidatePaths)
-                if (demand.allocate(network, path))
-                    return new DemandAllocationResult(demand.getWorkingPath(), demand.getBackupPath());
+                if (candidatePaths.isEmpty())
+                    return new DemandAllocationResult(
+                            demand.getWorkingPath());
+                for (PartedPath path : candidatePaths)
+                    if (demand.allocate(network, path))
+                        return new DemandAllocationResult(demand.getWorkingPath(), demand.getBackupPath());
 
-            return new DemandAllocationResult(demand.getWorkingPath());
+                return new DemandAllocationResult(demand.getWorkingPath());
+            }
+        } catch (NetworkException e) {
+            workingPathSuccess = false;
+            return DemandAllocationResult.NO_REGENERATORS;
         }
+
 
         return new DemandAllocationResult(demand.getWorkingPath());
     }
