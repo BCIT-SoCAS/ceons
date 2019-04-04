@@ -3,7 +3,6 @@ package ca.bcit.jfx.controllers;
 import ca.bcit.jfx.SavedNodeDetails;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import ca.bcit.jfx.NewTopology;
 import javafx.fxml.FXML;
 
 import javafx.geometry.Insets;
@@ -44,44 +43,6 @@ public class SaveMapController {
 	CheckBox dcCheckbox, itlCheckbox, standardCheckbox;
 	FileChooser fileChooser;
 	File file;
-
-
-	private void saveMap(TextField inputField, Stage dialogWindow) {
-        String requestLocation = inputField.getText();
-
-		List<String> locationList = Arrays.asList(requestLocation.split(","));
-
-		String apiPath = "api_key.txt";
-		String key = "";
-		try {
-			key = new String(Files.readAllBytes(Paths.get(apiPath)));
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-
-		NewTopology staticMap = new NewTopology(key);
-		for(String s: locationList) {
-			if(s.equals(locationList.get(0))){
-				System.out.println("here");
-			}
-			staticMap.addLocation(s);
-		}
-
-		NewTopology.distance(staticMap.getLocationsLatLng().get(0).lat, staticMap.getLocationsLatLng().get(1).lat,
-				staticMap.getLocationsLatLng().get(0).lng, staticMap.getLocationsLatLng().get(1).lng);
-
-		ArrayList<String> locations = staticMap.getLocations();
-		System.out.println(Arrays.toString(locations.toArray()));
-		staticMap.generateMap();
-
-    if (!getMap(requestLocation)) {
-			Alert alert = new Alert(Alert.AlertType.ERROR);
-			alert.setTitle("Warning");
-			alert.setHeaderText("Provided url is invalid");
-            alert.showAndWait();
-            return;
-        }
-	}
 
 	private boolean getMap(String requestUrl) {
 		return true;
