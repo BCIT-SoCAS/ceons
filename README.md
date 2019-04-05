@@ -1,26 +1,22 @@
-**CEONs User Reference** 
+**Please cite this paper when you use this simulator in your publications/lectures/presentations:**
 
-![image alt text](image_0.png)
+**M. Aibin and M. Blazejewski, "Complex Elastic Optical Network Simulator (CEONS)," 2015 17th International Conference on Transparent Optical Networks (ICTON), Budapest, 2015, pp. 1-4. doi: 10.1109/ICTON.2015.7193519**
 
-![image alt text](image_1.png)
-
-British Columbia Institute of Technology
-
-School of Computing, Internal Research
+British Columbia Institute of Technology, Faculty of Computing
 
 All Rights Reserved 
 
 Copyright© 2019
 
-**TABLE OF CONTENTS**
+CEONS runnable JAR file with two sample networks can [be downloaded from here](http://bit.ly/BCIT_CEONS "Download CEONS").
 
 # I.  Introduction
 
-The Complex Elastic Optical Network simulator (CEONs) is an open-source desktop application that allows network scientists visualize the statistics and behavior of various optical network topologies using different simulation settings (e.g., algorithms, traffic generation, modulations, random number generation seed, network demands/intensity) to address current issues regarding routing modulation and spectrum allocation (RMSA) and regenerator placement in unicast and multicast data transfers.
+The Complex Elastic Optical Network Simulator (CEONS) is an open-source desktop application that allows network scientists visualize the statistics and behavior of various optical network topologies using different simulation settings (e.g., algorithms, traffic generators, network requests types/intensity).
 
-This simulator was originally developed by Dr. Michal Aibin as a test environment to allow users to design their own algorithms in any programming language and implement them in the simulator as plugins to solve the aforementioned problems.  The results of each simulation were displayed onto the console showing the overall blocking percentage of all regenerators/link spectrum, and link failures.  
+This simulator was originally developed by Dr. Michal Aibin and M. Blazejewski as a test environment to allow users to design their own algorithms in any programming language and implement them in the simulator as plugins to solve the aforementioned problems.  The results of each simulation were displayed onto the console showing the overall blocking percentage of all regenerators/link spectrum, and link failures.  
 
-Since then, the simulator has been developed to illustrate the network topology within a geographical region and allow users to pause the simulation in real-time to observe resource utilization within each node or link.  In the future, users will have the option to create their own network topologies, where node locations can be specified with their group membership type, number of regenerators, and node linkage.
+Since then, the simulator has evolved to illustrate the network topology within a geographical region and allow users to pause the simulation in real-time to observe resource utilization within each node or link.  In the future, users will have the option to create their own network topologies, where node locations can be specified with their group membership type, number of regenerators, and node linkage.
 
 This user reference is intended to guide users through the specific use-cases in the graphical user interface provided by the desktop application.  For the creation of this document, we used a Windows operating system running IntelliJ on Java SE Development Kit 8.  We assume that you have the development environment set up or a Java ARchive (JAR) package file to run the simulation.
 
@@ -158,7 +154,6 @@ A link would display the the length of the link, the node it originates from/the
 If neither node or link is clicked on it will display current summary statistics of blocking percentages for regenerators, link and blocked spectrum.
 
 ## 5) Full Summary Pane
-![image alt text](image_23.png)
 
 This section is currently under development.  The idea for this area is to hold aggregated graphical information after multiple simulations are run.
 
