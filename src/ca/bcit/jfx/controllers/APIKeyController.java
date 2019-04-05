@@ -7,8 +7,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
-import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.*;
+
+import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -27,8 +29,6 @@ import com.google.maps.StaticMapsApi;
 import com.google.maps.model.Size;
 import com.google.maps.ImageResult;
 
-
-
 public class APIKeyController implements Initializable {
 	@FXML
 	private GridPane saveAPIKeyPane;
@@ -40,9 +40,12 @@ public class APIKeyController implements Initializable {
 	private Button closeAPIKeyWindowBtn;
 
 	public void initialize(URL location, ResourceBundle resources) {
-		String path = "file:" + System.getProperty("user.dir") + "/src/ca/bcit/jfx/res/images/bg.png";
-        saveAPIKeyPane.setStyle("-fx-background-image: url(\"" + path + "\"); -fx-background-size: cover;");
-    } 
+		BackgroundSize bgSize = new BackgroundSize(100, 100, true, true, false, true);
+		BackgroundImage bg = new BackgroundImage(new Image(getClass().getResourceAsStream("/ca/bcit/jfx/res/images/bg.png")),
+			BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, bgSize);
+		saveAPIKeyPane.setBackground(new Background(bg));
+	}
+	 
 	private boolean validateAPIkey(String key) {
         GeoApiContext context = new GeoApiContext.Builder()
                 .apiKey(key)

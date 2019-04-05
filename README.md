@@ -103,6 +103,7 @@ Upon setup completion, you will be able to run the simulator with the following 
 
 
 ## 2) Network Settings Controller
+![image alt text](image_20.png)
 
 **A:** Create topology button that opens up a dialog window where a user can enter a google maps API key.  Once entered the user can generate a network topology to be loaded.
 
@@ -113,6 +114,7 @@ Upon setup completion, you will be able to run the simulator with the following 
 **D:** Changes the drawing state to none, which has no effect upon user interaction with a loaded network topology.
 
 ## 3) Simulation Settings Controller
+![image alt text](image_21.png)
 
 **A:** Choose between algorithm types (e.g., AMRA, SPF), which dictate how routing occurs in the network and/or how optical resources are allocated.
 
@@ -141,6 +143,7 @@ Upon setup completion, you will be able to run the simulator with the following 
 **M:** Cancels running simulation or reloads simulation if not running
 
 ## 4) Live Info Pane
+![image alt text](image_22.png)
 
 This section holds live information when the simulation is started and paused.  If a node or link is clicked on when the simulator is paused, it displays the resource usage.  
 
