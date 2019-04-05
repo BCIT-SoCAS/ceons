@@ -54,13 +54,6 @@
 	-fx-focus: true;
 }
 
-.accordion {
-	-fx-background-color: radial-gradient(center 50% 50%, radius 100%, #004B9E, #004B9E, #003C79);
-	-fx-background-position: bottom center, center center;
-	-fx-background-repeat: no-repeat;
-	-fx-background-size: contain;
-}
-
 .scroll-pane > .viewport {
 	-fx-background-color: transparent;
 }
@@ -72,11 +65,13 @@
 
 
 #splash-screen-title {
-	-fx-font-size: 52px; 
+	-fx-font-size: 52px;
+	-fx-fill: #e5e3e3;
 	-fx-font-weight: bold;
 }
 
 #splash-screen-version {
-	-fx-font-size: 16px; 
+	-fx-font-size: 16px;
+	-fx-fill: #e5e3e3;
 	-fx-font-weight: bold;
 }

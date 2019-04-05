@@ -9,18 +9,18 @@
 
 <AnchorPane fx:id="splashScreenPane" stylesheets="/ca/bcit/jfx/res/stylesheets/application.cssext" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.SplashScreenController">
 	<children>
-		<ImageView fx:id="splashScreenBCITLogo" />
+		<ImageView fx:id="splashScreenBCITLogo" layoutX="30.0" layoutY="30.0" fitWidth="100" fitHeight="100" preserveRatio="true" pickOnBounds="true" />
 		<Text id="splash-screen-title" layoutX="150.0" layoutY="100.0" strokeType="OUTSIDE" strokeWidth="0.0" text="CEONS">
 			<font>
 				<Font name="Roboto Medium" />
 			</font>
 		</Text>
 		<ProgressIndicator layoutX="250.0" layoutY="170.0" />
-		<Text id="splash-screen-version" layoutX="30.0" layoutY="350.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Simulator version: 1.0.0">
+		<Text id="splash-screen-version" layoutX="30.0" layoutY="350.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Simulator version: 1.0.3">
 			<font>
 				<Font name="Roboto Medium" />
 			</font>
 		</Text>
-		<ImageView fx:id="splashScreenEONLogo" />
+		<ImageView fx:id="splashScreenEONLogo" layoutX="450.0" layoutY="250.0" fitWidth="125" fitHeight="125" preserveRatio="true" pickOnBounds="true" />
 	</children>
 </AnchorPane>
