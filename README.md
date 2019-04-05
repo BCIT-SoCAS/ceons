@@ -10,6 +10,8 @@ All Rights Reserved
 
 Copyright© 2019
 
+CEONs runnable JAR file can be downloaded from [bit.ly/BCIT-CEONS](bit.ly/BCIT-CEONS)
+
 # I.  Introduction
 
 The Complex Elastic Optical Network simulator (CEONs) is an open-source desktop application that allows network scientists visualize the statistics and behavior of various optical network topologies using different simulation settings (e.g., algorithms, traffic generation, modulations, random number generation seed, network demands/intensity) to address current issues regarding routing modulation and spectrum allocation (RMSA) and regenerator placement in unicast and multicast data transfers.
