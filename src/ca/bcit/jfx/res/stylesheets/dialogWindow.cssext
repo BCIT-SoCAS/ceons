@@ -1,4 +1,5 @@
 
 .title-text {
 	-fx-font-size: 20;
+	-fx-fill: #e5e3e3;
 }

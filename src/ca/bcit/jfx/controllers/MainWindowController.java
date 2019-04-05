@@ -36,12 +36,15 @@ import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 
 import javafx.scene.layout.*;
+import javafx.scene.paint.*;
+import javafx.geometry.Insets;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -178,8 +181,16 @@ public class MainWindowController {
 
 		graph.init(this);
 		
-		String path = "file:" + System.getProperty("user.dir") + "/src/ca/bcit/jfx/res/images/LogoEON.png";
-		accordion.setStyle("-fx-background-image: url(\"" + path + "\");");
+		BackgroundSize bgSize = new BackgroundSize(100, 100, true, true, true, false);
+		RadialGradient bgGradient = new RadialGradient(0, 0, 0.5, 0.5, 1, true, CycleMethod.NO_CYCLE, new Stop[] {
+			new Stop(0, Color.web("#004B9E")),
+			new Stop(0.5, Color.web("#004B9E")),
+			new Stop(1, Color.web("#003C79"))
+		});
+		List<BackgroundFill> bgFill = Arrays.asList(new BackgroundFill(bgGradient, CornerRadii.EMPTY, Insets.EMPTY));
+		List<BackgroundImage> bg = Arrays.asList(new BackgroundImage(new Image(getClass().getResourceAsStream("/ca/bcit/jfx/res/images/LogoEON.png")),
+			BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, bgSize));
+		accordion.setBackground(new Background(bgFill, bg));
 
 		simulationMenuController.setProgressBar(progressBar);
 		}

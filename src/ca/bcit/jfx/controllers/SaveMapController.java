@@ -108,11 +108,6 @@ public class SaveMapController {
 				System.out.println(arrList.get(i).get(j));
 			}
 		}
-
-//		fileChooser = new FileChooser();
-//		fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
-//		fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-//		file = fileChooser.showSaveDialog(null);
 	}
 
 	/*
