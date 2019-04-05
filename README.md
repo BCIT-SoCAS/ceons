@@ -14,8 +14,6 @@ Copyright© 2019
 
 **TABLE OF CONTENTS**
 
-[[TOC]]
-
 # I.  Introduction
 
 The Complex Elastic Optical Network simulator (CEONs) is an open-source desktop application that allows network scientists visualize the statistics and behavior of various optical network topologies using different simulation settings (e.g., algorithms, traffic generation, modulations, random number generation seed, network demands/intensity) to address current issues regarding routing modulation and spectrum allocation (RMSA) and regenerator placement in unicast and multicast data transfers.
@@ -109,6 +107,7 @@ Upon setup completion, you will be able to run the simulator with the following 
 
 
 ## 2) Network Settings Controller
+![image alt text](image_20.png)
 
 **A:** Create topology button that opens up a dialog window where a user can enter a google maps API key.  Once entered the user can generate a network topology to be loaded.
 
@@ -119,6 +118,7 @@ Upon setup completion, you will be able to run the simulator with the following 
 **D:** Changes the drawing state to none, which has no effect upon user interaction with a loaded network topology.
 
 ## 3) Simulation Settings Controller
+![image alt text](image_21.png)
 
 **A:** Choose between algorithm types (e.g., AMRA, SPF), which dictate how routing occurs in the network and/or how optical resources are allocated.
 
@@ -147,6 +147,7 @@ Upon setup completion, you will be able to run the simulator with the following 
 **M:** Cancels running simulation or reloads simulation if not running
 
 ## 4) Live Info Pane
+![image alt text](image_22.png)
 
 This section holds live information when the simulation is started and paused.  If a node or link is clicked on when the simulator is paused, it displays the resource usage.  
 
@@ -157,6 +158,7 @@ A link would display the the length of the link, the node it originates from/the
 If neither node or link is clicked on it will display current summary statistics of blocking percentages for regenerators, link and blocked spectrum.
 
 ## 5) Full Summary Pane
+![image alt text](image_23.png)
 
 This section is currently under development.  The idea for this area is to hold aggregated graphical information after multiple simulations are run.
 
