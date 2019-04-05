@@ -10,7 +10,7 @@ All Rights Reserved
 
 Copyright© 2019
 
-CEONs runnable JAR file can [be downloaded from here](http://bit.ly/BCIT-CEONS "Download CEONS")
+CEONs runnable JAR file with two sample networks can [be downloaded from here](http://bit.ly/BCIT_CEONS "Download CEONS").
 
 # I.  Introduction
 
