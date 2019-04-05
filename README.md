@@ -169,18 +169,18 @@ This section is currently under development.  The idea for this area is to hold 
 
 Number refers to node number (e.g., node_<num>) in network topology  
 
-The thicker colored line in the node indicates regenerator usage 
-Green: Has more than 50 regenerators remaining
-Yellow: Less than 50 regenerators remaining 
+The thicker colored line in the node indicates regenerator usage <br />
+Green: Has more than 50 regenerators remaining<br />
+Yellow: Less than 50 regenerators remaining <br />
 Red: Less than 20 regenerators remaining</td>
   </tr>
   <tr>
     <td>B</td>
-    <td>Link slice 
+    <td>Link
 
-The thick colored line in the link indicates the percentage of link use
-Green: 50% or less link utilization
-Yellow: More than 50% link utilization
+The thicker colored line in the link indicates the percentage of link use<br />
+Green: 50% or less link utilization<br />
+Yellow: More than 50% link utilization<br />
 Red: More than 80% link utilization</td>
   </tr>
   <tr>
