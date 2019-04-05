@@ -12,15 +12,15 @@ CEONS runnable JAR file with two sample networks can [be downloaded from here](h
 
 # I.  Introduction
 
-The Complex Elastic Optical Network Simulator (CEONS) is an open-source desktop application that allows network scientists visualize the statistics and behavior of various optical network topologies using different simulation settings (e.g., algorithms, traffic generators, network requests types/intensity).
+The Complex Elastic Optical Network Simulator (CEONS) is an open-source desktop application that allows network scientists visualize the statistics and behavior of various optical network topologies using different simulation settings (i.e., algorithms, traffic generators, network requests types/intensity).
 
-This simulator was originally developed by Dr. Michal Aibin and M. Blazejewski as a test environment to allow users to design their own algorithms in any programming language and implement them in the simulator as plugins to solve the aforementioned problems.  The results of each simulation were displayed onto the console showing the overall blocking percentage of all regenerators/link spectrum, and link failures.  
+This simulator was originally developed by Dr. Michal Aibin and M. Blazejewski as a test environment to allow users to design their algorithms in any programming language and implement them in the simulator as plugins to solve the problems above.  The results of each simulation were displayed onto the console showing the overall requests blocking percentage and link failures.  
 
-Since then, the simulator has evolved to illustrate the network topology within a geographical region and allow users to pause the simulation in real-time to observe resource utilization within each node or link.  In the future, users will have the option to create their own network topologies, where node locations can be specified with their group membership type, number of regenerators, and node linkage.
+Since then, the simulator has evolved to illustrate the network topology within a geographical region and allow users to pause the simulation in real-time to observe resource utilization within each node or link. In the future, users will have the option to create their network topologies, where node locations can be specified with their group membership type, number of regenerators, and node linkage.
 
-This user reference is intended to guide users through the specific use-cases in the graphical user interface provided by the desktop application.  For the creation of this document, we used a Windows operating system running IntelliJ on Java SE Development Kit 8.  We assume that you have the development environment set up or a Java ARchive (JAR) package file to run the simulation.
+This user manual is intended to guide users through the specific use-cases in the graphical user interface provided by the desktop application.  To run the simulator, your operating system needs to run the Java SE Development Kit 8. 
 
-If not, please visit the following links to download the recommended resources:
+If you need to setup your environment first, please visit the following links to download the recommended resources:
 
 <table>
   <tr>
@@ -66,7 +66,7 @@ Upon setup completion, you will be able to run the simulator with the following 
 
     7. Cancel or clear simulation
 
-4. Create network topology (Currently in development)
+4. Create network topology (Currently under development)
 
     8. Saving Google Maps API key to file
 
@@ -124,15 +124,15 @@ Upon setup completion, you will be able to run the simulator with the following 
 
 **E:** Alpha number input determines the probability of link failure 
 
-**F:** Demands count number input is the number of demands in the network
+**F:** Demands count number input is the number of demands to be simulated in the network
 
-**G:** Allows replica (data center) to be preserved
+**G:** Allows replica (data center) to be preserved for backup traffic - it means that primary and backup traffic will have the same replica.
 
 **H:** Allows modulation to be changed dynamically in simulation
 
 **I:** Modulation types to be used during simulation
 
-**J:** Number of paths each request can take to reach a destination
+**J:** Number of candidate paths for each request to reach a destination
 
 **K:** Begins simulation
 
@@ -179,28 +179,28 @@ Red: Less than 20 regenerators remaining</td>
     <td>Link slice 
 
 The thick colored line in the link indicates the percentage of link use
-Green: 50% or less link usage
-Yellow: More than 50% link usage
-Red: More than 80% link usage</td>
+Green: 50% or less link utilization
+Yellow: More than 50% link utilization
+Red: More than 80% link utilization</td>
   </tr>
   <tr>
     <td>C</td>
-    <td>International node (indicated by blue outline)</td>
+    <td>International node (indicated by a blue outline)</td>
   </tr>
   <tr>
     <td>D</td>
-    <td>Data center node (indicated by grey outline)</td>
+    <td>Data center node (indicated by a grey outline)</td>
   </tr>
   <tr>
     <td>E</td>
-    <td>International and data center node (indicated by blue and grey outline)</td>
+    <td>International and data center node (indicated by a blue and a grey outline)</td>
   </tr>
 </table>
 
 
 # IV.  To load network topology
 
- 1. Click** Load Topology **button.
+ 1. Click **Load Topology** button.
 
 ![image alt text](image_4.png)
 
@@ -224,13 +224,13 @@ Figure D: Console showing fully loaded project with calculated paths
 
 # V.  To run simulation
 
-1. In **Simulation Settings **section of the main window:
+1. In **Simulation Settings** section of the main window:
 
 1. Select **Algorithm**.
 
-2. Select **Traffic Generator.**
+2. Select **Traffic Generator**.
 
-3. Type **Erlang**, **Seed**, **Alpha** and **Demands Count.** 
+3. Type **Erlang**, **Seed**, **Alpha** and **Demands Count**. 
 
 4. Select/unselect **Backup replica preservation?**
 
@@ -254,7 +254,7 @@ Figure B: Network simulation in progress showing link and regenerator usage
 
 ## 1) Simulation in progress
 
-1. In **Simulation Settings, **click **Cancel Simulation**
+1. In **Simulation Settings**, click **Cancel Simulation**
 
 2. Click **OK** 
 
@@ -266,9 +266,9 @@ Figure A: Canceling the simulation while it’s running
 
 1. In **Simulation Settings**, click **Clear Simulation**
 
-2. Click **OK **(or **Cancel** to resume)
+2. Click **OK** (or **Cancel** to resume)
 
-3. Wait for network topology to finish loading
+3. Wait for network topology to finish loading and calculating available paths.
 
 ![image alt text](image_11.png)
 
@@ -320,7 +320,7 @@ Figure C: Live Info panel populated with the current node information
 
 ## 1.3)  Individual Link statistics
 
-1. While paused, click on a **link **of interest
+1. While paused, click on a **link** of interest
 
 2. Link instance information will be populated in the **Live Info** panel
 
