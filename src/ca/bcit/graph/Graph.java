@@ -61,7 +61,15 @@ public class Graph<N extends Identifiable, L extends Comparable<L>, P extends Pa
 		return oldLink;
 	}
 
-	protected boolean containsLink(N nodeA, N nodeB) {
+    /**
+     * Check if there is a link between two NetworkNodes
+     *
+     * @param nodeA		the first NetworkNode
+     * @param nodeB		the second NetworkNode
+     * @return			<code>true</code> if there is a link between the two NetworkNodes
+     * 					<code>false</code> otherwise
+     */
+    public boolean containsLink(N nodeA, N nodeB) {
 		if (!contains(nodeA) || !contains(nodeB)) return false;
 		return getLink(nodeA, nodeB) != null;
 	}
