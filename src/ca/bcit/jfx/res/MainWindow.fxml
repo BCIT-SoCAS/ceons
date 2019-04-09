@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import ca.bcit.jfx.components.Console?>
+<?import ca.bcit.jfx.components.ResizableCanvas?>
+<?import ca.bcit.jfx.components.TaskReadyProgressBar?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<!--suppress ALL -->
+<GridPane gridLinesVisible="true" prefWidth="800.0" prefHeight="600.0" stylesheets="/ca/bcit/jfx/res/application.cssext" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.MainWindowController">
+	<columnConstraints>
+		<ColumnConstraints hgrow="SOMETIMES" />
+		<ColumnConstraints maxWidth="-Infinity" prefWidth="250.0" />
+	</columnConstraints>
+	<rowConstraints>
+		<RowConstraints minHeight="10.0" prefHeight="30.0"
+			vgrow="SOMETIMES" />
+	</rowConstraints>
+	<children>
+		<GridPane>
+			<columnConstraints>
+				<ColumnConstraints hgrow="ALWAYS" percentWidth="100.0"
+					prefWidth="100.0" />
+			</columnConstraints>
+			<rowConstraints>
+				<RowConstraints vgrow="SOMETIMES" />
+				<RowConstraints minHeight="150.0" prefHeight="150.0" />
+				<RowConstraints minHeight="0.0" prefHeight="20.0" />
+			</rowConstraints>
+			<children>
+				<BorderPane id="borderPane">
+					<children>
+						<ResizableCanvas fx:id="graph" height="${borderPane.height}" width="${borderPane.width}" />
+					</children>
+				</BorderPane>
+				<Console fx:id="console" wrapText="true" GridPane.rowIndex="1" />
+				<TaskReadyProgressBar fx:id="progressBar" GridPane.rowIndex="2" />
+			</children>
+		</GridPane>
+		<Accordion fx:id="accordion" GridPane.columnIndex="1">
+			<panes>
+				<TitledPane animated="true" text="Network">
+					<content>
+						<VBox alignment="TOP_CENTER" spacing="8.0">
+							<children>
+								<fx:include fx:id="networkMenu" source="/ca/bcit/jfx/res/NetworkMenu.fxml" />
+								<RadioButton fx:id="RBNoneChose" onAction="#noneChose" selected="true" text="None" toggleGroup="$RBGroup">
+									<toggleGroup>
+										<ToggleGroup fx:id="RBGroup" />
+									</toggleGroup>
+								</RadioButton>
+								<Separator />
+								<RadioButton onAction="#linkChose" text="Add link" toggleGroup="$RBGroup" />
+								<RadioButton onAction="#nodeChose" text="Add node" toggleGroup="$RBGroup" />
+								<Separator />
+								<RadioButton fx:id="radioButtonDeleteNode" onAction="#deleteNodeChose" text="Delete node" toggleGroup="$RBGroup" />
+								<RadioButton fx:id="radioButtonDeleteLink" onAction="#deleteLinkChose" text="Delete link" toggleGroup="$RBGroup" />
+								<RadioButton fx:id="radioButtonDeleteFewElements" mnemonicParsing="false" onAction="#deleteFewElementsChose" text="Delete few elements" toggleGroup="$RBGroup" />
+								<Separator />
+								<RadioButton text="Rotate around center" toggleGroup="$RBGroup" onAction="#rotateAroundCenterChose" />
+								<RadioButton text="Rotate around node" toggleGroup="$RBGroup" onAction="#rotateAroundNodeChose" />
+							</children>
+						</VBox>
+					</content>
+				</TitledPane>
+				<TitledPane animated="true" text="Simulation">
+					<content>
+						<fx:include fx:id="simulationMenu" source="/ca/bcit/jfx/res/SimulationMenu.fxml" />
+					</content>
+				</TitledPane>
+				<TitledPane animated="true" text="Settings">
+					<content>
+						<VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0"
+							prefWidth="200.0">
+							<children>
+								<Button id="toggleInput" text="Toggle Input" />
+							</children>
+						</VBox>
+					</content>
+				</TitledPane>
+				<TitledPane fx:id="propertiesTitledPane" animated="true" text="Properties">
+					<content>
+						<AnchorPane prefHeight="180.0" prefWidth="200.0" />
+					</content>
+				</TitledPane>
+			</panes>
+		</Accordion>
+	</children>
+</GridPane>

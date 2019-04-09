@@ -8,17 +8,17 @@ import java.util.Map;
 import java.util.Random;
 
 public class UnicastDemandGenerator extends DemandGenerator<UnicastDemand> {
-
+	
 	private final RandomVariable<NetworkNode> source;
 	private final RandomVariable<NetworkNode> destination;
 
-	public UnicastDemandGenerator(RandomVariable<NetworkNode> source, RandomVariable<NetworkNode> destination, RandomVariable<Boolean> reallocate, RandomVariable<Boolean> allocateBackup,
-								  RandomVariable<Integer> volume, RandomVariable<Float> squeezeRatio) {
+	public UnicastDemandGenerator(RandomVariable<NetworkNode> source, RandomVariable<NetworkNode> destination, RandomVariable<Boolean> reallocate, RandomVariable<Boolean> allocateBackup, 
+			RandomVariable<Integer> volume, RandomVariable<Float> squeezeRatio) {
 		super(reallocate, allocateBackup, volume, squeezeRatio);
 		this.source = source;
 		this.destination = destination;
 	}
-
+	
 	@Override
 	public Random setSeed(long seed) {
 		Random seedGenerator = super.setSeed(seed);
@@ -26,19 +26,11 @@ public class UnicastDemandGenerator extends DemandGenerator<UnicastDemand> {
 		destination.setSeed(seedGenerator.nextLong());
 		return seedGenerator;
 	}
-
+	
 	@Override
 	public UnicastDemand next() {
-		int i = 0;
-		NetworkNode source = this.source.next();
-		NetworkNode destination = this.destination.next();
-		while (source.equals(destination)){
-			destination = this.destination.next();
-			i++;
-			if (i > 3) {
-				source = this.source.next();
-			}
-		}
+		NetworkNode source = this.source.next(), destination;
+		do destination = this.destination.next(); while (source.equals(destination));
 		generatedDemandsCount++;
 		return new UnicastDemand(source, destination, reallocate.next(), allocateBackup.next(), volume.next(), squeezeRatio.next(), ttl.next());
 	}

@@ -5,8 +5,7 @@ public class Vector2F extends FloatMatrix implements Cloneable {
 	public Vector2F (float x, float y) {
 		super(new float[][] {{x}, {y}});
 	}
-
-
+	
 	Vector2F (FloatMatrix vector) {
 		super(vector.matrix);
 	}

@@ -26,7 +26,7 @@ public class TrafficGenerator implements DemandStream<Demand>, YamlSerializable 
 	public String getName() {
 		return name;
 	}
-
+	
 	public void setReplicaPreservation(boolean replicaPreservation) {
 		for (DemandGenerator<?> generator : generators.values())
 			if (generator instanceof AnycastDemandGenerator)

@@ -10,16 +10,6 @@
 			<artifactId>snakeyaml</artifactId>
 			<version>1.5</version>
 		</dependency>
-		<dependency>
-			<groupId>com.google.maps</groupId>
-			<artifactId>google-maps-services</artifactId>
-			<version>0.9.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.25</version>
-		</dependency>
 	</dependencies>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
@@ -32,24 +22,6 @@
 			</resource>
 		</resources>
 		<plugins>
-			<plugin>
-				<groupId>com.jolira</groupId>
-				<artifactId>onejar-maven-plugin</artifactId>
-				<executions>
-						<execution>
-								<configuration>
-										<mainClass>ca.bcit.Main</mainClass>
-										<attachToBuild>true</attachToBuild>
-										<filename>
-											ceons.jar
-										</filename>
-								</configuration>
-								<goals>
-										<goal>one-jar</goal>
-								</goals>
-						</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.3</version>

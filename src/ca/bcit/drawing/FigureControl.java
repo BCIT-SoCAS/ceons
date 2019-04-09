@@ -8,8 +8,6 @@ import javafx.collections.ObservableList;
 import javafx.scene.canvas.Canvas;
 
 import java.util.ArrayList;
-import java.util.Map;
-
 
 public class FigureControl {
 	private final ArrayList<Figure> list = new ArrayList<>();
@@ -42,11 +40,6 @@ public class FigureControl {
 		selectedFigure = temp.selectedFigure;
 	}
 
-	/**
-	 * Draw a new Figure (Node or Link) on the canvas
-	 *
-	 * @param temp		the figure object. It needs to be either node or link.
-	 */
 	public void add(Figure temp) {
 
 		if (temp instanceof Node) {
@@ -217,7 +210,7 @@ public class FigureControl {
 	}
 
 	public void changeNodePoint(Figure node, Vector2F vec2f) {
-		vec2f = fitPointToCanvas(vec2f);
+		vec2f = fitPointToCanva(vec2f);
 		vec2f=fixNodePoint(vec2f);
 		changeLinksPoint(node, vec2f);
 		node.setStartPoint(vec2f);
@@ -266,7 +259,7 @@ public class FigureControl {
 		return list.get(idx);
 	}
 
-	private Vector2F fitPointToCanvas(Vector2F vec2F) {
+	private Vector2F fitPointToCanva(Vector2F vec2F) {
 		float x = vec2F.getX();
 		float y = vec2F.getY();
 		if (x > canvas.getWidth())
@@ -284,7 +277,6 @@ public class FigureControl {
 		selectedFigure = _selectedFigure;
 		redraw();
 	}
-
 	public Figure getSelectedFigure() {
 		return selectedFigure;
 	}
@@ -328,43 +320,6 @@ public class FigureControl {
 				
 				redraw();
 			}
-		}
-	}
-
-	/**
-	 * Mark node as international or data center(replica)
-	 *	
-	 */
-	public void markNode(Vector2F clickedPoint, String groupName) {
-		if (!isEmpty()) {
-			int temp = (findClosestNode(clickedPoint));
-		if (calculateDistance(temp, clickedPoint) < Node.imageSize/2) {
-				Figure fig=list.get(temp);
-				Node node = (Node) fig;
-				node.setNodeGroup(groupName, true);
-			}
-			
-			redraw();
-		}
-	}
-
-	/**
-	 * Remove all groups from a node
-	 *
-	 */
-	public void unmarkNode(Vector2F clickedPoint) {
-		if (!isEmpty()) {
-			int temp = (findClosestNode(clickedPoint));
-		if (calculateDistance(temp, clickedPoint) < Node.imageSize/2) {
-				Figure fig=list.get(temp);
-				Node node = (Node) fig;
-				Map nodeGroups = node.getNodeGroups();
-				for (Object key : nodeGroups.keySet()) {
-					node.setNodeGroup(key.toString(), false);
-				}
-			}
-			
-			redraw();
 		}
 	}
 

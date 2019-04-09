@@ -6,7 +6,6 @@ import ca.bcit.io.YamlSerializable;
 import ca.bcit.net.algo.RMSAAlgorithm;
 import ca.bcit.net.demand.Demand;
 import ca.bcit.net.demand.DemandAllocationResult;
-import ca.bcit.net.demand.generator.TrafficGenerator;
 import ca.bcit.net.spectrum.BackupSpectrumSegment;
 import ca.bcit.net.spectrum.Spectrum;
 import ca.bcit.net.spectrum.SpectrumSegment;
@@ -32,18 +31,12 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	private final int[][] modulationMetrics = new int[6][6];
 	
 	private MetricType regeneratorMetricType;
-	private int regeneratorMetricValue = 5;
+	private int regeneratorMetricValue;
 	
 	private RMSAAlgorithm demandAllocationAlgorithm;
-
-	public void setTrafficGenerator(TrafficGenerator trafficGenerator) {
-		this.trafficGenerator = trafficGenerator;
-	}
-
-	private TrafficGenerator trafficGenerator;
 	private int bestPathsCount;
 	private boolean canSwitchModulation;
-	private ArrayList<Demand> allocatedDemands = new ArrayList<>();
+	private final ArrayList<Demand> allocatedDemands = new ArrayList<>();
 	
 	public int maxPathsCount;
 	
@@ -85,17 +78,12 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 				allocatedDemands.get(i).deallocate();
 				allocatedDemands.remove(i);
 				i--;
-			} else {
+			} else
 				allocatedDemands.get(i).tick();
-			}
 	}
 	
 	public void waitForDemandsDeath() {
 		while (!allocatedDemands.isEmpty()) update();
-		allocatedDemands = new ArrayList<>();
-		for (Map.Entry<String, NetworkNode> entry: nodes.entrySet()) {
-			entry.getValue().occupiedRegenerators = 0;
-		}
 		inactiveLinks.clear();
 		inactivePaths.clear();
 	}
@@ -106,7 +94,6 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 		if (!contains(node)) return false;
 		List<NetworkNode> group = nodesGroups.computeIfAbsent(groupName, k -> new ArrayList<>());
 		if (group.contains(node)) return false;
-		node.setNodeGroup(groupName, true);
 		group.add(node);
 		return true;
 	}
@@ -116,7 +103,6 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 		List<NetworkNode> group = nodesGroups.get(groupName);
 		if (group == null) return false;
 		if (!group.contains(node)) return false;
-		node.setNodeGroup(groupName, false);
 		group.remove(node);
 		if (group.isEmpty()) nodesGroups.remove(groupName);
 		return true;

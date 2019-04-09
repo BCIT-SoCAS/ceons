@@ -2,8 +2,6 @@ package ca.bcit.net;
 
 import ca.bcit.ApplicationResources;
 import ca.bcit.io.Logger;
-import ca.bcit.jfx.components.ResizableCanvas;
-import ca.bcit.jfx.controllers.SimulationMenuController;
 import ca.bcit.jfx.tasks.SimulationTask;
 import ca.bcit.net.demand.AnycastDemand;
 import ca.bcit.net.demand.Demand;
@@ -13,7 +11,8 @@ import ca.bcit.net.demand.generator.TrafficGenerator;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.*;
+import java.util.Map;
+import java.util.Random;
 
 
 /**
@@ -23,8 +22,10 @@ import java.util.*;
  *
  */
 public class Simulation {
-	private Network network;
-	private TrafficGenerator generator;
+
+	private final Network network;
+	private final TrafficGenerator generator;
+
 	private double totalVolume;
 	private double spectrumBlockedVolume;
 	private double regeneratorsBlockedVolume;
@@ -33,11 +34,6 @@ public class Simulation {
 	private double allocations;
 	private double unhandledVolume;
 	private final double[] modulationsUsage = new double[6];
-	private boolean runAgain;
-
-	public Simulation(){
-
-	}
 
 	public Simulation(Network network, TrafficGenerator generator) {
 		this.network = network;
@@ -46,34 +42,22 @@ public class Simulation {
 
 	public void simulate(long seed, int demandsCount, double alpha, int erlang, boolean replicaPreservation,
 			SimulationTask task) {
-		SimulationMenuController.finished = false;
-		SimulationMenuController.cancelled = false;
 		clearVolumeValues();
-
-		//For development set to debug, for release set to info
-		Logger.setLoggerLevel(Logger.LoggerLevel.DEBUG);
 		generator.setErlang(erlang);
 		generator.setSeed(seed);
 		generator.setReplicaPreservation(replicaPreservation);
 		network.setSeed(seed);
 		Random linkCutter = new Random(seed);
-
 		try {
-			ResizableCanvas.getParentController().updateGraph();
 			for (; generator.getGeneratedDemandsCount() < demandsCount;) {
-				SimulationMenuController.started = true;
-
 				Demand demand = generator.next();
 
-				// handle the demand for the specific simulation
 				if (linkCutter.nextDouble() < alpha / erlang)
 					for (Demand reallocate : network.cutLink())
 						if (reallocate.reallocate())
 							handleDemand(reallocate);
-						else {
+						else
 							linkFailureBlockedVolume += reallocate.getVolume();
-							ResizableCanvas.getParentController().linkFailureBlockedVolume += reallocate.getVolume();
-						}
 				else {
 					handleDemand(demand);
 					if (demand instanceof AnycastDemand)
@@ -81,52 +65,25 @@ public class Simulation {
 				}
 
 				network.update();
-
-				// pause button
-				pause();
-
-				// cancel button
-				if (SimulationMenuController.cancelled) {
-					break;
-				}
-
 				task.updateProgress(generator.getGeneratedDemandsCount(), demandsCount);
-			} // loop end here
-			ResizableCanvas.getParentController().stopUpdateGraph();
-			// force call the update again here
+			}
 		} catch (NetworkException e) {
-			// error in code
 			Logger.info("Network exception: " + e.getMessage());
 			for (; generator.getGeneratedDemandsCount() < demandsCount;) {
 				Demand demand = generator.next();
 				unhandledVolume += demand.getVolume();
-
 				if (demand instanceof AnycastDemand)
 					unhandledVolume += generator.next().getVolume();
 				task.updateProgress(generator.getGeneratedDemandsCount(), demandsCount);
 			}
 			totalVolume += unhandledVolume;
-			ResizableCanvas.getParentController().totalVolume += unhandledVolume;
 		}
 
-		// wait for internal cleanup after simulation is done
-//		network.waitForDemandsDeath();
+		network.waitForDemandsDeath();
 
-		// signal GUI menus that simulation is complete
-		SimulationMenuController.finished = true;
-		ResizableCanvas.getParentController().updateGraph();
-
-		// throw error to avoid printing out data report for cancelled simulations
-		if (SimulationMenuController.cancelled) {
-			Logger.info("Simulation cancelled!");
-		}
-
-		// print basic data in the internal console
 		Logger.info("Blocked Spectrum: " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
 		Logger.info("Blocked Regenerators: " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
 		Logger.info("Blocked Link Failure: " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
-
-		// write the resulting data of a successful simulation to file
 		File dir = new File("results");
 		if (!dir.isDirectory())
 			dir.mkdir();
@@ -151,24 +108,11 @@ public class Simulation {
 		} catch (IOException e) {
 			Logger.debug(e);
 		}
+		// for (Modulation modulation : Modulation.values())
+		// Logger.info(modulation.toString() + ": " +
+		// modulationsUsage[modulation.ordinal()]);
 	}
 
-	/**
-	 * For use during an active simulation only. Place the simulation thread to sleep while pause is active.
-	 */
-	private void pause() {
-		while (SimulationMenuController.paused) {
-			try {
-				Thread.sleep(10);
-			} catch(InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
-		}
-	}
-
-	/**
-	 * Reset parameters to be used in a new simulation. Called before a set of simulations start.
-	 */
 	private void clearVolumeValues() {
 		this.totalVolume = 0;
 		this.spectrumBlockedVolume = 0;
@@ -177,20 +121,11 @@ public class Simulation {
 		this.regsPerAllocation = 0;
 		this.allocations = 0;
 		this.unhandledVolume = 0;
-		ResizableCanvas.getParentController().totalVolume = 0;
-		ResizableCanvas.getParentController().spectrumBlockedVolume = 0;
-		ResizableCanvas.getParentController().regeneratorsBlockedVolume = 0;
-		ResizableCanvas.getParentController().linkFailureBlockedVolume = 0;
 		for (Map.Entry<String, NetworkNode> entries: network.nodes.entrySet()){
 			entries.getValue().clearOccupied();
 		}
 	}
 
-	/**
-	 * Process a specific demand request. If the demand is impossible to fulfill, the cause is recorded.
-	 * If the demand can be fulfilled, resources will be consumed.
-	 * @param demand the demand in question
-	 */
 	private void handleDemand(Demand demand) {
 		DemandAllocationResult result = network.allocateDemand(demand);
 
@@ -198,11 +133,9 @@ public class Simulation {
 			switch (result.type) {
 			case NO_REGENERATORS:
 				regeneratorsBlockedVolume += demand.getVolume();
-				ResizableCanvas.getParentController().regeneratorsBlockedVolume += demand.getVolume();
 				break;
 			case NO_SPECTRUM:
 				spectrumBlockedVolume += demand.getVolume();
-				ResizableCanvas.getParentController().spectrumBlockedVolume += demand.getVolume();
 				break;
 			default:
 				break;
@@ -221,6 +154,5 @@ public class Simulation {
 			}
 		}
 		totalVolume += demand.getVolume();
-		ResizableCanvas.getParentController().totalVolume += demand.getVolume();
 	}
 }

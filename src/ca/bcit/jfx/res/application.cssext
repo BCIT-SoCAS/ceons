@@ -1,6 +1,6 @@
 .titled-pane {
 	-fx-skin: "com.sun.javafx.scene.control.skin.TitledPaneSkin";    
-	-fx-text-fill: #e5e3e3;
+	-fx-text-fill: #e7d0d0;
 }
 
 .titled-pane:expanded {
@@ -8,13 +8,13 @@
 }
 
 .titled-pane > .title {
-	-fx-background-color: linear-gradient(to bottom, #004B9E, #004B9E, #003C79);
+	-fx-background-color: linear-gradient(to bottom, #a16aa7, #815a85, #604063);
 	-fx-background-insets: 0.0, 1.0, 2.0;
 	-fx-padding: 0.166667em 0.833333em 0.25em 0.833333em; /* 2 10 3 10 */
 }
 
 .titled-pane:expanded > .title {
-	-fx-background-color: linear-gradient(to bottom, #004B9E, #004B9E 60%, #003C79);
+	-fx-background-color: linear-gradient(to bottom, #c28ac9, #a16aa7 60%, #815a85);
 	-fx-background-insets: 0.0, 1.0, 2.0;
 	-fx-padding: 0.166667em 0.833333em 0.25em 0.833333em; /* 2 10 3 10 */
 }
@@ -54,6 +54,14 @@
 	-fx-focus: true;
 }
 
+.accordion {
+	-fx-background-color: radial-gradient(center 50% 50%, radius 100%, #e0d0ee, #c28ac9, #a190a7);
+	-fx-background-image: url("LogoEON.png");
+	-fx-background-position: center, center;
+	-fx-background-repeat: no-repeat;
+	-fx-background-size: contain;
+}
+
 .scroll-pane > .viewport {
 	-fx-background-color: transparent;
 }
@@ -61,17 +69,4 @@
 .scroll-pane {
 	-fx-background-color: transparent;
 	-fx-padding-left: 15px;
-}
-
-
-#splash-screen-title {
-	-fx-font-size: 52px;
-	-fx-fill: #e5e3e3;
-	-fx-font-weight: bold;
-}
-
-#splash-screen-version {
-	-fx-font-size: 16px;
-	-fx-fill: #e5e3e3;
-	-fx-font-weight: bold;
 }

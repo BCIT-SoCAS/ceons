@@ -5,17 +5,10 @@ import ca.bcit.jfx.components.Console;
 public class Logger {
 
 	public enum LoggerLevel {
-		DEBUG,
-		INFO
+		DEBUG
 	}
-
-	public static void setLoggerLevel(LoggerLevel loggerLevel) {
-		Logger.loggerLevel = loggerLevel;
-	}
-
-	private static LoggerLevel loggerLevel = LoggerLevel.DEBUG;
-
-
+	
+	private static final LoggerLevel loggerLevel = LoggerLevel.DEBUG;
 	
 	public static void debug(String message) {
 		if (loggerLevel == LoggerLevel.DEBUG) System.out.println((message));
