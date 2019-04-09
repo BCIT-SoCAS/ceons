@@ -39,6 +39,8 @@ public abstract class Figure {
 
 	protected abstract void drawOutline(GraphicsContext gc, Color color);
 
+	public abstract int getInfo();
+
 	void drawOutline(GraphicsContext gc) {
 		drawOutline(gc, Color.BLACK);
 	}

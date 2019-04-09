@@ -10,11 +10,13 @@ public class EONProject extends Project {
 
 	private final Network network;
 	private final List<TrafficGenerator> trafficGenerators;
+	private final String map;
 	
-	public EONProject(File projectFile, Network network, List<TrafficGenerator> trafficGenerators) {
+	public EONProject(File projectFile, Network network, List<TrafficGenerator> trafficGenerators, String map) {
 		super(projectFile);
 		this.network = network;
 		this.trafficGenerators = trafficGenerators;
+		this.map = map;
 	}
 
 	@Override
@@ -25,5 +27,9 @@ public class EONProject extends Project {
 	@Override
 	public List<TrafficGenerator> getTrafficGenerators() {
 		return trafficGenerators;
+	}
+
+	public String getMap() {
+		return map;
 	}
 }

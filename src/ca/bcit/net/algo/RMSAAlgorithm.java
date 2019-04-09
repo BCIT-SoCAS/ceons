@@ -14,7 +14,6 @@ public abstract class RMSAAlgorithm {
 	static {
 		registerAlgorithm(new SPF());
 		registerAlgorithm(new AMRA());
-		registerAlgorithm(new MNC());
 	}
 	
 	private static void registerAlgorithm(RMSAAlgorithm algorithm) {

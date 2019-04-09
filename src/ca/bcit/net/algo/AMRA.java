@@ -47,6 +47,8 @@ public class AMRA extends RMSAAlgorithm {
 		}
 		if (!workingPathSuccess)
 			return DemandAllocationResult.NO_SPECTRUM;
+
+		try {
 			if (demand.allocateBackup()) {
 				volume = (int) Math.ceil(demand.getSqueezedVolume() / 10) - 1;
 
@@ -54,13 +56,18 @@ public class AMRA extends RMSAAlgorithm {
 
 				if (candidatePaths.isEmpty())
 					return new DemandAllocationResult(
-                            demand.getWorkingPath());
+							demand.getWorkingPath());
 				for (PartedPath path : candidatePaths)
 					if (demand.allocate(network, path))
 						return new DemandAllocationResult(demand.getWorkingPath(), demand.getBackupPath());
 
 				return new DemandAllocationResult(demand.getWorkingPath());
 			}
+		} catch (NetworkException e) {
+			workingPathSuccess = false;
+			return DemandAllocationResult.NO_REGENERATORS;
+		}
+
 
 		return new DemandAllocationResult(demand.getWorkingPath());
 	}
@@ -93,9 +100,7 @@ public class AMRA extends RMSAAlgorithm {
 			// Update metrics
 			path.setMetric(
 					network.getRegeneratorMetricValue()
-							* (network.getRegeneratorMetricType() == MetricType.STATIC
-									? path.getNeededRegeneratorsCount()
-									: (Math.floor(path.getOccupiedRegeneratorsPercentage() * 10) + 1))
+							* (path.getNeededRegeneratorsCount())
 							+ path.getMetric());
 		}
 		Collections.sort(candidatePaths);
@@ -110,29 +115,26 @@ public class AMRA extends RMSAAlgorithm {
 
 	private int calculateModulationMetric(Network network, PathPart part, Modulation modulation) {
 		int metric;
-		if (network.getModualtionMetricType() == MetricType.STATIC)
-			metric = network.getStaticModulationMetric(modulation);
-		else {
-			double slicesOccupationPercentage = part.getOccupiedSlicesPercentage() * 100;
-			int slicesOccupationMetric;
-			if (slicesOccupationPercentage <= 90)
-				if (slicesOccupationPercentage <= 75)
-					if (slicesOccupationPercentage <= 60)
-						if (slicesOccupationPercentage <= 40)
-							if (slicesOccupationPercentage <= 20)
-								slicesOccupationMetric = 0;
-							else
-								slicesOccupationMetric = 1;
+
+		double slicesOccupationPercentage = part.getOccupiedSlicesPercentage() * 100;
+		int slicesOccupationMetric;
+		if (slicesOccupationPercentage <= 90)
+			if (slicesOccupationPercentage <= 75)
+				if (slicesOccupationPercentage <= 60)
+					if (slicesOccupationPercentage <= 40)
+						if (slicesOccupationPercentage <= 20)
+							slicesOccupationMetric = 0;
 						else
-							slicesOccupationMetric = 2;
+							slicesOccupationMetric = 1;
 					else
-						slicesOccupationMetric = 3;
+						slicesOccupationMetric = 2;
 				else
-					slicesOccupationMetric = 4;
+					slicesOccupationMetric = 3;
 			else
-				slicesOccupationMetric = 5;
-			metric = network.getDynamicModulationMetric(modulation, slicesOccupationMetric);
-		}
-		return metric;
+				slicesOccupationMetric = 4;
+		else
+			slicesOccupationMetric = 5;
+		metric = network.getDynamicModulationMetric(modulation, slicesOccupationMetric);
+	return metric;
 	}
 }

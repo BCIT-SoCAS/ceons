@@ -1,16 +1,15 @@
-package ca.bcit.jfx;
+package ca.bcit.jfx.controllers;
 
 import ca.bcit.drawing.Figure;
+import ca.bcit.drawing.Node;
 import ca.bcit.drawing.FigureControl;
 import ca.bcit.utils.geom.Vector2F;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
 
@@ -22,13 +21,17 @@ import java.util.ResourceBundle;
  */
 public class NodePropertiesController implements Initializable {
     @FXML
-    private TextField textFieldName;
+		private Label nodeName;
+		@FXML
+    private Label nodeGroup;
+    @FXML
+    private Label regenNum;
     @FXML
     private ListView<String> listView;
     @FXML
-    private TextField textFieldX;
+    private Label xID;
     @FXML
-    private TextField textFieldY;
+    private Label yID;
     @FXML
     private TitledPane titledPane;
     private FigureControl list;
@@ -40,7 +43,7 @@ public class NodePropertiesController implements Initializable {
                 list.setSelectedFigure(list.findFigureByName(newValue));
             }
         });
-        textFieldName.textProperty().addListener((observable, oldValue, newValue) -> {
+        nodeName.textProperty().addListener((observable, oldValue, newValue) -> {
             actualNode = list.findFigureByName(oldValue);
             if (!list.containsFigureWithName(newValue)) {
                 actualNode.setName(newValue);
@@ -54,36 +57,54 @@ public class NodePropertiesController implements Initializable {
         {
             String selectedNode=listView.getSelectionModel().getSelectedItem();
             Figure node= list.findFigureByName(selectedNode);
-            fillInformations(node);
+            fillInformation(node);
             listView.getSelectionModel().clearSelection();
         }
     }
-    public void initDate(FigureControl _list, Figure _node) {
+    public void initData(FigureControl _list, Figure _node) {
         list = _list;
         actualNode = _node;
-        fillInformations(_node);
+        fillInformation(_node);
     }
 
-    private void fillInformations(Figure node)
+    private void fillInformation(Figure fig)
     {
-            textFieldName.setText(node.getName());
-            ObservableList<String> obList=list.generateNodeConnections(node);
-            listView.setItems(obList);
-            textFieldX.setText(((Float)node.getStartPoint().getX()).toString());
-            textFieldY.setText(((Float)node.getStartPoint().getY()).toString());
+			Node node = (Node) fig;
+			nodeName.setText(node.getName());
+
+			Boolean isReplica = (Boolean) node.getNodeGroups().get("replicas");
+			Boolean isInternational = (Boolean) node.getNodeGroups().get("international");
+			if (Boolean.TRUE.equals(isReplica) && Boolean.TRUE.equals(isInternational)) {
+				nodeGroup.setText("Data Center, International");
+			} else if (Boolean.TRUE.equals(isReplica)) {
+				nodeGroup.setText("Data Center");
+			} else if (Boolean.TRUE.equals(isInternational)) {
+				nodeGroup.setText("International");
+			} else {
+				nodeGroup.setText("Standard");
+			}
+
+			ObservableList<String> obList=list.generateNodeConnections(node);
+			listView.setItems(obList);
+			xID.setText(((Float)node.getStartPoint().getX()).toString());
+			yID.setText(((Float)node.getStartPoint().getY()).toString());
+			regenNum.setText(Integer.toString(node.getInfo()));
     }
+
     @FXML
     private void onActionTextField(ActionEvent event)
     {
         Vector2F vec2F= getVector2FFromTextFields();
-        Figure node=list.findFigureByName(textFieldName.getText());
+        Figure node=list.findFigureByName(nodeName.getText());
         list.changeNodePoint(node,vec2F);
-        fillInformations(node);
+        fillInformation(node);
     }
+
     private Vector2F getVector2FFromTextFields()
     {
-        return new Vector2F(Float.parseFloat(textFieldX.getText()),Float.parseFloat(textFieldY.getText()));
+        return new Vector2F(Float.parseFloat(xID.getText()),Float.parseFloat(yID.getText()));
     }
+
     public TitledPane getTitledPane()
     {
         return titledPane;

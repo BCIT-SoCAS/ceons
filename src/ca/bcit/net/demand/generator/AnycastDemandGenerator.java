@@ -11,30 +11,30 @@ public class AnycastDemandGenerator extends DemandGenerator<AnycastDemand> {
 
 	private final RandomVariable<NetworkNode> client;
 	private boolean replicaPreservation;
-	
+
 	private AnycastDemand downstream;
-	
-	public AnycastDemandGenerator(RandomVariable<NetworkNode> client, RandomVariable<Boolean> reallocate, RandomVariable<Boolean> allocateBackup, 
+
+	public AnycastDemandGenerator(RandomVariable<NetworkNode> client, RandomVariable<Boolean> reallocate, RandomVariable<Boolean> allocateBackup,
 			RandomVariable<Integer> volume, RandomVariable<Float> squeezeRatio) {
 		super(reallocate, allocateBackup, volume, squeezeRatio);
 		this.client = client;
 	}
-	
+
 	public void setReplicaPreservation(boolean backupPreservation) {
 		this.replicaPreservation = backupPreservation;
 	}
-	
+
 	@Override
 	public Random setSeed(long seed) {
 		Random seedGenerator = super.setSeed(seed);
 		client.setSeed(seedGenerator.nextLong());
 		return seedGenerator;
 	}
-	
+
 	@Override
 	public AnycastDemand next() {
 		AnycastDemand result;
-		
+
 		if (downstream != null) {
 			result = downstream;
 			downstream = null;
@@ -46,11 +46,11 @@ public class AnycastDemandGenerator extends DemandGenerator<AnycastDemand> {
 			downstream = new AnycastDemand.Downstream(client, reallocate, allocateBackup, volume.next(), squeezeRatio.next(), ttl, replicaPreservation);
 			result = new AnycastDemand.Upstream(client, reallocate, allocateBackup, volume.next(), squeezeRatio.next(), ttl, replicaPreservation);
 		}
-		
+
 		generatedDemandsCount++;
 		return result;
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public AnycastDemandGenerator(Map map) {
 		super(map);
