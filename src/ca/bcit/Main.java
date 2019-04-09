@@ -37,9 +37,9 @@ import java.util.List;
 
 public class Main extends Application {
 
-	private static long seed = 0;
-	private static int demandsCount = 10000;
-	private static int erlang = 300;
+	private static long seed = 10;
+	private static int demandsCount = 25000;
+	private static int erlang = 700;
 	private static double alpha = 0;
 	private static boolean replicaPreservation = false;
 	private static List<TrafficGenerator> generators = new ArrayList<>();
@@ -109,7 +109,7 @@ public class Main extends Application {
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
-			network.setBestPathsCount(10);
+			network.setBestPathsCount(2);
 			simulation.simulate(seed, demandsCount, alpha, erlang, replicaPreservation,	task);
 //			below is GUI code
 //			ProjectFileFormat.registerFileFormat(new EONProjectFileFormat());
