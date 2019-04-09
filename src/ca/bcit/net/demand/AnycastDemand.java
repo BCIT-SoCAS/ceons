@@ -8,13 +8,13 @@ import ca.bcit.net.PartedPath;
 import java.util.ArrayList;
 
 public abstract class AnycastDemand extends Demand {
-	
+
 	public static class Upstream extends AnycastDemand {
-		
+
 		public Upstream(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl, boolean replicaPreservation) {
 			super(client, reallocate, allocateBackup, volume, squeezeRatio, ttl, replicaPreservation);
 		}
-		
+
 		@Override
 		public ArrayList<PartedPath> getCandidatePaths(boolean backup, Network network) {
 			ArrayList<PartedPath> paths = new ArrayList<>();
@@ -23,7 +23,7 @@ public abstract class AnycastDemand extends Demand {
 				if (replicaPreservation) {
 					NetworkNode replica = workingPath.getPath().get(0) == client ? workingPath.getPath().get(workingPath.getPath().size() - 1) : workingPath.getPath().get(0);
 					int acceptedPaths = 0;
-					for (NetworkPath path : network.getPaths(client , replica))
+					for (NetworkPath path : network.getPaths(client, replica))
 						if (!network.isInactive(path))
 							if (acceptedPaths >= network.getBestPathsCount()) break;
 							else if (path.isDisjoint(workingPath)) {
@@ -33,7 +33,7 @@ public abstract class AnycastDemand extends Demand {
 				} else
 					for (NetworkNode replica : network.getGroup("replicas")) {
 						int acceptedPaths = 0;
-						for (NetworkPath path : network.getPaths(client , replica))
+						for (NetworkPath path : network.getPaths(client, replica))
 							if (!network.isInactive(path))
 								if (acceptedPaths >= network.getBestPathsCount()) break;
 								else if (path.isDisjoint(workingPath)) {
@@ -42,15 +42,19 @@ public abstract class AnycastDemand extends Demand {
 								}
 					}
 			else
-				for (NetworkNode replica : network.getGroup("replicas"))
-					for (NetworkPath path : network.getPaths(client , replica).subList(0, network.getBestPathsCount()))
+				for (NetworkNode replica : network.getGroup("replicas")) {
+					if (client == replica) {
+						continue;
+					}
+					for (NetworkPath path : network.getPaths(client, replica).subList(0, network.getBestPathsCount())) {
 						if (!network.isInactive(path))
 							paths.add(new PartedPath(network, path, path.get(0) == client));
-
+					}
+				}
 			paths.sort(PartedPath.LENGTH_COMPARATOR);
 			if (paths.size() > network.getBestPathsCount())
 				paths.subList(network.getBestPathsCount(), paths.size()).clear();
-			
+
 			return paths;
 		}
 	}
@@ -64,7 +68,7 @@ public abstract class AnycastDemand extends Demand {
 		public Downstream(NetworkNode client, boolean reallocate, boolean allocateBackup, int volume, float squeezeRatio, int ttl, boolean replicaPreservation) {
 			super(client, reallocate, allocateBackup, volume, squeezeRatio, ttl, replicaPreservation);
 		}
-		
+
 		@Override
 		public ArrayList<PartedPath> getCandidatePaths(boolean backup, Network network) {
 			ArrayList<PartedPath> paths = new ArrayList<>();
@@ -73,7 +77,7 @@ public abstract class AnycastDemand extends Demand {
 				if (replicaPreservation) {
 					NetworkNode replica = workingPath.getPath().get(0) == client ? workingPath.getPath().get(workingPath.getPath().size() - 1) : workingPath.getPath().get(0);
 					int acceptedPaths = 0;
-					for (NetworkPath path : network.getPaths(client , replica))
+					for (NetworkPath path : network.getPaths(client, replica))
 						if (!network.isInactive(path))
 							if (acceptedPaths >= network.getBestPathsCount()) break;
 							else if (path.isDisjoint(workingPath)) {
@@ -83,7 +87,7 @@ public abstract class AnycastDemand extends Demand {
 				} else
 					for (NetworkNode replica : network.getGroup("replicas")) {
 						int acceptedPaths = 0;
-						for (NetworkPath path : network.getPaths(client , replica))
+						for (NetworkPath path : network.getPaths(client, replica))
 							if (!network.isInactive(path))
 								if (acceptedPaths >= network.getBestPathsCount()) break;
 								else if (path.isDisjoint(workingPath)) {
@@ -91,20 +95,24 @@ public abstract class AnycastDemand extends Demand {
 									acceptedPaths++;
 								}
 					}
-			else
-				for (NetworkNode replica : network.getGroup("replicas"))
-					for (NetworkPath path : network.getPaths(replica, client).subList(0, network.getBestPathsCount()))
-						if (!network.isInactive(path))
-							paths.add(new PartedPath(network, path, path.get(0) == replica));
-			
+			for (NetworkNode replica : network.getGroup("replicas")) {
+				if (client == replica) {
+					continue;
+				}
+				for (NetworkPath path : network.getPaths(client, replica).subList(0, network.getBestPathsCount())) {
+					if (!network.isInactive(path))
+						paths.add(new PartedPath(network, path, path.get(0) == client));
+				}
+			}
+
 			paths.sort(PartedPath.LENGTH_COMPARATOR);
 			if (paths.size() > network.getBestPathsCount())
 				paths.subList(network.getBestPathsCount(), paths.size()).clear();
-			
+
 			return paths;
 		}
 	}
-	
+
 	final NetworkNode client;
 	final boolean replicaPreservation;
 
