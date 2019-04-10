@@ -33,6 +33,9 @@ public abstract class AnycastDemand extends Demand {
                 } else
                     for (NetworkNode replica : network.getGroup("replicas")) {
                         int acceptedPaths = 0;
+                        if (client == replica) {
+                            continue;
+                        }
                         for (NetworkPath path : network.getPaths(client, replica))
                             if (!network.isInactive(path))
                                 if (acceptedPaths >= network.getBestPathsCount()) break;
