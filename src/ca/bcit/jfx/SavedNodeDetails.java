@@ -3,8 +3,8 @@ package ca.bcit.jfx;
 public class SavedNodeDetails {
 
     private String location;
-		private String connectedNodeNum;
-		private String nodeNum;
+    private String connectedNodeNum;
+    private String nodeNum;
     private int numRegenerators;
     private String nodeType;
 
@@ -17,7 +17,7 @@ public class SavedNodeDetails {
     }
 
     public SavedNodeDetails(String nodeNum, String location, String connectedNodeNum, int numRegernators, String nodeType){
-				this.nodeNum = nodeNum;
+        this.nodeNum = nodeNum;
         this.location = location;
         this.connectedNodeNum = connectedNodeNum;
         this.numRegenerators = numRegernators;
