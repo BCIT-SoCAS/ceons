@@ -1,7 +1,8 @@
 package ca.bcit.jfx.controllers;
 
+import ca.bcit.io.create.NewTopology;
 import ca.bcit.jfx.SavedNodeDetails;
-import ca.bcit.jfx.StaticMap;
+import ca.bcit.io.create.StaticMap;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -13,7 +14,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.GridPane;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -24,10 +24,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import java.lang.ClassLoader;
 
 
 public class SaveMapController {
@@ -96,7 +93,8 @@ public class SaveMapController {
 			ex.printStackTrace();
 		}
 
-		StaticMap staticMap = new StaticMap(key);
+//		StaticMap staticMap = new StaticMap(key);
+		NewTopology newTopology = new NewTopology(key);
 
 		//Will get all row objects
 		System.out.println(saveTable.getItems().get(saveTable.getItems().size()-1).getNodeNum());
@@ -112,10 +110,12 @@ public class SaveMapController {
 			arrList.get(i).add(savedNodeDetails.getNodeType());
 			arrList.get(i).add(""+savedNodeDetails.getConnectedNodeNum());
 			arrList.get(i).add(""+savedNodeDetails.getNumRegenerators());
-			staticMap.addLocation(savedNodeDetails.getNodeNum(), savedNodeDetails.getLocation());
+//			staticMap.addLocation(savedNodeDetails.getLocation(), savedNodeDetails.getNodeNum());
+			newTopology.addNode(savedNodeDetails.getLocation(), savedNodeDetails.getNodeNum());
 		}
 
-		staticMap.generateMap(true);
+		newTopology.createTopology();
+//		staticMap.generateMap(true);
 
 		//Printing
 //		for (int i = 0; i < arrList.size(); i++) {
@@ -215,26 +215,26 @@ public class SaveMapController {
 		nodeDetails.add(new SavedNodeDetails("Node_6", "Zurich", "1,3,5", 100, "Data Center"));
 		nodeDetails.add(new SavedNodeDetails("Node_7", "Strasbourg", "1,3,5", 100, "Data Center"));
 		nodeDetails.add(new SavedNodeDetails("Node_8", "Hamburg", "2,3,6", 100, "International"));
-		nodeDetails.add(new SavedNodeDetails("Node_9", "Frankfurt", "1,3,5", 100, "Data Center"));
-		nodeDetails.add(new SavedNodeDetails("Node_10", "Milan", "2,3,6", 100, "International"));
-		nodeDetails.add(new SavedNodeDetails("Node_11", "Munich", "1,3,5", 100, "Data Center"));
-		nodeDetails.add(new SavedNodeDetails("Node_12", "Berlin", "2,3,6", 100, "International"));
-		nodeDetails.add(new SavedNodeDetails("Node_13", "Rome", "1,3,5", 100, "Data Center"));
-		nodeDetails.add(new SavedNodeDetails("Node_14", "Zagreb", "2,3,6", 100, "International"));
-		nodeDetails.add(new SavedNodeDetails("Node_15", "Vienna", "1,3,5", 100, "Data Center"));
-		nodeDetails.add(new SavedNodeDetails("Node_16", "Prague", "1,3,5", 100, "Data Center"));
-		nodeDetails.add(new SavedNodeDetails("Node_17", "Madrid", "2,3,6", 100, "International"));
-		nodeDetails.add(new SavedNodeDetails("Node_18", "Bordeaux", "1,3,5", 100, "Data Center"));
-		nodeDetails.add(new SavedNodeDetails("Node_19", "Barcelona, spain", "2,3,6", 100, "International"));
-		nodeDetails.add(new SavedNodeDetails("Node_20", "Dublin", "1,3,5", 100, "Data Center"));
-		nodeDetails.add(new SavedNodeDetails("Node_21", "Glasgow", "1,3,5", 100, "Data Center"));
-		nodeDetails.add(new SavedNodeDetails("Node_22", "Athens", "2,3,6", 100, "International"));
-		nodeDetails.add(new SavedNodeDetails("Node_23", "Belgrade", "1,3,5", 100, "Data Center"));
-		nodeDetails.add(new SavedNodeDetails("Node_24", "Budapest", "1,3,5", 100, "Data Center"));
-		nodeDetails.add(new SavedNodeDetails("Node_25", "Warsaw", "2,3,6", 100, "International"));
-		nodeDetails.add(new SavedNodeDetails("Node_26", "Copenhagen", "1,3,5", 100, "Data Center"));
-		nodeDetails.add(new SavedNodeDetails("Node_27", "Stockholm", "1,3,5", 100, "Data Center"));
-		nodeDetails.add(new SavedNodeDetails("Node_28", "Oslo", "1,3,5", 100, "Data Center"));
+//		nodeDetails.add(new SavedNodeDetails("Node_9", "Frankfurt", "1,3,5", 100, "Data Center"));
+//		nodeDetails.add(new SavedNodeDetails("Node_10", "Milan", "2,3,6", 100, "International"));
+//		nodeDetails.add(new SavedNodeDetails("Node_11", "Munich", "1,3,5", 100, "Data Center"));
+//		nodeDetails.add(new SavedNodeDetails("Node_12", "Berlin", "2,3,6", 100, "International"));
+//		nodeDetails.add(new SavedNodeDetails("Node_13", "Rome", "1,3,5", 100, "Data Center"));
+//		nodeDetails.add(new SavedNodeDetails("Node_14", "Zagreb", "2,3,6", 100, "International"));
+//		nodeDetails.add(new SavedNodeDetails("Node_15", "Vienna", "1,3,5", 100, "Data Center"));
+//		nodeDetails.add(new SavedNodeDetails("Node_16", "Prague", "1,3,5", 100, "Data Center"));
+//		nodeDetails.add(new SavedNodeDetails("Node_17", "Madrid", "2,3,6", 100, "International"));
+//		nodeDetails.add(new SavedNodeDetails("Node_18", "Bordeaux", "1,3,5", 100, "Data Center"));
+//		nodeDetails.add(new SavedNodeDetails("Node_19", "Barcelona, spain", "2,3,6", 100, "International"));
+//		nodeDetails.add(new SavedNodeDetails("Node_20", "Dublin", "1,3,5", 100, "Data Center"));
+//		nodeDetails.add(new SavedNodeDetails("Node_21", "Glasgow", "1,3,5", 100, "Data Center"));
+//		nodeDetails.add(new SavedNodeDetails("Node_22", "Athens", "2,3,6", 100, "International"));
+//		nodeDetails.add(new SavedNodeDetails("Node_23", "Belgrade", "1,3,5", 100, "Data Center"));
+//		nodeDetails.add(new SavedNodeDetails("Node_24", "Budapest", "1,3,5", 100, "Data Center"));
+//		nodeDetails.add(new SavedNodeDetails("Node_25", "Warsaw", "2,3,6", 100, "International"));
+//		nodeDetails.add(new SavedNodeDetails("Node_26", "Copenhagen", "1,3,5", 100, "Data Center"));
+//		nodeDetails.add(new SavedNodeDetails("Node_27", "Stockholm", "1,3,5", 100, "Data Center"));
+//		nodeDetails.add(new SavedNodeDetails("Node_28", "Oslo", "1,3,5", 100, "Data Center"));
 
 //		nodeDetails.add(new SavedNodeDetails("Node_3", "Richmond", "1,2", 100, "Standard"));
 //		nodeDetails.add(new SavedNodeDetails("Node_4","Delta", "5,6", 100, "Standard"));

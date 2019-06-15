@@ -1,8 +1,5 @@
-package ca.bcit.jfx;
+package ca.bcit.io.create;
 
-import ca.bcit.utils.random.UniformRandomVariable;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.maps.*;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
@@ -19,6 +16,7 @@ public class StaticMap {
     private LatLng centerPoint;
     private GeoApiContext context;
     private int zoomLevel;
+    private double meterPerPixel;
 
     private double minLat;
     private double maxLat;
@@ -30,6 +28,10 @@ public class StaticMap {
     final private Size mapSize = new Size(500,365);
     final private int MERCATOR_RANGE = 256;
 
+    /**
+     * Constructor for StaticMap
+     * @param apiKey
+     */
     public StaticMap(String apiKey) {
         this.context = new GeoApiContext.Builder().apiKey(apiKey).build();
         this.locations = new HashMap<String, String>();
@@ -72,10 +74,10 @@ public class StaticMap {
 
     /**
      * add a location to the map
-     * @param nodeNum
      * @param location
+     * @param nodeNum
      */
-    public void addLocation(String nodeNum, String location) {
+    public void addLocation(String location, String nodeNum) {
         locations.put(nodeNum, location);
         LatLng latlng = getLatLng(location);
 
@@ -101,6 +103,62 @@ public class StaticMap {
         }
 
         System.out.println(location + " added, coordinate: " + latlng.lat + ", " + latlng.lng);
+    }
+
+    public NewNode addLocation(NewNode newNode) {
+        String location = newNode.getName();
+        locations.put("Node_" + newNode.getNodeNum(), location);
+        LatLng latlng = getLatLng(location);
+
+        newNode.setLatLng(latlng);
+
+        coordinates.add(latlng);
+
+        if (this.isFirst) {
+            this.minLat = latlng.lat;
+            this.maxLat = latlng.lat;
+            this.minLng = latlng.lng;
+            this.maxLng = latlng.lng;
+            this.isFirst = false;
+        } else {
+            if (latlng.lat < minLat) {
+                minLat = latlng.lat;
+            } else if (latlng.lat > maxLat) {
+                maxLat = latlng.lat;
+            }
+            if (latlng.lng < minLng) {
+                minLng = latlng.lng;
+            } else if (latlng.lng > maxLng) {
+                maxLng = latlng.lng;
+            }
+        }
+
+        System.out.println(newNode.getName() + " added, coordinate: " + latlng.lat + ", " + latlng.lng);
+        return newNode;
+    }
+
+    /**
+     * Getter for meterPerPixel
+     * @return
+     */
+    public double getMeterPerPixel() {
+        return meterPerPixel;
+    }
+
+    /**
+     * Getter for centerPoint
+     * @return
+     */
+    public LatLng getCenterPoint() {
+        return centerPoint;
+    }
+
+    /**
+     * Getter for mapSize
+     * @return
+     */
+    public Size getMapSize() {
+        return mapSize;
     }
 
     /**
@@ -157,7 +215,7 @@ public class StaticMap {
 //        }
 
         for (int i = 20; i > 0; i--) {
-            if (minDistancePerPixel < getMetersPerPx(this.centerPoint.lat, i)) {
+            if (minDistancePerPixel < calMetersPerPx(this.centerPoint.lat, i)) {
                 this.zoomLevel = i;
                 break;
             }
@@ -171,8 +229,9 @@ public class StaticMap {
      * @param zoomLevel
      * @return
      */
-    private double getMetersPerPx(double centerLat, int zoomLevel) {
-        return 156543.03392 * Math.cos(centerLat * Math.PI / 180) / Math.pow(2, zoomLevel);
+    private double calMetersPerPx(double centerLat, int zoomLevel) {
+        this.meterPerPixel = 156543.03392 * Math.cos(centerLat * Math.PI / 180) / Math.pow(2, zoomLevel);
+        return this.meterPerPixel;
     }
 
     /**
