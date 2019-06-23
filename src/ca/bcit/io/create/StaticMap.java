@@ -105,12 +105,11 @@ public class StaticMap {
         System.out.println(location + " added, coordinate: " + latlng.lat + ", " + latlng.lng);
     }
 
-    public NewNode addLocation(NewNode newNode) {
-        String location = newNode.getName();
-        locations.put("Node_" + newNode.getNodeNum(), location);
-        LatLng latlng = getLatLng(location);
+    public SavedNodeDetails addLocation(SavedNodeDetails savedNodeDetails) {
+        locations.put("Node_" + savedNodeDetails.getNodeNum(), savedNodeDetails.getLocation());
+        LatLng latlng = getLatLng(savedNodeDetails.getLocation());
 
-        newNode.setLatLng(latlng);
+        savedNodeDetails.setLatLng(latlng);
 
         coordinates.add(latlng);
 
@@ -133,8 +132,8 @@ public class StaticMap {
             }
         }
 
-        System.out.println(newNode.getName() + " added, coordinate: " + latlng.lat + ", " + latlng.lng);
-        return newNode;
+        System.out.println(savedNodeDetails.getLocation() + " added, coordinate: " + latlng.lat + ", " + latlng.lng);
+        return savedNodeDetails;
     }
 
     /**

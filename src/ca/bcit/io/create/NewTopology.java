@@ -6,34 +6,40 @@ import java.util.ArrayList;
 
 public class NewTopology {
     private StaticMap staticMap;
-    private ArrayList<NewNode> newNodes;
+    private ArrayList<SavedNodeDetails> savedNodeDetailsList;
 
     public NewTopology(String key) {
         this.staticMap = new StaticMap(key);
-        this.newNodes = new ArrayList<NewNode>();
+        this.savedNodeDetailsList = new ArrayList<SavedNodeDetails>();
     }
 
-    public void addNode(String name, String nodeNum) {
-        NewNode newNode = new NewNode(name, nodeNum);
-        newNode = this.staticMap.addLocation(newNode);
-        this.newNodes.add(newNode);
+    public void addNode(SavedNodeDetails savedNodeDetails){
+        staticMap.addLocation(savedNodeDetails);
+        savedNodeDetailsList.add(savedNodeDetails);
     }
+
+//    public void addNode(String name, int nodeNum) {
+//        NewNode newNode = new NewNode(name, nodeNum);
+//        newNode = this.staticMap.addLocation(newNode);
+//        this.newNodes.add(newNode);
+//    }
 
     public void createTopology() {
         staticMap.generateMap(true);
-        for (int i = 0; i < newNodes.size(); i++) {
-            newNodes.get(i).setX(calXCoord(newNodes.get(i)));
-            newNodes.get(i).setY(calYCoord(newNodes.get(i)));
-            System.out.println(newNodes.get(i).toString());
+        for (int i = 0; i < savedNodeDetailsList.size(); i++) {
+            SavedNodeDetails savedNodeDetails = savedNodeDetailsList.get(i);
+            savedNodeDetails.setX(calXCoord(savedNodeDetails));
+            savedNodeDetails.setY(calYCoord(savedNodeDetails));
+            System.out.println(savedNodeDetails.toString());
         }
     }
 
-    private int calYCoord(NewNode newNode) {
+    private int calYCoord(SavedNodeDetails savedNodeDetails) {
         int y = 0;
         int centerHeight = staticMap.getMapSize().height;
         LatLng centerPoint = staticMap.getCenterPoint();
         double meterPerPixel = staticMap.getMeterPerPixel()/2;
-        double lat = newNode.getLatLng().lat;
+        double lat = savedNodeDetails.getLatLng().lat;
         long latDistance = distance(centerPoint.lat, lat, centerPoint.lng, centerPoint.lng);
 
         if ((centerPoint.lat - lat) > 0) {
@@ -45,12 +51,12 @@ public class NewTopology {
         return y;
     }
 
-    private int calXCoord(NewNode newNode) {
+    private int calXCoord(SavedNodeDetails savedNodeDetails) {
         int x= 0;
         int centerWidth = staticMap.getMapSize().width;
         LatLng centerPoint = staticMap.getCenterPoint();
         double meterPerPixel = staticMap.getMeterPerPixel()/2;
-        double lng = newNode.getLatLng().lng;
+        double lng = savedNodeDetails.getLatLng().lng;
         long lngDistance = distance(centerPoint.lat, centerPoint.lat, centerPoint.lng, lng);
 
         if ((centerPoint.lng - lng) > 0) {
@@ -90,4 +96,5 @@ public class NewTopology {
 
         return Math.round(Math.sqrt(distance)) * 1000;
     }
+
 }

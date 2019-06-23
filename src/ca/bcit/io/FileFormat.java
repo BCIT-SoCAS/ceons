@@ -3,6 +3,8 @@ package ca.bcit.io;
 import java.io.File;
 import java.io.IOException;
 
+import ca.bcit.io.create.SavedNodeDetails;
+import javafx.collections.ObservableList;
 import javafx.stage.FileChooser.ExtensionFilter;
 
 public abstract class FileFormat<D, L, S> {
@@ -16,12 +18,14 @@ public abstract class FileFormat<D, L, S> {
 		return load(file, null);
 	}
 
-	public abstract void save(File file, D data, S parameter) throws IOException;
+//	public abstract void save(File file, D data, S parameter) throws IOException;
+//
+//	public void save(File file, D data) throws IOException {
+//		if (hasSaveParameter()) throw new FileFormatException("Saving paramter missing!");
+//		save(file, data, null);
+//	}
 
-	public void save(File file, D data) throws IOException {
-		if (hasSaveParameter()) throw new FileFormatException("Saving paramter missing!");
-		save(file, data, null);
-	}
+	public abstract void save(File file, D data, ObservableList<SavedNodeDetails> tableList) throws IOException;
 
 	public abstract boolean hasLoadParameter();
 

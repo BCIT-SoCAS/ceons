@@ -1,10 +1,13 @@
 package ca.bcit.jfx.controllers;
 
+import ca.bcit.ApplicationResources;
+import ca.bcit.io.Logger;
 import ca.bcit.io.create.NewTopology;
-import ca.bcit.jfx.SavedNodeDetails;
-import ca.bcit.io.create.StaticMap;
+import ca.bcit.io.project.ProjectFileFormat;
+import ca.bcit.io.create.SavedNodeDetails;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 
 import javafx.geometry.Insets;
@@ -28,193 +31,204 @@ import java.util.List;
 
 
 public class SaveMapController {
-	@FXML
-	private TextField saveMapInput;
-	@FXML
-	private Button saveMapBtn;
-	@FXML
-	private Button closeMapWindowBtn;
+    @FXML
+    private TextField saveMapInput;
+    @FXML
+    private Button saveMapBtn;
+    @FXML
+    private Button closeMapWindowBtn;
 
-	Stage saveWindow;
-	TableView<SavedNodeDetails> saveTable;
-	TextField nodeNumInput, nameInput, connNodeInput, numRegeneratorInput;
-	CheckBox dcCheckbox, itlCheckbox, standardCheckbox;
-	FileChooser fileChooser;
-	File file;
+    Stage saveWindow;
+    TableView<SavedNodeDetails> saveTable;
+    TextField nodeNumInput, nameInput, connNodeInput, numRegeneratorInput;
+    CheckBox dcCheckbox, itlCheckbox, standardCheckbox;
+    FileChooser fileChooser;
+    File file;
+    SavedNodeDetails savedNodeDetails;
 
-	private boolean getMap(String requestUrl) {
-		return true;
-		// logic to request a map
-	}
+    private boolean getMap(String requestUrl) {
+        return true;
+        // logic to request a map
+    }
 
-	/*
-	*Add a new row of node details when the add button is clicked
-	 */
-	public void addButtonClicked(){
-		SavedNodeDetails savedNodeDetails = new SavedNodeDetails();
-		
-		savedNodeDetails.setNodeNum(getNextNodeNum());
-		savedNodeDetails.setLocation(nameInput.getText());
-		savedNodeDetails.setConnectedNodeNum((connNodeInput.getText()));
-		savedNodeDetails.setNumRegenerators(Integer.parseInt((numRegeneratorInput.getText())));
-		savedNodeDetails.setNodeType(getSelectedNodeType());
-		saveTable.getItems().add(savedNodeDetails);
-		nameInput.clear();
-		connNodeInput.clear();
-		numRegeneratorInput.clear();
-		itlCheckbox.setSelected(false);
-		dcCheckbox.setSelected(false);
-		standardCheckbox.setSelected(false);
-	}
+    /*
+     *Add a new row of node details when the add button is clicked
+     */
+    public void addButtonClicked() {
+        try {
+            this.savedNodeDetails = new SavedNodeDetails(getNextNodeNum(), nameInput.getText(), connNodeInput.getText(), Integer.parseInt(numRegeneratorInput.getText()), getSelectedNodeType());
+            saveTable.getItems().add(savedNodeDetails);
+        } catch (Exception e) {
+            Logger.info("Please fill in all the fields");
+        }
 
-	/*
-	*Delete selected row when the delete button is clicked
-	 */
-	public void deleteButtonClicked(){
-		ObservableList<SavedNodeDetails> nodeDetailsSelected, allNodeDetails;
-		allNodeDetails = saveTable.getItems();
-		nodeDetailsSelected = saveTable.getSelectionModel().getSelectedItems();
-		//For the instance that appears in the entire array of objects, remove it
-		nodeDetailsSelected.forEach(allNodeDetails::remove);
-	}
+        nameInput.clear();
+        connNodeInput.clear();
+        numRegeneratorInput.clear();
+        itlCheckbox.setSelected(false);
+        dcCheckbox.setSelected(false);
+        standardCheckbox.setSelected(false);
+    }
 
-	/*
-	*Makes calls to google API to save a map and also calculate distances, finally writes to .eon file when clicked
-	 */
-	public void saveButtonClicked(){
-		SavedNodeDetails savedNodeDetails = new SavedNodeDetails();
+    /*
+     *Delete selected row when the delete button is clicked
+     */
+    public void deleteButtonClicked() {
+        ObservableList<SavedNodeDetails> nodeDetailsSelected, allNodeDetails;
+        allNodeDetails = saveTable.getItems();
+        nodeDetailsSelected = saveTable.getSelectionModel().getSelectedItems();
+        int nodeNumOfSelected = saveTable.getSelectionModel().getSelectedItem().getNodeNum();
 
-		// get api key
-		String apiPath = "api_key.txt";
-		String key = "";
-		try {
-			key = new String(Files.readAllBytes(Paths.get(apiPath)));
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
+        //For the instance that appears in the entire array of objects, remove it
+        nodeDetailsSelected.forEach(allNodeDetails::remove);
+        updateNodeNumsUponDelete(nodeNumOfSelected);
+    }
+
+    /*
+     *Makes calls to google API to save a map and also calculate distances, finally writes to .eon file when clicked
+     */
+    public void saveButtonClicked() {
+        // get api key
+        String apiPath = "api_key.txt";
+        String key = "";
+        try {
+            key = new String(Files.readAllBytes(Paths.get(apiPath)));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
 
 //		StaticMap staticMap = new StaticMap(key);
-		NewTopology newTopology = new NewTopology(key);
+        NewTopology newTopology = new NewTopology(key);
 
-		//Will get all row objects
-		System.out.println(saveTable.getItems().get(saveTable.getItems().size()-1).getNodeNum());
-
-		//Add all fields to the list for each object
-		List<List<String>> arrList=new ArrayList<>();
-
-		//Implement data manipulation here
-		for (int i = 0; i < saveTable.getItems().size() ; i++) {
-			savedNodeDetails=saveTable.getItems().get(i);
-			arrList.add(new ArrayList<>());
-			arrList.get(i).add(savedNodeDetails.getLocation());
-			arrList.get(i).add(savedNodeDetails.getNodeType());
-			arrList.get(i).add(""+savedNodeDetails.getConnectedNodeNum());
-			arrList.get(i).add(""+savedNodeDetails.getNumRegenerators());
+        //Implement data manipulation here
+        for (int i = 0; i < saveTable.getItems().size(); i++) {
+            savedNodeDetails = saveTable.getItems().get(i);
 //			staticMap.addLocation(savedNodeDetails.getLocation(), savedNodeDetails.getNodeNum());
-			newTopology.addNode(savedNodeDetails.getLocation(), savedNodeDetails.getNodeNum());
-		}
+//            newTopology.addNode(savedNodeDetails.getLocation(), savedNodeDetails.getNodeNum());
+            newTopology.addNode(savedNodeDetails);
+        }
 
-		newTopology.createTopology();
+        newTopology.createTopology();
 //		staticMap.generateMap(true);
 
-		//Printing
-//		for (int i = 0; i < arrList.size(); i++) {
-//			for (int j = 0; j < arrList.get(i).size(); j++){
-//				System.out.println(arrList.get(i).get(j));
-//			}
-//		}
-	}
+        //my changes
 
-	/*
-	*Used to display a table view with inputs to allow user to build a network topology
-	 */
-	public void displaySaveMapWindow() {
-		saveWindow = new Stage();
-		saveWindow.initModality(Modality.APPLICATION_MODAL);
+        fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        file = fileChooser.showSaveDialog(null);
 
-		saveWindow.setTitle("Save Network Topology");
-		saveWindow.getIcons().add(new Image(getClass().getResourceAsStream("/ca/bcit/jfx/res/images/LogoBCIT.png")));
+        if (file == null) return;
+        Task<Void> task = new Task<Void>() {
 
-		//Node Number
-		TableColumn<SavedNodeDetails, String> nodeNumColumn = new TableColumn<>("Node Number");
-		nodeNumColumn.setMinWidth(200);
-		nodeNumColumn.setCellValueFactory(new PropertyValueFactory<>("nodeNum"));
+            @Override
+            protected Void call() {
+                try {
+                    Logger.info("Saving project to " + file.getName() + "...");
+                    ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).save(file, ApplicationResources.getProject(), saveTable.getItems());
+                    Logger.info("Finished saving project.");
+                } catch (Exception ex) {
+                    Logger.info("An exception occurred while saving the project.");
+                    Logger.debug(ex);
+                }
+                return null;
+            }
+        };
+        task.run();
+    }
 
-		//Name Column
-		TableColumn<SavedNodeDetails, String> nameColumn = new TableColumn<>("Location");
-		nameColumn.setMinWidth(200);
-		//use the location property of our objects
-		nameColumn.setCellValueFactory(new PropertyValueFactory<>("location"));
+    /*
+     *Used to display a table view with inputs to allow user to build a network topology
+     */
+    public void displaySaveMapWindow() {
+        saveWindow = new Stage();
+        saveWindow.initModality(Modality.APPLICATION_MODAL);
 
-		//Connected to Node Column
-		TableColumn<SavedNodeDetails, String> connectedNodeNumColumn = new TableColumn<>("Connected Node # (Separate multiple links with a comma)");
-		connectedNodeNumColumn.setMinWidth(450);
-		connectedNodeNumColumn.setCellValueFactory(new PropertyValueFactory<>("connectedNodeNum"));
+        saveWindow.setTitle("Save Network Topology");
+        saveWindow.getIcons().add(new Image(getClass().getResourceAsStream("/ca/bcit/jfx/res/images/LogoBCIT.png")));
 
-		//Number of Regenerators Column
-		TableColumn<SavedNodeDetails, String> numRegeneratorColumn = new TableColumn<>("# of Regenerators");
-		numRegeneratorColumn.setMinWidth(200);
-		numRegeneratorColumn.setCellValueFactory(new PropertyValueFactory<>("numRegenerators"));
+        //Node Number
+        TableColumn<SavedNodeDetails, String> nodeNumColumn = new TableColumn<>("Node Number");
+        nodeNumColumn.setMinWidth(200);
+        nodeNumColumn.setCellValueFactory(new PropertyValueFactory<>("nodeNum"));
 
-		//Node Type Column
-		TableColumn<SavedNodeDetails, String> nodeTypeColumn = new TableColumn<>("Node Type");
-		nodeTypeColumn.setMinWidth(400);
-		nodeTypeColumn.setCellValueFactory(new PropertyValueFactory<>("nodeType"));
+        //Name Column
+        TableColumn<SavedNodeDetails, String> nameColumn = new TableColumn<>("Location");
+        nameColumn.setMinWidth(200);
+        //use the location property of our objects
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("location"));
 
-		//Inputs
-		nameInput = new TextField();
-		nameInput.setPromptText("Enter location");
+        //Connected to Node Column
+        TableColumn<SavedNodeDetails, String> connectedNodeNumColumn = new TableColumn<>("Connected Node # (Separate multiple links with a comma)");
+        connectedNodeNumColumn.setMinWidth(450);
+        connectedNodeNumColumn.setCellValueFactory(new PropertyValueFactory<>("connectedNodeNum"));
 
-		connNodeInput = new TextField();
-		connNodeInput.setPromptText("Enter connected node(s)");
+        //Number of Regenerators Column
+        TableColumn<SavedNodeDetails, String> numRegeneratorColumn = new TableColumn<>("# of Regenerators");
+        numRegeneratorColumn.setMinWidth(200);
+        numRegeneratorColumn.setCellValueFactory(new PropertyValueFactory<>("numRegenerators"));
 
-		numRegeneratorInput = new TextField();
-		numRegeneratorInput.setPromptText("Enter # of regenerators");
+        //Node Type Column
+        TableColumn<SavedNodeDetails, String> nodeTypeColumn = new TableColumn<>("Node Type");
+        nodeTypeColumn.setMinWidth(400);
+        nodeTypeColumn.setCellValueFactory(new PropertyValueFactory<>("nodeType"));
 
-		itlCheckbox = new CheckBox("International");
-		dcCheckbox = new CheckBox("Data Center");
-		standardCheckbox = new CheckBox("Standard");
+        //Inputs
+        nameInput = new TextField();
+        nameInput.setPromptText("Enter location");
 
-		//Buttons
-		Button addButton = new Button("Add");
-		addButton.setOnAction(e -> addButtonClicked());
+        connNodeInput = new TextField();
+        connNodeInput.setPromptText("Enter connected node(s)");
 
-		Button deleteButton = new Button("Delete");
-		deleteButton.setOnAction(e -> deleteButtonClicked());
+        numRegeneratorInput = new TextField();
+        numRegeneratorInput.setPromptText("Enter # of regenerators");
 
-		Button saveButton = new Button("Save Map");
-		saveButton.setOnAction(e -> saveButtonClicked());
+        itlCheckbox = new CheckBox("International");
+        dcCheckbox = new CheckBox("Data Center");
+        standardCheckbox = new CheckBox("Standard");
 
-		HBox hBox = new HBox();
-		//Insets: Padding around entire layout
-		hBox.setPadding(new Insets(10, 10, 10, 10));
-		hBox.setSpacing(20);
-		hBox.getChildren().addAll(nameInput, connNodeInput, numRegeneratorInput, dcCheckbox, itlCheckbox, standardCheckbox, addButton, deleteButton, saveButton);
+        //Buttons
+        Button addButton = new Button("Add");
+        addButton.setOnAction(e -> addButtonClicked());
 
-		saveTable = new TableView<>();
-		saveTable.setItems(getSavedNodeDeatils());
-		saveTable.getColumns().addAll(nodeNumColumn, nameColumn, connectedNodeNumColumn, numRegeneratorColumn, nodeTypeColumn);
+        Button deleteButton = new Button("Delete");
+        deleteButton.setOnAction(e -> deleteButtonClicked());
 
-		VBox vBox = new VBox();
-		vBox.getChildren().addAll(saveTable, hBox);
+        Button saveButton = new Button("Save Map");
+        saveButton.setOnAction(e -> saveButtonClicked());
 
-		Scene scene = new Scene(vBox);
-		saveWindow.setScene(scene);
-		saveWindow.showAndWait();
-	}
+        HBox hBox = new HBox();
+        //Insets: Padding around entire layout
+        hBox.setPadding(new Insets(10, 10, 10, 10));
+        hBox.setSpacing(20);
+        hBox.getChildren().addAll(nameInput, connNodeInput, numRegeneratorInput, dcCheckbox, itlCheckbox, standardCheckbox, addButton, deleteButton, saveButton);
 
-	//Get all of the node details
-	public ObservableList<SavedNodeDetails> getSavedNodeDeatils(){
-		//observable list to store java objects inside
-		ObservableList<SavedNodeDetails> nodeDetails = FXCollections.observableArrayList();
-		nodeDetails.add(new SavedNodeDetails("Node_1", "London", "2,3,6", 100, "International"));
-		nodeDetails.add(new SavedNodeDetails("Node_2", "Paris", "1,3,5", 100, "Data Center"));
-		nodeDetails.add(new SavedNodeDetails("Node_3", "Brussels", "2,3,6", 100, "International"));
-		nodeDetails.add(new SavedNodeDetails("Node_4", "Amsterdam", "1,3,5", 100, "Data Center"));
-		nodeDetails.add(new SavedNodeDetails("Node_5", "Lyon", "2,3,6", 100, "International"));
-		nodeDetails.add(new SavedNodeDetails("Node_6", "Zurich", "1,3,5", 100, "Data Center"));
-		nodeDetails.add(new SavedNodeDetails("Node_7", "Strasbourg", "1,3,5", 100, "Data Center"));
-		nodeDetails.add(new SavedNodeDetails("Node_8", "Hamburg", "2,3,6", 100, "International"));
+        saveTable = new TableView<>();
+        saveTable.setItems(getSavedNodeDeatils());
+        saveTable.getColumns().addAll(nodeNumColumn, nameColumn, connectedNodeNumColumn, numRegeneratorColumn, nodeTypeColumn);
+
+        VBox vBox = new VBox();
+        vBox.getChildren().addAll(saveTable, hBox);
+
+        Scene scene = new Scene(vBox);
+        saveWindow.setScene(scene);
+        saveWindow.showAndWait();
+    }
+
+    //Get all of the node details
+    public ObservableList<SavedNodeDetails> getSavedNodeDeatils() {
+        //observable list to store java objects inside
+        ObservableList<SavedNodeDetails> nodeDetails = FXCollections.observableArrayList();
+        nodeDetails.add(new SavedNodeDetails(1, "London", "2,3,6", 100, "International"));
+        nodeDetails.add(new SavedNodeDetails(2, "Paris", "1,3,5", 100, "Data Center"));
+        nodeDetails.add(new SavedNodeDetails(3, "Brussels", "2,3,6", 100, "International"));
+//        nodeDetails.add(new SavedNodeDetails(4, "Amsterdam", "1,3,5", 100, "Data Center"));
+//        nodeDetails.add(new SavedNodeDetails(5, "Lyon", "2,3,6", 100, "International"));
+//        nodeDetails.add(new SavedNodeDetails(6, "Zurich", "1,3,5", 100, "Data Center"));
+//        nodeDetails.add(new SavedNodeDetails(7, "Strasbourg", "1,3,5", 100, "Data Center"));
+//        nodeDetails.add(new SavedNodeDetails(8, "Hamburg", "2,3,6", 100, "International"));
+
+
 //		nodeDetails.add(new SavedNodeDetails("Node_9", "Frankfurt", "1,3,5", 100, "Data Center"));
 //		nodeDetails.add(new SavedNodeDetails("Node_10", "Milan", "2,3,6", 100, "International"));
 //		nodeDetails.add(new SavedNodeDetails("Node_11", "Munich", "1,3,5", 100, "Data Center"));
@@ -240,33 +254,55 @@ public class SaveMapController {
 //		nodeDetails.add(new SavedNodeDetails("Node_4","Delta", "5,6", 100, "Standard"));
 //		nodeDetails.add(new SavedNodeDetails("Node_5","New Westminster", "2,4", 100, "Standard"));
 //		nodeDetails.add(new SavedNodeDetails("Node_6","Surrey", "1,4", 100, "Standard"));
-		return nodeDetails;
-	}
+        return nodeDetails;
+    }
 
-	public String getNextNodeNum(){
-		String [] splitString;
-		String returnedString;
-		int nodeNum;
-		splitString = saveTable.getItems().get(saveTable.getItems().size()-1).getNodeNum().split("_");
-		nodeNum = Integer.parseInt(splitString[1])+1;
-		returnedString = splitString[0]+"_"+nodeNum;
-		return returnedString;
-	}
+    /**
+     * Method will get calculate the size of rows and increment it to determine the next node num
+     *
+     * @return String representation of next node number to be placed
+     */
+    private int getNextNodeNum() {
+        System.out.println(saveTable.getItems().size() + 1);
+        if (saveTable.getItems().size() == 0) {
+            return 1;
+        } else {
+            return saveTable.getItems().size() + 1;
+        }
+    }
 
-	public String getSelectedNodeType(){
-		boolean dcSelected = dcCheckbox.isSelected();
-		boolean itlSelected = itlCheckbox.isSelected();
-		boolean standardSelected = standardCheckbox.isSelected();
-		if (dcSelected && !itlSelected && !standardSelected){
-			return "Data Center";
-		} else if (dcSelected && itlSelected && !standardSelected){
-			return "Data Center, International";
-		} else if (!dcSelected && itlSelected && !standardSelected){
-			return "International";
-		} else if (!dcSelected && !itlSelected && standardSelected){
-			return "Standard";
-		}
-		return "Standard";
-	}
+    /**
+     * Update all the following row numbers by decreasing their node numbers by 1
+     *
+     * @param nodeNumDeleted reference node number used to find the row to start updating from
+     */
+    private void updateNodeNumsUponDelete(int nodeNumDeleted) {
+        ObservableList<SavedNodeDetails> allNodeDetails;
+        allNodeDetails = saveTable.getItems();
+        for (int i = nodeNumDeleted; i <= allNodeDetails.size(); i++) {
+            allNodeDetails.get(i - 1).setNodeNum(i);
+        }
+    }
+
+    /**
+     * Identifies checkboxes marked and sets the node type to be added accordingly; default is standard
+     *
+     * @return node type
+     */
+    private String getSelectedNodeType() {
+        boolean dcSelected = dcCheckbox.isSelected();
+        boolean itlSelected = itlCheckbox.isSelected();
+        boolean standardSelected = standardCheckbox.isSelected();
+        if (dcSelected && !itlSelected && !standardSelected) {
+            return "Data Center";
+        } else if (dcSelected && itlSelected && !standardSelected) {
+            return "Data Center, International";
+        } else if (!dcSelected && itlSelected && !standardSelected) {
+            return "International";
+        } else if (!dcSelected && !itlSelected && standardSelected) {
+            return "Standard";
+        }
+        return "Standard";
+    }
 
 }
