@@ -111,7 +111,7 @@ public class SaveMapController {
                     }
 
                     Logger.info("Saving project to " + file.getName() + "...");
-                    ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).save(file, ApplicationResources.getProject(), saveTable.getItems(), newTopology.getMap());
+                    ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).save(file, ApplicationResources.getProject(), saveTable.getItems(), newTopology.getMap(), key);
                     Logger.info("Finished saving project.");
                 } catch (Exception ex) {
                     Logger.info("An exception occurred while saving the project.");

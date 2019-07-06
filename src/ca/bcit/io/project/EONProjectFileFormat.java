@@ -1,10 +1,12 @@
 package ca.bcit.io.project;
 
 import ca.bcit.io.YamlConfiguration;
+import ca.bcit.io.create.NewTopology;
 import ca.bcit.io.create.SavedNodeDetails;
 import ca.bcit.net.Modulation;
 import ca.bcit.net.ModulationInIfStatement;
 import ca.bcit.net.Network;
+import ca.bcit.net.NetworkLink;
 import ca.bcit.net.demand.generator.TrafficGenerator;
 import com.google.maps.ImageResult;
 import javafx.collections.ObservableList;
@@ -62,7 +64,7 @@ public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
 	}
 
 	@Override
-	public void save(File file, Project data, ObservableList<SavedNodeDetails> tableList, ImageResult staticMap) throws IOException {
+	public void save(File file, Project data, ObservableList<SavedNodeDetails> tableList, ImageResult staticMap, String apiKey) throws IOException {
 		ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(file));
 
 		//make the project.yml
@@ -106,7 +108,18 @@ public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
 			}
 			for(Map.Entry<ArrayList<String>, HashMap<String, Object>> entry : nodeDetails.getConnectedNodeLinkMap().entrySet()) {
 				if(!toSerializeNodeLinks.containsKey(entry.getKey())){
-					toSerializeNodeLinks.put(entry.getKey(), entry.getValue());
+					int nodeANum = Integer.parseInt(entry.getKey().get(0).split("_")[1]);
+					String nodeA = tableList.get(nodeANum-1).getLocation();
+					int nodeBNum = Integer.parseInt(entry.getKey().get(1).split("_")[1]);
+					String nodeB = tableList.get(nodeBNum-1).getLocation();
+					int length = NewTopology.calDistance(nodeA, nodeB, apiKey);
+					// ------------------------------------------------------------------------------------------------------------------------------------------
+					System.out.println("Link: nodeANum=" + nodeANum + ", nodeA=" + nodeA + ", nodeBNum=" + nodeBNum + ", nodeB=" + nodeB + ", length=" + length);
+					// ------------------------------------------------------------------------------------------------------------------------------------------
+					HashMap<String, Object> link = new HashMap<String, Object>();
+					link.put("length", length);
+					link.put("class", NetworkLink.class.getName());
+					toSerializeNodeLinks.put(entry.getKey(), link);
 				}
 			}
 		}

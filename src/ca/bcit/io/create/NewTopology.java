@@ -1,17 +1,13 @@
 package ca.bcit.io.create;
 
-
-import ca.bcit.net.NetworkLink;
 import com.google.maps.ImageResult;
 import com.google.maps.model.LatLng;
-
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+
 
 public class NewTopology {
     private StaticMap staticMap;
     private ArrayList<SavedNodeDetails> savedNodeDetailsList;
-    private ArrayList<NetworkLink> uniqueNetworkLinks;
 
     public NewTopology(String key) {
         this.staticMap = new StaticMap(key);
@@ -33,6 +29,14 @@ public class NewTopology {
         }
 
         return staticMap;
+    }
+
+    public static int calDistance(String locationA, String locationB, String apiKey) {
+       LatLng a = StaticMap.getLatLng(locationA, apiKey);
+       LatLng b = StaticMap.getLatLng(locationB, apiKey);
+
+       long disInMeters = distance(a.lat, b.lat, a.lng, b.lng);
+       return (int)disInMeters/1000;
     }
 
     private int calYCoord(SavedNodeDetails savedNodeDetails) {

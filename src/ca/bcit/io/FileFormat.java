@@ -27,7 +27,7 @@ public abstract class FileFormat<D, L, S> {
 //		save(file, data, null);
 //	}
 
-	public abstract void save(File file, D data, ObservableList<SavedNodeDetails> tableList, ImageResult staticMap) throws IOException;
+	public abstract void save(File file, D data, ObservableList<SavedNodeDetails> tableList, ImageResult staticMap, String apiKey) throws IOException;
 
 	public abstract boolean hasLoadParameter();
 

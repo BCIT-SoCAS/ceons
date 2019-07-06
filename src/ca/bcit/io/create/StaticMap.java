@@ -17,6 +17,7 @@ public class StaticMap {
     private GeoApiContext context;
     private int zoomLevel;
     private double meterPerPixel;
+    private String key;
 
     private double minLat;
     private double maxLat;
@@ -33,6 +34,7 @@ public class StaticMap {
      * @param apiKey
      */
     public StaticMap(String apiKey) {
+        this.key = apiKey;
         this.context = new GeoApiContext.Builder().apiKey(apiKey).build();
         this.locations = new HashMap<String, String>();
         this.coordinates = new ArrayList<LatLng>();
@@ -80,7 +82,7 @@ public class StaticMap {
      */
     public void addLocation(String location, String nodeNum) {
         locations.put(nodeNum, location);
-        LatLng latlng = getLatLng(location);
+        LatLng latlng = getLatLng(location, this.key);
 
         coordinates.add(latlng);
 
@@ -108,7 +110,7 @@ public class StaticMap {
 
     public SavedNodeDetails addLocation(SavedNodeDetails savedNodeDetails) {
         locations.put("Node_" + savedNodeDetails.getNodeNum(), savedNodeDetails.getLocation());
-        LatLng latlng = getLatLng(savedNodeDetails.getLocation());
+        LatLng latlng = getLatLng(savedNodeDetails.getLocation(), this.key);
 
         savedNodeDetails.setLatLng(latlng);
 
@@ -239,10 +241,11 @@ public class StaticMap {
      * @param location
      * @return
      */
-    public LatLng getLatLng(String location) {
+    public static LatLng getLatLng(String location, String apiKey) {
         LatLng latLng = new LatLng(0,0);
         try {
-            GeocodingApiRequest request = GeocodingApi.geocode(this.context, location);
+            GeoApiContext context = new GeoApiContext.Builder().apiKey(apiKey).build();
+            GeocodingApiRequest request = GeocodingApi.geocode(context, location);
             GeocodingResult[] result = request.await();
             // Handle successful request.
             latLng.lng = result[0].geometry.location.lng;
