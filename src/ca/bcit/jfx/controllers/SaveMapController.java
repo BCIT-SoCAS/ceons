@@ -205,16 +205,33 @@ public class SaveMapController {
     public ObservableList<SavedNodeDetails> getSavedNodeDeatils() {
         //observable list to store java objects inside
         ObservableList<SavedNodeDetails> nodeDetails = FXCollections.observableArrayList();
-        nodeDetails.add(new SavedNodeDetails(1, "London", "2,3,6", 100, "International"));
-        nodeDetails.add(new SavedNodeDetails(2, "Paris", "1,3,5", 100, "Data Center"));
-        nodeDetails.add(new SavedNodeDetails(3, "Brussels", "2,3,6", 100, "International"));
-        nodeDetails.add(new SavedNodeDetails(4, "Amsterdam", "1,3,5", 100, "Data Center"));
-        nodeDetails.add(new SavedNodeDetails(5, "Lyon", "2,3,6", 100, "International"));
-        nodeDetails.add(new SavedNodeDetails(6, "Zurich", "1,3,5", 100, "Data Center"));
-        nodeDetails.add(new SavedNodeDetails(7, "Strasbourg", "1,3,5", 100, "Data Center"));
-        nodeDetails.add(new SavedNodeDetails(8, "Hamburg", "2,3,6", 100, "International"));
 
+        // --dt14-------------------------------------------------------------------------------------------------------------------------------
+        nodeDetails.add(new SavedNodeDetails(1, "Hannover", "14", 100, "Standard"));
+        nodeDetails.add(new SavedNodeDetails(2, "Frankfurt", "1,13,14,8", 100, "Standard"));
+        nodeDetails.add(new SavedNodeDetails(3, "Hamburg", "1", 100, "Standard"));
+        nodeDetails.add(new SavedNodeDetails(4, "Bremen", "3,1", 100, "Standard"));
+        nodeDetails.add(new SavedNodeDetails(5, "Berlin", "3,1,14", 100, "International"));
+        nodeDetails.add(new SavedNodeDetails(6, "Muenchen", "8,7", 100, "Data Center"));
+        nodeDetails.add(new SavedNodeDetails(7, "Ulm, Germany", "", 100, "Standard"));
+        nodeDetails.add(new SavedNodeDetails(8, "Nuernberg", "9", 100, "Standard"));
+        nodeDetails.add(new SavedNodeDetails(9, "Stuttgart", "7", 100, "Standard"));
+        nodeDetails.add(new SavedNodeDetails(10, "Essen, Germany", "", 100, "Standard"));
+        nodeDetails.add(new SavedNodeDetails(11, "Dortmund", "10,1,13", 100, "Data Center"));
+        nodeDetails.add(new SavedNodeDetails(12, "Duesseldorf", "10,13", 100, "International"));
+        nodeDetails.add(new SavedNodeDetails(13, "Koeln", "", 100, "Standard"));
+        nodeDetails.add(new SavedNodeDetails(14, "Leipzig", "8", 100, "Data Center"));
+        // --dt14-------------------------------------------------------------------------------------------------------------------------------
 
+//        nodeDetails.add(new SavedNodeDetails(8, "Hamburg", "2,3,6", 100, "International"));
+//        nodeDetails.add(new SavedNodeDetails(1, "London", "2,3,6", 100, "International"));
+//        nodeDetails.add(new SavedNodeDetails(2, "Paris", "1,3,5", 100, "Data Center"));
+//        nodeDetails.add(new SavedNodeDetails(3, "Brussels", "2,3,6", 100, "International"));
+//        nodeDetails.add(new SavedNodeDetails(4, "Amsterdam", "1,3,5", 100, "Data Center"));
+//        nodeDetails.add(new SavedNodeDetails(5, "Lyon", "2,3,6", 100, "International"));
+//        nodeDetails.add(new SavedNodeDetails(6, "Zurich", "1,3,5", 100, "Data Center"));
+//        nodeDetails.add(new SavedNodeDetails(7, "Strasbourg", "1,3,5", 100, "Data Center"));
+//        nodeDetails.add(new SavedNodeDetails(8, "Hamburg", "2,3,6", 100, "International"));
 //		nodeDetails.add(new SavedNodeDetails("Node_9", "Frankfurt", "1,3,5", 100, "Data Center"));
 //		nodeDetails.add(new SavedNodeDetails("Node_10", "Milan", "2,3,6", 100, "International"));
 //		nodeDetails.add(new SavedNodeDetails("Node_11", "Munich", "1,3,5", 100, "Data Center"));

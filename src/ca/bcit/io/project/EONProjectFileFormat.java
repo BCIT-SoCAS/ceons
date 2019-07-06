@@ -108,18 +108,21 @@ public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
 			}
 			for(Map.Entry<ArrayList<String>, HashMap<String, Object>> entry : nodeDetails.getConnectedNodeLinkMap().entrySet()) {
 				if(!toSerializeNodeLinks.containsKey(entry.getKey())){
-					int nodeANum = Integer.parseInt(entry.getKey().get(0).split("_")[1]);
-					String nodeA = tableList.get(nodeANum-1).getLocation();
-					int nodeBNum = Integer.parseInt(entry.getKey().get(1).split("_")[1]);
-					String nodeB = tableList.get(nodeBNum-1).getLocation();
-					int length = NewTopology.calDistance(nodeA, nodeB, apiKey);
-					// ------------------------------------------------------------------------------------------------------------------------------------------
-					System.out.println("Link: nodeANum=" + nodeANum + ", nodeA=" + nodeA + ", nodeBNum=" + nodeBNum + ", nodeB=" + nodeB + ", length=" + length);
-					// ------------------------------------------------------------------------------------------------------------------------------------------
-					HashMap<String, Object> link = new HashMap<String, Object>();
-					link.put("length", length);
-					link.put("class", NetworkLink.class.getName());
-					toSerializeNodeLinks.put(entry.getKey(), link);
+					Boolean hasLink = !(entry.getKey().get(0).split("_").length == 1);
+					if(hasLink) {
+						int nodeANum = Integer.parseInt(entry.getKey().get(0).split("_")[1]);
+						String nodeA = tableList.get(nodeANum-1).getLocation();
+						int nodeBNum = Integer.parseInt(entry.getKey().get(1).split("_")[1]);
+						String nodeB = tableList.get(nodeBNum-1).getLocation();
+						int length = NewTopology.calDistance(nodeA, nodeB, apiKey);
+						// ------------------------------------------------------------------------------------------------------------------------------------------
+						System.out.println("Link: nodeANum=" + nodeANum + ", nodeA=" + nodeA + ", nodeBNum=" + nodeBNum + ", nodeB=" + nodeB + ", length=" + length);
+						// ------------------------------------------------------------------------------------------------------------------------------------------
+						HashMap<String, Object> link = new HashMap<String, Object>();
+						link.put("length", length);
+						link.put("class", NetworkLink.class.getName());
+						toSerializeNodeLinks.put(entry.getKey(), link);
+					}
 				}
 			}
 		}

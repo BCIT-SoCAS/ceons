@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class NewTopology {
     private StaticMap staticMap;
     private ArrayList<SavedNodeDetails> savedNodeDetailsList;
+    private final Boolean hasMarker = false;
 
     public NewTopology(String key) {
         this.staticMap = new StaticMap(key);
@@ -20,7 +21,7 @@ public class NewTopology {
     }
 
     public ImageResult getMap() {
-        ImageResult staticMap = this.staticMap.generateMap(true);
+        ImageResult staticMap = this.staticMap.generateMap(this.hasMarker);
         for (int i = 0; i < savedNodeDetailsList.size(); i++) {
             SavedNodeDetails savedNodeDetails = savedNodeDetailsList.get(i);
             savedNodeDetails.setX(calXCoord(savedNodeDetails));
