@@ -3,6 +3,7 @@ package ca.bcit.io.project;
 import ca.bcit.net.Network;
 import ca.bcit.net.demand.generator.TrafficGenerator;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.List;
 
@@ -22,5 +23,5 @@ public abstract class Project {
 	
 	public abstract List<TrafficGenerator> getTrafficGenerators();
 
-	public abstract String getMap();
+	public abstract BufferedImage getMap();
 }

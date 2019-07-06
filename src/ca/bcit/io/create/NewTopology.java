@@ -1,7 +1,9 @@
 package ca.bcit.io.create;
 
+import com.google.maps.ImageResult;
 import com.google.maps.model.LatLng;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public class NewTopology {
@@ -24,14 +26,16 @@ public class NewTopology {
 //        this.newNodes.add(newNode);
 //    }
 
-    public void createTopology() {
-        staticMap.generateMap(true);
+    public ImageResult getMap() {
+        ImageResult staticMap = this.staticMap.generateMap(true);
         for (int i = 0; i < savedNodeDetailsList.size(); i++) {
             SavedNodeDetails savedNodeDetails = savedNodeDetailsList.get(i);
             savedNodeDetails.setX(calXCoord(savedNodeDetails));
             savedNodeDetails.setY(calYCoord(savedNodeDetails));
             System.out.println(savedNodeDetails.toString());
         }
+
+        return staticMap;
     }
 
     private int calYCoord(SavedNodeDetails savedNodeDetails) {

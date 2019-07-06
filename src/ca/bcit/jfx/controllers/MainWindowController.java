@@ -26,6 +26,7 @@ import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.concurrent.Task;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -39,8 +40,11 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.*;
 import javafx.geometry.Insets;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +55,8 @@ import java.nio.file.Paths;
 import java.nio.file.Files;
 
 import javafx.util.Duration;
+
+import javax.imageio.ImageIO;
 
 
 public class MainWindowController {
@@ -385,7 +391,7 @@ public class MainWindowController {
                     ApplicationResources.setProject(project);
                     Logger.debug("Finished loading project.");
                     graph.resetCanvas();
-                    mapViewer.setImage(new Image(getClass().getResourceAsStream("/" + project.getMap())));
+                    mapViewer.setImage(SwingFXUtils.toFXImage(project.getMap(), null));
                     //for every node in the network place onto map and for each node add links between
                     for (NetworkNode n : project.getNetwork().getNodes()) {
 //                        n.setRegeneratorsCount(100);
