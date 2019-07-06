@@ -1,9 +1,11 @@
 package ca.bcit.io;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 import ca.bcit.io.create.SavedNodeDetails;
+import com.google.maps.ImageResult;
 import javafx.collections.ObservableList;
 import javafx.stage.FileChooser.ExtensionFilter;
 
@@ -25,7 +27,7 @@ public abstract class FileFormat<D, L, S> {
 //		save(file, data, null);
 //	}
 
-	public abstract void save(File file, D data, ObservableList<SavedNodeDetails> tableList) throws IOException;
+	public abstract void save(File file, D data, ObservableList<SavedNodeDetails> tableList, ImageResult staticMap) throws IOException;
 
 	public abstract boolean hasLoadParameter();
 

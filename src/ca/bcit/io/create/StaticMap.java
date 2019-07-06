@@ -42,7 +42,7 @@ public class StaticMap {
      * create and generate a static map from google
      * @param hasMarker
      */
-    public void generateMap(Boolean hasMarker) {
+    public ImageResult generateMap(Boolean hasMarker) {
         try {
             setCenterPoint();
             setZoomLevel();
@@ -63,12 +63,13 @@ public class StaticMap {
 //            ImageResult map = StaticMapsApi.newRequest(context, mapSize).center(this.centerPoint).markers(markers).
 //                    scale(2).await();
             BufferedImage img = ImageIO.read(new ByteArrayInputStream(map.imageData));
-
-            File outPutFile = new File("image.png");
-            ImageIO.write(img, "png", outPutFile);
             System.out.println("image generated");
+            return map;
+//            File outPutFile = new File("image.png");
+//            ImageIO.write(img, "png", outPutFile);
         } catch (Exception e) {
             System.out.println("Failed to generate static map:" + e);
+            return null;
         }
     }
 

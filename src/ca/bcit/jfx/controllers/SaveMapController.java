@@ -88,31 +88,6 @@ public class SaveMapController {
      *Makes calls to google API to save a map and also calculate distances, finally writes to .eon file when clicked
      */
     public void saveButtonClicked() {
-        // get api key
-        String apiPath = "api_key.txt";
-        String key = "";
-        try {
-            key = new String(Files.readAllBytes(Paths.get(apiPath)));
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-//		StaticMap staticMap = new StaticMap(key);
-        NewTopology newTopology = new NewTopology(key);
-
-        //Implement data manipulation here
-        for (int i = 0; i < saveTable.getItems().size(); i++) {
-            savedNodeDetails = saveTable.getItems().get(i);
-//			staticMap.addLocation(savedNodeDetails.getLocation(), savedNodeDetails.getNodeNum());
-//            newTopology.addNode(savedNodeDetails.getLocation(), savedNodeDetails.getNodeNum());
-            newTopology.addNode(savedNodeDetails);
-        }
-
-        newTopology.createTopology();
-//		staticMap.generateMap(true);
-
-        //my changes
-
         fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
@@ -123,9 +98,20 @@ public class SaveMapController {
 
             @Override
             protected Void call() {
+                // get api key
+                String apiPath = "api_key.txt";
+                String key = "";
                 try {
+                    key = new String(Files.readAllBytes(Paths.get(apiPath)));
+                    NewTopology newTopology = new NewTopology(key);
+
+                    for (int i = 0; i < saveTable.getItems().size(); i++) {
+                        savedNodeDetails = saveTable.getItems().get(i);
+                        newTopology.addNode(savedNodeDetails);
+                    }
+
                     Logger.info("Saving project to " + file.getName() + "...");
-                    ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).save(file, ApplicationResources.getProject(), saveTable.getItems());
+                    ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).save(file, ApplicationResources.getProject(), saveTable.getItems(), newTopology.getMap());
                     Logger.info("Finished saving project.");
                 } catch (Exception ex) {
                     Logger.info("An exception occurred while saving the project.");
@@ -222,11 +208,11 @@ public class SaveMapController {
         nodeDetails.add(new SavedNodeDetails(1, "London", "2,3,6", 100, "International"));
         nodeDetails.add(new SavedNodeDetails(2, "Paris", "1,3,5", 100, "Data Center"));
         nodeDetails.add(new SavedNodeDetails(3, "Brussels", "2,3,6", 100, "International"));
-//        nodeDetails.add(new SavedNodeDetails(4, "Amsterdam", "1,3,5", 100, "Data Center"));
-//        nodeDetails.add(new SavedNodeDetails(5, "Lyon", "2,3,6", 100, "International"));
-//        nodeDetails.add(new SavedNodeDetails(6, "Zurich", "1,3,5", 100, "Data Center"));
-//        nodeDetails.add(new SavedNodeDetails(7, "Strasbourg", "1,3,5", 100, "Data Center"));
-//        nodeDetails.add(new SavedNodeDetails(8, "Hamburg", "2,3,6", 100, "International"));
+        nodeDetails.add(new SavedNodeDetails(4, "Amsterdam", "1,3,5", 100, "Data Center"));
+        nodeDetails.add(new SavedNodeDetails(5, "Lyon", "2,3,6", 100, "International"));
+        nodeDetails.add(new SavedNodeDetails(6, "Zurich", "1,3,5", 100, "Data Center"));
+        nodeDetails.add(new SavedNodeDetails(7, "Strasbourg", "1,3,5", 100, "Data Center"));
+        nodeDetails.add(new SavedNodeDetails(8, "Hamburg", "2,3,6", 100, "International"));
 
 
 //		nodeDetails.add(new SavedNodeDetails("Node_9", "Frankfurt", "1,3,5", 100, "Data Center"));
