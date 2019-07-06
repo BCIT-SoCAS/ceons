@@ -40,15 +40,10 @@ public class YamlConfiguration {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static Object deserializeAll(Object object) {
-//		System.out.println("Object: " + object);
 		if (object instanceof Map) {
 			Map map = (Map) object;
-//			System.out.println("Without Set Entry: " + map.entrySet());
-//			System.out.println("Set Entry : " + (Set<Entry>) map.entrySet());
 			for (Entry entry : (Set<Entry>) map.entrySet()){
-//				System.out.println("Entry: " + entry);
 				entry.setValue(deserializeAll(entry.getValue()));
-//				System.out.println("Value: " + entry.getValue());
 			}
 			if (map.containsKey("class"))
 				try {
@@ -70,17 +65,14 @@ public class YamlConfiguration {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static Object serializeAll(Object object) {
-//		System.out.println(object.getClass());
 		if (object instanceof Map) {
 			Map map = (Map) object;
-			System.out.println((Set<Entry>) map.entrySet());
 			for (Entry entry : (Set<Entry>) map.entrySet()){
 				entry.setValue(serializeAll(entry.getValue()));
 			}
 			return map;
 		} else if (object instanceof List) {
 			List list = (List) object;
-//			System.out.println(list);
 			for (int i = 0; i < list.size(); i++) list.set(i, serializeAll(list.get(i))); {
 				return list;
 			}
@@ -93,7 +85,6 @@ public class YamlConfiguration {
 			map = (Map) serializeAll(map);
 			return map;
 		} else {
-			System.out.println(object);
 			return object;
 		}
 	}

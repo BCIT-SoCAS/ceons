@@ -1,13 +1,14 @@
 package ca.bcit.io.create;
 
+import ca.bcit.net.NetworkLink;
 import com.google.maps.model.LatLng;
 import ca.bcit.io.YamlSerializable;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class SavedNodeDetails implements YamlSerializable {
 
+    private HashMap<ArrayList<String>, HashMap<String, Object>> connectedNodeLinkMap = new HashMap<ArrayList<String>, HashMap<String, Object>>();
     private String location;
     private String connectedNodeNum;
     private int nodeNum;
@@ -31,6 +32,8 @@ public class SavedNodeDetails implements YamlSerializable {
         setConnectedNodeNum(connectedNodeNum);
         setNumRegenerators(numRegenerators);
         setNodeType(nodeType);
+
+        initConnectedNodeLinkMap(connectedNodeNum);
     }
 
     public int getNodeNum() {
@@ -57,6 +60,25 @@ public class SavedNodeDetails implements YamlSerializable {
         this.connectedNodeNum = connectedNodeNum;
     }
 
+    public void initConnectedNodeLinkMap(String connectedNodeNum) {
+        //will split the user defined node connections then make a map of all network links to this current node
+        List<String> connectedNodeNumStringList = Arrays.asList(connectedNodeNum.split(","));
+
+        for(String otherConnectionNum : connectedNodeNumStringList){
+            ArrayList<String> currentNodeConnection = new ArrayList<String>();
+            HashMap<String, Object> currentNodeConnectionLinkLength = new HashMap<String, Object>();
+
+            currentNodeConnection.add(this.nodeNumToString());
+            currentNodeConnection.add("Node_" + otherConnectionNum);
+            Collections.sort(currentNodeConnection);
+
+            //length is placeholder for now
+            currentNodeConnectionLinkLength.put("length", 100);
+            currentNodeConnectionLinkLength.put("class", NetworkLink.class.getName());
+            this.connectedNodeLinkMap.put(currentNodeConnection, currentNodeConnectionLinkLength);
+        }
+    }
+
     public int getNumRegenerators() {
         return numRegenerators;
     }
@@ -73,7 +95,9 @@ public class SavedNodeDetails implements YamlSerializable {
         this.nodeType = nodeType;
     }
 
-    //Shaun's
+    public HashMap<ArrayList<String>, HashMap<String, Object>> getConnectedNodeLinkMap(){
+        return connectedNodeLinkMap;
+    }
 
     public LatLng getLatLng() {
         return latLng;
@@ -99,7 +123,7 @@ public class SavedNodeDetails implements YamlSerializable {
         this.y = y;
     }
 
-    private String nodeNumToString(){
+    public String nodeNumToString(){
         return "Node_" + this.nodeNum;
     }
 

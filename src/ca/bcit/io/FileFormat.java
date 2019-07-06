@@ -14,7 +14,7 @@ public abstract class FileFormat<D, L, S> {
 	public abstract D load(File file, L parameter) throws IOException;
 
 	public D load(File file) throws IOException {
-		if (hasLoadParameter()) throw new FileFormatException("Loading paramter missing!");
+		if (hasLoadParameter()) throw new FileFormatException("Loading parameter missing!");
 		return load(file, null);
 	}
 

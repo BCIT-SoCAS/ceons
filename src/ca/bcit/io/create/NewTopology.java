@@ -1,5 +1,6 @@
 package ca.bcit.io.create;
 
+import ca.bcit.net.NetworkLink;
 import com.google.maps.model.LatLng;
 
 import java.util.ArrayList;
@@ -7,6 +8,7 @@ import java.util.ArrayList;
 public class NewTopology {
     private StaticMap staticMap;
     private ArrayList<SavedNodeDetails> savedNodeDetailsList;
+    private ArrayList<NetworkLink> uniqueNetworkLinks;
 
     public NewTopology(String key) {
         this.staticMap = new StaticMap(key);
@@ -18,14 +20,12 @@ public class NewTopology {
         savedNodeDetailsList.add(savedNodeDetails);
     }
 
-//    public void addNode(String name, int nodeNum) {
-//        NewNode newNode = new NewNode(name, nodeNum);
-//        newNode = this.staticMap.addLocation(newNode);
-//        this.newNodes.add(newNode);
-//    }
-
     public void createTopology() {
         staticMap.generateMap(true);
+        saveNodeDetails();
+    }
+
+    private void saveNodeDetails(){
         for (int i = 0; i < savedNodeDetailsList.size(); i++) {
             SavedNodeDetails savedNodeDetails = savedNodeDetailsList.get(i);
             savedNodeDetails.setX(calXCoord(savedNodeDetails));

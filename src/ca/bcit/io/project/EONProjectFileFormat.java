@@ -12,9 +12,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -74,11 +72,36 @@ public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
 
 		//make the topology.yml
 		YamlConfiguration topology = new YamlConfiguration();
-//		topology.put("", data.getNetwork());
 		topology.put("nodes", tableList);
-//		topology.put("groups", tableList.get(0));
-//		topology.put("links", tableList.get(1));
 
+		ArrayList<String> nodeNumReplicas = new ArrayList<String>();
+		ArrayList<String> nodeNumInternationals = new ArrayList<String>();
+		HashMap<String, ArrayList<String>> toSeralizeNodeTypes = new HashMap<String, ArrayList<String>>();
+		HashMap<ArrayList<String>, HashMap<String, Object>> toSerializeNodeLinks = new HashMap<ArrayList<String>, HashMap<String, Object>>();
+
+		for(SavedNodeDetails nodeDetails : tableList){
+			if(nodeDetails.getNodeType().equals("International")){
+				nodeNumInternationals.add(nodeDetails.nodeNumToString());
+			} else if(nodeDetails.getNodeType().equals("Data Center, International")){
+				nodeNumReplicas.add(nodeDetails.nodeNumToString());
+				nodeNumInternationals.add(nodeDetails.nodeNumToString());
+			} else if(nodeDetails.getNodeType().equals("Data Center")){
+				nodeNumReplicas.add(nodeDetails.nodeNumToString());
+			}
+			for(Map.Entry<ArrayList<String>, HashMap<String, Object>> entry : nodeDetails.getConnectedNodeLinkMap().entrySet()) {
+				if(!toSerializeNodeLinks.containsKey(entry.getKey())){
+					toSerializeNodeLinks.put(entry.getKey(), entry.getValue());
+				}
+			}
+		}
+
+		System.out.println(toSerializeNodeLinks);
+
+		toSeralizeNodeTypes.put("replicas", nodeNumReplicas);
+		toSeralizeNodeTypes.put("international", nodeNumInternationals);
+		topology.put("groups", toSeralizeNodeTypes);
+		topology.put("links", toSerializeNodeLinks);
+		topology.put("class", Network.class.getName());
 
 		zip.putNextEntry(new ZipEntry("topology.yml"));
 		topology.save(new OutputStreamWriter(zip));
