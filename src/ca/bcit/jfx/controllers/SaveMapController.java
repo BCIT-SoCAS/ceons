@@ -207,20 +207,20 @@ public class SaveMapController {
         ObservableList<SavedNodeDetails> nodeDetails = FXCollections.observableArrayList();
 
         // --dt14-------------------------------------------------------------------------------------------------------------------------------
-        nodeDetails.add(new SavedNodeDetails(1, "Hannover", "14", 100, "Standard"));
-        nodeDetails.add(new SavedNodeDetails(2, "Frankfurt", "1,13,14,8", 100, "Standard"));
-        nodeDetails.add(new SavedNodeDetails(3, "Hamburg", "1", 100, "Standard"));
-        nodeDetails.add(new SavedNodeDetails(4, "Bremen", "3,1", 100, "Standard"));
-        nodeDetails.add(new SavedNodeDetails(5, "Berlin", "3,1,14", 100, "International"));
-        nodeDetails.add(new SavedNodeDetails(6, "Muenchen", "8,7", 100, "Data Center"));
-        nodeDetails.add(new SavedNodeDetails(7, "Ulm, Germany", "", 100, "Standard"));
-        nodeDetails.add(new SavedNodeDetails(8, "Nuernberg", "9", 100, "Standard"));
-        nodeDetails.add(new SavedNodeDetails(9, "Stuttgart", "7", 100, "Standard"));
-        nodeDetails.add(new SavedNodeDetails(10, "Essen, Germany", "", 100, "Standard"));
-        nodeDetails.add(new SavedNodeDetails(11, "Dortmund", "10,1,13", 100, "Data Center"));
-        nodeDetails.add(new SavedNodeDetails(12, "Duesseldorf", "10,13", 100, "International"));
-        nodeDetails.add(new SavedNodeDetails(13, "Koeln", "", 100, "Standard"));
-        nodeDetails.add(new SavedNodeDetails(14, "Leipzig", "8", 100, "Data Center"));
+        nodeDetails.add(new SavedNodeDetails(0, "Hannover", "13", 100, "Standard"));
+        nodeDetails.add(new SavedNodeDetails(1, "Frankfurt", "0,12,13,7", 100, "Standard"));
+        nodeDetails.add(new SavedNodeDetails(2, "Hamburg", "0", 100, "Standard"));
+        nodeDetails.add(new SavedNodeDetails(3, "Bremen", "2,0", 100, "Standard"));
+        nodeDetails.add(new SavedNodeDetails(4, "Berlin", "2,0,13", 100, "International"));
+        nodeDetails.add(new SavedNodeDetails(5, "Muenchen", "6,7", 100, "Data Center"));
+        nodeDetails.add(new SavedNodeDetails(6, "Ulm, Germany", "", 100, "Standard"));
+        nodeDetails.add(new SavedNodeDetails(7, "Nuernberg", "8", 100, "Standard"));
+        nodeDetails.add(new SavedNodeDetails(8, "Stuttgart", "6", 100, "Standard"));
+        nodeDetails.add(new SavedNodeDetails(9, "Essen, Germany", "", 100, "Standard"));
+        nodeDetails.add(new SavedNodeDetails(10, "Dortmund", "9,0,12", 100, "Data Center"));
+        nodeDetails.add(new SavedNodeDetails(11, "Duesseldorf", "9,12", 100, "International"));
+        nodeDetails.add(new SavedNodeDetails(12, "Koeln", "", 100, "Standard"));
+        nodeDetails.add(new SavedNodeDetails(13, "Leipzig", "7", 100, "Data Center"));
         // --dt14-------------------------------------------------------------------------------------------------------------------------------
 
 //        nodeDetails.add(new SavedNodeDetails(8, "Hamburg", "2,3,6", 100, "International"));
@@ -282,8 +282,8 @@ public class SaveMapController {
     private void updateNodeNumsUponDelete(int nodeNumDeleted) {
         ObservableList<SavedNodeDetails> allNodeDetails;
         allNodeDetails = saveTable.getItems();
-        for (int i = nodeNumDeleted; i <= allNodeDetails.size(); i++) {
-            allNodeDetails.get(i - 1).setNodeNum(i);
+        for (int i = nodeNumDeleted; i < allNodeDetails.size(); i++) {
+            allNodeDetails.get(i).setNodeNum(i);
         }
     }
 

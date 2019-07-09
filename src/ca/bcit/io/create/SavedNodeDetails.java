@@ -41,7 +41,11 @@ public class SavedNodeDetails implements YamlSerializable {
     }
 
     public void setNodeNum(int nodeNum) {
-        this.nodeNum = nodeNum;
+        if(nodeNum >= 0){
+            this.nodeNum = nodeNum;
+        } else {
+            throw new IllegalArgumentException("Node num can't be negative");
+        }
     }
 
     public String getLocation() {
@@ -49,7 +53,11 @@ public class SavedNodeDetails implements YamlSerializable {
     }
 
     public void setLocation(String location) {
-        this.location = location;
+        if(location != null && !location.isEmpty()){
+            this.location = location;
+        } else {
+            throw new IllegalArgumentException("Node location can't be null or empty");
+        }
     }
 
     public String getConnectedNodeNum() {
@@ -57,7 +65,11 @@ public class SavedNodeDetails implements YamlSerializable {
     }
 
     public void setConnectedNodeNum(String connectedNodeNum) {
-        this.connectedNodeNum = connectedNodeNum;
+        if(connectedNodeNum != null){
+            this.connectedNodeNum = connectedNodeNum;
+        } else {
+            throw new IllegalArgumentException("Node connection from map creation can't be null");
+        }
     }
 
     public void initConnectedNodeLinkMap(String connectedNodeNum) {
@@ -84,7 +96,11 @@ public class SavedNodeDetails implements YamlSerializable {
     }
 
     public void setNumRegenerators(int numRegenerators) {
-        this.numRegenerators = numRegenerators;
+        if(numRegenerators >= 0){
+            this.numRegenerators = numRegenerators;
+        } else {
+            throw new IllegalArgumentException("Number of regenerators can't be negative");
+        }
     }
 
     public String getNodeType() {
@@ -92,7 +108,11 @@ public class SavedNodeDetails implements YamlSerializable {
     }
 
     public void setNodeType(String nodeType) {
-        this.nodeType = nodeType;
+        if(nodeType != null && !nodeType.isEmpty()){
+            this.nodeType = nodeType;
+        } else {
+            throw new IllegalArgumentException("Node type can't be null or empty");
+        }
     }
 
     public HashMap<ArrayList<String>, HashMap<String, Object>> getConnectedNodeLinkMap(){
@@ -112,7 +132,11 @@ public class SavedNodeDetails implements YamlSerializable {
     }
 
     public void setLatLng(LatLng latLng) {
-        this.latLng = latLng;
+        if(latLng != null){
+            this.latLng = latLng;
+        } else {
+            throw new IllegalArgumentException("Latitude and Longitude can't be null");
+        }
     }
 
     public void setX(int x) {

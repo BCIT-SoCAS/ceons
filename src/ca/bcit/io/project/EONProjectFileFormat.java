@@ -1,12 +1,12 @@
 package ca.bcit.io.project;
 
 import ca.bcit.io.YamlConfiguration;
-import ca.bcit.io.create.NewTopology;
 import ca.bcit.io.create.SavedNodeDetails;
+import ca.bcit.io.create.SavedNodeLinks;
+import ca.bcit.io.create.SavedNodeTypes;
 import ca.bcit.net.Modulation;
 import ca.bcit.net.ModulationInIfStatement;
 import ca.bcit.net.Network;
-import ca.bcit.net.NetworkLink;
 import ca.bcit.net.demand.generator.TrafficGenerator;
 import com.google.maps.ImageResult;
 import javafx.collections.ObservableList;
@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.*;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -42,7 +41,7 @@ public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
 
 		YamlConfiguration topology = new YamlConfiguration(zip.getInputStream(zip.getEntry(projectConfig.get("topology"))));
 		Network network = topology.get("");
-		System.out.println(network);
+
 
 		BufferedImage map = null;
 		InputStream in = zip.getInputStream(zip.getEntry("map.png"));
@@ -92,47 +91,16 @@ public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
 		YamlConfiguration topology = new YamlConfiguration();
 		topology.put("nodes", tableList);
 
-		ArrayList<String> nodeNumReplicas = new ArrayList<String>();
-		ArrayList<String> nodeNumInternationals = new ArrayList<String>();
-		HashMap<String, ArrayList<String>> toSeralizeNodeTypes = new HashMap<String, ArrayList<String>>();
-		HashMap<ArrayList<String>, HashMap<String, Object>> toSerializeNodeLinks = new HashMap<ArrayList<String>, HashMap<String, Object>>();
+		SavedNodeTypes savedNodeTypes = new SavedNodeTypes();
+		SavedNodeLinks savedNodeLinks = new SavedNodeLinks();
 
 		for(SavedNodeDetails nodeDetails : tableList){
-			if(nodeDetails.getNodeType().equals("International")){
-				nodeNumInternationals.add(nodeDetails.nodeNumToString());
-			} else if(nodeDetails.getNodeType().equals("Data Center, International")){
-				nodeNumReplicas.add(nodeDetails.nodeNumToString());
-				nodeNumInternationals.add(nodeDetails.nodeNumToString());
-			} else if(nodeDetails.getNodeType().equals("Data Center")){
-				nodeNumReplicas.add(nodeDetails.nodeNumToString());
-			}
-			for(Map.Entry<ArrayList<String>, HashMap<String, Object>> entry : nodeDetails.getConnectedNodeLinkMap().entrySet()) {
-				if(!toSerializeNodeLinks.containsKey(entry.getKey())){
-					Boolean hasLink = !(entry.getKey().get(0).split("_").length == 1);
-					if(hasLink) {
-						int nodeANum = Integer.parseInt(entry.getKey().get(0).split("_")[1]);
-						String nodeA = tableList.get(nodeANum-1).getLocation();
-						int nodeBNum = Integer.parseInt(entry.getKey().get(1).split("_")[1]);
-						String nodeB = tableList.get(nodeBNum-1).getLocation();
-						int length = NewTopology.calDistance(nodeA, nodeB, apiKey);
-						// ------------------------------------------------------------------------------------------------------------------------------------------
-						System.out.println("Link: nodeANum=" + nodeANum + ", nodeA=" + nodeA + ", nodeBNum=" + nodeBNum + ", nodeB=" + nodeB + ", length=" + length);
-						// ------------------------------------------------------------------------------------------------------------------------------------------
-						HashMap<String, Object> link = new HashMap<String, Object>();
-						link.put("length", length);
-						link.put("class", NetworkLink.class.getName());
-						toSerializeNodeLinks.put(entry.getKey(), link);
-					}
-				}
-			}
+			savedNodeTypes.setNodeNumType(nodeDetails);
+			savedNodeLinks.setNodeNumLinks(nodeDetails, tableList, apiKey);
 		}
 
-		System.out.println(toSerializeNodeLinks);
-
-		toSeralizeNodeTypes.put("replicas", nodeNumReplicas);
-		toSeralizeNodeTypes.put("international", nodeNumInternationals);
-		topology.put("groups", toSeralizeNodeTypes);
-		topology.put("links", toSerializeNodeLinks);
+		topology.put("groups", savedNodeTypes.getToSerializeNodeTypes());
+		topology.put("links", savedNodeLinks.getToSerializeNodeLinks());
 		topology.put("class", Network.class.getName());
 
 		zip.putNextEntry(new ZipEntry("topology.yml"));
