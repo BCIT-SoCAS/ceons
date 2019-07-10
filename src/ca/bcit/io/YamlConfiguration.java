@@ -1,5 +1,8 @@
 package ca.bcit.io;
 
+import ca.bcit.io.create.SavedNodeDetails;
+import ca.bcit.net.NetworkNode;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 
@@ -14,23 +17,34 @@ import java.util.Set;
 
 public class YamlConfiguration {
 
-	private static final Yaml PARSER = new Yaml();
+	private Yaml parser;
+	private DumperOptions dumperOptions;
 	private Object config;
-	
+
 	public YamlConfiguration(InputStream stream) {
-		config = deserializeAll(PARSER.load(stream));
+//		this.dumperOptions = new DumperOptions();
+//		dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+//		this.parser = new Yaml(dumperOptions);
+		this.parser = new Yaml();
+		config = deserializeAll(parser.load(stream));
+//		System.out.println("Config: " + config);
 	}
 	@SuppressWarnings("rawtypes")
 	public YamlConfiguration() {
+		this.dumperOptions = new DumperOptions();
+		dumperOptions.setWidth(100);
+		this.parser = new Yaml(dumperOptions);
+//		this.parser = new Yaml();
 		config = new HashMap();
 	}
-	
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static Object deserializeAll(Object object) {
 		if (object instanceof Map) {
 			Map map = (Map) object;
-			for (Entry entry : (Set<Entry>) map.entrySet())
+			for (Entry entry : (Set<Entry>) map.entrySet()){
 				entry.setValue(deserializeAll(entry.getValue()));
+			}
 			if (map.containsKey("class"))
 				try {
 					Constructor init = Class.forName((String) map.get("class")).getDeclaredConstructor(Map.class);
@@ -48,26 +62,33 @@ public class YamlConfiguration {
 			return list;
 		} else return object;
 	}
-	
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static Object serializeAll(Object object) {
 		if (object instanceof Map) {
 			Map map = (Map) object;
-			for (Entry entry : (Set<Entry>) map.entrySet())
+			for (Entry entry : (Set<Entry>) map.entrySet()){
 				entry.setValue(serializeAll(entry.getValue()));
+			}
 			return map;
 		} else if (object instanceof List) {
 			List list = (List) object;
-			for (int i = 0; i < list.size(); i++) list.set(i, serializeAll(list.get(i)));
-			return list;
+			for (int i = 0; i < list.size(); i++) list.set(i, serializeAll(list.get(i))); {
+				return list;
+			}
 		} else if (object instanceof YamlSerializable) {
 			Map map = ((YamlSerializable) object).serialize();
-			map.put("class", object.getClass().getName());
+			if(object instanceof SavedNodeDetails){
+				NetworkNode nn = new NetworkNode();
+				map.put("class", nn.getClass().getName());
+			}
 			map = (Map) serializeAll(map);
 			return map;
-		} else return object;
+		} else {
+			return object;
+		}
 	}
-	
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public <T> T get(String path) {
 		if (path.length() == 0) return (T) config;
@@ -85,34 +106,38 @@ public class YamlConfiguration {
 				}
 		return (T) result;
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <T> T put(String path, Object value) {
+		Object container;
+
 		if (path.length() == 0) {
 			Object oldConfig = config;
 			config = value;
 			return (T) oldConfig;
 		}
-		
-		Object container;
+
 		if (path.contains(".")) {
 			int lastDotIndex = path.lastIndexOf('.');
 			String containerPath = path.substring(0, lastDotIndex);
 			path = path.substring(lastDotIndex + 1);
 			container = get(containerPath);
-		} else container = config;
-		
+		} else {
+			container = config;
+		}
+
 		if (container instanceof Map)
 			return (T) ((Map) container).put(path, value);
+
 		else if (container instanceof List) {
 			int index = Integer.parseInt(path);
 			if (index == ((List) container).size()) {
 				((List) container).add(value);
 				return null;
-			} else return (T) ((List) container).set(index, value);	
-		} else throw new YAMLException("Tried to store a value in an unexisting container!");
+			} else return (T) ((List) container).set(index, value);
+		} else throw new YAMLException("Tried to store a value in an non-existent container!");
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <T> T remove(String path) {
 		if (path.length() == 0) {
@@ -136,6 +161,6 @@ public class YamlConfiguration {
 	}
 
 	public void save(Writer output) {
-		PARSER.dump(serializeAll(config), output);
+		parser.dump(serializeAll(config), output);
 	}
 }

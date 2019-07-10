@@ -21,6 +21,10 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 	private Node figureNode;
 	private Map<String, Boolean> nodeGroups = new HashMap<>();
 
+	public NetworkNode(){
+		this.name = "unknown";
+	}
+
 	/**
 	 * Class constructor specifying name of the NetworkNode
 	 * @param name
