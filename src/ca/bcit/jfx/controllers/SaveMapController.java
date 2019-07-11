@@ -102,6 +102,7 @@ public class SaveMapController implements Loadable {
         MainWindowController controller = ResizableCanvas.getParentController();
         boolean loadSuccessful = controller.selectFileToLoad();
         if(loadSuccessful){
+            saveTable.getItems().clear();
             controller.initalizeSimulationsAndNetworks();
             HashSet<ArrayList<Integer>> uniqueLinks = new HashSet<ArrayList<Integer>>();
             Task<Void> task = new Task<Void>() {
