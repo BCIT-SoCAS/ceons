@@ -231,12 +231,15 @@ public class SaveMapController implements Loadable {
 
         //Inputs
         nameInput = new TextField();
+        nameInput.setStyle("-fx-prompt-text-fill: derive(-fx-control-inner-background, -30%);");
         nameInput.setPromptText("Enter location");
 
         connNodeInput = new TextField();
+        connNodeInput.setStyle("-fx-prompt-text-fill: derive(-fx-control-inner-background, -30%);");
         connNodeInput.setPromptText("Enter connected node(s)");
 
         numRegeneratorInput = new TextField();
+        numRegeneratorInput.setStyle("-fx-prompt-text-fill: derive(-fx-control-inner-background, -30%);");
         numRegeneratorInput.setPromptText("Enter # of regenerators");
 
         itlCheckbox = new CheckBox("International");
