@@ -24,3 +24,4 @@ Node_21: NewOrleans
 Node_22: Boston
 Node_23: Atlanta
 Node_24: Miami
+Node_25: Washington, D.C
