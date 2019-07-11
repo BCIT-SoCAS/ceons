@@ -84,6 +84,10 @@ public class SaveMapController implements Loadable {
         ObservableList<SavedNodeDetails> nodeDetailsSelected, allNodeDetails;
         allNodeDetails = saveTable.getItems();
         nodeDetailsSelected = saveTable.getSelectionModel().getSelectedItems();
+        if(nodeDetailsSelected.size() == 0) {
+            Logger.info("No row selected to delete");
+            return;
+        }
         int nodeNumOfSelected = saveTable.getSelectionModel().getSelectedItem().getNodeNum();
 
         //For the instance that appears in the entire array of objects, remove it
