@@ -160,6 +160,7 @@ public class SavedNodeDetails implements YamlSerializable {
     public Map<String, Object> serialize() {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("name", nodeNumToString());
+        map.put("location", getLocation());
         map.put("regenerators", numRegenerators);
         map.put("xcoordinate", x);
         map.put("ycoordinate", y);

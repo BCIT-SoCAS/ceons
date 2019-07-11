@@ -32,7 +32,7 @@ public class YamlConfiguration {
 	@SuppressWarnings("rawtypes")
 	public YamlConfiguration() {
 		this.dumperOptions = new DumperOptions();
-		dumperOptions.setWidth(100);
+		dumperOptions.setWidth(150);
 		this.parser = new Yaml(dumperOptions);
 //		this.parser = new Yaml();
 		config = new HashMap();

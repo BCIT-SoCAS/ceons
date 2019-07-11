@@ -3,13 +3,21 @@ package ca.bcit.jfx.controllers;
 import ca.bcit.ApplicationResources;
 import ca.bcit.io.Logger;
 import ca.bcit.io.create.NewTopology;
+import ca.bcit.io.project.Project;
 import ca.bcit.io.project.ProjectFileFormat;
 import ca.bcit.io.create.SavedNodeDetails;
+import ca.bcit.jfx.components.Console;
+import ca.bcit.jfx.components.ResizableCanvas;
+import ca.bcit.net.Network;
+import ca.bcit.net.NetworkLink;
+import ca.bcit.net.NetworkNode;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -26,11 +34,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
-public class SaveMapController {
+public class SaveMapController implements Loadable {
+    private int i;
     @FXML
     private TextField saveMapInput;
     @FXML
@@ -44,7 +52,6 @@ public class SaveMapController {
     CheckBox dcCheckbox, itlCheckbox, standardCheckbox;
     FileChooser fileChooser;
     File file;
-    SavedNodeDetails savedNodeDetails;
 
     private boolean getMap(String requestUrl) {
         return true;
@@ -56,7 +63,7 @@ public class SaveMapController {
      */
     public void addButtonClicked() {
         try {
-            this.savedNodeDetails = new SavedNodeDetails(getNextNodeNum(), nameInput.getText(), connNodeInput.getText(), Integer.parseInt(numRegeneratorInput.getText()), getSelectedNodeType());
+            SavedNodeDetails savedNodeDetails = new SavedNodeDetails(getNextNodeNum(), nameInput.getText(), connNodeInput.getText(), Integer.parseInt(numRegeneratorInput.getText()), getSelectedNodeType());
             saveTable.getItems().add(savedNodeDetails);
         } catch (Exception e) {
             Logger.info("Please fill in all the fields");
@@ -85,6 +92,55 @@ public class SaveMapController {
     }
 
     /*
+     * Will populate table from the loaded YAML file and load main window with the topology
+     */
+    public void loadButtonClicked() {
+        MainWindowController controller = ResizableCanvas.getParentController();
+        controller.initalizeSimulationsAndNetworks();
+        HashSet<ArrayList<Integer>> uniqueLinks = new HashSet<ArrayList<Integer>>();
+        try {
+            Network network = ApplicationResources.getProject().getNetwork();
+            for (NetworkNode n1 : network.getNodes()) {
+                ArrayList<Integer> linkedNodeNums = new ArrayList<Integer>();
+                String linkedNodesToString = "";
+                String nodeTypesToString = "";
+                for (NetworkNode otherNode : network.getNodes()) {
+                    if (network.containsLink(n1, otherNode)) {
+                        linkedNodeNums.add(otherNode.getNodeNum());
+                    }
+                }
+                Collections.sort(linkedNodeNums);
+                if (!uniqueLinks.contains(linkedNodeNums)){
+                    uniqueLinks.add(linkedNodeNums);
+                }
+
+                if (!linkedNodeNums.isEmpty()){
+                    for(int i = 0; i < linkedNodeNums.size() - 1; i++){
+                        linkedNodesToString += (linkedNodeNums.get(i) + ",");
+                    }
+                    linkedNodesToString += linkedNodeNums.get(linkedNodeNums.size() - 1);
+                }
+                if (n1.getNodeGroups().size() == 2){
+                    nodeTypesToString = "Data Center, International";
+                } else if (n1.getNodeGroups().size() == 1){
+                    if(n1.getNodeGroups().get("replicas")){
+                        nodeTypesToString = "Data Center";
+                    } else if(n1.getNodeGroups().get("international")){
+                        nodeTypesToString = "International";
+                    }
+                } else {
+                    nodeTypesToString = "Standard";
+                }
+                SavedNodeDetails savedNodeDetails = new SavedNodeDetails(getNextNodeNum(), n1.getLocation(), linkedNodesToString, n1.getRegeneratorsCount(), nodeTypesToString);
+                saveTable.getItems().add(savedNodeDetails);
+            }
+        } catch (Exception e) {
+            Logger.info("Some exception: " + e);
+        }
+    }
+
+
+    /*
      *Makes calls to google API to save a map and also calculate distances, finally writes to .eon file when clicked
      */
     public void saveButtonClicked() {
@@ -106,7 +162,7 @@ public class SaveMapController {
                     NewTopology newTopology = new NewTopology(key);
 
                     for (int i = 0; i < saveTable.getItems().size(); i++) {
-                        savedNodeDetails = saveTable.getItems().get(i);
+                        SavedNodeDetails savedNodeDetails = saveTable.getItems().get(i);
                         newTopology.addNode(savedNodeDetails);
                     }
 
@@ -180,6 +236,9 @@ public class SaveMapController {
         Button deleteButton = new Button("Delete");
         deleteButton.setOnAction(e -> deleteButtonClicked());
 
+        Button updateButton = new Button("Load Map");
+        updateButton.setOnAction(e -> loadButtonClicked());
+
         Button saveButton = new Button("Save Map");
         saveButton.setOnAction(e -> saveButtonClicked());
 
@@ -187,7 +246,7 @@ public class SaveMapController {
         //Insets: Padding around entire layout
         hBox.setPadding(new Insets(10, 10, 10, 10));
         hBox.setSpacing(20);
-        hBox.getChildren().addAll(nameInput, connNodeInput, numRegeneratorInput, dcCheckbox, itlCheckbox, standardCheckbox, addButton, deleteButton, saveButton);
+        hBox.getChildren().addAll(nameInput, connNodeInput, numRegeneratorInput, dcCheckbox, itlCheckbox, standardCheckbox, addButton, deleteButton, saveButton, updateButton);
 
         saveTable = new TableView<>();
         saveTable.setItems(getSavedNodeDeatils());
@@ -206,21 +265,24 @@ public class SaveMapController {
         //observable list to store java objects inside
         ObservableList<SavedNodeDetails> nodeDetails = FXCollections.observableArrayList();
 
+        /**
+         * Mock data for the table
+         */
         // --dt14-------------------------------------------------------------------------------------------------------------------------------
-        nodeDetails.add(new SavedNodeDetails(0, "Hannover", "13", 100, "Standard"));
-        nodeDetails.add(new SavedNodeDetails(1, "Frankfurt", "0,12,13,7", 100, "Standard"));
-        nodeDetails.add(new SavedNodeDetails(2, "Hamburg", "0", 100, "Standard"));
-        nodeDetails.add(new SavedNodeDetails(3, "Bremen", "2,0", 100, "Standard"));
-        nodeDetails.add(new SavedNodeDetails(4, "Berlin", "2,0,13", 100, "International"));
-        nodeDetails.add(new SavedNodeDetails(5, "Muenchen", "6,7", 100, "Data Center"));
-        nodeDetails.add(new SavedNodeDetails(6, "Ulm, Germany", "", 100, "Standard"));
-        nodeDetails.add(new SavedNodeDetails(7, "Nuernberg", "8", 100, "Standard"));
-        nodeDetails.add(new SavedNodeDetails(8, "Stuttgart", "6", 100, "Standard"));
-        nodeDetails.add(new SavedNodeDetails(9, "Essen, Germany", "", 100, "Standard"));
-        nodeDetails.add(new SavedNodeDetails(10, "Dortmund", "9,0,12", 100, "Data Center"));
-        nodeDetails.add(new SavedNodeDetails(11, "Duesseldorf", "9,12", 100, "International"));
-        nodeDetails.add(new SavedNodeDetails(12, "Koeln", "", 100, "Standard"));
-        nodeDetails.add(new SavedNodeDetails(13, "Leipzig", "7", 100, "Data Center"));
+//        nodeDetails.add(new SavedNodeDetails(0, "Hannover", "13", 100, "Standard"));
+//        nodeDetails.add(new SavedNodeDetails(1, "Frankfurt", "0,12,13,7", 100, "Standard"));
+//        nodeDetails.add(new SavedNodeDetails(2, "Hamburg", "0", 100, "Standard"));
+//        nodeDetails.add(new SavedNodeDetails(3, "Bremen", "2,0", 100, "Standard"));
+//        nodeDetails.add(new SavedNodeDetails(4, "Berlin", "2,0,13", 100, "International"));
+//        nodeDetails.add(new SavedNodeDetails(5, "Muenchen", "6,7", 100, "Data Center"));
+//        nodeDetails.add(new SavedNodeDetails(6, "Ulm, Germany", "", 100, "Standard"));
+//        nodeDetails.add(new SavedNodeDetails(7, "Nuernberg", "8", 100, "Standard"));
+//        nodeDetails.add(new SavedNodeDetails(8, "Stuttgart", "6", 100, "Standard"));
+//        nodeDetails.add(new SavedNodeDetails(9, "Essen, Germany", "", 100, "Standard"));
+//        nodeDetails.add(new SavedNodeDetails(10, "Dortmund", "9,0,12", 100, "Data Center"));
+//        nodeDetails.add(new SavedNodeDetails(11, "Duesseldorf", "9,12", 100, "International"));
+//        nodeDetails.add(new SavedNodeDetails(12, "Koeln", "", 100, "Standard"));
+//        nodeDetails.add(new SavedNodeDetails(13, "Leipzig", "7", 100, "Data Center"));
         // --dt14-------------------------------------------------------------------------------------------------------------------------------
 
 //        nodeDetails.add(new SavedNodeDetails(8, "Hamburg", "2,3,6", 100, "International"));
@@ -261,17 +323,12 @@ public class SaveMapController {
     }
 
     /**
-     * Method will get calculate the size of rows and increment it to determine the next node num
+     * Method will get return the size as the next node num because node num default is 0
      *
      * @return String representation of next node number to be placed
      */
     private int getNextNodeNum() {
-        System.out.println(saveTable.getItems().size() + 1);
-        if (saveTable.getItems().size() == 0) {
-            return 1;
-        } else {
-            return saveTable.getItems().size() + 1;
-        }
+        return saveTable.getItems().size();
     }
 
     /**
