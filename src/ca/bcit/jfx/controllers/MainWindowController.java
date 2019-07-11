@@ -60,6 +60,7 @@ import javax.imageio.ImageIO;
 
 
 public class MainWindowController implements Loadable {
+    private static final int PROPERTIES_PANE_NUMBER = 2;
     private int i;
     @FXML
     private Console console;
@@ -81,8 +82,6 @@ public class MainWindowController implements Loadable {
     FileChooser fileChooser;
 
     File file;
-
-    private final static int PROPERTIES_PANE_NUMBER = 2;
 
     public double totalVolume;
     public double spectrumBlockedVolume;
@@ -304,7 +303,7 @@ public class MainWindowController implements Loadable {
     }
 
     @FXML
-    public void createButtonPressed(ActionEvent a) throws IOException {
+    public void createButtonClicked(ActionEvent a) throws IOException {
         String rootPath = System.getProperty("user.dir");
         Path apiKeyPath = Paths.get(rootPath + "/api_key.txt");
         GridPane grid = new GridPane();
@@ -394,32 +393,23 @@ public class MainWindowController implements Loadable {
         task.run();
     }
 
-    /*
-     * Will populate table from the loaded YAML file and load main window with the topology
-     */
-    public void loadButtonClicked(){
+    @FXML
+    public void loadButtonClicked() {
+        boolean loadSuccessful = selectFileToLoad();
+        if(loadSuccessful){
+            initalizeSimulationsAndNetworks();
+        }
+    }
+
+    public boolean selectFileToLoad(){
         fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
         file = fileChooser.showOpenDialog(null);
-
-        if (file == null) return;
-        initalizeSimulationsAndNetworks();
-    }
-
-    @FXML
-    public void loadButtonPressed(ActionEvent e) {
-        initalizeSimulationsAndNetworks();
+        return (file != null);
     }
 
     public synchronized void initalizeSimulationsAndNetworks() {
-        fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-        file = fileChooser.showOpenDialog(null);
-
-        if (file == null) return;
-
         Task<Void> task = new Task<Void>() {
 
             @Override

@@ -96,46 +96,56 @@ public class SaveMapController implements Loadable {
      */
     public void loadButtonClicked() {
         MainWindowController controller = ResizableCanvas.getParentController();
-        controller.initalizeSimulationsAndNetworks();
-        HashSet<ArrayList<Integer>> uniqueLinks = new HashSet<ArrayList<Integer>>();
-        try {
-            Network network = ApplicationResources.getProject().getNetwork();
-            for (NetworkNode n1 : network.getNodes()) {
-                ArrayList<Integer> linkedNodeNums = new ArrayList<Integer>();
-                String linkedNodesToString = "";
-                String nodeTypesToString = "";
-                for (NetworkNode otherNode : network.getNodes()) {
-                    if (network.containsLink(n1, otherNode)) {
-                        linkedNodeNums.add(otherNode.getNodeNum());
-                    }
-                }
-                Collections.sort(linkedNodeNums);
-                if (!uniqueLinks.contains(linkedNodeNums)){
-                    uniqueLinks.add(linkedNodeNums);
-                }
+        boolean loadSuccessful = controller.selectFileToLoad();
+        if(loadSuccessful){
+            controller.initalizeSimulationsAndNetworks();
+            HashSet<ArrayList<Integer>> uniqueLinks = new HashSet<ArrayList<Integer>>();
+            Task<Void> task = new Task<Void>() {
+                @Override
+                protected Void call() {
+                    try {
+                        Network network = ApplicationResources.getProject().getNetwork();
+                        for (NetworkNode n1 : network.getNodes()) {
+                            ArrayList<Integer> linkedNodeNums = new ArrayList<Integer>();
+                            String linkedNodesToString = "";
+                            String nodeTypesToString = "";
+                            for (NetworkNode otherNode : network.getNodes()) {
+                                if (network.containsLink(n1, otherNode)) {
+                                    linkedNodeNums.add(otherNode.getNodeNum());
+                                }
+                            }
+                            Collections.sort(linkedNodeNums);
+                            if (!uniqueLinks.contains(linkedNodeNums)) {
+                                uniqueLinks.add(linkedNodeNums);
+                            }
 
-                if (!linkedNodeNums.isEmpty()){
-                    for(int i = 0; i < linkedNodeNums.size() - 1; i++){
-                        linkedNodesToString += (linkedNodeNums.get(i) + ",");
+                            if (!linkedNodeNums.isEmpty()) {
+                                for (int i = 0; i < linkedNodeNums.size() - 1; i++) {
+                                    linkedNodesToString += (linkedNodeNums.get(i) + ",");
+                                }
+                                linkedNodesToString += linkedNodeNums.get(linkedNodeNums.size() - 1);
+                            }
+                            if (n1.getNodeGroups().size() == 2) {
+                                nodeTypesToString = "Data Center, International";
+                            } else if (n1.getNodeGroups().size() == 1) {
+                                if (n1.getNodeGroups().containsKey("replicas")) {
+                                    nodeTypesToString = "Data Center";
+                                } else if (n1.getNodeGroups().containsKey("international")) {
+                                    nodeTypesToString = "International";
+                                }
+                            } else {
+                                nodeTypesToString = "Standard";
+                            }
+                            SavedNodeDetails savedNodeDetails = new SavedNodeDetails(getNextNodeNum(), n1.getLocation(), linkedNodesToString, n1.getRegeneratorsCount(), nodeTypesToString);
+                            saveTable.getItems().add(savedNodeDetails);
+                        }
+                    } catch (Exception e) {
+                        Logger.info("Some exception: " + e);
                     }
-                    linkedNodesToString += linkedNodeNums.get(linkedNodeNums.size() - 1);
+                    return null;
                 }
-                if (n1.getNodeGroups().size() == 2){
-                    nodeTypesToString = "Data Center, International";
-                } else if (n1.getNodeGroups().size() == 1){
-                    if(n1.getNodeGroups().get("replicas")){
-                        nodeTypesToString = "Data Center";
-                    } else if(n1.getNodeGroups().get("international")){
-                        nodeTypesToString = "International";
-                    }
-                } else {
-                    nodeTypesToString = "Standard";
-                }
-                SavedNodeDetails savedNodeDetails = new SavedNodeDetails(getNextNodeNum(), n1.getLocation(), linkedNodesToString, n1.getRegeneratorsCount(), nodeTypesToString);
-                saveTable.getItems().add(savedNodeDetails);
-            }
-        } catch (Exception e) {
-            Logger.info("Some exception: " + e);
+            };
+            task.run();
         }
     }
 
@@ -236,8 +246,8 @@ public class SaveMapController implements Loadable {
         Button deleteButton = new Button("Delete");
         deleteButton.setOnAction(e -> deleteButtonClicked());
 
-        Button updateButton = new Button("Load Map");
-        updateButton.setOnAction(e -> loadButtonClicked());
+        Button loadButton = new Button("Load Map");
+        loadButton.setOnAction(e -> loadButtonClicked());
 
         Button saveButton = new Button("Save Map");
         saveButton.setOnAction(e -> saveButtonClicked());
@@ -246,7 +256,7 @@ public class SaveMapController implements Loadable {
         //Insets: Padding around entire layout
         hBox.setPadding(new Insets(10, 10, 10, 10));
         hBox.setSpacing(20);
-        hBox.getChildren().addAll(nameInput, connNodeInput, numRegeneratorInput, dcCheckbox, itlCheckbox, standardCheckbox, addButton, deleteButton, saveButton, updateButton);
+        hBox.getChildren().addAll(nameInput, connNodeInput, numRegeneratorInput, dcCheckbox, itlCheckbox, standardCheckbox, addButton, deleteButton, saveButton, loadButton);
 
         saveTable = new TableView<>();
         saveTable.setItems(getSavedNodeDeatils());

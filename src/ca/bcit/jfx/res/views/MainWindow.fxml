@@ -54,8 +54,8 @@
 					<content>
 						<VBox alignment="TOP_CENTER" spacing="8.0">
 							<children>
-								<Button onAction="#createButtonPressed" text="Create Topology" GridPane.rowIndex="1" />
-								<Button onAction="#loadButtonPressed" text="Load Topology" GridPane.columnIndex="1" />
+								<Button onAction="#createButtonClicked" text="Create Topology" GridPane.rowIndex="1" />
+								<Button onAction="#loadButtonClicked" text="Load Topology" GridPane.columnIndex="1" />
 								<RadioButton fx:id="RBNoneChose" selected="true" text="None" toggleGroup="$RBGroup">
 									<toggleGroup>
 										<ToggleGroup fx:id="RBGroup" />
