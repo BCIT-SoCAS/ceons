@@ -3,25 +3,20 @@ package ca.bcit.jfx.controllers;
 import ca.bcit.ApplicationResources;
 import ca.bcit.io.Logger;
 import ca.bcit.io.create.NewTopology;
-import ca.bcit.io.project.Project;
 import ca.bcit.io.project.ProjectFileFormat;
 import ca.bcit.io.create.SavedNodeDetails;
-import ca.bcit.jfx.components.Console;
 import ca.bcit.jfx.components.ResizableCanvas;
 import ca.bcit.net.Network;
-import ca.bcit.net.NetworkLink;
 import ca.bcit.net.NetworkNode;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.fxml.FXML;
 
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -29,29 +24,26 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.converter.IntegerStringConverter;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
 
 public class SaveMapController implements Loadable {
-    private int i;
-    @FXML
-    private TextField saveMapInput;
-    @FXML
-    private Button saveMapBtn;
-    @FXML
-    private Button closeMapWindowBtn;
 
-    Stage saveWindow;
-    TableView<SavedNodeDetails> saveTable;
-    TextField nodeNumInput, nameInput, connNodeInput, numRegeneratorInput;
-    CheckBox dcCheckbox, itlCheckbox, standardCheckbox;
-    FileChooser fileChooser;
-    File file;
+    private static final int BOTH_GROUP_MEMBERSHIPS = 2;
+    private static final int ONE_GROUP_MEMBERSHIP = 1;
+    private int i;
+
+    private Stage saveWindow;
+    private TableView<SavedNodeDetails> saveTable;
+    private TextField nodeNumInput, nameInput, connNodeInput, numRegeneratorInput;
+    private CheckBox dcCheckbox, itlCheckbox, standardCheckbox;
+    private FileChooser fileChooser;
+    private File file;
 
     private boolean getMap(String requestUrl) {
         return true;
@@ -84,7 +76,7 @@ public class SaveMapController implements Loadable {
         ObservableList<SavedNodeDetails> nodeDetailsSelected, allNodeDetails;
         allNodeDetails = saveTable.getItems();
         nodeDetailsSelected = saveTable.getSelectionModel().getSelectedItems();
-        if(nodeDetailsSelected.size() == 0) {
+        if (nodeDetailsSelected.size() == 0) {
             Logger.info("No row selected to delete");
             return;
         }
@@ -101,52 +93,13 @@ public class SaveMapController implements Loadable {
     public void loadButtonClicked() {
         MainWindowController controller = ResizableCanvas.getParentController();
         boolean loadSuccessful = controller.selectFileToLoad();
-        if(loadSuccessful){
+        if (loadSuccessful) {
             saveTable.getItems().clear();
             controller.initalizeSimulationsAndNetworks();
-            HashSet<ArrayList<Integer>> uniqueLinks = new HashSet<ArrayList<Integer>>();
             Task<Void> task = new Task<Void>() {
                 @Override
                 protected Void call() {
-                    try {
-                        Network network = ApplicationResources.getProject().getNetwork();
-                        for (NetworkNode n1 : network.getNodes()) {
-                            ArrayList<Integer> linkedNodeNums = new ArrayList<Integer>();
-                            String linkedNodesToString = "";
-                            String nodeTypesToString = "";
-                            for (NetworkNode otherNode : network.getNodes()) {
-                                if (network.containsLink(n1, otherNode)) {
-                                    linkedNodeNums.add(otherNode.getNodeNum());
-                                }
-                            }
-                            Collections.sort(linkedNodeNums);
-                            if (!uniqueLinks.contains(linkedNodeNums)) {
-                                uniqueLinks.add(linkedNodeNums);
-                            }
-
-                            if (!linkedNodeNums.isEmpty()) {
-                                for (int i = 0; i < linkedNodeNums.size() - 1; i++) {
-                                    linkedNodesToString += (linkedNodeNums.get(i) + ",");
-                                }
-                                linkedNodesToString += linkedNodeNums.get(linkedNodeNums.size() - 1);
-                            }
-                            if (n1.getNodeGroups().size() == 2) {
-                                nodeTypesToString = "Data Center, International";
-                            } else if (n1.getNodeGroups().size() == 1) {
-                                if (n1.getNodeGroups().containsKey("replicas")) {
-                                    nodeTypesToString = "Data Center";
-                                } else if (n1.getNodeGroups().containsKey("international")) {
-                                    nodeTypesToString = "International";
-                                }
-                            } else {
-                                nodeTypesToString = "Standard";
-                            }
-                            SavedNodeDetails savedNodeDetails = new SavedNodeDetails(getNextNodeNum(), n1.getLocation(), linkedNodesToString, n1.getRegeneratorsCount(), nodeTypesToString);
-                            saveTable.getItems().add(savedNodeDetails);
-                        }
-                    } catch (Exception e) {
-                        Logger.info("Some exception: " + e);
-                    }
+                    populateTableWithLoadedTopology();
                     return null;
                 }
             };
@@ -195,6 +148,13 @@ public class SaveMapController implements Loadable {
     }
 
     /*
+     *Populates the table view with information from the currently loaded topology for the user to edit
+     */
+    public void updateButtonClicked() {
+        populateTableWithLoadedTopology();
+    }
+
+    /*
      *Used to display a table view with inputs to allow user to build a network topology
      */
     public void displaySaveMapWindow() {
@@ -209,26 +169,47 @@ public class SaveMapController implements Loadable {
         nodeNumColumn.setMinWidth(200);
         nodeNumColumn.setCellValueFactory(new PropertyValueFactory<>("nodeNum"));
 
-        //Name Column
-        TableColumn<SavedNodeDetails, String> nameColumn = new TableColumn<>("Location");
-        nameColumn.setMinWidth(200);
+        //Location Column
+        TableColumn<SavedNodeDetails, String> locationColumn = new TableColumn<>("Location");
+        locationColumn.setMinWidth(200);
         //use the location property of our objects
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("location"));
+        locationColumn.setCellValueFactory(new PropertyValueFactory<>("location"));
+        locationColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        locationColumn.setOnEditCommit(
+                (TableColumn.CellEditEvent<SavedNodeDetails, String> t) -> {
+                    ((SavedNodeDetails) t.getTableView().getItems().get(t.getTablePosition().getRow())).setLocation(t.getNewValue());
+                });
+
 
         //Connected to Node Column
         TableColumn<SavedNodeDetails, String> connectedNodeNumColumn = new TableColumn<>("Connected Node # (Separate multiple links with a comma)");
         connectedNodeNumColumn.setMinWidth(450);
         connectedNodeNumColumn.setCellValueFactory(new PropertyValueFactory<>("connectedNodeNum"));
+        connectedNodeNumColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        connectedNodeNumColumn.setOnEditCommit(
+                (TableColumn.CellEditEvent<SavedNodeDetails, String> t) -> {
+                    ((SavedNodeDetails) t.getTableView().getItems().get(t.getTablePosition().getRow())).setConnectedNodeNum(t.getNewValue());
+                });
 
         //Number of Regenerators Column
-        TableColumn<SavedNodeDetails, String> numRegeneratorColumn = new TableColumn<>("# of Regenerators");
+        TableColumn<SavedNodeDetails, Integer> numRegeneratorColumn = new TableColumn<>("# of Regenerators");
         numRegeneratorColumn.setMinWidth(200);
         numRegeneratorColumn.setCellValueFactory(new PropertyValueFactory<>("numRegenerators"));
+        numRegeneratorColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        numRegeneratorColumn.setOnEditCommit(
+                (TableColumn.CellEditEvent<SavedNodeDetails, Integer> t) -> {
+                    ((SavedNodeDetails) t.getTableView().getItems().get(t.getTablePosition().getRow())).setNumRegenerators(t.getNewValue());
+                });
 
         //Node Type Column
         TableColumn<SavedNodeDetails, String> nodeTypeColumn = new TableColumn<>("Node Type");
         nodeTypeColumn.setMinWidth(400);
         nodeTypeColumn.setCellValueFactory(new PropertyValueFactory<>("nodeType"));
+        nodeTypeColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        nodeTypeColumn.setOnEditCommit(
+                (TableColumn.CellEditEvent<SavedNodeDetails, String> t) -> {
+                    ((SavedNodeDetails) t.getTableView().getItems().get(t.getTablePosition().getRow())).setNodeType(t.getNewValue());
+                });
 
         //Inputs
         nameInput = new TextField();
@@ -254,21 +235,25 @@ public class SaveMapController implements Loadable {
         Button deleteButton = new Button("Delete");
         deleteButton.setOnAction(e -> deleteButtonClicked());
 
-        Button loadButton = new Button("Load Map");
+        Button loadButton = new Button("Load map");
         loadButton.setOnAction(e -> loadButtonClicked());
 
-        Button saveButton = new Button("Save Map");
+        Button saveButton = new Button("Save map");
         saveButton.setOnAction(e -> saveButtonClicked());
+
+        Button updateButton = new Button("Update current pre-loaded map");
+        updateButton.setOnAction(e -> updateButtonClicked());
 
         HBox hBox = new HBox();
         //Insets: Padding around entire layout
         hBox.setPadding(new Insets(10, 10, 10, 10));
         hBox.setSpacing(20);
-        hBox.getChildren().addAll(nameInput, connNodeInput, numRegeneratorInput, dcCheckbox, itlCheckbox, standardCheckbox, addButton, deleteButton, saveButton, loadButton);
+        hBox.getChildren().addAll(nameInput, connNodeInput, numRegeneratorInput, dcCheckbox, itlCheckbox, standardCheckbox, addButton, deleteButton, saveButton, loadButton, updateButton);
 
         saveTable = new TableView<>();
-        saveTable.setItems(getSavedNodeDeatils());
-        saveTable.getColumns().addAll(nodeNumColumn, nameColumn, connectedNodeNumColumn, numRegeneratorColumn, nodeTypeColumn);
+        saveTable.setItems(getSavedNodeDetails());
+        saveTable.setEditable(true);
+        saveTable.getColumns().addAll(nodeNumColumn, locationColumn, connectedNodeNumColumn, numRegeneratorColumn, nodeTypeColumn);
 
         VBox vBox = new VBox();
         vBox.getChildren().addAll(saveTable, hBox);
@@ -279,7 +264,7 @@ public class SaveMapController implements Loadable {
     }
 
     //Get all of the node details
-    public ObservableList<SavedNodeDetails> getSavedNodeDeatils() {
+    private ObservableList<SavedNodeDetails> getSavedNodeDetails() {
         //observable list to store java objects inside
         ObservableList<SavedNodeDetails> nodeDetails = FXCollections.observableArrayList();
 
@@ -304,34 +289,34 @@ public class SaveMapController implements Loadable {
         // --dt14-------------------------------------------------------------------------------------------------------------------------------
 
         // --euro28-------------------------------------------------------------------------------------------------------------------------------
-        nodeDetails.add(new SavedNodeDetails(0, "London", "1,3,19", 100, "Data Center"));
-        nodeDetails.add(new SavedNodeDetails(1, "Paris", "0,2,4,6,17", 100, "Data Center"));
-        nodeDetails.add(new SavedNodeDetails(2, "Brussels", "1,3,8", 100, "Standard"));
-        nodeDetails.add(new SavedNodeDetails(3, "Amsterdam", "0,2,7,20", 100, "Data Center"));
-        nodeDetails.add(new SavedNodeDetails(4, "Lyon", "1,5,18", 100, "Standard"));
-        nodeDetails.add(new SavedNodeDetails(5, "Zurich", "4,6,9", 100, "Data Center"));
-        nodeDetails.add(new SavedNodeDetails(6, "Strasbourg", "1,5,8", 100, "Standard"));
-        nodeDetails.add(new SavedNodeDetails(7, "Hamburg", "3,8,11", 100, "Standard"));
-		nodeDetails.add(new SavedNodeDetails(8, "Frankfurt", "2,6,7,10", 100, "Data Center"));
-		nodeDetails.add(new SavedNodeDetails(9, "Milan", "5,10,12", 100, "Standard"));
-		nodeDetails.add(new SavedNodeDetails(10, "Munich", "8,9,11,14", 100, "Standard"));
-		nodeDetails.add(new SavedNodeDetails(11, "Berlin", "7,10,15,24,25", 100, "Standard"));
-		nodeDetails.add(new SavedNodeDetails(12, "Rome", "9,13,21", 100, "Standard"));
-		nodeDetails.add(new SavedNodeDetails(13, "Zagreb", "12,14,22", 100, "Standard"));
-		nodeDetails.add(new SavedNodeDetails(14, "Vienna", "10,13,15", 100, "Standard"));
-		nodeDetails.add(new SavedNodeDetails(15, "Prague", "11,14,23", 100, "Standard"));
-		nodeDetails.add(new SavedNodeDetails(16, "Madrid", "17,18", 100, "Data Center"));
-		nodeDetails.add(new SavedNodeDetails(17, "Bordeaux", "1,16", 100, "International"));
-		nodeDetails.add(new SavedNodeDetails(18, "Barcelona, Spain", "4,16", 100, "Standard"));
-		nodeDetails.add(new SavedNodeDetails(19, "Dublin", "0,20", 100, "International"));
-		nodeDetails.add(new SavedNodeDetails(20, "Glasgow", "3,19", 100, "Standard"));
-		nodeDetails.add(new SavedNodeDetails(21, "Athens", "22,12", 100, "International"));
-		nodeDetails.add(new SavedNodeDetails(22, "Belgrade", "13,21,23", 100, "Standard"));
-		nodeDetails.add(new SavedNodeDetails(23, "Budapest", "15,22,24", 100, "Standard"));
-		nodeDetails.add(new SavedNodeDetails(24, "Warsaw", "11,23,26", 100, "Data Center"));
-		nodeDetails.add(new SavedNodeDetails(25, "Copenhagen", "11,27", 100, "Standard"));
-		nodeDetails.add(new SavedNodeDetails(26, "Stockholm", "24,27", 100, "Standard"));
-		nodeDetails.add(new SavedNodeDetails(27, "Oslo", "25,26", 100, "Standard"));
+//        nodeDetails.add(new SavedNodeDetails(0, "London", "1,3,19", 100, "Data Center"));
+//        nodeDetails.add(new SavedNodeDetails(1, "Paris", "0,2,4,6,17", 100, "Data Center"));
+//        nodeDetails.add(new SavedNodeDetails(2, "Brussels", "1,3,8", 100, "Standard"));
+//        nodeDetails.add(new SavedNodeDetails(3, "Amsterdam", "0,2,7,20", 100, "Data Center"));
+//        nodeDetails.add(new SavedNodeDetails(4, "Lyon", "1,5,18", 100, "Standard"));
+//        nodeDetails.add(new SavedNodeDetails(5, "Zurich", "4,6,9", 100, "Data Center"));
+//        nodeDetails.add(new SavedNodeDetails(6, "Strasbourg", "1,5,8", 100, "Standard"));
+//        nodeDetails.add(new SavedNodeDetails(7, "Hamburg", "3,8,11", 100, "Standard"));
+//		nodeDetails.add(new SavedNodeDetails(8, "Frankfurt", "2,6,7,10", 100, "Data Center"));
+//		nodeDetails.add(new SavedNodeDetails(9, "Milan", "5,10,12", 100, "Standard"));
+//		nodeDetails.add(new SavedNodeDetails(10, "Munich", "8,9,11,14", 100, "Standard"));
+//		nodeDetails.add(new SavedNodeDetails(11, "Berlin", "7,10,15,24,25", 100, "Standard"));
+//		nodeDetails.add(new SavedNodeDetails(12, "Rome", "9,13,21", 100, "Standard"));
+//		nodeDetails.add(new SavedNodeDetails(13, "Zagreb", "12,14,22", 100, "Standard"));
+//		nodeDetails.add(new SavedNodeDetails(14, "Vienna", "10,13,15", 100, "Standard"));
+//		nodeDetails.add(new SavedNodeDetails(15, "Prague", "11,14,23", 100, "Standard"));
+//		nodeDetails.add(new SavedNodeDetails(16, "Madrid", "17,18", 100, "Data Center"));
+//		nodeDetails.add(new SavedNodeDetails(17, "Bordeaux", "1,16", 100, "International"));
+//		nodeDetails.add(new SavedNodeDetails(18, "Barcelona, Spain", "4,16", 100, "Standard"));
+//		nodeDetails.add(new SavedNodeDetails(19, "Dublin", "0,20", 100, "International"));
+//		nodeDetails.add(new SavedNodeDetails(20, "Glasgow", "3,19", 100, "Standard"));
+//		nodeDetails.add(new SavedNodeDetails(21, "Athens", "22,12", 100, "International"));
+//		nodeDetails.add(new SavedNodeDetails(22, "Belgrade", "13,21,23", 100, "Standard"));
+//		nodeDetails.add(new SavedNodeDetails(23, "Budapest", "15,22,24", 100, "Standard"));
+//		nodeDetails.add(new SavedNodeDetails(24, "Warsaw", "11,23,26", 100, "Data Center"));
+//		nodeDetails.add(new SavedNodeDetails(25, "Copenhagen", "11,27", 100, "Standard"));
+//		nodeDetails.add(new SavedNodeDetails(26, "Stockholm", "24,27", 100, "Standard"));
+//		nodeDetails.add(new SavedNodeDetails(27, "Oslo", "25,26", 100, "Standard"));
         // --euro28-------------------------------------------------------------------------------------------------------------------------------
 
         // --us26-------------------------------------------------------------------------------------------------------------------------------
@@ -409,4 +394,52 @@ public class SaveMapController implements Loadable {
         return "Standard";
     }
 
+    /**
+     * Will populate the table view with the currently loaded topology information
+     */
+    private void populateTableWithLoadedTopology() {
+        HashSet<ArrayList<Integer>> uniqueLinks = new HashSet<ArrayList<Integer>>();
+        try {
+            Network network = ApplicationResources.getProject().getNetwork();
+            saveTable.getItems().clear();
+            for (NetworkNode n1 : network.getNodes()) {
+                ArrayList<Integer> linkedNodeNums = new ArrayList<Integer>();
+                String linkedNodesToString = "";
+                String nodeTypesToString = "";
+                for (NetworkNode otherNode : network.getNodes()) {
+                    if (network.containsLink(n1, otherNode)) {
+                        linkedNodeNums.add(otherNode.getNodeNum());
+                    }
+                }
+                Collections.sort(linkedNodeNums);
+                if (!uniqueLinks.contains(linkedNodeNums)) {
+                    uniqueLinks.add(linkedNodeNums);
+                }
+
+                if (!linkedNodeNums.isEmpty()) {
+                    for (int i = 0; i < linkedNodeNums.size() - 1; i++) {
+                        linkedNodesToString += (linkedNodeNums.get(i) + ",");
+                    }
+                    linkedNodesToString += linkedNodeNums.get(linkedNodeNums.size() - 1);
+                }
+                if (n1.getNodeGroups().size() == BOTH_GROUP_MEMBERSHIPS) {
+                    nodeTypesToString = "Data Center, International";
+                } else if (n1.getNodeGroups().size() == ONE_GROUP_MEMBERSHIP) {
+                    if (n1.getNodeGroups().containsKey("replicas")) {
+                        nodeTypesToString = "Data Center";
+                    } else if (n1.getNodeGroups().containsKey("international")) {
+                        nodeTypesToString = "International";
+                    }
+                } else {
+                    nodeTypesToString = "Standard";
+                }
+                SavedNodeDetails savedNodeDetails = new SavedNodeDetails(getNextNodeNum(), n1.getLocation(), linkedNodesToString, n1.getRegeneratorsCount(), nodeTypesToString);
+                saveTable.getItems().add(savedNodeDetails);
+            }
+        } catch (NullPointerException e) {
+            Logger.info("Network not pre-loaded from the main window controller.  You may load directly here with the 'load' button");
+        } catch (Exception e) {
+            Logger.info("Some exception occurred while trying to load: " + e);
+        }
+    }
 }
