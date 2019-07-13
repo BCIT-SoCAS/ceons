@@ -18,14 +18,14 @@ public class SavedNodeDetails implements YamlSerializable {
     private int x;
     private int y;
 
-    public SavedNodeDetails() {
-        this.location = "";
-        this.connectedNodeNum = "";
-        this.nodeNum = 0;
-        this.numRegenerators = 100;
-        this.nodeType = "Standard";
-    }
-
+    /**
+     * Constructor of SavedNodeDetails
+     * @param nodeNum node number
+     * @param location location name
+     * @param connectedNodeNum node numbers of the connected node, ex: "1,2,3"
+     * @param numRegenerators number of regenerators
+     * @param nodeType node type (international, data center, standard)
+     */
     public SavedNodeDetails(int nodeNum, String location, String connectedNodeNum, int numRegenerators, String nodeType) {
         setNodeNum(nodeNum);
         setLocation(location);
@@ -36,10 +36,18 @@ public class SavedNodeDetails implements YamlSerializable {
         initConnectedNodeLinkMap(connectedNodeNum);
     }
 
+    /**
+     * Getter for nodeNum
+     * @return int node number
+     */
     public int getNodeNum() {
         return nodeNum;
     }
 
+    /**
+     * Setter for nodeNum
+     * @param nodeNum node number
+     */
     public void setNodeNum(int nodeNum) {
         if(nodeNum >= 0){
             this.nodeNum = nodeNum;
@@ -48,10 +56,18 @@ public class SavedNodeDetails implements YamlSerializable {
         }
     }
 
+    /**
+     * Getter for location
+     * @return String location name
+     */
     public String getLocation() {
         return location;
     }
 
+    /**
+     * Setter for location
+     * @param location location name
+     */
     public void setLocation(String location) {
         if(location != null && !location.isEmpty()){
             this.location = location;
@@ -60,10 +76,18 @@ public class SavedNodeDetails implements YamlSerializable {
         }
     }
 
+    /**
+     * Getter for connectedNodeNum
+     * @return String node numbers of the connected node, ex: "1,2,3"
+     */
     public String getConnectedNodeNum() {
         return connectedNodeNum;
     }
 
+    /**
+     * Setter for connectedNodeNum
+     * @param connectedNodeNum node numbers of the connected node, ex: "1,2,3"
+     */
     public void setConnectedNodeNum(String connectedNodeNum) {
         if(connectedNodeNum != null){
             this.connectedNodeNum = connectedNodeNum;
@@ -72,8 +96,11 @@ public class SavedNodeDetails implements YamlSerializable {
         }
     }
 
+    /**
+     * Parse connectedNodeNum and make a map of all network links for this current node
+     * @param connectedNodeNum node numbers of the connected node, ex: "1,2,3"
+     */
     public void initConnectedNodeLinkMap(String connectedNodeNum) {
-        //will split the user defined node connections then make a map of all network links to this current node
         List<String> connectedNodeNumStringList = Arrays.asList(connectedNodeNum.split(","));
 
         for(String otherConnectionNum : connectedNodeNumStringList){
@@ -84,17 +111,24 @@ public class SavedNodeDetails implements YamlSerializable {
             currentNodeConnection.add("Node_" + otherConnectionNum);
             Collections.sort(currentNodeConnection);
 
-            //length is placeholder for now
             currentNodeConnectionLinkLength.put("length", 100);
             currentNodeConnectionLinkLength.put("class", NetworkLink.class.getName());
             this.connectedNodeLinkMap.put(currentNodeConnection, currentNodeConnectionLinkLength);
         }
     }
 
+    /**
+     * Getter for numRegenerators
+     * @return int number of regenerators
+     */
     public int getNumRegenerators() {
         return numRegenerators;
     }
 
+    /**
+     * Setter for numRegenrators
+     * @param numRegenerators number of regenerators
+     */
     public void setNumRegenerators(int numRegenerators) {
         if(numRegenerators >= 0){
             this.numRegenerators = numRegenerators;
@@ -103,10 +137,18 @@ public class SavedNodeDetails implements YamlSerializable {
         }
     }
 
+    /**
+     * Getter for nodeType
+     * @return String node type (international, data center, standard)
+     */
     public String getNodeType() {
         return nodeType;
     }
 
+    /**
+     * Setter for nodeType
+     * @param nodeType node type (international, data center, standard)
+     */
     public void setNodeType(String nodeType) {
         if(nodeType != null && !nodeType.isEmpty()){
             this.nodeType = nodeType;
@@ -115,22 +157,42 @@ public class SavedNodeDetails implements YamlSerializable {
         }
     }
 
+    /**
+     * Getter for connectedNodeLinkMap
+     * @return HashMap formatted to store in yml
+     */
     public HashMap<ArrayList<String>, HashMap<String, Object>> getConnectedNodeLinkMap(){
         return connectedNodeLinkMap;
     }
 
+    /**
+     * Getter for latLng
+     * @return LatLng latitude and longitude
+     */
     public LatLng getLatLng() {
         return latLng;
     }
 
+    /**
+     * Getter for x position
+     * @return int x position
+     */
     public int getX() {
         return x;
     }
 
+    /**
+     * Getter for y position
+     * @return int y position
+     */
     public int getY() {
         return y;
     }
 
+    /**
+     * Setter for latLng
+     * @param latLng latitude and longitude
+     */
     public void setLatLng(LatLng latLng) {
         if(latLng != null){
             this.latLng = latLng;
@@ -139,23 +201,43 @@ public class SavedNodeDetails implements YamlSerializable {
         }
     }
 
+    /**
+     * Setter for x position
+     * @param x x position
+     */
     public void setX(int x) {
         this.x = x;
     }
 
+    /**
+     * Setter for y position
+     * @param y y position
+     */
     public void setY(int y) {
         this.y = y;
     }
 
+    /**
+     * Convert nodeNum to String
+     * @return String nodeNum in String, ex: "Node_0"
+     */
     public String nodeNumToString(){
         return "Node_" + this.nodeNum;
     }
 
+    /**
+     * Convert current object to String for printing
+     * @return String
+     */
     @Override
     public String toString() {
         return "Node_" + this.nodeNum + ": " + this.location + " (" + this.x + ", " + this.y + ")";
     }
 
+    /**
+     * Serialize from yml
+     * @return Map
+     */
     @Override
     public Map<String, Object> serialize() {
         Map<String, Object> map = new HashMap<String, Object>();
