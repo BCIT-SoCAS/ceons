@@ -10,16 +10,28 @@ public class NewTopology {
     private ArrayList<SavedNodeDetails> savedNodeDetailsList;
     private final Boolean hasMarker = false;
 
+    /**
+     * Constructor for NewTopology
+     * @param key google api key
+     */
     public NewTopology(String key) {
         this.staticMap = new StaticMap(key);
         this.savedNodeDetailsList = new ArrayList<SavedNodeDetails>();
     }
 
+    /**
+     * Add new node
+     * @param savedNodeDetails node details
+     */
     public void addNode(SavedNodeDetails savedNodeDetails){
         staticMap.addLocation(savedNodeDetails);
         savedNodeDetailsList.add(savedNodeDetails);
     }
 
+    /**
+     * Generate a google static map
+     * @return ImageResult google static map
+     */
     public ImageResult getMap() {
         ImageResult staticMap = this.staticMap.generateMap(this.hasMarker);
         for (int i = 0; i < savedNodeDetailsList.size(); i++) {
@@ -28,10 +40,14 @@ public class NewTopology {
             savedNodeDetails.setY(calYCoord(savedNodeDetails));
             System.out.println(savedNodeDetails.toString());
         }
-
         return staticMap;
     }
 
+    /**
+     * Calculate and return y position of the node on google static map
+     * @param savedNodeDetails node details
+     * @return int y position
+     */
     private int calYCoord(SavedNodeDetails savedNodeDetails) {
         int y = 0;
         int centerHeight = staticMap.getMapSize().height;
@@ -49,6 +65,11 @@ public class NewTopology {
         return y;
     }
 
+    /**
+     * Calculate and return x position of the node on google static map
+     * @param savedNodeDetails node details
+     * @return int x position
+     */
     private int calXCoord(SavedNodeDetails savedNodeDetails) {
         int x= 0;
         int centerWidth = staticMap.getMapSize().width;

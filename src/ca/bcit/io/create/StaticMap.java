@@ -28,7 +28,7 @@ public class StaticMap {
 
     /**
      * Constructor for StaticMap
-     * @param apiKey
+     * @param apiKey google static map api
      */
     public StaticMap(String apiKey) {
         this.key = apiKey;
@@ -38,7 +38,7 @@ public class StaticMap {
 
     /**
      * create and generate a static map from google
-     * @param hasMarker
+     * @param hasMarker decide whether the generated static map should have markers on each location
      */
     public ImageResult generateMap(Boolean hasMarker) {
         try {
@@ -64,6 +64,10 @@ public class StaticMap {
         }
     }
 
+    /**
+     * Add a location to include in google static map
+     * @param savedNodeDetails node details
+     */
     public void addLocation(SavedNodeDetails savedNodeDetails) {
         LatLng latlng = getLatLng(savedNodeDetails.getLocation(), this.key);
         savedNodeDetails.setLatLng(latlng);
@@ -91,7 +95,7 @@ public class StaticMap {
 
     /**
      * Getter for meterPerPixel
-     * @return
+     * @return double meter per pixel
      */
     public double getMeterPerPixel() {
         return meterPerPixel;
@@ -99,7 +103,7 @@ public class StaticMap {
 
     /**
      * Getter for centerPoint
-     * @return
+     * @return LatLng center point coordinate
      */
     public LatLng getCenterPoint() {
         return centerPoint;
@@ -107,14 +111,14 @@ public class StaticMap {
 
     /**
      * Getter for mapSize
-     * @return
+     * @return Size google static map size
      */
     public Size getMapSize() {
         return mapSize;
     }
 
     /**
-     * set the center point of the map
+     * Calculate and set the center point of google static map
      */
     private void setCenterPoint() {
         LatLng center = new LatLng(0,0);
@@ -126,7 +130,7 @@ public class StaticMap {
     }
 
     /**
-     * Set the zoom level of the map
+     * Calculate and set the zoom level of google static map
      */
     private void setZoomLevel() {
         long minWidth = distance(maxLat, maxLat, maxLng, minLng);
@@ -153,9 +157,9 @@ public class StaticMap {
 
     /**
      * Returns the distance each pixel on the map is in meters
-     * @param centerLat
-     * @param zoomLevel
-     * @return
+     * @param centerLat latitude value of the center point
+     * @param zoomLevel zoom level
+     * @return meters per pixel
      */
     private double calMetersPerPx(double centerLat, int zoomLevel) {
         this.meterPerPixel = 156543.03392 * Math.cos(centerLat * Math.PI / 180) / Math.pow(2, zoomLevel);
@@ -164,8 +168,9 @@ public class StaticMap {
 
     /**
      * Returns the latitude and longitude of a location
-     * @param location
-     * @return
+     * @param location location name
+     * @param apiKey google map api key
+     * @return LatLng latitude and longtude
      */
     public static LatLng getLatLng(String location, String apiKey) {
         LatLng latLng = new LatLng(0,0);
