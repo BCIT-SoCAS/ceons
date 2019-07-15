@@ -32,8 +32,6 @@ public class SavedNodeDetails implements YamlSerializable {
         setConnectedNodeNum(connectedNodeNum);
         setNumRegenerators(numRegenerators);
         setNodeType(nodeType);
-
-        initConnectedNodeLinkMap(connectedNodeNum);
     }
 
     public int getNodeNum() {
@@ -67,12 +65,14 @@ public class SavedNodeDetails implements YamlSerializable {
     public void setConnectedNodeNum(String connectedNodeNum) {
         if(connectedNodeNum != null){
             this.connectedNodeNum = connectedNodeNum;
+            initConnectedNodeLinkMap(connectedNodeNum);
         } else {
             throw new IllegalArgumentException("Node connection from map creation can't be null");
         }
     }
 
     public void initConnectedNodeLinkMap(String connectedNodeNum) {
+        this.connectedNodeLinkMap.clear();
         //will split the user defined node connections then make a map of all network links to this current node
         List<String> connectedNodeNumStringList = Arrays.asList(connectedNodeNum.split(","));
 
@@ -160,6 +160,7 @@ public class SavedNodeDetails implements YamlSerializable {
     public Map<String, Object> serialize() {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("name", nodeNumToString());
+        map.put("location", getLocation());
         map.put("regenerators", numRegenerators);
         map.put("xcoordinate", x);
         map.put("ycoordinate", y);

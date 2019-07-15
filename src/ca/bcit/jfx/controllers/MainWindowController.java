@@ -59,8 +59,9 @@ import javafx.util.Duration;
 import javax.imageio.ImageIO;
 
 
-public class MainWindowController {
-	private int i;
+public class MainWindowController implements Loadable {
+    private static final int PROPERTIES_PANE_NUMBER = 2;
+    private int i;
     @FXML
     private Console console;
     @FXML
@@ -82,8 +83,6 @@ public class MainWindowController {
 
     File file;
 
-    private final static int PROPERTIES_PANE_NUMBER = 2;
-
     public double totalVolume;
     public double spectrumBlockedVolume;
     public double regeneratorsBlockedVolume;
@@ -92,78 +91,104 @@ public class MainWindowController {
 
     private static Timeline updateTimeline;
 
-		/**
-		* Changes state to add Node to a map
-		* @deprecated currently not in use
-		*/
+    public ResizableCanvas getGraph() {
+        return graph;
+    }
+
+    public void setGraph(ResizableCanvas graph) {
+        this.graph = graph;
+    }
+
+    public ImageView getMapViewer() {
+        return mapViewer;
+    }
+
+    public void setMapViewer(ImageView mapViewer) {
+        this.mapViewer = mapViewer;
+    }
+
+    /**
+     * Changes state to add Node to a map
+     *
+     * @deprecated currently not in use
+     */
     @FXML
     private void nodeAdd(ActionEvent e) {
         graph.changeState(DrawingState.nodeAddingState);
     }
 
-		/**
-		* Changes state to add Link to a map
-		* @deprecated currently not in use
-		*/
+    /**
+     * Changes state to add Link to a map
+     *
+     * @deprecated currently not in use
+     */
     @FXML
     private void linkAdd(ActionEvent e) {
         graph.changeState(DrawingState.linkAddingState);
     }
 
     @FXML
-    private void nodeSelect(ActionEvent e) { graph.changeState(DrawingState.clickingState); }
+    private void nodeSelect(ActionEvent e) {
+        graph.changeState(DrawingState.clickingState);
+    }
 
-		/**
-		* Changes state to delete Node from a map
-		* @deprecated currently not in use
-		*/
+    /**
+     * Changes state to delete Node from a map
+     *
+     * @deprecated currently not in use
+     */
     @FXML
     private void deleteNodeChose(ActionEvent e) {
         graph.changeState(DrawingState.nodeDeleteState);
     }
 
-		/**
-		* Changes state to delete Link from a map
-		* @deprecated currently not in use
-		*/
+    /**
+     * Changes state to delete Link from a map
+     *
+     * @deprecated currently not in use
+     */
     @FXML
     private void deleteLinkChose(ActionEvent e) {
         graph.changeState(DrawingState.linkDeleteState);
-		}
+    }
 
-		/**
-		* Changes state to delete multiple elements from a map
-		* @deprecated currently not in use
-		*/
-		@FXML
+    /**
+     * Changes state to delete multiple elements from a map
+     *
+     * @deprecated currently not in use
+     */
+    @FXML
     private void deleteFewElementsChose(ActionEvent e) {
         graph.changeState(DrawingState.fewElementsDeleteState);
     }
 
-		/**
-		* Changes state to mark Node as Replica on a map
-		* @deprecated currently not in use
-		*/
+    /**
+     * Changes state to mark Node as Replica on a map
+     *
+     * @deprecated currently not in use
+     */
 
     @FXML
     private void nodeMarkReplica(ActionEvent e) {
         graph.changeState(DrawingState.nodeMarkReplicaState);
-		}
+    }
 
-		/**
-		* Changes state to mark Node as International on a map
-		* @deprecated currently not in use
-		*/
-		@FXML
+    /**
+     * Changes state to mark Node as International on a map
+     *
+     * @deprecated currently not in use
+     */
+    @FXML
     private void nodeMarkInternational(ActionEvent e) {
         graph.changeState(DrawingState.nodeMarkInternationalState);
-		}
-	
-		/**
-		* Changes state to unmark Node on a map
-		* @deprecated currently not in use
-		*/
-		@FXML
+    }
+
+    /**
+     * Changes state to unmark Node on a map
+     *
+     * @deprecated currently not in use
+     */
+    @FXML
     private void nodeUnmark(ActionEvent e) {
         graph.changeState(DrawingState.nodeUnmarkState);
     }
@@ -185,27 +210,27 @@ public class MainWindowController {
             throw new RuntimeException(e);
         }
 
-		graph.init(this);
-		
-		BackgroundSize bgSize = new BackgroundSize(100, 100, true, true, true, false);
-		RadialGradient bgGradient = new RadialGradient(0, 0, 0.5, 0.5, 1, true, CycleMethod.NO_CYCLE, new Stop[] {
-			new Stop(0, Color.web("#004B9E")),
-			new Stop(0.5, Color.web("#004B9E")),
-			new Stop(1, Color.web("#003C79"))
-		});
-		List<BackgroundFill> bgFill = Arrays.asList(new BackgroundFill(bgGradient, CornerRadii.EMPTY, Insets.EMPTY));
-		List<BackgroundImage> bg = Arrays.asList(new BackgroundImage(new Image(getClass().getResourceAsStream("/ca/bcit/jfx/res/images/LogoEON.png")),
-			BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, bgSize));
-		accordion.setBackground(new Background(bgFill, bg));
+        graph.init(this);
 
-		simulationMenuController.setProgressBar(progressBar);
-		}
+        BackgroundSize bgSize = new BackgroundSize(100, 100, true, true, true, false);
+        RadialGradient bgGradient = new RadialGradient(0, 0, 0.5, 0.5, 1, true, CycleMethod.NO_CYCLE, new Stop[] {
+                new Stop(0, Color.web("#004B9E")),
+                new Stop(0.5, Color.web("#004B9E")),
+                new Stop(1, Color.web("#003C79"))
+        });
+        List<BackgroundFill> bgFill = Arrays.asList(new BackgroundFill(bgGradient, CornerRadii.EMPTY, Insets.EMPTY));
+        List<BackgroundImage> bg = Arrays.asList(new BackgroundImage(new Image(getClass().getResourceAsStream("/ca/bcit/jfx/res/images/LogoEON.png")),
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, bgSize));
+        accordion.setBackground(new Background(bgFill, bg));
+
+        simulationMenuController.setProgressBar(progressBar);
+    }
 
     /**
      * Opens up live info tab with the node/link information
      *
-     * @param fig   node or link that is selected
-     * @param list  list of all links & nodes
+     * @param fig  node or link that is selected
+     * @param list list of all links & nodes
      */
     public void loadProperties(Figure fig, FigureControl list) {
         {
@@ -267,7 +292,7 @@ public class MainWindowController {
     }
 
     public void setExpandedPane(int idx) {
-				accordion.getPanes().get(idx).setExpanded(true);
+        accordion.getPanes().get(idx).setExpanded(true);
     }
 
     private void setLiveInfoPaneContent(TitledPane tp) {
@@ -278,25 +303,25 @@ public class MainWindowController {
     }
 
     @FXML
-    public void onNew(ActionEvent a) throws IOException {
-		String rootPath = System.getProperty("user.dir");
-		Path apiKeyPath = Paths.get(rootPath + "/api_key.txt");
-		GridPane grid = new GridPane();
-		if (Files.exists(apiKeyPath)){
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SaveMapWindow.fxml"));
-			grid = fxmlLoader.load();
-			SaveMapController controller = fxmlLoader.getController();
-			if (controller != null) {
-				controller.displaySaveMapWindow();
-			}
-		} else {
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/APIKeyWindow.fxml"));
-			grid = fxmlLoader.load();
-			APIKeyController controller = fxmlLoader.getController();
-			if (controller != null) {
-				controller.displaySaveAPIKeyWindow(grid);
-			}
-		}
+    public void createButtonClicked(ActionEvent a) throws IOException {
+        String rootPath = System.getProperty("user.dir");
+        Path apiKeyPath = Paths.get(rootPath + "/api_key.txt");
+        GridPane grid = new GridPane();
+        if (Files.exists(apiKeyPath)) {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SaveMapWindow.fxml"));
+            grid = fxmlLoader.load();
+            SaveMapController controller = fxmlLoader.getController();
+            if (controller != null) {
+                controller.displaySaveMapWindow();
+            }
+        } else {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/APIKeyWindow.fxml"));
+            grid = fxmlLoader.load();
+            APIKeyController controller = fxmlLoader.getController();
+            if (controller != null) {
+                controller.displaySaveAPIKeyWindow(grid);
+            }
+        }
     }
 
     // live GUI updates during simulation
@@ -349,7 +374,6 @@ public class MainWindowController {
                     graph.resetCanvas();
                     for (NetworkNode n : ApplicationResources.getProject().getNetwork().getNodes()) {
                         n.clearOccupied();
-                        n.setRegeneratorsCount(100);
                         n.setFigure(n);
                         graph.addNetworkNode(n);
                         for (NetworkNode n2 : ApplicationResources.getProject().getNetwork().getNodes()) {
@@ -370,14 +394,19 @@ public class MainWindowController {
     }
 
     @FXML
-    public void onLoad(ActionEvent e) {
+    public void loadButtonClicked() {
+        boolean loadSuccessful = selectFileToLoad();
+        if(loadSuccessful){
+            initalizeSimulationsAndNetworks();
+        }
+    }
+
+    public boolean selectFileToLoad(){
         fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
         file = fileChooser.showOpenDialog(null);
-
-        if (file == null) return;
-        initalizeSimulationsAndNetworks();
+        return (file != null);
     }
 
     public synchronized void initalizeSimulationsAndNetworks() {
@@ -445,7 +474,7 @@ public class MainWindowController {
                 + "Blocked Link Failure: " + this.linkFailureBlockedVolume / this.totalVolume * 100 + "%");
     }
 
-    private void setupGenerators(Project project) {
+    public void setupGenerators(Project project) {
         Network network = project.getNetwork();
         List<TrafficGenerator> generators = project.getTrafficGenerators();
 

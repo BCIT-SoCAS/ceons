@@ -17,20 +17,23 @@ import ca.bcit.drawing.Node;
 public class NetworkNode extends PositionedNode implements YamlSerializable {
 
 	private final String name;
+	private final String location;
 	int regeneratorsCount, occupiedRegenerators;
 	private Node figureNode;
-	private Map<String, Boolean> nodeGroups = new HashMap<>();
+	private HashMap<String, Boolean> nodeGroups = new HashMap<>();
 
 	public NetworkNode(){
 		this.name = "unknown";
+		this.location = "unknown";
 	}
 
 	/**
 	 * Class constructor specifying name of the NetworkNode
 	 * @param name
 	 */
-	public NetworkNode(String name) {
+	public NetworkNode(String name, String location) {
 		this.name = name;
+		this.location = location;
 	}
 
 	public void setFigure(NetworkNode n) {
@@ -48,10 +51,31 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 
 	/**
 	 * Getter method for name variable
-	 * @return
+	 * @return name
 	 */
 	public String getName() {
 		return name;
+	}
+
+	/**
+	 * Getter method for the node num
+	 */
+	public int getNodeNum(){
+		return Integer.parseInt(name.split("_")[1]);
+	}
+
+	/**
+	 * Getting method for the node location
+	 */
+	public String getLocation(){
+		return location;
+	}
+
+	/**
+	 * Getting method for the regenerators count initially set
+	 */
+	public int getRegeneratorsCount(){
+		return regeneratorsCount;
 	}
 
 	/**
@@ -82,7 +106,7 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 	 * Getter method that return name of the group the node belongs to
 	 * @return
 	 */
-	public Map getNodeGroups() {
+	public HashMap<String, Boolean> getNodeGroups() {
 		return this.nodeGroups;
 	}
 
@@ -157,6 +181,7 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 	 */
 	private NetworkNode(Map map) {
 		name = (String) map.get("name");
+		location = (String) map.get("location");
 		regeneratorsCount = (Integer) map.get("regenerators");
         setPosition((Integer) map.get("xcoordinate"),(Integer) map.get("ycoordinate"));
 	}
