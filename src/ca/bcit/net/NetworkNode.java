@@ -27,10 +27,6 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 		this.location = "unknown";
 	}
 
-	public NetworkNode(){
-		this.name = "unknown";
-	}
-
 	/**
 	 * Class constructor specifying name of the NetworkNode
 	 * @param name
