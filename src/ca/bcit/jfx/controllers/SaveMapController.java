@@ -362,6 +362,7 @@ public class SaveMapController implements Loadable {
 
     /**
      * Update all the following row numbers by decreasing their node numbers by 1
+     * Remove deleted node num from nodes with connections to the deleted nodes
      *
      * @param nodeNumDeleted reference node number used to find the row to start updating from
      */
@@ -370,6 +371,21 @@ public class SaveMapController implements Loadable {
         allNodeDetails = saveTable.getItems();
         for (int i = nodeNumDeleted; i < allNodeDetails.size(); i++) {
             allNodeDetails.get(i).setNodeNum(i);
+        }
+        for (SavedNodeDetails node : allNodeDetails){
+            String connectedNumString = node.getConnectedNodeNum();
+            List<String> connectedNumStringList = new ArrayList<String>(Arrays.asList(connectedNumString.split(",")));
+            ListIterator<String> it = connectedNumStringList.listIterator();
+            while(it.hasNext()){
+                String nodeNum = it.next();
+                //remove deleted node number from the connected node string and update node numbers that were greater than the deleted node number
+                if(nodeNumDeleted == Integer.parseInt(nodeNum)){
+                    it.remove();
+                } else if (nodeNumDeleted < Integer.parseInt(nodeNum)){
+                    it.set(Integer.parseInt(nodeNum) - 1 + "");
+                }
+            }
+            node.setConnectedNodeNum(String.join(",", connectedNumStringList));
         }
     }
 
