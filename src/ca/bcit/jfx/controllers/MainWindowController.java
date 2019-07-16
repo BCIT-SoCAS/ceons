@@ -78,6 +78,8 @@ public class MainWindowController implements Loadable {
     private TitledPane liveInfoPane;
     @FXML
     private ImageView mapViewer;
+    @FXML
+    private Button updateTopologyButton;
 
     FileChooser fileChooser;
 
@@ -213,7 +215,7 @@ public class MainWindowController implements Loadable {
         graph.init(this);
 
         BackgroundSize bgSize = new BackgroundSize(100, 100, true, true, true, false);
-        RadialGradient bgGradient = new RadialGradient(0, 0, 0.5, 0.5, 1, true, CycleMethod.NO_CYCLE, new Stop[] {
+        RadialGradient bgGradient = new RadialGradient(0, 0, 0.5, 0.5, 1, true, CycleMethod.NO_CYCLE, new Stop[]{
                 new Stop(0, Color.web("#004B9E")),
                 new Stop(0.5, Color.web("#004B9E")),
                 new Stop(1, Color.web("#003C79"))
@@ -303,7 +305,7 @@ public class MainWindowController implements Loadable {
     }
 
     @FXML
-    public void createButtonClicked(ActionEvent a) throws IOException {
+    public void createButtonClicked() throws IOException {
         String rootPath = System.getProperty("user.dir");
         Path apiKeyPath = Paths.get(rootPath + "/api_key.txt");
         GridPane grid = new GridPane();
@@ -322,6 +324,15 @@ public class MainWindowController implements Loadable {
                 controller.displaySaveAPIKeyWindow(grid);
             }
         }
+    }
+
+    @FXML
+    public void updateButtonClicked() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SaveMapWindow.fxml"));
+        fxmlLoader.load();
+        SaveMapController controller = fxmlLoader.getController();
+        controller.displaySaveMapWindow();
+        controller.populateTableWithLoadedTopology();
     }
 
     // live GUI updates during simulation
@@ -396,12 +407,13 @@ public class MainWindowController implements Loadable {
     @FXML
     public void loadButtonClicked() {
         boolean loadSuccessful = selectFileToLoad();
-        if(loadSuccessful){
+        if (loadSuccessful) {
             initalizeSimulationsAndNetworks();
+            updateTopologyButton.setDisable(false);
         }
     }
 
-    public boolean selectFileToLoad(){
+    public boolean selectFileToLoad() {
         fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));

@@ -148,13 +148,6 @@ public class SaveMapController implements Loadable {
     }
 
     /*
-     *Populates the table view with information from the currently loaded topology for the user to edit
-     */
-    public void updateButtonClicked() {
-        populateTableWithLoadedTopology();
-    }
-
-    /*
      *Used to display a table view with inputs to allow user to build a network topology
      */
     public void displaySaveMapWindow() {
@@ -241,14 +234,14 @@ public class SaveMapController implements Loadable {
         Button saveButton = new Button("Save map");
         saveButton.setOnAction(e -> saveButtonClicked());
 
-        Button updateButton = new Button("Update current pre-loaded map");
-        updateButton.setOnAction(e -> updateButtonClicked());
+//        Button updateButton = new Button("Update current pre-loaded map");
+//        updateButton.setOnAction(e -> updateButtonClicked());
 
         HBox hBox = new HBox();
         //Insets: Padding around entire layout
         hBox.setPadding(new Insets(10, 10, 10, 10));
         hBox.setSpacing(20);
-        hBox.getChildren().addAll(nameInput, connNodeInput, numRegeneratorInput, dcCheckbox, itlCheckbox, standardCheckbox, addButton, deleteButton, saveButton, loadButton, updateButton);
+        hBox.getChildren().addAll(nameInput, connNodeInput, numRegeneratorInput, dcCheckbox, itlCheckbox, standardCheckbox, addButton, deleteButton, saveButton, loadButton);
 
         saveTable = new TableView<>();
         saveTable.setItems(getSavedNodeDetails());
@@ -415,7 +408,7 @@ public class SaveMapController implements Loadable {
     /**
      * Will populate the table view with the currently loaded topology information
      */
-    private void populateTableWithLoadedTopology() {
+    public void populateTableWithLoadedTopology() {
         HashSet<ArrayList<Integer>> uniqueLinks = new HashSet<ArrayList<Integer>>();
         try {
             Network network = ApplicationResources.getProject().getNetwork();
