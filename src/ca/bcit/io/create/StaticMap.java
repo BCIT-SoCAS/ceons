@@ -8,11 +8,9 @@ import com.google.maps.model.Size;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.util.*;
 
 public class StaticMap {
-    private Map<String, String> locations;
     private LatLng centerPoint;
     private GeoApiContext context;
     private int zoomLevel;
@@ -24,10 +22,9 @@ public class StaticMap {
     private double minLng;
     private double maxLng;
     private ArrayList<LatLng> coordinates;
-    boolean isFirst = true;
+    private boolean isFirst = true;
 
     final private Size mapSize = new Size(500,365);
-    final private int MERCATOR_RANGE = 256;
 
     /**
      * Constructor for StaticMap
@@ -36,7 +33,6 @@ public class StaticMap {
     public StaticMap(String apiKey) {
         this.key = apiKey;
         this.context = new GeoApiContext.Builder().apiKey(apiKey).build();
-        this.locations = new HashMap<String, String>();
         this.coordinates = new ArrayList<LatLng>();
     }
 
@@ -58,7 +54,7 @@ public class StaticMap {
                     markers.addLocation(latLng);
                 }
                 // show center point
-                markers.addLocation(this.centerPoint);
+                // markers.addLocation(this.centerPoint);
             }
             ImageResult map = StaticMapsApi.newRequest(context, mapSize).center(this.centerPoint).markers(markers).
                     zoom(this.zoomLevel).scale(2).await();
@@ -75,41 +71,7 @@ public class StaticMap {
         }
     }
 
-    /**
-     * add a location to the map
-     * @param location
-     * @param nodeNum
-     */
-    public void addLocation(String location, String nodeNum) {
-        locations.put(nodeNum, location);
-        LatLng latlng = getLatLng(location, this.key);
-
-        coordinates.add(latlng);
-
-        if (this.isFirst) {
-            this.minLat = latlng.lat;
-            this.maxLat = latlng.lat;
-            this.minLng = latlng.lng;
-            this.maxLng = latlng.lng;
-            this.isFirst = false;
-        } else {
-            if (latlng.lat < minLat) {
-                minLat = latlng.lat;
-            } else if (latlng.lat > maxLat) {
-                maxLat = latlng.lat;
-            }
-            if (latlng.lng < minLng) {
-                minLng = latlng.lng;
-            } else if (latlng.lng > maxLng) {
-                maxLng = latlng.lng;
-            }
-        }
-
-        System.out.println(location + " added, coordinate: " + latlng.lat + ", " + latlng.lng);
-    }
-
     public SavedNodeDetails addLocation(SavedNodeDetails savedNodeDetails) {
-        locations.put("Node_" + savedNodeDetails.getNodeNum(), savedNodeDetails.getLocation());
         LatLng latlng = getLatLng(savedNodeDetails.getLocation(), this.key);
 
         savedNodeDetails.setLatLng(latlng);
@@ -266,7 +228,7 @@ public class StaticMap {
      * el2 End altitude in meters
      * @returns Distance in Meters
      */
-    private static long distance(double lat1, double lat2, double lon1,
+    public static long distance(double lat1, double lat2, double lon1,
                                 double lon2) {
 
         final int R = 6371; // Radius of the earth
