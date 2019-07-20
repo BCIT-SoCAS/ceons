@@ -63,7 +63,7 @@ public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
 	}
 
 	@Override
-	public void save(File file, Project data, ObservableList<SavedNodeDetails> tableList, ImageResult staticMap, String apiKey) throws IOException {
+	public void save(File file, Project data, ObservableList<SavedNodeDetails> tableList, ImageResult staticMap) throws IOException {
 		ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(file));
 
 		//make the project.yml

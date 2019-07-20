@@ -51,7 +51,8 @@ public class StaticMap {
                     markers.addLocation(latLng);
                 }
                 // show center point
-//                markers.addLocation(this.centerPoint);
+                // markers.addLocation(this.centerPoint);
+
             }
             ImageResult map = StaticMapsApi.newRequest(context, mapSize).center(this.centerPoint).markers(markers).
                     zoom(this.zoomLevel).scale(2).await();
@@ -64,11 +65,7 @@ public class StaticMap {
         }
     }
 
-    /**
-     * Add a location to include in google static map
-     * @param savedNodeDetails node details
-     */
-    public void addLocation(SavedNodeDetails savedNodeDetails) {
+    public SavedNodeDetails addLocation(SavedNodeDetails savedNodeDetails) {
         LatLng latlng = getLatLng(savedNodeDetails.getLocation(), this.key);
         savedNodeDetails.setLatLng(latlng);
         coordinates.add(latlng);
@@ -91,6 +88,7 @@ public class StaticMap {
             }
         }
         System.out.println(savedNodeDetails.getLocation() + " added, coordinate: " + latlng.lat + ", " + latlng.lng);
+        return savedNodeDetails;
     }
 
     /**
