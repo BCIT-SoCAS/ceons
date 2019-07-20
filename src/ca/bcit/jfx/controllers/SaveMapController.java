@@ -253,7 +253,7 @@ public class SaveMapController implements Loadable {
 
         Scene scene = new Scene(vBox);
         saveWindow.setScene(scene);
-        saveWindow.showAndWait();
+        saveWindow.show();
     }
 
     //Get all of the node details

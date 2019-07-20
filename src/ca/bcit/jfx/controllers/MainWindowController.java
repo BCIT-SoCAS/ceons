@@ -332,7 +332,14 @@ public class MainWindowController implements Loadable {
         fxmlLoader.load();
         SaveMapController controller = fxmlLoader.getController();
         controller.displaySaveMapWindow();
-        controller.populateTableWithLoadedTopology();
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() {
+                controller.populateTableWithLoadedTopology();
+                return null;
+            }
+        };
+        task.run();
     }
 
     // live GUI updates during simulation
@@ -409,7 +416,6 @@ public class MainWindowController implements Loadable {
         boolean loadSuccessful = selectFileToLoad();
         if (loadSuccessful) {
             initalizeSimulationsAndNetworks();
-            updateTopologyButton.setDisable(false);
         }
     }
 
@@ -446,6 +452,7 @@ public class MainWindowController implements Loadable {
                     }
 
                     setupGenerators(project);
+                    updateTopologyButton.setDisable(false);
 
                 } catch (Exception ex) {
                     Logger.info("An exception occurred while loading the project.");
@@ -486,6 +493,11 @@ public class MainWindowController implements Loadable {
                 + "Blocked Link Failure: " + this.linkFailureBlockedVolume / this.totalVolume * 100 + "%");
     }
 
+    /**
+     * Method will setup generator behavior for no backup, dedicated backup, and shared backup options
+     *
+     * @param project loaded
+     */
     public void setupGenerators(Project project) {
         Network network = project.getNetwork();
         List<TrafficGenerator> generators = project.getTrafficGenerators();
@@ -498,6 +510,7 @@ public class MainWindowController implements Loadable {
                 new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
         subGenerators.add(new MappedRandomVariable.Entry<>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("replicas")), new UniformRandomVariable.Generic<>(network.getGroup("replicas")),
                 new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(40, 410, 10), new ConstantRandomVariable<>(1f))));
+
         subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getGroup("international")),
                 new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
         subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
@@ -513,6 +526,7 @@ public class MainWindowController implements Loadable {
                 new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
         subGenerators.add(new MappedRandomVariable.Entry<>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("replicas")), new UniformRandomVariable.Generic<>(network.getGroup("replicas")),
                 new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(40, 410, 10), new ConstantRandomVariable<>(1f))));
+
         subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getGroup("international")),
                 new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
         subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
@@ -559,32 +573,5 @@ public class MainWindowController implements Loadable {
 
         SimulationMenuController.generatorsStatic.setItems(new ObservableListWrapper<>(generators));
     }
-
-//    @SuppressWarnings("unused")
-//    @FXML
-//    public void onSave(ActionEvent e) {
-//        fileChooser = new FileChooser();
-//        fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
-//        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-//        file = fileChooser.showSaveDialog(null);
-//
-//        if (file == null) return;
-//        Task<Void> task = new Task<Void>() {
-//
-//            @Override
-//            protected Void call() {
-//                try {
-//                    Logger.info("Saving project to " + file.getName() + "...");
-//                    ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).save(file, ApplicationResources.getProject());
-//                    Logger.info("Finished saving project.");
-//                } catch (Exception ex) {
-//                    Logger.info("An exception occurred while saving the project.");
-//                    Logger.debug(ex);
-//                }
-//                return null;
-//            }
-//        };
-//        task.run();
-//    }
 
 }
