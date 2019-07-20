@@ -96,7 +96,7 @@ public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
 
 		for(SavedNodeDetails nodeDetails : tableList){
 			savedNodeTypes.setNodeNumType(nodeDetails);
-			savedNodeLinks.setNodeNumLinks(nodeDetails, tableList, apiKey);
+			savedNodeLinks.setNodeNumLinks(nodeDetails, tableList);
 		}
 
 		topology.put("groups", savedNodeTypes.getToSerializeNodeTypes());
