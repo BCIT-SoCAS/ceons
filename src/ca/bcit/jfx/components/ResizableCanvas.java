@@ -30,6 +30,7 @@ public class ResizableCanvas extends Canvas {
         setOnMouseDragged(this::canvasOnMouseDragged);
         setOnMousePressed(this::canvasOnMousePressed);
         setOnMouseReleased(this::canvasOnMouseReleased);
+        setOnScroll(this::canvasOnMouseScroll);
     }
 
     public static MainWindowController getParentController() {
@@ -67,6 +68,20 @@ public class ResizableCanvas extends Canvas {
 			markNode(clickedPoint, "international");
 		}
         updateListBeforeChanges();
+    }
+
+    private void canvasOnMouseScroll(ScrollEvent e) {
+        if(!list.isEmpty())
+        {
+            listBeforeChanges.setSelectedFigure(null);
+            Zooming zooming=new Zooming(listBeforeChanges);
+            //parent.loadProperties(null,list);
+            if (e.getDeltaY() > 0)
+                list=new FigureControl(zooming.zoom(true));
+            else
+                list=new FigureControl(zooming.zoom(false));
+            list.redraw();
+        }
     }
 
 		/**
