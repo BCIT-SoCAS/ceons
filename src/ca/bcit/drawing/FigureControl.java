@@ -8,7 +8,9 @@ import javafx.collections.ObservableList;
 import javafx.scene.canvas.Canvas;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 public class FigureControl {
@@ -171,24 +173,30 @@ public class FigureControl {
 	}
 
 	public ObservableList<String> generateNodeConnections(Figure temp) {
-		ObservableList<String> data = FXCollections.observableArrayList();
+		ObservableList<Figure> data = FXCollections.observableArrayList();
+		ObservableList<String> returnedData = FXCollections.observableArrayList();
 		Vector2F fixedPoint = fixLinkPoint(temp.getStartPoint());
 		for (Figure fig : list) {
 			if (fig instanceof Link) {
-				Vector2F linkStartPoint=fig.getStartPoint();
-				Vector2F linkEndPoint=((Link)fig).getEndPoint();				
+				Vector2F linkStartPoint = fig.getStartPoint();
+				Vector2F linkEndPoint = ((Link) fig).getEndPoint();
 				if (linkStartPoint.equals(fixedPoint)) {
 					Figure n = findNodeAtPoint(linkEndPoint);
-					if (n != null)
-						data.add(n.getName());
+					if (n != null && !data.contains(n))
+						data.add(n);
 				} else if (linkEndPoint.equals(fixedPoint)) {
 					Figure n = findNodeAtPoint(linkStartPoint);
-					if (n != null)
-						data.add(n.getName());
+					if (n != null && !data.contains(n))
+						data.add(n);
 				}
 			}
 		}
-		return data;
+		Comparator<Figure> comparator = Comparator.comparingInt(Figure::getNodeNum);
+		data.sort(comparator);
+		for(Figure f : data){
+			returnedData.add(f.getName());
+		}
+		return returnedData;
 	}
 
 	public Figure findNodeAtPoint(Vector2F p) {
