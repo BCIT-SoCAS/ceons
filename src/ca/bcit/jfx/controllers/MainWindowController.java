@@ -101,6 +101,8 @@ public class MainWindowController implements Loadable {
         this.graph = graph;
     }
 
+    public void setFile(File file) {this.file = file; }
+
     public ImageView getMapViewer() {
         return mapViewer;
     }
