@@ -69,7 +69,7 @@ public class ErrorDialog {
         if(errorMessage != null && !errorMessage.isEmpty()){
             this.errorMessage = errorMessage;
         } else {
-            throw new IllegalArgumentException("Error message can't be null");
+            throw new IllegalArgumentException("Error message can't be null or empty");
         }
     }
 

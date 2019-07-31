@@ -6,6 +6,7 @@ import ca.bcit.io.MapLoadingException;
 import ca.bcit.io.create.NewTopology;
 import ca.bcit.io.project.ProjectFileFormat;
 import ca.bcit.io.create.SavedNodeDetails;
+import ca.bcit.jfx.components.InformationDialog;
 import ca.bcit.jfx.components.ResizableCanvas;
 import ca.bcit.jfx.components.ErrorDialog;
 import ca.bcit.net.Network;
@@ -169,9 +170,9 @@ public class SaveMapController implements Loadable {
                         saveWindow.close();
                         MainWindowController controller = ResizableCanvas.getParentController();
                         controller.setFile(file);
-                        controller.initalizeSimulationsAndNetworks();
-
                         Logger.info("Finished saving project.");
+                        new InformationDialog("Project successfully saved");
+                        controller.initalizeSimulationsAndNetworks();
                     } catch (Exception ex) {
                         new ErrorDialog("An exception occurred while saving the project!", ex);
                         ex.printStackTrace();
