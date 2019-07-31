@@ -171,7 +171,7 @@ public class SaveMapController implements Loadable {
                         MainWindowController controller = ResizableCanvas.getParentController();
                         controller.setFile(file);
                         Logger.info("Finished saving project.");
-                        new InformationDialog("Project successfully saved");
+                        new InformationDialog("Project successfully saved...  Initializing now");
                         controller.initalizeSimulationsAndNetworks();
                     } catch (Exception ex) {
                         new ErrorDialog("An exception occurred while saving the project!", ex);
