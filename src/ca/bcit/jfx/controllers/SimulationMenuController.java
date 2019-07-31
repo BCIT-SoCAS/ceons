@@ -2,7 +2,9 @@ package ca.bcit.jfx.controllers;
 
 import ca.bcit.ApplicationResources;
 import ca.bcit.io.Logger;
+import ca.bcit.io.MapLoadingException;
 import ca.bcit.jfx.DrawingState;
+import ca.bcit.jfx.components.ErrorDialog;
 import ca.bcit.jfx.components.TaskReadyProgressBar;
 import ca.bcit.jfx.components.ResizableCanvas;
 import ca.bcit.jfx.components.UIntField;
@@ -139,7 +141,17 @@ public class SimulationMenuController {
 				started = false;
 				ResizableCanvas.getParentController().resetGraph();
 				ResizableCanvas.getParentController().graph.changeState(DrawingState.noActionState);
-				ResizableCanvas.getParentController().initalizeSimulationsAndNetworks();
+				try {
+					ResizableCanvas.getParentController().initalizeSimulationsAndNetworks();
+				} catch (MapLoadingException ex){
+					new ErrorDialog(ex.getMessage(), ex);
+					ex.printStackTrace();
+					return;
+				} catch (Exception ex){
+					new ErrorDialog("An exception occurred while loading the project.", ex);
+					ex.printStackTrace();
+					return;
+				}
 			} else {
 				paused = false;
 				pauseButton.setText("Pause Simulation");
@@ -160,7 +172,17 @@ public class SimulationMenuController {
 				finished = true;
 				started = false;
 				ResizableCanvas.getParentController().resetGraph();
-				ResizableCanvas.getParentController().initalizeSimulationsAndNetworks();
+				try {
+					ResizableCanvas.getParentController().initalizeSimulationsAndNetworks();
+				} catch (MapLoadingException ex){
+					new ErrorDialog(ex.getMessage(), ex);
+					ex.printStackTrace();
+					return;
+				} catch (Exception ex){
+					new ErrorDialog("An exception occurred while loading the project.", ex);
+					ex.printStackTrace();
+					return;
+				}
 			} else {
 				paused = false;
 				pauseButton.setText("Pause Simulation");
