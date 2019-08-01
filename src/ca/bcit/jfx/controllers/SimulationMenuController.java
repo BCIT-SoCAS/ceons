@@ -21,6 +21,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
+import javax.swing.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -30,7 +31,9 @@ public class SimulationMenuController {
 	public static ComboBox<TrafficGenerator> generatorsStatic;
 	
 	@FXML private ComboBox<TrafficGenerator> generators;
-	@FXML private UIntField erlang;
+	@FXML private CheckBox runMultipleSimulations;
+	@FXML private Label erlangLabel;
+	@FXML private UIntField erlangIntField;
 	@FXML private UIntField seed;
 	@FXML private TextField alpha;
 	@FXML private UIntField demands;
@@ -71,10 +74,22 @@ public class SimulationMenuController {
 		SimulationMenuController.progressBar = progressBar;
 	}
 
+	@FXML public void runMultipleSimulations(ActionEvent e){
+		boolean isCheckBoxSelected = runMultipleSimulations.isSelected();
+		if(isCheckBoxSelected){
+			settings.getChildren().remove(erlangLabel);
+			settings.getChildren().remove(erlangIntField);
+//			RangeSlider r = new RangeSlider();
+		}
+
+		erlangLabel.setVisible(!erlangLabel.isVisible());
+		erlangIntField.setVisible(!erlangIntField.isVisible());
+	}
+
 	// start simulation button
 	public static boolean started = false;
 	public static boolean finished = false;
-	@FXML public void startSimulationAction(ActionEvent e) {
+	@FXML public void startSimulation(ActionEvent e) {
 		Network network = ApplicationResources.getProject().getNetwork();
 
 		if (algorithms.getValue() == null) {
@@ -108,7 +123,7 @@ public class SimulationMenuController {
 
 
 		Simulation simulation = new Simulation(network, generators.getValue());
-		SimulationTask task = new SimulationTask(simulation, seed.getValue(), Double.parseDouble(alpha.getText()), erlang.getValue(), demands.getValue(), replicaPreservation.isSelected());
+		SimulationTask task = new SimulationTask(simulation, seed.getValue(), Double.parseDouble(alpha.getText()), erlangIntField.getValue(), demands.getValue(), replicaPreservation.isSelected());
 		//gray out settings
 		clearCancelButton.setText("Cancel Simulation");
 		settings.setDisable(true);

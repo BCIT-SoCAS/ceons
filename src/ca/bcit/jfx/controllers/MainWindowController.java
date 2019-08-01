@@ -443,7 +443,7 @@ public class MainWindowController implements Loadable {
 
     public synchronized void initalizeSimulationsAndNetworks() throws MapLoadingException, Exception {
         boolean loadSuccessful = false;
-        
+
         try {
             Logger.info("Loading project from " + file.getName() + "...");
             Project project = ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).load(file);
