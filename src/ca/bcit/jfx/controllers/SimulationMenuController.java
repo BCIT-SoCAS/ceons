@@ -18,11 +18,12 @@ import ca.bcit.net.demand.generator.TrafficGenerator;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import org.controlsfx.control.RangeSlider;
+import javafx.scene.text.Font;
 
-import javax.swing.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -30,6 +31,8 @@ import java.util.Optional;
 public class SimulationMenuController {
     public static final int ERLANG_LABEL_INDEX = 7;
     public static final int ERLANG_INT_FIELD_INDEX = 8;
+    public static final int ERLANG_INT_RANGE_LOW_LABEL_INDEX = 0;
+    public static final int ERLANG_INT_RANGE_HIGH_LABEL_INDEX = 1;
 
 	public static ComboBox<TrafficGenerator> generatorsStatic;
 	
@@ -38,12 +41,17 @@ public class SimulationMenuController {
 	@FXML private Label erlangLabel;
 	@FXML private UIntField erlangIntField;
 	@FXML private Label erlangRangeLabel;
-	@FXML private RangeSlider erlangeRangeSlider;
+	@FXML private Label erlangRangeLowLabel;
+	@FXML private Label erlangRangeHighLabel;
+	@FXML private UIntField erlangRangeLow;
+	@FXML private UIntField erlangRangeHigh;
 	@FXML private UIntField seed;
 	@FXML private TextField alpha;
 	@FXML private UIntField demands;
 	@FXML private CheckBox replicaPreservation;
 	@FXML private VBox settings;
+	@FXML private HBox multipleSimulatonSettingsLabel;
+	@FXML private HBox multipleSimulatonSettingsRange;
 	@FXML private ComboBox<RMSAAlgorithm> algorithms;
 	@FXML private ToggleGroup regeneratorsMetric;
 	@FXML private ToggleGroup modulationMetric;
@@ -82,21 +90,37 @@ public class SimulationMenuController {
 	@FXML public void runMultipleSimulations(ActionEvent e){
 		boolean isCheckBoxSelected = runMultipleSimulations.isSelected();
 		if(isCheckBoxSelected){
-            erlangeRangeSlider = new RangeSlider(0,1500,300,700);
-            erlangeRangeSlider.setShowTickMarks(true);
-            erlangeRangeSlider.setShowTickLabels(true);
-            erlangeRangeSlider.setMajorTickUnit(5);
-            erlangeRangeSlider.setMinorTickCount(5);
-            erlangeRangeSlider.setSnapToTicks(true);
-
+			runMultipleSimulations.setText("Run single simulation?");
             erlangRangeLabel = new Label("Erlang Range");
+			erlangRangeLabel.setStyle("-fx-font-weight: bold;");
+
+			erlangRangeLowLabel = new Label("Lower limit");
+			erlangRangeLowLabel.setFont(new Font(10));
+
+			erlangRangeHighLabel = new Label("Higher limit");
+			erlangRangeHighLabel.setFont(new Font(10));
+
+			erlangRangeLow = new UIntField(300);
+			erlangRangeLow.setAlignment(Pos.CENTER);
+			erlangRangeHigh = new UIntField(700);
+			erlangRangeHigh.setAlignment(Pos.CENTER);
+
 			settings.getChildren().remove(erlangLabel);
 			settings.getChildren().remove(erlangIntField);
+
 			settings.getChildren().add(ERLANG_LABEL_INDEX, erlangRangeLabel);
-//            settings.getChildren().add(ERLANG_INT_FIELD_INDEX, erlangeRangeSlider);
+
+			multipleSimulatonSettingsLabel.getChildren().add(erlangRangeLowLabel);
+			multipleSimulatonSettingsLabel.getChildren().add(erlangRangeHighLabel);
+			multipleSimulatonSettingsRange.getChildren().add(erlangRangeLow);
+			multipleSimulatonSettingsRange.getChildren().add(erlangRangeHigh);
 		} else {
+			runMultipleSimulations.setText("Run multiple simulations?");
+
             settings.getChildren().remove(erlangRangeLabel);
-//            settings.getChildren().remove(erlangeRangeSlider);
+			multipleSimulatonSettingsLabel.getChildren().clear();
+			multipleSimulatonSettingsRange.getChildren().clear();
+
 			settings.getChildren().add(ERLANG_LABEL_INDEX, erlangLabel);
 			settings.getChildren().add(ERLANG_INT_FIELD_INDEX, erlangIntField);
 		}

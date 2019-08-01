@@ -3,30 +3,60 @@
 <?import ca.bcit.jfx.components.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 <ScrollPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.SimulationMenuController" fitToWidth="true">
     <content>
         <VBox>
             <VBox fx:id="settings" spacing="8.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
                 <children>
-                    <Label text="Algorithm"/>
+                    <Label text="Algorithm">
+						<font>
+							<Font name="System Bold"/>
+						</font>
+					</Label>
                     <ComboBox fx:id="algorithms" promptText="Choose algorithm... "/>
                     <Separator/>
-                    <Label text="Traffic Generator"/>
+                    <Label text="Traffic Generator">
+						<font>
+							<Font name="System Bold"/>
+						</font>
+					</Label>
                     <ComboBox fx:id="generators" promptText="Choose generator... "/>
                     <Separator/>
                     <CheckBox fx:id="runMultipleSimulations" text="Run multiple simulations?" onAction="#runMultipleSimulations"/>
-                    <Label fx:id="erlangLabel" text="Erlang"/>
-                    <UIntField fx:id="erlangIntField"/>
-                    <Label text="Seed"/>
-                    <UIntField fx:id="seed"/>
-                    <Label text="Alpha"/>
-                    <TextField fx:id="alpha" text="0.0"/>
-                    <Label text="Demands Count"/>
-                    <UIntField fx:id="demands"/>
-                    <CheckBox fx:id="replicaPreservation" text="Backup replica preservation?" selected="true"/>
+                    <Label fx:id="erlangLabel" text="Erlang">
+						<font>
+							<Font name="System Bold"/>
+						</font>
+					</Label>
+                    <UIntField fx:id="erlangIntField" alignment="CENTER"/>
+					<HBox fx:id="multipleSimulatonSettingsLabel" alignment="CENTER" spacing="100"></HBox>
+					<HBox fx:id="multipleSimulatonSettingsRange" alignment="CENTER"></HBox>
+                    <Label text="Seed">
+						<font>
+							<Font name="System Bold"/>
+						</font>
+					</Label>
+                    <UIntField fx:id="seed" alignment="CENTER"/>
+                    <Label text="Alpha">
+						<font>
+							<Font name="System Bold"/>
+						</font>
+					</Label>
+                    <TextField fx:id="alpha" text="0.0" alignment="CENTER"/>
+                    <Label text="Demands Count">
+						<font>
+							<Font name="System Bold"/>
+						</font>
+					</Label>
+                    <UIntField fx:id="demands" alignment="CENTER"/>
                     <Separator/>
-                    <CheckBox fx:id="allowModulationChange" text="Change modulation on path?" selected="true"/>
-                    <Label text="Allowed Modulations"/>
+					<CheckBox fx:id="allowModulationChange" text="Change modulation on path?" selected="true"/>
+                    <Label text="Allowed Modulations">
+						<font>
+							<Font name="System Bold"/>
+						</font>
+					</Label>
                     <GridPane fx:id="modulationSelection">
                         <columnConstraints>
                             <ColumnConstraints percentWidth="50"/>
@@ -42,9 +72,14 @@
                         </children>
                     </GridPane>
                     <Separator/>
-                    <Label text="Number of candidate paths"/>
-                    <UIntField fx:id="bestPaths"/>
+                    <Label text="Number of candidate paths">
+						<font>
+							<Font name="System Bold"/>
+						</font>
+					</Label>
+                    <UIntField fx:id="bestPaths" alignment="CENTER"/>
                     <Separator/>
+					<CheckBox fx:id="replicaPreservation" text="Backup replica preservation?" selected="true"/>
                 </children>
             </VBox>
             <VBox fx:id="simulatorControl" spacing="8.0" alignment="BOTTOM_CENTER" minHeight="0.0" minWidth="0.0">
