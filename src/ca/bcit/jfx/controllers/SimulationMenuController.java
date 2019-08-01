@@ -29,8 +29,10 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public class SimulationMenuController {
-    public static final int ERLANG_LABEL_INDEX = 7;
-    public static final int ERLANG_INT_FIELD_INDEX = 8;
+    public static final int SIMULATION_REPETITION_LABEL_INDEX = 7;
+	public static final int ERLANG_RANGE_LABEL_INDEX = 9;
+    public static final int ERLANG_LABEL_INDEX = 8;
+    public static final int ERLANG_INT_FIELD_INDEX = 9;
     public static final int ERLANG_INT_RANGE_LOW_LABEL_INDEX = 0;
     public static final int ERLANG_INT_RANGE_HIGH_LABEL_INDEX = 1;
 
@@ -38,12 +40,16 @@ public class SimulationMenuController {
 	
 	@FXML private ComboBox<TrafficGenerator> generators;
 	@FXML private CheckBox runMultipleSimulations;
+	@FXML private Label simulationRepetitions;
 	@FXML private Label erlangLabel;
-	@FXML private UIntField erlangIntField;
+	@FXML private Label erlangStep;
 	@FXML private Label erlangRangeLabel;
 	@FXML private Label erlangRangeLowLabel;
 	@FXML private Label erlangRangeHighLabel;
+	@FXML private UIntField erlangIntField;
 	@FXML private UIntField erlangRangeLow;
+	@FXML private UIntField numRepetitions;
+	@FXML private UIntField stepBetweenErlanges;
 	@FXML private UIntField erlangRangeHigh;
 	@FXML private UIntField seed;
 	@FXML private TextField alpha;
@@ -87,37 +93,59 @@ public class SimulationMenuController {
 		SimulationMenuController.progressBar = progressBar;
 	}
 
-	@FXML public void runMultipleSimulations(ActionEvent e){
+	@FXML public void multipleSimulationsSelected(ActionEvent e){
 		boolean isCheckBoxSelected = runMultipleSimulations.isSelected();
 		if(isCheckBoxSelected){
 			runMultipleSimulations.setText("Run single simulation?");
+			simulationRepetitions = new Label("Simulations at each Erlang");
+			simulationRepetitions.setStyle("-fx-font-weight: bold;");
+
+			numRepetitions = new UIntField(5);
+			numRepetitions.setAlignment(Pos.CENTER);
+
             erlangRangeLabel = new Label("Erlang Range");
 			erlangRangeLabel.setStyle("-fx-font-weight: bold;");
+
+			erlangStep = new Label("Step between Erlangs");
+			erlangStep.setStyle("-fx-font-weight: bold;");
+
+			stepBetweenErlanges = new UIntField(20);
+			stepBetweenErlanges.setAlignment(Pos.CENTER);
 
 			erlangRangeLowLabel = new Label("Lower limit");
 			erlangRangeLowLabel.setFont(new Font(10));
 
+			erlangRangeLow = new UIntField(300);
+			erlangRangeLow.setAlignment(Pos.CENTER);
+
 			erlangRangeHighLabel = new Label("Higher limit");
 			erlangRangeHighLabel.setFont(new Font(10));
 
-			erlangRangeLow = new UIntField(300);
-			erlangRangeLow.setAlignment(Pos.CENTER);
 			erlangRangeHigh = new UIntField(700);
 			erlangRangeHigh.setAlignment(Pos.CENTER);
 
 			settings.getChildren().remove(erlangLabel);
 			settings.getChildren().remove(erlangIntField);
 
-			settings.getChildren().add(ERLANG_LABEL_INDEX, erlangRangeLabel);
+			settings.getChildren().add(SIMULATION_REPETITION_LABEL_INDEX, simulationRepetitions);
+			settings.getChildren().add(SIMULATION_REPETITION_LABEL_INDEX + 1, numRepetitions);
 
+			settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX, erlangRangeLabel);
 			multipleSimulatonSettingsLabel.getChildren().add(erlangRangeLowLabel);
 			multipleSimulatonSettingsLabel.getChildren().add(erlangRangeHighLabel);
 			multipleSimulatonSettingsRange.getChildren().add(erlangRangeLow);
 			multipleSimulatonSettingsRange.getChildren().add(erlangRangeHigh);
+
+			settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX + 3, erlangStep);
+			settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX + 4, stepBetweenErlanges);
 		} else {
 			runMultipleSimulations.setText("Run multiple simulations?");
 
+            settings.getChildren().remove(simulationRepetitions);
+			settings.getChildren().remove(numRepetitions);
             settings.getChildren().remove(erlangRangeLabel);
+            settings.getChildren().remove(erlangStep);
+            settings.getChildren().remove(stepBetweenErlanges);
 			multipleSimulatonSettingsLabel.getChildren().clear();
 			multipleSimulatonSettingsRange.getChildren().clear();
 

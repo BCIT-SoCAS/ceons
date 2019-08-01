@@ -7,23 +7,23 @@
 <ScrollPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.SimulationMenuController" fitToWidth="true">
     <content>
         <VBox>
-            <VBox fx:id="settings" spacing="8.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
+            <VBox fx:id="settings" spacing="6.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
                 <children>
-                    <Label text="Algorithm">
+                    <Label text="Algorithms">
 						<font>
 							<Font name="System Bold"/>
 						</font>
 					</Label>
                     <ComboBox fx:id="algorithms" promptText="Choose algorithm... "/>
-                    <Separator/>
-                    <Label text="Traffic Generator">
+                    <Separator />
+                    <Label text="Traffic Generators">
 						<font>
 							<Font name="System Bold"/>
 						</font>
 					</Label>
                     <ComboBox fx:id="generators" promptText="Choose generator... "/>
                     <Separator/>
-                    <CheckBox fx:id="runMultipleSimulations" text="Run multiple simulations?" onAction="#runMultipleSimulations"/>
+                    <CheckBox fx:id="runMultipleSimulations" text="Run multiple simulations?" onAction="#multipleSimulationsSelected"/>
                     <Label fx:id="erlangLabel" text="Erlang">
 						<font>
 							<Font name="System Bold"/>
@@ -51,15 +51,13 @@
 					</Label>
                     <UIntField fx:id="demands" alignment="CENTER"/>
                     <Separator/>
-					<CheckBox fx:id="allowModulationChange" text="Change modulation on path?" selected="true"/>
-                    <Label text="Allowed Modulations">
+                    <Label text="Modulations">
 						<font>
 							<Font name="System Bold"/>
 						</font>
 					</Label>
-                    <GridPane fx:id="modulationSelection">
+                    <GridPane fx:id="modulationSelection" alignment="CENTER">
                         <columnConstraints>
-                            <ColumnConstraints percentWidth="50"/>
                             <ColumnConstraints percentWidth="50"/>
                         </columnConstraints>
                         <children>
@@ -71,15 +69,22 @@
                             <CheckBox id="modulation5" text="64QAM" GridPane.columnIndex="1" GridPane.rowIndex="2" selected="true"/>
                         </children>
                     </GridPane>
+					<CheckBox fx:id="allowModulationChange" text="Change modulation on path?" selected="true"/>
                     <Separator/>
-                    <Label text="Number of candidate paths">
+                    <Label text="Number of Candidate Paths">
 						<font>
 							<Font name="System Bold"/>
 						</font>
 					</Label>
                     <UIntField fx:id="bestPaths" alignment="CENTER"/>
                     <Separator/>
+					<Label text="Network Survivability">
+						<font>
+							<Font name="System Bold"/>
+						</font>
+					</Label>
 					<CheckBox fx:id="replicaPreservation" text="Backup replica preservation?" selected="true"/>
+					<Separator/>
                 </children>
             </VBox>
             <VBox fx:id="simulatorControl" spacing="8.0" alignment="BOTTOM_CENTER" minHeight="0.0" minWidth="0.0">
