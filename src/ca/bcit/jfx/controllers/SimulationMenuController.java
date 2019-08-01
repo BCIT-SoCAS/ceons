@@ -20,6 +20,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import org.controlsfx.control.RangeSlider;
 
 import javax.swing.*;
 import java.lang.reflect.Field;
@@ -27,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public class SimulationMenuController {
+    public static final int ERLANG_LABEL_INDEX = 7;
+    public static final int ERLANG_INT_FIELD_INDEX = 8;
 
 	public static ComboBox<TrafficGenerator> generatorsStatic;
 	
@@ -34,6 +37,8 @@ public class SimulationMenuController {
 	@FXML private CheckBox runMultipleSimulations;
 	@FXML private Label erlangLabel;
 	@FXML private UIntField erlangIntField;
+	@FXML private Label erlangRangeLabel;
+	@FXML private RangeSlider erlangeRangeSlider;
 	@FXML private UIntField seed;
 	@FXML private TextField alpha;
 	@FXML private UIntField demands;
@@ -77,9 +82,23 @@ public class SimulationMenuController {
 	@FXML public void runMultipleSimulations(ActionEvent e){
 		boolean isCheckBoxSelected = runMultipleSimulations.isSelected();
 		if(isCheckBoxSelected){
+            erlangeRangeSlider = new RangeSlider(0,1500,300,700);
+            erlangeRangeSlider.setShowTickMarks(true);
+            erlangeRangeSlider.setShowTickLabels(true);
+            erlangeRangeSlider.setMajorTickUnit(5);
+            erlangeRangeSlider.setMinorTickCount(5);
+            erlangeRangeSlider.setSnapToTicks(true);
+
+            erlangRangeLabel = new Label("Erlang Range");
 			settings.getChildren().remove(erlangLabel);
 			settings.getChildren().remove(erlangIntField);
-//			RangeSlider r = new RangeSlider();
+			settings.getChildren().add(ERLANG_LABEL_INDEX, erlangRangeLabel);
+//            settings.getChildren().add(ERLANG_INT_FIELD_INDEX, erlangeRangeSlider);
+		} else {
+            settings.getChildren().remove(erlangRangeLabel);
+//            settings.getChildren().remove(erlangeRangeSlider);
+			settings.getChildren().add(ERLANG_LABEL_INDEX, erlangLabel);
+			settings.getChildren().add(ERLANG_INT_FIELD_INDEX, erlangIntField);
 		}
 
 		erlangLabel.setVisible(!erlangLabel.isVisible());
