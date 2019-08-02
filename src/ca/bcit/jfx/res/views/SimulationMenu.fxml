@@ -7,7 +7,7 @@
 <ScrollPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.SimulationMenuController" fitToWidth="true">
     <content>
         <VBox>
-            <VBox fx:id="settings" spacing="6.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
+            <VBox fx:id="settings" spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
                 <children>
                     <Label text="Algorithms">
 						<font>
@@ -32,12 +32,12 @@
                     <UIntField fx:id="erlangIntField" alignment="CENTER"/>
 					<HBox fx:id="multipleSimulatonSettingsLabel" alignment="CENTER" spacing="100"></HBox>
 					<HBox fx:id="multipleSimulatonSettingsRange" alignment="CENTER"></HBox>
-                    <Label text="Seed">
+                    <Label fx:id="seedLabel" text="Seed">
 						<font>
 							<Font name="System Bold"/>
 						</font>
 					</Label>
-                    <UIntField fx:id="seed" alignment="CENTER"/>
+                    <UIntField fx:id="seedField" alignment="CENTER"/>
                     <Label text="Alpha">
 						<font>
 							<Font name="System Bold"/>

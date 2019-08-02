@@ -35,23 +35,18 @@ public class Simulation {
 	private final double[] modulationsUsage = new double[6];
 	private boolean runAgain;
 
-	public Simulation(){
-
-	}
-
 	public Simulation(Network network, TrafficGenerator generator) {
 		this.network = network;
 		this.generator = generator;
 	}
 
-	public void simulate(long seed, int demandsCount, double alpha, int erlang, boolean replicaPreservation,
-			SimulationTask task) {
+	public void simulate(long seed, int demandsCount, double alpha, int erlang, boolean replicaPreservation, SimulationTask task) {
 		SimulationMenuController.finished = false;
 		SimulationMenuController.cancelled = false;
 		clearVolumeValues();
 
 		//For development set to debug, for release set to info
-		Logger.setLoggerLevel(Logger.LoggerLevel.DEBUG);
+		Logger.setLoggerLevel(Logger.LoggerLevel.INFO);
 		generator.setErlang(erlang);
 		generator.setSeed(seed);
 		generator.setReplicaPreservation(replicaPreservation);

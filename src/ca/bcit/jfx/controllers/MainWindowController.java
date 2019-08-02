@@ -485,11 +485,11 @@ public class MainWindowController implements Loadable {
 
                 i = 1;
                 try {
-                    network.maxPathsCount = network.calculatePaths(() -> updateProgress(i++, network.getNodesPairsCount()));
+                    network.setMaxPathsCount(network.calculatePaths(() -> updateProgress(i++, network.getNodesPairsCount())));
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
-                Console.cout.println("Max best paths count: " + network.maxPathsCount);
+                Console.cout.println("Max best paths count: " + network.getMaxPathsCount());
 
                 return null;
             }

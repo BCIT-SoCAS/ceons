@@ -44,8 +44,20 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	private int bestPathsCount;
 	private boolean canSwitchModulation;
 	private ArrayList<Demand> allocatedDemands = new ArrayList<>();
-	
-	public int maxPathsCount;
+
+	public int getMaxPathsCount() {
+		return maxPathsCount;
+	}
+
+	public void setMaxPathsCount(int maxPathsCount) {
+		if(maxPathsCount >= 0){
+			this.maxPathsCount = maxPathsCount;
+		} else {
+			throw new IllegalArgumentException("Max paths count must be positive");
+		}
+	}
+
+	private int maxPathsCount;
 	
 	public Network() {
 		super(new NetworkPathBuilder());

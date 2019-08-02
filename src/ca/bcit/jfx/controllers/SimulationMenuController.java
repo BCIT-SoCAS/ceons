@@ -1,7 +1,6 @@
 package ca.bcit.jfx.controllers;
 
 import ca.bcit.ApplicationResources;
-import ca.bcit.io.Logger;
 import ca.bcit.io.MapLoadingException;
 import ca.bcit.jfx.DrawingState;
 import ca.bcit.jfx.components.ErrorDialog;
@@ -27,14 +26,13 @@ import javafx.scene.text.Font;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.Random;
 
 public class SimulationMenuController {
     public static final int SIMULATION_REPETITION_LABEL_INDEX = 7;
 	public static final int ERLANG_RANGE_LABEL_INDEX = 9;
     public static final int ERLANG_LABEL_INDEX = 8;
     public static final int ERLANG_INT_FIELD_INDEX = 9;
-    public static final int ERLANG_INT_RANGE_LOW_LABEL_INDEX = 0;
-    public static final int ERLANG_INT_RANGE_HIGH_LABEL_INDEX = 1;
 
 	public static ComboBox<TrafficGenerator> generatorsStatic;
 	
@@ -42,16 +40,17 @@ public class SimulationMenuController {
 	@FXML private CheckBox runMultipleSimulations;
 	@FXML private Label simulationRepetitions;
 	@FXML private Label erlangLabel;
-	@FXML private Label erlangStep;
+	@FXML private Label stepBetweenErlangsLabel;
 	@FXML private Label erlangRangeLabel;
 	@FXML private Label erlangRangeLowLabel;
 	@FXML private Label erlangRangeHighLabel;
+	@FXML private Label seedLabel;
 	@FXML private UIntField erlangIntField;
-	@FXML private UIntField erlangRangeLow;
-	@FXML private UIntField numRepetitions;
-	@FXML private UIntField stepBetweenErlanges;
-	@FXML private UIntField erlangRangeHigh;
-	@FXML private UIntField seed;
+	@FXML private UIntField erlangRangeLowField;
+	@FXML private UIntField numRepetitionsPerErlang;
+	@FXML private UIntField stepBetweenErlangsField;
+	@FXML private UIntField erlangRangeHighField;
+	@FXML private UIntField seedField;
 	@FXML private TextField alpha;
 	@FXML private UIntField demands;
 	@FXML private CheckBox replicaPreservation;
@@ -100,57 +99,61 @@ public class SimulationMenuController {
 			simulationRepetitions = new Label("Simulations at each Erlang");
 			simulationRepetitions.setStyle("-fx-font-weight: bold;");
 
-			numRepetitions = new UIntField(5);
-			numRepetitions.setAlignment(Pos.CENTER);
+			numRepetitionsPerErlang = new UIntField(1);
+			numRepetitionsPerErlang.setAlignment(Pos.CENTER);
 
             erlangRangeLabel = new Label("Erlang Range");
 			erlangRangeLabel.setStyle("-fx-font-weight: bold;");
 
-			erlangStep = new Label("Step between Erlangs");
-			erlangStep.setStyle("-fx-font-weight: bold;");
+			stepBetweenErlangsLabel = new Label("Step between Erlangs");
+			stepBetweenErlangsLabel.setStyle("-fx-font-weight: bold;");
 
-			stepBetweenErlanges = new UIntField(20);
-			stepBetweenErlanges.setAlignment(Pos.CENTER);
+			stepBetweenErlangsField = new UIntField(20);
+			stepBetweenErlangsField.setAlignment(Pos.CENTER);
 
 			erlangRangeLowLabel = new Label("Lower limit");
 			erlangRangeLowLabel.setFont(new Font(10));
 
-			erlangRangeLow = new UIntField(300);
-			erlangRangeLow.setAlignment(Pos.CENTER);
+			erlangRangeLowField = new UIntField(300);
+			erlangRangeLowField.setAlignment(Pos.CENTER);
 
 			erlangRangeHighLabel = new Label("Higher limit");
 			erlangRangeHighLabel.setFont(new Font(10));
 
-			erlangRangeHigh = new UIntField(700);
-			erlangRangeHigh.setAlignment(Pos.CENTER);
+			erlangRangeHighField = new UIntField(700);
+			erlangRangeHighField.setAlignment(Pos.CENTER);
 
 			settings.getChildren().remove(erlangLabel);
 			settings.getChildren().remove(erlangIntField);
+			settings.getChildren().remove(seedLabel);
+			settings.getChildren().remove(seedField);
 
 			settings.getChildren().add(SIMULATION_REPETITION_LABEL_INDEX, simulationRepetitions);
-			settings.getChildren().add(SIMULATION_REPETITION_LABEL_INDEX + 1, numRepetitions);
+			settings.getChildren().add(SIMULATION_REPETITION_LABEL_INDEX + 1, numRepetitionsPerErlang);
 
 			settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX, erlangRangeLabel);
 			multipleSimulatonSettingsLabel.getChildren().add(erlangRangeLowLabel);
 			multipleSimulatonSettingsLabel.getChildren().add(erlangRangeHighLabel);
-			multipleSimulatonSettingsRange.getChildren().add(erlangRangeLow);
-			multipleSimulatonSettingsRange.getChildren().add(erlangRangeHigh);
+			multipleSimulatonSettingsRange.getChildren().add(erlangRangeLowField);
+			multipleSimulatonSettingsRange.getChildren().add(erlangRangeHighField);
 
-			settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX + 3, erlangStep);
-			settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX + 4, stepBetweenErlanges);
+			settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX + 3, stepBetweenErlangsLabel);
+			settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX + 4, stepBetweenErlangsField);
 		} else {
 			runMultipleSimulations.setText("Run multiple simulations?");
 
             settings.getChildren().remove(simulationRepetitions);
-			settings.getChildren().remove(numRepetitions);
+			settings.getChildren().remove(numRepetitionsPerErlang);
             settings.getChildren().remove(erlangRangeLabel);
-            settings.getChildren().remove(erlangStep);
-            settings.getChildren().remove(stepBetweenErlanges);
+            settings.getChildren().remove(stepBetweenErlangsLabel);
+            settings.getChildren().remove(stepBetweenErlangsField);
 			multipleSimulatonSettingsLabel.getChildren().clear();
 			multipleSimulatonSettingsRange.getChildren().clear();
 
 			settings.getChildren().add(ERLANG_LABEL_INDEX, erlangLabel);
 			settings.getChildren().add(ERLANG_INT_FIELD_INDEX, erlangIntField);
+			settings.getChildren().add(ERLANG_INT_FIELD_INDEX + 1, seedLabel);
+			settings.getChildren().add(ERLANG_INT_FIELD_INDEX + 2, seedField);
 		}
 
 		erlangLabel.setVisible(!erlangLabel.isVisible());
@@ -161,44 +164,86 @@ public class SimulationMenuController {
 	public static boolean started = false;
 	public static boolean finished = false;
 	@FXML public void startSimulation(ActionEvent e) {
-		Network network = ApplicationResources.getProject().getNetwork();
+	    try {
+            Network network = ApplicationResources.getProject().getNetwork();
+            if (algorithms.getValue() == null) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Set Routing Algorithm");
+                alert.setHeaderText(null);
+                alert.setContentText("No algorithm selected!");
+                alert.setResizable(true);
+                alert.getDialogPane().setPrefSize(480.0, 100);
+                alert.showAndWait();
+                return;
+            } else if (generators.getValue() == null) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Set Generators Traffic");
+                alert.setHeaderText(null);
+                alert.setContentText("Traffic generator must be selected between simulations!");
+                alert.setResizable(true);
+                alert.getDialogPane().setPrefSize(480.0, 100);
+                alert.showAndWait();
+                return;
+            } else if (bestPaths.getValue() > network.getMaxPathsCount()){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Set Number of Candidate Paths");
+                alert.setHeaderText(null);
+                alert.setContentText("Number of candidate paths must be less than best paths count");
+                alert.setResizable(true);
+                alert.getDialogPane().setPrefSize(480.0, 100);
+                alert.showAndWait();
+                return;
+            }
 
-		if (algorithms.getValue() == null) {
-			Logger.info("No algorithm selected!");
-			return;
-		} else if (generators.getValue() == null) {
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
-			alert.setTitle("Set Generators Traffic");
-			alert.setHeaderText(null);
-			alert.setContentText("Traffic generator must be selected between simulations!");
-			alert.setResizable(true);
-			alert.getDialogPane().setPrefSize(480.0, 100);
-			alert.showAndWait();
-			return;
-		}
+            network.setDemandAllocationAlgorithm(algorithms.getValue());
+            network.setTrafficGenerator(generators.getValue());
 
-		network.setDemandAllocationAlgorithm(algorithms.getValue());
-		network.setTrafficGenerator(generators.getValue());
-		for (Modulation modulation : network.getAllowedModulations()) network.disallowModulation(modulation);
-		for (Modulation modulation : Modulation.values())
-			if (modulations[modulation.ordinal()].isSelected())
-				network.allowModulation(modulation);
-		network.setBestPathsCount(bestPaths.getValue());
+            //Initially remove all modulations first and add back modulations that user selects
+            for (Modulation modulation : network.getAllowedModulations()) network.disallowModulation(modulation);
+            for (Modulation modulation : Modulation.values())
+                if (modulations[modulation.ordinal()].isSelected())
+                    network.allowModulation(modulation);
 
-		//Modulation Metric is always dynamic
-		network.setModualtionMetricType(MetricType.DYNAMIC);
-		//Regenerator Metric value is always set to 5
-		network.setRegeneratorMetricValue(5);
-		//Regenerator Metric is always static
-		network.setRegeneratorMetricType(MetricType.STATIC);
+            network.setBestPathsCount(bestPaths.getValue());
 
+            //Modulation Metric is always dynamic
+            network.setModualtionMetricType(MetricType.DYNAMIC);
+            //Regenerator Metric value is always set to 5
+            network.setRegeneratorMetricValue(5);
+            //Regenerator Metric is always static
+            network.setRegeneratorMetricType(MetricType.STATIC);
 
-		Simulation simulation = new Simulation(network, generators.getValue());
-		SimulationTask task = new SimulationTask(simulation, seed.getValue(), Double.parseDouble(alpha.getText()), erlangIntField.getValue(), demands.getValue(), replicaPreservation.isSelected());
-		//gray out settings
-		clearCancelButton.setText("Cancel Simulation");
-		settings.setDisable(true);
-		progressBar.runTask(task, true);
+            if(!runMultipleSimulations.isSelected()){
+                Simulation simulation = new Simulation(network, generators.getValue());
+                SimulationTask task = new SimulationTask(simulation, seedField.getValue(), Double.parseDouble(alpha.getText()), erlangIntField.getValue(), demands.getValue(), replicaPreservation.isSelected());
+                //gray out settings
+                clearCancelButton.setText("Cancel Simulation");
+                settings.setDisable(true);
+                progressBar.runTask(task, true);
+            } else {
+//                int simulationRuns = numRepetitionsPerErlang.getValue() * (erlangRangeHighField.getValue() - erlangRangeLowField.getValue())/stepBetweenErlangsField.getValue();
+//                System.out.println(simulationRuns);
+                Random random = new Random();
+
+                for(int erlangValue = erlangRangeLowField.getValue(); erlangValue < erlangRangeHighField.getValue(); erlangValue+=stepBetweenErlangsField.getValue()){
+                    int randomSeed = random.nextInt(101);
+                    Simulation simulation = new Simulation(network, generators.getValue());
+                    SimulationTask task = new SimulationTask(simulation, randomSeed, Double.parseDouble(alpha.getText()), erlangValue, demands.getValue(), replicaPreservation.isSelected());
+                    //gray out settings
+                    clearCancelButton.setText("Cancel Simulation");
+                    settings.setDisable(true);
+                    progressBar.runTask(task, true);
+                }
+            }
+        } catch (NullPointerException ex) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Starting Simulation");
+            alert.setHeaderText(null);
+            alert.setContentText("Load a project into the simulator!");
+            alert.setResizable(true);
+            alert.getDialogPane().setPrefSize(480.0, 100);
+            alert.showAndWait();
+        }
 	}
 
 	public void isFinished() {
