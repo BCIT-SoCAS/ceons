@@ -15,7 +15,6 @@ public class TrafficGenerator implements DemandStream<Demand>, YamlSerializable 
 	private int generatedDemandsCount;
 	private final String name;
 	private final MappedRandomVariable<DemandGenerator<?>> generators;
-	
 	private DemandGenerator<?> lastAnycast;
 	
 	public TrafficGenerator(String name, MappedRandomVariable<DemandGenerator<?>> generators) {
@@ -25,6 +24,10 @@ public class TrafficGenerator implements DemandStream<Demand>, YamlSerializable 
 	
 	public String getName() {
 		return name;
+	}
+
+	public MappedRandomVariable<DemandGenerator<?>> getGenerators() {
+		return generators;
 	}
 
 	public void setReplicaPreservation(boolean replicaPreservation) {

@@ -27,6 +27,9 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 public class SimulationMenuController {
     public static final int SIMULATION_REPETITION_LABEL_INDEX = 7;
@@ -196,7 +199,7 @@ public class SimulationMenuController {
             }
 
             network.setDemandAllocationAlgorithm(algorithms.getValue());
-            network.setTrafficGenerator(generators.getValue());
+//            network.setTrafficGenerator(generators.getValue());
 
             //Initially remove all modulations first and add back modulations that user selects
             for (Modulation modulation : network.getAllowedModulations()) network.disallowModulation(modulation);
@@ -221,19 +224,19 @@ public class SimulationMenuController {
                 settings.setDisable(true);
                 progressBar.runTask(task, true);
             } else {
-//                int simulationRuns = numRepetitionsPerErlang.getValue() * (erlangRangeHighField.getValue() - erlangRangeLowField.getValue())/stepBetweenErlangsField.getValue();
-//                System.out.println(simulationRuns);
                 Random random = new Random();
 
-                for(int erlangValue = erlangRangeLowField.getValue(); erlangValue < erlangRangeHighField.getValue(); erlangValue+=stepBetweenErlangsField.getValue()){
-                    int randomSeed = random.nextInt(101);
-                    Simulation simulation = new Simulation(network, generators.getValue());
-                    SimulationTask task = new SimulationTask(simulation, randomSeed, Double.parseDouble(alpha.getText()), erlangValue, demands.getValue(), replicaPreservation.isSelected());
-                    //gray out settings
-                    clearCancelButton.setText("Cancel Simulation");
-                    settings.setDisable(true);
-                    progressBar.runTask(task, true);
-                }
+				for(int numRepetitions = 0; numRepetitions < numRepetitionsPerErlang.getValue(); numRepetitions++){
+					int randomSeed = random.nextInt(101);
+					for(int erlangValue = erlangRangeLowField.getValue(); erlangValue <= erlangRangeHighField.getValue(); erlangValue+=stepBetweenErlangsField.getValue()){
+						Simulation simulation = new Simulation(network, generators.getValue());
+						SimulationTask task = new SimulationTask(simulation, randomSeed, Double.parseDouble(alpha.getText()), erlangValue, demands.getValue(), replicaPreservation.isSelected());
+						//gray out settings
+						clearCancelButton.setText("Cancel Simulation");
+						settings.setDisable(true);
+						progressBar.runTask(task, true);
+					}
+				}
             }
         } catch (NullPointerException ex) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -279,7 +282,7 @@ public class SimulationMenuController {
 					ex.printStackTrace();
 					return;
 				} catch (Exception ex){
-					new ErrorDialog("An exception occurred while loading the project.", ex);
+					new ErrorDialog("An exception occurred: ", ex);
 					ex.printStackTrace();
 					return;
 				}

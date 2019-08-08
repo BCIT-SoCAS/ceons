@@ -13,8 +13,8 @@ public class NetworkLink extends FixedLengthLink<NetworkLink> {
 	
 	public static final int NUMBER_OF_SLICES = 640;
 	
-	final Spectrum slicesUp = new Spectrum(NUMBER_OF_SLICES);
-	final Spectrum slicesDown = new Spectrum(NUMBER_OF_SLICES);
+	Spectrum slicesUp = new Spectrum(NUMBER_OF_SLICES);
+	Spectrum slicesDown = new Spectrum(NUMBER_OF_SLICES);
 	
 	public NetworkLink(int length) {
 		super(length);

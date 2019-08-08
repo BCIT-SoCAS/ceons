@@ -387,32 +387,24 @@ public class MainWindowController implements Loadable {
 
     // reset the GUI after stop/finish
     public void resetGraph() {
-        Task<Void> task = new Task<Void>() {
-
-            @Override
-            protected Void call() {
-                try {
-                    stopUpdateGraph();
-                    graph.resetCanvas();
-                    for (NetworkNode n : ApplicationResources.getProject().getNetwork().getNodes()) {
-                        n.clearOccupied();
-                        n.setFigure(n);
-                        graph.addNetworkNode(n);
-                        for (NetworkNode n2 : ApplicationResources.getProject().getNetwork().getNodes()) {
-                            if (ApplicationResources.getProject().getNetwork().containsLink(n, n2)) {
-                                graph.addLink(n.getPosition(), n2.getPosition(), 100);
-                            }
-                        }
+        try {
+            stopUpdateGraph();
+            graph.resetCanvas();
+            for (NetworkNode n : ApplicationResources.getProject().getNetwork().getNodes()) {
+                n.clearOccupied();
+                n.setFigure(n);
+                graph.addNetworkNode(n);
+                for (NetworkNode n2 : ApplicationResources.getProject().getNetwork().getNodes()) {
+                    if (ApplicationResources.getProject().getNetwork().containsLink(n, n2)) {
+                        graph.addLink(n.getPosition(), n2.getPosition(), 100);
                     }
-
-                } catch (Exception ex) {
-                    new ErrorDialog("An exception occurred while updating the project.", ex);
-                    System.out.println(ex.getMessage());
                 }
-                return null;
             }
-        };
-        task.run();
+
+        } catch (Exception ex) {
+            new ErrorDialog("An exception occurred while updating the project.", ex);
+            System.out.println(ex.getMessage());
+        }
     }
 
     @FXML
@@ -441,7 +433,7 @@ public class MainWindowController implements Loadable {
         return (file != null);
     }
 
-    public synchronized void initalizeSimulationsAndNetworks() throws MapLoadingException, Exception {
+    public void initalizeSimulationsAndNetworks() throws MapLoadingException, Exception {
         boolean loadSuccessful = false;
 
         try {

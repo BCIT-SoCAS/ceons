@@ -1,6 +1,7 @@
 package ca.bcit.jfx.tasks;
 
 import ca.bcit.io.Logger;
+import ca.bcit.jfx.components.ResizableCanvas;
 import ca.bcit.jfx.controllers.SimulationMenuController;
 import ca.bcit.net.Simulation;
 import javafx.concurrent.Task;
@@ -26,7 +27,9 @@ public class SimulationTask extends Task<Void> {
 	@Override
 	protected Void call() {
 		try {
-			Logger.info("Starting simulation!");
+			Logger.info("\n");
+			Logger.info("Starting simulation! " + "\n\tSeed: " + seed + "\n\tAlpha: " + alpha + "\n\tErlang: " + erlang +
+					"\n\tDemands Count: " + demandsCount + "\n\tReplica Preservation: " + replicaPreservation);
 			simulation.simulate(seed, demandsCount, alpha, erlang, replicaPreservation, this);
 			Logger.info("Simulation finished!");
 		} catch (Throwable e) {
