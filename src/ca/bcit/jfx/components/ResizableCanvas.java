@@ -37,9 +37,6 @@ public class ResizableCanvas extends Canvas {
         return parent;
     }
 
-		/**
-		* @deprecated currently not in use
-		*/
     private void canvasOnMousePressed(MouseEvent e) {
         updateListBeforeChanges();
         Vector2F pressedPoint = new Vector2F((float) e.getX(), (float) e.getY());

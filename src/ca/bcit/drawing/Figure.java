@@ -53,6 +53,10 @@ public abstract class Figure {
 		name = _name;
 	}
 
+	public int getNodeNum(){
+		return Integer.parseInt(name.split("_")[1]);
+	}
+
 	public boolean equalsByName(String _name) {
 		return name.equals(_name);
 	}

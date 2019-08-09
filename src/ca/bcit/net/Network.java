@@ -36,20 +36,34 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	
 	private RMSAAlgorithm demandAllocationAlgorithm;
 
-	public void setTrafficGenerator(TrafficGenerator trafficGenerator) {
-		this.trafficGenerator = trafficGenerator;
-	}
-
 	private TrafficGenerator trafficGenerator;
 	private int bestPathsCount;
 	private boolean canSwitchModulation;
 	private ArrayList<Demand> allocatedDemands = new ArrayList<>();
-	
-	public int maxPathsCount;
-	
+
+	private int maxPathsCount;
+
 	public Network() {
 		super(new NetworkPathBuilder());
 	}
+
+	public int getMaxPathsCount() {
+		return maxPathsCount;
+	}
+
+	public void setMaxPathsCount(int maxPathsCount) {
+		if(maxPathsCount >= 0){
+			this.maxPathsCount = maxPathsCount;
+		} else {
+			throw new IllegalArgumentException("Max paths count must be positive");
+		}
+	}
+
+	public void setTrafficGenerator(TrafficGenerator trafficGenerator) {
+		this.trafficGenerator = trafficGenerator;
+	}
+	
+
 	
 	// DEMANDS
 	
@@ -94,7 +108,7 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 		while (!allocatedDemands.isEmpty()) update();
 		allocatedDemands = new ArrayList<>();
 		for (Map.Entry<String, NetworkNode> entry: nodes.entrySet()) {
-			entry.getValue().occupiedRegenerators = 0;
+			entry.getValue().clearOccupied();
 		}
 		inactiveLinks.clear();
 		inactivePaths.clear();
@@ -260,7 +274,7 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 		this.regeneratorMetricValue = regeneratorMetricValue;
 	}
 	
-	// SERIALIZATION
+	// DESERIALIZATION
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Network(Map map) {
@@ -272,6 +286,8 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 		Map<String, List<String>> groups = (Map<String, List<String>>) map.get("groups");
 		if (groups != null) for (Entry<String, List<String>> group : groups.entrySet()) for (String node : group.getValue()) addNodeToGroup(group.getKey(), getNode(node));
 	}
+
+	// SERIALIZATION
 	
 	@Override
 	public Map<String, Object> serialize() {

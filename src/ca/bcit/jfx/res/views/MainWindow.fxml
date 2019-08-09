@@ -34,7 +34,7 @@
 			<rowConstraints>
 				<RowConstraints vgrow="SOMETIMES" />
 				<!-- FOR THE CONSOLE-->
-				<RowConstraints minHeight="150.0" prefHeight="150.0" />
+				<RowConstraints minHeight="150.0" prefHeight="275.0" />
 				<!-- FOR THE STATUS BAR-->
 				<RowConstraints minHeight="0.0" prefHeight="20.0" />
 			</rowConstraints>

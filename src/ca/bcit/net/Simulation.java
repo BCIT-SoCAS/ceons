@@ -2,13 +2,18 @@ package ca.bcit.net;
 
 import ca.bcit.ApplicationResources;
 import ca.bcit.io.Logger;
+import ca.bcit.io.MapLoadingException;
+import ca.bcit.io.project.Project;
+import ca.bcit.io.project.ProjectFileFormat;
 import ca.bcit.jfx.components.ResizableCanvas;
+import ca.bcit.jfx.controllers.MainWindowController;
 import ca.bcit.jfx.controllers.SimulationMenuController;
 import ca.bcit.jfx.tasks.SimulationTask;
 import ca.bcit.net.demand.AnycastDemand;
 import ca.bcit.net.demand.Demand;
 import ca.bcit.net.demand.DemandAllocationResult;
 import ca.bcit.net.demand.generator.TrafficGenerator;
+import ca.bcit.net.spectrum.Spectrum;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,25 +38,19 @@ public class Simulation {
 	private double allocations;
 	private double unhandledVolume;
 	private final double[] modulationsUsage = new double[6];
-	private boolean runAgain;
-
-	public Simulation(){
-
-	}
 
 	public Simulation(Network network, TrafficGenerator generator) {
 		this.network = network;
 		this.generator = generator;
 	}
 
-	public void simulate(long seed, int demandsCount, double alpha, int erlang, boolean replicaPreservation,
-			SimulationTask task) {
+	public void simulate(long seed, int demandsCount, double alpha, int erlang, boolean replicaPreservation, SimulationTask task) {
 		SimulationMenuController.finished = false;
 		SimulationMenuController.cancelled = false;
 		clearVolumeValues();
 
 		//For development set to debug, for release set to info
-		Logger.setLoggerLevel(Logger.LoggerLevel.DEBUG);
+		Logger.setLoggerLevel(Logger.LoggerLevel.INFO);
 		generator.setErlang(erlang);
 		generator.setSeed(seed);
 		generator.setReplicaPreservation(replicaPreservation);
@@ -60,6 +59,7 @@ public class Simulation {
 
 		try {
 			ResizableCanvas.getParentController().updateGraph();
+
 			for (; generator.getGeneratedDemandsCount() < demandsCount;) {
 				SimulationMenuController.started = true;
 
@@ -92,7 +92,7 @@ public class Simulation {
 
 				task.updateProgress(generator.getGeneratedDemandsCount(), demandsCount);
 			} // loop end here
-			ResizableCanvas.getParentController().stopUpdateGraph();
+
 			// force call the update again here
 		} catch (NetworkException e) {
 			// error in code
@@ -109,12 +109,12 @@ public class Simulation {
 			ResizableCanvas.getParentController().totalVolume += unhandledVolume;
 		}
 
-		// wait for internal cleanup after simulation is done
-//		network.waitForDemandsDeath();
+		 //wait for internal cleanup after simulation is done
+		network.waitForDemandsDeath();
+		ResizableCanvas.getParentController().resetGraph();
 
 		// signal GUI menus that simulation is complete
 		SimulationMenuController.finished = true;
-		ResizableCanvas.getParentController().updateGraph();
 
 		// throw error to avoid printing out data report for cancelled simulations
 		if (SimulationMenuController.cancelled) {
@@ -170,6 +170,9 @@ public class Simulation {
 	 * Reset parameters to be used in a new simulation. Called before a set of simulations start.
 	 */
 	private void clearVolumeValues() {
+		MainWindowController mainWindowController = ResizableCanvas.getParentController();
+		Project project = ApplicationResources.getProject();
+		Network network = project.getNetwork();
 		this.totalVolume = 0;
 		this.spectrumBlockedVolume = 0;
 		this.regeneratorsBlockedVolume = 0;
@@ -177,12 +180,27 @@ public class Simulation {
 		this.regsPerAllocation = 0;
 		this.allocations = 0;
 		this.unhandledVolume = 0;
-		ResizableCanvas.getParentController().totalVolume = 0;
-		ResizableCanvas.getParentController().spectrumBlockedVolume = 0;
-		ResizableCanvas.getParentController().regeneratorsBlockedVolume = 0;
-		ResizableCanvas.getParentController().linkFailureBlockedVolume = 0;
-		for (Map.Entry<String, NetworkNode> entries: network.nodes.entrySet()){
-			entries.getValue().clearOccupied();
+		mainWindowController.totalVolume = 0;
+		mainWindowController.spectrumBlockedVolume = 0;
+		mainWindowController.regeneratorsBlockedVolume = 0;
+		mainWindowController.linkFailureBlockedVolume = 0;
+		for(NetworkNode n : network.getNodes()){
+			n.clearOccupied();
+			for(NetworkNode n2 : network.getNodes()){
+				if(network.containsLink(n, n2)){
+					NetworkLink networkLink = network.getLink(n, n2);
+					Spectrum spectrum = network.getLinkSlices(n, n2);
+					networkLink.slicesUp = new Spectrum(NetworkLink.NUMBER_OF_SLICES);
+					networkLink.slicesDown = new Spectrum(NetworkLink.NUMBER_OF_SLICES);
+					System.out.println("Network Link: " + networkLink.toString());
+					System.out.println("Length: " + networkLink.length);
+					System.out.println("Slices Down: " + networkLink.slicesDown);
+					System.out.println("Slices Up: " + networkLink.slicesUp);
+					System.out.println("Slices Count: " + spectrum.getSlicesCount());
+					System.out.println("Occupied Slices: " + spectrum.getOccupiedSlices());
+					System.out.println("Segments: " + spectrum.getSegments());
+				}
+			}
 		}
 	}
 

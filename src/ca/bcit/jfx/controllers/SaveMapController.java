@@ -2,22 +2,26 @@ package ca.bcit.jfx.controllers;
 
 import ca.bcit.ApplicationResources;
 import ca.bcit.io.Logger;
+import ca.bcit.io.MapLoadingException;
 import ca.bcit.io.create.NewTopology;
 import ca.bcit.io.project.ProjectFileFormat;
 import ca.bcit.io.create.SavedNodeDetails;
 import ca.bcit.jfx.components.ResizableCanvas;
+import ca.bcit.jfx.components.ErrorDialog;
 import ca.bcit.net.Network;
 import ca.bcit.net.NetworkNode;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -27,7 +31,9 @@ import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -58,7 +64,7 @@ public class SaveMapController implements Loadable {
             SavedNodeDetails savedNodeDetails = new SavedNodeDetails(getNextNodeNum(), nameInput.getText(), connNodeInput.getText(), Integer.parseInt(numRegeneratorInput.getText()), getSelectedNodeType());
             saveTable.getItems().add(savedNodeDetails);
         } catch (Exception e) {
-            Logger.info("Please fill in all the fields");
+            new ErrorDialog("Please fill in all the fields");
         }
 
         nameInput.clear();
@@ -77,7 +83,7 @@ public class SaveMapController implements Loadable {
         allNodeDetails = saveTable.getItems();
         nodeDetailsSelected = saveTable.getSelectionModel().getSelectedItems();
         if (nodeDetailsSelected.size() == 0) {
-            Logger.info("No row selected to delete");
+            new ErrorDialog("No row selected to delete");
             return;
         }
         int nodeNumOfSelected = saveTable.getSelectionModel().getSelectedItem().getNodeNum();
@@ -94,8 +100,18 @@ public class SaveMapController implements Loadable {
         MainWindowController controller = ResizableCanvas.getParentController();
         boolean loadSuccessful = controller.selectFileToLoad();
         if (loadSuccessful) {
+            try {
+                controller.initalizeSimulationsAndNetworks();
+            } catch (MapLoadingException ex){
+                new ErrorDialog(ex.getMessage(), ex);
+                ex.printStackTrace();
+                return;
+            } catch (Exception ex){
+                new ErrorDialog("An exception occurred while loading the project.", ex);
+                ex.printStackTrace();
+                return;
+            }
             saveTable.getItems().clear();
-            controller.initalizeSimulationsAndNetworks();
             Task<Void> task = new Task<Void>() {
                 @Override
                 protected Void call() {
@@ -111,40 +127,71 @@ public class SaveMapController implements Loadable {
     /*
      *Makes calls to google API to save a map and also calculate distances, finally writes to .eon file when clicked
      */
-    public void saveButtonClicked() {
-        fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
-        file = fileChooser.showSaveDialog(null);
+    public void saveButtonClicked() throws IOException {
+        if(!isSaveTablePopulated(saveTable)){
+            new ErrorDialog("Please enter at least three rows containing different nodes types");
+            return;
+        }
+        if(!internationalReplicaTypesExist(saveTable)){
+            new ErrorDialog("Both Data Center and International nodes must be present in the topology");
+            return;
+        }
 
-        if (file == null) return;
-        Task<Void> task = new Task<Void>() {
+        String rootPath = System.getProperty("user.dir");
+        String apiPath = "api_key.txt";
+        Path apiKeyPath = Paths.get(rootPath + "/" + apiPath);
+        GridPane grid = new GridPane();
 
-            @Override
-            protected Void call() {
-                // get api key
-                String apiPath = "api_key.txt";
-                String key = "";
-                try {
-                    key = new String(Files.readAllBytes(Paths.get(apiPath)));
-                    NewTopology newTopology = new NewTopology(key);
+        if (Files.exists(apiKeyPath)) {
+            fileChooser = new FileChooser();
+            fileChooser.getExtensionFilters().addAll(ProjectFileFormat.getExtensionFilters());
+            fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+            file = fileChooser.showSaveDialog(null);
 
-                    for (int i = 0; i < saveTable.getItems().size(); i++) {
-                        SavedNodeDetails savedNodeDetails = saveTable.getItems().get(i);
-                        newTopology.addNode(savedNodeDetails);
+            if (file == null) return;
+            Task<Void> task = new Task<Void>() {
+
+                @Override
+                protected Void call() {
+                    // get api key
+                    String key = "";
+                    try {
+                        key = new String(Files.readAllBytes(Paths.get(apiPath)));
+                        NewTopology newTopology = new NewTopology(key);
+
+                        for (int i = 0; i < saveTable.getItems().size(); i++) {
+                            SavedNodeDetails savedNodeDetails = saveTable.getItems().get(i);
+                            newTopology.addNode(savedNodeDetails);
+                        }
+
+                        Logger.info("Saving project to " + file.getName() + "...");
+                        ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).save(file, ApplicationResources.getProject(), saveTable.getItems(), newTopology.getMap());
+                        saveWindow.close();
+                        MainWindowController controller = ResizableCanvas.getParentController();
+                        controller.setFile(file);
+                        controller.initalizeSimulationsAndNetworks();
+
+                        Logger.info("Finished saving project.");
+                    } catch (Exception ex) {
+                        new ErrorDialog("An exception occurred while saving the project!", ex);
+                        ex.printStackTrace();
                     }
-
-                    Logger.info("Saving project to " + file.getName() + "...");
-                    ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).save(file, ApplicationResources.getProject(), saveTable.getItems(), newTopology.getMap());
-                    Logger.info("Finished saving project.");
-                } catch (Exception ex) {
-                    Logger.info("An exception occurred while saving the project.");
-                    Logger.debug(ex);
+                    return null;
                 }
-                return null;
+            };
+            task.run();
+        } else {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/APIKeyWindow.fxml"));
+            grid = fxmlLoader.load();
+            APIKeyController controller = fxmlLoader.getController();
+            if (controller != null) {
+                controller.displaySaveAPIKeyWindow(grid);
+                apiKeyPath = Paths.get(rootPath + "/" + apiPath);
+                if (Files.exists(apiKeyPath)) {
+                    saveButtonClicked();
+                }
             }
-        };
-        task.run();
+        }
     }
 
     /*
@@ -232,10 +279,15 @@ public class SaveMapController implements Loadable {
         loadButton.setOnAction(e -> loadButtonClicked());
 
         Button saveButton = new Button("Save map");
-        saveButton.setOnAction(e -> saveButtonClicked());
-
-//        Button updateButton = new Button("Update current pre-loaded map");
-//        updateButton.setOnAction(e -> updateButtonClicked());
+        saveButton.setOnAction(e ->
+                {
+                    try {
+                        saveButtonClicked();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();;
+                    }
+                }
+        );
 
         HBox hBox = new HBox();
         //Insets: Padding around entire layout
@@ -365,17 +417,17 @@ public class SaveMapController implements Loadable {
         for (int i = nodeNumDeleted; i < allNodeDetails.size(); i++) {
             allNodeDetails.get(i).setNodeNum(i);
         }
-        for (SavedNodeDetails node : allNodeDetails){
+        for (SavedNodeDetails node : allNodeDetails) {
             String connectedNumString = node.getConnectedNodeNum();
-            if(!connectedNumString.isEmpty()){
+            if (!connectedNumString.isEmpty()) {
                 List<String> connectedNumStringList = new ArrayList<String>(Arrays.asList(connectedNumString.split(",")));
                 ListIterator<String> it = connectedNumStringList.listIterator();
-                while(it.hasNext()){
+                while (it.hasNext()) {
                     String nodeNum = it.next();
                     //remove deleted node number from the connected node string and update node numbers that were greater than the deleted node number
-                    if(nodeNumDeleted == Integer.parseInt(nodeNum)){
+                    if (nodeNumDeleted == Integer.parseInt(nodeNum)) {
                         it.remove();
-                    } else if (nodeNumDeleted < Integer.parseInt(nodeNum)){
+                    } else if (nodeNumDeleted < Integer.parseInt(nodeNum)) {
                         it.set(Integer.parseInt(nodeNum) - 1 + "");
                     }
                 }
@@ -448,9 +500,43 @@ public class SaveMapController implements Loadable {
                 saveTable.getItems().add(savedNodeDetails);
             }
         } catch (NullPointerException e) {
-            Logger.info("Network not pre-loaded from the main window controller.  You may load directly here with the 'load' button");
+            new ErrorDialog("Network not pre-loaded from the main window controller.  You may load directly here with the 'load' button");
         } catch (Exception e) {
-            Logger.info("Some exception occurred while trying to load: " + e);
+            new ErrorDialog("Some exception occurred while trying to load: ", e);
         }
+    }
+
+    /**
+     * Checks save table for the existence of both international and data center node types
+     * @param saveTable contains row information (SavedNodeDetails)
+     * @return boolean; true if both node types exist
+     */
+    public boolean internationalReplicaTypesExist(TableView<SavedNodeDetails> saveTable){
+        boolean internationalPresent = false;
+        boolean repliacaPresent = false;
+
+        for(SavedNodeDetails node : saveTable.getItems()){
+            if(internationalPresent && repliacaPresent){
+                return true;
+            }
+            if(node.getNodeType().contains("International")){
+                internationalPresent = true;
+            } else if(node.getNodeType().contains("Data Center")){
+                repliacaPresent = true;
+            } else if(node.getNodeType().contains("Data Center, International")){
+                internationalPresent = true;
+                repliacaPresent = true;
+            }
+        }
+        return (internationalPresent && repliacaPresent);
+    }
+
+    /**
+     * Checks if save table has at least one row populated
+     * @param saveTable contains row information (SavedNodeDetails)
+     * @return boolean; true if there is at least one SavedNodeDetails
+     */
+    public boolean isSaveTablePopulated(TableView<SavedNodeDetails> saveTable){
+        return (saveTable.getItems().size() >= 3);
     }
 }

@@ -1,17 +1,25 @@
 package ca.bcit.jfx.components;
 
 import ca.bcit.io.Logger;
-import ca.bcit.jfx.controllers.SimulationMenuController;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
-import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 public class TaskReadyProgressBar extends StackPane {
-
+	private final ExecutorService runMultipleSimulationService = Executors.newSingleThreadExecutor(new ThreadFactory() {
+		@Override
+		public Thread newThread(Runnable runnable) {
+			Thread thread = Executors.defaultThreadFactory().newThread(runnable);
+			thread.setDaemon(true);
+			return thread;
+		}
+	});
 	private final ProgressBar bar = new ProgressBar();
 	private final Label label = new Label("");
 	
@@ -45,7 +53,8 @@ public class TaskReadyProgressBar extends StackPane {
 		task.setOnCancelled(this::onCancelled);
 		Thread thread = new Thread(task);
 		thread.setDaemon(daemon);
-		thread.start();
+		runMultipleSimulationService.execute(thread);
+//		thread.start();
 	}
 
 	public void onSucceeded() {
@@ -60,5 +69,9 @@ public class TaskReadyProgressBar extends StackPane {
 	private void onCancelled(WorkerStateEvent e) {
 		Logger.debug(e.getSource().toString() + " was cancelled!");
 		unbind();
+	}
+
+	public ExecutorService getRunMultipleSimulationService(){
+		return runMultipleSimulationService;
 	}
 }
