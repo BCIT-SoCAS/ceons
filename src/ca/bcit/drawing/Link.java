@@ -22,6 +22,22 @@ public class Link extends Figure {
 	}
 
 	/**
+	 * Draw link with a gradient color acording to avaliable free slices
+	 * @param stPoint starting location of the link
+	 * @param _endPoint end location of the link
+	 * @param number the number tag identifying the link
+	 * @param Percentage percentage of free slices left in the link
+	 * @param length length between start node and end node
+	 */
+	public Link(Vector2F stPoint, Vector2F _endPoint, int number, int Percentage, int length) {
+		super(stPoint, "Link" + number);
+		this.Percentage = Percentage;
+		endPoint = _endPoint;
+		this.length = length;
+		loadImage();
+	}
+
+	/**
 	 * @deprecatd Old method to draw link with the previous used color (default green)
 	 * @param stPoint starting location of the link
 	 * @param _endPoint end location of the link
@@ -30,21 +46,6 @@ public class Link extends Figure {
 	@Deprecated
 	public Link(Vector2F stPoint, Vector2F _endPoint, int number) {
 		super(stPoint, "Link" + number);
-		endPoint = _endPoint;
-		length = 0;
-		loadImage();
-	}
-
-	/**
-	 * Draw link with a gradient color acording to avaliable free slices
-	 * @param stPoint starting location of the link
-	 * @param _endPoint end location of the link
-	 * @param number the number tag identifying the link
-	 * @param Percentage percentage of free slices left in the link
-	 */
-	public Link(Vector2F stPoint, Vector2F _endPoint, int number, int Percentage) {
-		super(stPoint, "Link" + number);
-		this.Percentage = Percentage;
 		endPoint = _endPoint;
 		length = 0;
 		loadImage();

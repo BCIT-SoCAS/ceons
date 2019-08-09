@@ -30,6 +30,7 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 public class SimulationMenuController {
     public static final int SIMULATION_REPETITION_LABEL_INDEX = 7;
@@ -69,6 +70,11 @@ public class SimulationMenuController {
 	@FXML private Button pauseButton;
 	@FXML private Button clearCancelButton;
 	private CheckBox[] modulations;
+
+	public static boolean started = false;
+	public static boolean finished = false;
+	public static boolean paused = false;
+	public static boolean cancelled = false;
 
 	public static TaskReadyProgressBar progressBar;
 	/**
@@ -164,8 +170,6 @@ public class SimulationMenuController {
 	}
 
 	// start simulation button
-	public static boolean started = false;
-	public static boolean finished = false;
 	@FXML public void startSimulation(ActionEvent e) {
 	    try {
             Network network = ApplicationResources.getProject().getNetwork();
@@ -199,7 +203,6 @@ public class SimulationMenuController {
             }
 
             network.setDemandAllocationAlgorithm(algorithms.getValue());
-//            network.setTrafficGenerator(generators.getValue());
 
             //Initially remove all modulations first and add back modulations that user selects
             for (Modulation modulation : network.getAllowedModulations()) network.disallowModulation(modulation);
@@ -221,9 +224,16 @@ public class SimulationMenuController {
                 SimulationTask task = new SimulationTask(simulation, seedField.getValue(), Double.parseDouble(alpha.getText()), erlangIntField.getValue(), demands.getValue(), replicaPreservation.isSelected());
                 //gray out settings
                 clearCancelButton.setText("Cancel Simulation");
-                settings.setDisable(true);
                 progressBar.runTask(task, true);
             } else {
+				final ExecutorService runMultipleSimulationService = Executors.newSingleThreadExecutor(new ThreadFactory() {
+					@Override
+					public Thread newThread(Runnable runnable) {
+						Thread thread = Executors.defaultThreadFactory().newThread(runnable);
+						thread.setDaemon(true);
+						return thread;
+					}
+				});
                 Random random = new Random();
 
 				for(int numRepetitions = 0; numRepetitions < numRepetitionsPerErlang.getValue(); numRepetitions++){
@@ -233,8 +243,8 @@ public class SimulationMenuController {
 						SimulationTask task = new SimulationTask(simulation, randomSeed, Double.parseDouble(alpha.getText()), erlangValue, demands.getValue(), replicaPreservation.isSelected());
 						//gray out settings
 						clearCancelButton.setText("Cancel Simulation");
-						settings.setDisable(true);
-						progressBar.runTask(task, true);
+						progressBar.runTask(task, true, runMultipleSimulationService);
+						progressBar.increaseSimulationCount();
 					}
 				}
             }
@@ -254,7 +264,6 @@ public class SimulationMenuController {
 	}
 
 	// Cancel simulation button
-	public static boolean cancelled = false;
 	@FXML public void clearCancelSimulation(ActionEvent e) {
 
 		paused = true;
@@ -276,6 +285,7 @@ public class SimulationMenuController {
 				ResizableCanvas.getParentController().resetGraph();
 				ResizableCanvas.getParentController().graph.changeState(DrawingState.noActionState);
 				try {
+					progressBar.getRunMultipleSimulationService().shutdownNow();
 					ResizableCanvas.getParentController().initalizeSimulationsAndNetworks();
 				} catch (MapLoadingException ex){
 					new ErrorDialog(ex.getMessage(), ex);
@@ -328,7 +338,6 @@ public class SimulationMenuController {
 	}
 
 	// pause simulation button
-	public static boolean paused = false;
 	@FXML public void pauseSimulation(ActionEvent e) {
 		if (paused && !finished && started) {
 			ResizableCanvas.getParentController().graph.changeState(DrawingState.noActionState);

@@ -15,11 +15,13 @@ import ca.bcit.jfx.components.ErrorDialog;
 import ca.bcit.jfx.components.ResizableCanvas;
 import ca.bcit.jfx.components.TaskReadyProgressBar;
 import ca.bcit.net.Network;
+import ca.bcit.net.NetworkLink;
 import ca.bcit.net.NetworkNode;
 import ca.bcit.net.demand.generator.AnycastDemandGenerator;
 import ca.bcit.net.demand.generator.DemandGenerator;
 import ca.bcit.net.demand.generator.TrafficGenerator;
 import ca.bcit.net.demand.generator.UnicastDemandGenerator;
+import ca.bcit.net.spectrum.Spectrum;
 import ca.bcit.utils.Utils;
 import ca.bcit.utils.random.ConstantRandomVariable;
 import ca.bcit.utils.random.MappedRandomVariable;
@@ -360,10 +362,12 @@ public class MainWindowController implements Loadable {
                                     graph.addNetworkNode(n);
                                     for (NetworkNode n2 : project.getNetwork().getNodes()) {
                                         if (project.getNetwork().containsLink(n, n2)) {
-                                            int totalSlices = project.getNetwork().getLinkSlices(n, n2).getSlicesCount();
-                                            int occupiedSlices = project.getNetwork().getLinkSlices(n, n2).getOccupiedSlices();
+                                            NetworkLink networkLink = project.getNetwork().getLink(n, n2);
+                                            Spectrum linkSpectrum = project.getNetwork().getLinkSlices(n, n2);
+                                            int totalSlices = linkSpectrum.getSlicesCount();
+                                            int occupiedSlices = linkSpectrum.getOccupiedSlices();
                                             int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
-                                            graph.addLink(n.getPosition(), n2.getPosition(), currentPercentage);
+                                            graph.addLink(n.getPosition(), n2.getPosition(), currentPercentage, networkLink.getLength());
                                         }
                                     }
                                 }
@@ -390,13 +394,15 @@ public class MainWindowController implements Loadable {
         try {
             stopUpdateGraph();
             graph.resetCanvas();
-            for (NetworkNode n : ApplicationResources.getProject().getNetwork().getNodes()) {
+            Project project = ApplicationResources.getProject();
+            for (NetworkNode n : project.getNetwork().getNodes()) {
                 n.clearOccupied();
                 n.setFigure(n);
                 graph.addNetworkNode(n);
                 for (NetworkNode n2 : ApplicationResources.getProject().getNetwork().getNodes()) {
+                    NetworkLink networkLink = project.getNetwork().getLink(n, n2);
                     if (ApplicationResources.getProject().getNetwork().containsLink(n, n2)) {
-                        graph.addLink(n.getPosition(), n2.getPosition(), 100);
+                        graph.addLink(n.getPosition(), n2.getPosition(), 100, networkLink.getLength());
                     }
                 }
             }
@@ -449,8 +455,9 @@ public class MainWindowController implements Loadable {
                 n.setFigure(n);
                 graph.addNetworkNode(n);
                 for (NetworkNode n2 : project.getNetwork().getNodes()) {
+                    NetworkLink networkLink = project.getNetwork().getLink(n, n2);
                     if (project.getNetwork().containsLink(n, n2)) {
-                        graph.addLink(n.getPosition(), n2.getPosition(), 100);
+                        graph.addLink(n.getPosition(), n2.getPosition(), 100, networkLink.getLength());
                     }
                 }
             }

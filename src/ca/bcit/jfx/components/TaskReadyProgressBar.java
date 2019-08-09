@@ -7,21 +7,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.StackPane;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
 
 public class TaskReadyProgressBar extends StackPane {
-	private final ExecutorService runMultipleSimulationService = Executors.newSingleThreadExecutor(new ThreadFactory() {
-		@Override
-		public Thread newThread(Runnable runnable) {
-			Thread thread = Executors.defaultThreadFactory().newThread(runnable);
-			thread.setDaemon(true);
-			return thread;
-		}
-	});
 	private final ProgressBar bar = new ProgressBar();
 	private final Label label = new Label("");
+	private ExecutorService runMultipleSimulationService;
+	private int numSimulationsLeft = 0;
 	
 	public TaskReadyProgressBar() {
 		super();
@@ -47,31 +39,63 @@ public class TaskReadyProgressBar extends StackPane {
 	public void runTask(Task<?> task, boolean daemon) {
 		bind(task);
 		task.setOnSucceeded(e -> {
-			onSucceeded();
+			unbind();
 		});
-		task.setOnFailed(this::onFailed);
-		task.setOnCancelled(this::onCancelled);
+		task.setOnFailed(e -> {
+			unbind();
+			Logger.debug(e.getSource().toString() + " failed!");
+		});
+		task.setOnCancelled(e -> {
+			unbind();
+			Logger.debug(e.getSource().toString() + " was cancelled!");
+		});;
+		Thread thread = new Thread(task);
+		thread.setDaemon(daemon);
+		thread.start();
+	}
+
+	public void runTask(Task<?> task, boolean daemon, ExecutorService runMultipleSimulationService) {
+		bind(task);
+		setRunMultipleSimulationService(runMultipleSimulationService);
+		task.setOnSucceeded(e -> {
+			unbind();
+			numSimulationsLeft--;
+			if(numSimulationsLeft == 0){
+				runMultipleSimulationService.shutdown();
+				try {
+					if (!runMultipleSimulationService.awaitTermination(800, TimeUnit.MILLISECONDS)) {
+						runMultipleSimulationService.shutdownNow();
+					}
+				} catch (InterruptedException ex) {
+					runMultipleSimulationService.shutdownNow();
+				}
+			}
+		});
+		task.setOnFailed(e -> {
+			unbind();
+			Logger.debug(e.getSource().toString() + " failed!");
+		});
+		task.setOnCancelled(e -> {
+			unbind();
+			Logger.debug(e.getSource().toString() + " was cancelled!");
+		});
+
+		//Start the thread task execution
 		Thread thread = new Thread(task);
 		thread.setDaemon(daemon);
 		runMultipleSimulationService.execute(thread);
-//		thread.start();
 	}
 
-	public void onSucceeded() {
-		unbind();
+	public void setRunMultipleSimulationService(ExecutorService runMultipleSimulationService) {
+			this.runMultipleSimulationService = runMultipleSimulationService;
 	}
 
-	private void onFailed(WorkerStateEvent e) {
-		Logger.debug(e.getSource().toString() + " failed!");
-		unbind();
-	}
-	
-	private void onCancelled(WorkerStateEvent e) {
-		Logger.debug(e.getSource().toString() + " was cancelled!");
-		unbind();
-	}
-
-	public ExecutorService getRunMultipleSimulationService(){
+	public ExecutorService getRunMultipleSimulationService() {
 		return runMultipleSimulationService;
 	}
+
+	public void increaseSimulationCount(){
+		numSimulationsLeft++;
+	}
+
 }

@@ -44,9 +44,9 @@ public class ResizableCanvas extends Canvas {
         } else if (isLinkDeleteState() || isFewElementsDeleteState()) {
             startTempPoint = pressedPoint;
         } else if (isClickingState() && !list.isEmpty()) {
-            Figure temp = findClosestElement(pressedPoint);
-            setSelectedFigure(temp);
-            loadProperties(temp);
+            Figure closestElement = findClosestElement(pressedPoint);
+            setSelectedFigure(closestElement);
+            loadProperties(closestElement);
         }
     }
 
@@ -224,8 +224,8 @@ public class ResizableCanvas extends Canvas {
      * @param end_vec2F   coordinates of the second Node
      * @param Percentage  percentage of the slice being free
      */
-    public void addLink(Vector2F start_vec2F, Vector2F end_vec2F, int Percentage) {
-        list.add(new Link(start_vec2F, end_vec2F, list.getLinkAmount(), Percentage));
+    public void addLink(Vector2F start_vec2F, Vector2F end_vec2F, int Percentage, int length) {
+        list.add(new Link(start_vec2F, end_vec2F, list.getLinkAmount(), Percentage, length));
     }
 
     private Figure findClosestElement(Vector2F vec2F) {
