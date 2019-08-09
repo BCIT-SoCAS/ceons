@@ -131,10 +131,12 @@ public class Simulation {
 		if (!dir.isDirectory())
 			dir.mkdir();
 		File save = new File(dir, ApplicationResources.getProject().getName().toUpperCase() + "-" + generator.getName()
-				+ "-ERLANG" + erlang + "-ALPHA" + alpha + ".txt");
+				+ "-ERLANG" + erlang + "-SEED" + seed + "-ALPHA" + alpha + ".txt");
 		try {
 			PrintWriter out = new PrintWriter(save);
 			out.println("Generator: " + generator.getName());
+			out.println("Erlang: " + erlang);
+			out.println("Seed: " + seed);
 			out.println("Alpha: " + alpha);
 			out.println("Demands count: " + demandsCount);
 			out.println("Blocked Spectrum: " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
