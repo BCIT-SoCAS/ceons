@@ -52,7 +52,7 @@ public class Main extends Application {
 		primaryStage.setMinWidth(primaryStage.getWidth());
 		primaryStage.setMinHeight(primaryStage.getHeight());
 		
-		final Canvas canvas = (Canvas) scene.lookup("#graph");
+		final Canvas canvas = (Canvas) scene.lookup("#canvas");
 		BorderPane pane = (BorderPane) scene.lookup("#borderPane");
 		canvas.widthProperty().bind(pane.widthProperty());
 		canvas.heightProperty().bind(pane.heightProperty());

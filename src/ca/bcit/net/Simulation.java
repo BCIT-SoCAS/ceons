@@ -151,6 +151,12 @@ public class Simulation {
 		} catch (IOException e) {
 			Logger.debug(e);
 		}
+		//Helps slow GUI update between multiple simulations being run back to back
+		try {
+			Thread.sleep(2000);
+		} catch(InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
 	}
 
 	/**
@@ -192,13 +198,6 @@ public class Simulation {
 					Spectrum spectrum = network.getLinkSlices(n, n2);
 					networkLink.slicesUp = new Spectrum(NetworkLink.NUMBER_OF_SLICES);
 					networkLink.slicesDown = new Spectrum(NetworkLink.NUMBER_OF_SLICES);
-					System.out.println("Network Link: " + networkLink.toString());
-					System.out.println("Length: " + networkLink.length);
-					System.out.println("Slices Down: " + networkLink.slicesDown);
-					System.out.println("Slices Up: " + networkLink.slicesUp);
-					System.out.println("Slices Count: " + spectrum.getSlicesCount());
-					System.out.println("Occupied Slices: " + spectrum.getOccupiedSlices());
-					System.out.println("Segments: " + spectrum.getSegments());
 				}
 			}
 		}
