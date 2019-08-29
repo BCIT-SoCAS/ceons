@@ -171,6 +171,8 @@ public class SimulationMenuController {
 
 	// start simulation button
 	@FXML public void startSimulation(ActionEvent e) {
+		Simulation simulation;
+
 	    try {
             Network network = ApplicationResources.getProject().getNetwork();
             if (algorithms.getValue() == null) {
@@ -219,8 +221,11 @@ public class SimulationMenuController {
             //Regenerator Metric is always static
             network.setRegeneratorMetricType(MetricType.STATIC);
 
+            //If multiple simulations is selected then we will create a single thread executor otherwise to run multiple consecutive simulations back-to-back, otherwise, run one task
             if(!runMultipleSimulations.isSelected()){
-                Simulation simulation = new Simulation(network, generators.getValue());
+                simulation = new Simulation(network, generators.getValue());
+
+                //TODO: REFACTOR SIMULATION TASK INTO SIMULATION
                 SimulationTask task = new SimulationTask(simulation, seedField.getValue(), Double.parseDouble(alpha.getText()), erlangIntField.getValue(), demands.getValue(), replicaPreservation.isSelected());
                 //gray out settings
                 clearCancelButton.setText("Cancel Simulation");
@@ -235,15 +240,28 @@ public class SimulationMenuController {
 					}
 				});
                 Random random = new Random();
+				int startingErlangValue = erlangRangeLowField.getValue();
+				int endingErlangValue = erlangRangeHighField.getValue();
+				int totalSimulations = numRepetitionsPerErlang.getValue() * (erlangRangeHighField.getValue() - erlangRangeLowField.getValue());
 
-				for(int numRepetitions = 0; numRepetitions < numRepetitionsPerErlang.getValue(); numRepetitions++){
+				for(int numRepetitions = 1; numRepetitions <= numRepetitionsPerErlang.getValue(); numRepetitions++){
 					int randomSeed = random.nextInt(101);
+
 					for(int erlangValue = erlangRangeLowField.getValue(); erlangValue <= erlangRangeHighField.getValue(); erlangValue+=stepBetweenErlangsField.getValue()){
-						Simulation simulation = new Simulation(network, generators.getValue());
-						SimulationTask task = new SimulationTask(simulation, randomSeed, Double.parseDouble(alpha.getText()), erlangValue, demands.getValue(), replicaPreservation.isSelected());
+						System.out.println(erlangValue);
+						System.out.println(erlangRangeHighField.getValue());
+						System.out.println(numRepetitions);
+						System.out.println(numRepetitionsPerErlang.getValue());
+						//Only read AND write the summary PDF on the last simulation
+						if(numRepetitions < numRepetitionsPerErlang.getValue() && erlangValue < erlangRangeHighField.getValue()){
+							simulation = new Simulation(network, generators.getValue(), false);
+						} else {
+							simulation = new Simulation(network, generators.getValue(), true, totalSimulations, startingErlangValue, erlangValue, endingErlangValue, randomSeed, Double.parseDouble(alpha.getText()));
+						}
+						SimulationTask simulationTask = new SimulationTask(simulation, randomSeed, Double.parseDouble(alpha.getText()), erlangValue, demands.getValue(), replicaPreservation.isSelected());
 						//gray out settings
 						clearCancelButton.setText("Cancel Simulation");
-						progressBar.runTask(task, true, runMultipleSimulationService);
+						progressBar.runTask(simulationTask, true, runMultipleSimulationService);
 						progressBar.increaseSimulationCount();
 					}
 				}
