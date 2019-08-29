@@ -3,9 +3,11 @@ package ca.bcit.net;
 import ca.bcit.ApplicationResources;
 import ca.bcit.io.Logger;
 import ca.bcit.io.MapLoadingException;
+import ca.bcit.io.SimulationSummary;
 import ca.bcit.io.project.Project;
 import ca.bcit.io.project.ProjectFileFormat;
 import ca.bcit.jfx.components.ResizableCanvas;
+import ca.bcit.jfx.components.TaskReadyProgressBar;
 import ca.bcit.jfx.controllers.MainWindowController;
 import ca.bcit.jfx.controllers.SimulationMenuController;
 import ca.bcit.jfx.tasks.SimulationTask;
@@ -30,18 +32,11 @@ import java.util.*;
  */
 public class Simulation {
 
-	private static final String RESULTS_DATA_DIR_NAME = "results data";
-	private static final String RESULTS_SUMMARY_DIR_NAME = "results summary";
+	public static final String RESULTS_DATA_DIR_NAME = "results data";
+	private String resultsDataFileName;
 
 	private Network network;
 	private TrafficGenerator generator;
-	private boolean printSummary;
-	private int totalSimulations;
-	private int startingErlangValue;
-	private int currentErlangValue;
-	private int endingErlangValue;
-	private int randomSeed;
-	private double alpha;
 	private double totalVolume;
 	private double spectrumBlockedVolume;
 	private double regeneratorsBlockedVolume;
@@ -61,19 +56,11 @@ public class Simulation {
 	public Simulation(Network network, TrafficGenerator generator, boolean printSummary) {
 		this.network = network;
 		this.generator = generator;
-		this.printSummary = printSummary;
 	}
 
 	public Simulation(Network network, TrafficGenerator generator, boolean printSummary, int totalSimulations, int startingErlangValue, int currentErlangValue, int endingErlangValue, int randomSeed, double alpha) {
 		this.network = network;
 		this.generator = generator;
-		this.printSummary = printSummary;
-		this.totalSimulations = totalSimulations;
-		this.startingErlangValue = startingErlangValue;
-		this.currentErlangValue = currentErlangValue;
-		this.endingErlangValue = endingErlangValue;
-		this.randomSeed = randomSeed;
-		this.alpha = alpha;
 
 	}
 
@@ -166,47 +153,36 @@ public class Simulation {
 		}
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		String json = gson.toJson(new SimulationSummary(erlang, seed, alpha, demandsCount));
+		String json = gson.toJson(new SimulationSummary(generator.getName(), erlang, seed, alpha, demandsCount, totalVolume,
+				spectrumBlockedVolume, regeneratorsBlockedVolume, linkFailureBlockedVolume, unhandledVolume, regsPerAllocation,
+				allocations));
+
+
 //		System.out.println(json);
 
 		try {
-			String resultsDataFileName = ApplicationResources.getProject().getName().toUpperCase() + "-" + generator.getName()
+			resultsDataFileName = ApplicationResources.getProject().getName().toUpperCase() + "-" + generator.getName()
 					+ "-ERLANG" + erlang + "-SEED" + seed + "-ALPHA" + alpha + ".json";
+			TaskReadyProgressBar.addResultsDataFileName(resultsDataFileName);
 			FileWriter resultsDataWriter  = new FileWriter(new File(resultsDirectory, resultsDataFileName));
 
 			resultsDataWriter.write(json);
 			resultsDataWriter.close();
 
-			if(printSummary){
-				System.out.println("PRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARY\n" +
-						"PRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARY\n" +
-						"PRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARY\n" +
-						"PRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARY\n" +
-						"PRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARYPRINT SUMMARY\n");
-				File resultsSummaryDirectory = new File(RESULTS_SUMMARY_DIR_NAME);
-				ArrayList<JsonObject> resultsSummaryList = new ArrayList<JsonObject>();
-
-				if (!resultsSummaryDirectory.isDirectory()) {
-					resultsSummaryDirectory.mkdir();
-				}
-
-				BufferedReader bufferedReader = new BufferedReader(new FileReader(RESULTS_DATA_DIR_NAME + "/" + resultsDataFileName));
-				JsonObject js = gson.fromJson(bufferedReader, JsonObject.class);
-				System.out.println(js.getAsJsonObject());
-				resultsSummaryList.add(js);
-
-//				for(int simulationNum = 0; simulationNum < totalSimulations; simulationNum++){
-//					BufferedReader bufferedReader = new BufferedReader(new FileReader(RESULTS_DATA_DIR_NAME + "/" + resultsDataFileName));
-//					JsonObject js = gson.fromJson(bufferedReader, JsonObject.class);
-//					System.out.println(js.getAsJsonObject());
-//					resultsSummaryList.add(js);
+//			if(printSummary){
+//				File resultsSummaryDirectory = new File(RESULTS_SUMMARY_DIR_NAME);
+//
+//				if (!resultsSummaryDirectory.isDirectory()) {
+//					resultsSummaryDirectory.mkdir();
 //				}
-
-
-
-				FileWriter resultsSummaryWriter = new FileWriter(new File(resultsSummaryDirectory,ApplicationResources.getProject().getName().toUpperCase() + "-" + generator.getName()
-						+ "-ERLANG" + erlang + "-SEED" + seed + "-ALPHA" + alpha + ".json"));
-			}
+//
+//				BufferedReader bufferedReader = new BufferedReader(new FileReader(RESULTS_DATA_DIR_NAME + "/" + resultsDataFileName));
+//				JsonObject js = gson.fromJson(bufferedReader, JsonObject.class);
+//				System.out.println(js.getAsJsonObject());
+//
+//				FileWriter resultsSummaryWriter = new FileWriter(new File(resultsSummaryDirectory,ApplicationResources.getProject().getName().toUpperCase() + "-" + generator.getName()
+//						+ "-ERLANG" + erlang + "-SEED" + seed + "-ALPHA" + alpha + ".json"));
+//			}
 		}  catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -236,35 +212,7 @@ public class Simulation {
 //		} catch (IOException e) {
 //			Logger.debug(e);
 //		}
-	}
 
-	private class SimulationSummary {
-		String trafficGeneratorName;
-		int erlangValue;
-		long seedValue;
-		double alphaValue;
-		int demandsCountValue;
-		double noSpectrumBlockedVolumePercentage;
-		double noRegeneratorsBlockedVolumePercentage;
-		double linkFailureBlockedVolumePercentage;
-		double unhandledVolumePercentage;
-		double totalBlockedVolumePercentage;
-		double averageRegeneratiorsPerAllocation;
-
-		private SimulationSummary(int erlangValue, long seedValue, double alphaValue, int demandsCountValue){
-			this.trafficGeneratorName = generator.getName();
-			this.erlangValue = erlangValue;
-			this.seedValue = seedValue;
-			this.alphaValue = alphaValue;
-			this.demandsCountValue = demandsCountValue;
-			noSpectrumBlockedVolumePercentage = spectrumBlockedVolume / totalVolume * 100;
-			noRegeneratorsBlockedVolumePercentage =  regeneratorsBlockedVolume / totalVolume * 100;
-			linkFailureBlockedVolumePercentage = linkFailureBlockedVolume / totalVolume * 100;
-			unhandledVolumePercentage = unhandledVolume / totalVolume * 100;
-			totalBlockedVolumePercentage = ((spectrumBlockedVolume / totalVolume) + (regeneratorsBlockedVolume / totalVolume)
-					+ (linkFailureBlockedVolume / totalVolume) + (unhandledVolume / totalVolume)) * 100;
-			averageRegeneratiorsPerAllocation = regsPerAllocation / allocations;
-		}
 		//Helps slow GUI update between multiple simulations being run back to back
 		try {
 			Thread.sleep(2000);

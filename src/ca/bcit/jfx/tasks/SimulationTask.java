@@ -23,7 +23,6 @@ public class SimulationTask extends Task<Void> {
 		this.alpha = alpha;
 		this.replicaPreservation = replicaPreservation;
 	}
-	
 	@Override
 	protected Void call() {
 		try {
@@ -47,4 +46,30 @@ public class SimulationTask extends Task<Void> {
 	public void updateMessage(String message) {
 		super.updateMessage(message);
 	}
+
+	//GETTERS AND SETTERS
+	public Simulation getSimulation() {
+		return simulation;
+	}
+
+	public long getSeed() {
+		return seed;
+	}
+
+	public int getDemandsCount() {
+		return demandsCount;
+	}
+
+	public int getErlang() {
+		return erlang;
+	}
+
+	public double getAlpha() {
+		return alpha;
+	}
+
+	public boolean isReplicaPreservation() {
+		return replicaPreservation;
+	}
+
 }
