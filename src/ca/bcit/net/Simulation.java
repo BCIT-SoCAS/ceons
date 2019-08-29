@@ -265,6 +265,12 @@ public class Simulation {
 					+ (linkFailureBlockedVolume / totalVolume) + (unhandledVolume / totalVolume)) * 100;
 			averageRegeneratiorsPerAllocation = regsPerAllocation / allocations;
 		}
+		//Helps slow GUI update between multiple simulations being run back to back
+		try {
+			Thread.sleep(2000);
+		} catch(InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
 	}
 
 	/**

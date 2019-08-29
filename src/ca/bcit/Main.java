@@ -53,7 +53,7 @@ public class Main extends Application {
 		primaryStage.setMinHeight(primaryStage.getHeight());
 		primaryStage.setResizable(false);
 		
-		final Canvas canvas = (Canvas) scene.lookup("#graph");
+		final Canvas canvas = (Canvas) scene.lookup("#canvas");
 		BorderPane pane = (BorderPane) scene.lookup("#borderPane");
 		canvas.widthProperty().bind(pane.widthProperty());
 		canvas.heightProperty().bind(pane.heightProperty());

@@ -44,11 +44,8 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.*;
 import javafx.geometry.Insets;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,8 +56,6 @@ import java.nio.file.Paths;
 import java.nio.file.Files;
 
 import javafx.util.Duration;
-
-import javax.imageio.ImageIO;
 
 
 public class MainWindowController implements Loadable {
@@ -73,7 +68,7 @@ public class MainWindowController implements Loadable {
     @FXML
     private SimulationMenuController simulationMenuController;
     @FXML
-    public ResizableCanvas graph;
+    public ResizableCanvas canvas;
     @FXML
     private Accordion accordion;
     @FXML
@@ -97,12 +92,12 @@ public class MainWindowController implements Loadable {
 
     private static Timeline updateTimeline;
 
-    public ResizableCanvas getGraph() {
-        return graph;
+    public ResizableCanvas getCanvas() {
+        return canvas;
     }
 
-    public void setGraph(ResizableCanvas graph) {
-        this.graph = graph;
+    public void setCanvas(ResizableCanvas canvas) {
+        this.canvas = canvas;
     }
 
     public void setFile(File file) {this.file = file; }
@@ -122,7 +117,7 @@ public class MainWindowController implements Loadable {
      */
     @FXML
     private void nodeAdd(ActionEvent e) {
-        graph.changeState(DrawingState.nodeAddingState);
+        canvas.changeState(DrawingState.nodeAddingState);
     }
 
     /**
@@ -132,12 +127,12 @@ public class MainWindowController implements Loadable {
      */
     @FXML
     private void linkAdd(ActionEvent e) {
-        graph.changeState(DrawingState.linkAddingState);
+        canvas.changeState(DrawingState.linkAddingState);
     }
 
     @FXML
     private void nodeSelect(ActionEvent e) {
-        graph.changeState(DrawingState.clickingState);
+        canvas.changeState(DrawingState.clickingState);
     }
 
     /**
@@ -147,7 +142,7 @@ public class MainWindowController implements Loadable {
      */
     @FXML
     private void deleteNodeChose(ActionEvent e) {
-        graph.changeState(DrawingState.nodeDeleteState);
+        canvas.changeState(DrawingState.nodeDeleteState);
     }
 
     /**
@@ -157,7 +152,7 @@ public class MainWindowController implements Loadable {
      */
     @FXML
     private void deleteLinkChose(ActionEvent e) {
-        graph.changeState(DrawingState.linkDeleteState);
+        canvas.changeState(DrawingState.linkDeleteState);
     }
 
     /**
@@ -167,7 +162,7 @@ public class MainWindowController implements Loadable {
      */
     @FXML
     private void deleteFewElementsChose(ActionEvent e) {
-        graph.changeState(DrawingState.fewElementsDeleteState);
+        canvas.changeState(DrawingState.fewElementsDeleteState);
     }
 
     /**
@@ -178,7 +173,7 @@ public class MainWindowController implements Loadable {
 
     @FXML
     private void nodeMarkReplica(ActionEvent e) {
-        graph.changeState(DrawingState.nodeMarkReplicaState);
+        canvas.changeState(DrawingState.nodeMarkReplicaState);
     }
 
     /**
@@ -188,7 +183,7 @@ public class MainWindowController implements Loadable {
      */
     @FXML
     private void nodeMarkInternational(ActionEvent e) {
-        graph.changeState(DrawingState.nodeMarkInternationalState);
+        canvas.changeState(DrawingState.nodeMarkInternationalState);
     }
 
     /**
@@ -198,7 +193,7 @@ public class MainWindowController implements Loadable {
      */
     @FXML
     private void nodeUnmark(ActionEvent e) {
-        graph.changeState(DrawingState.nodeUnmarkState);
+        canvas.changeState(DrawingState.nodeUnmarkState);
     }
 
     @FXML
@@ -218,7 +213,7 @@ public class MainWindowController implements Loadable {
             throw new RuntimeException(e);
         }
 
-        graph.init(this);
+        canvas.init(this);
 
         BackgroundSize bgSize = new BackgroundSize(100, 100, true, true, true, false);
         RadialGradient bgGradient = new RadialGradient(0, 0, 0.5, 0.5, 1, true, CycleMethod.NO_CYCLE, new Stop[]{
@@ -355,11 +350,11 @@ public class MainWindowController implements Loadable {
                         Duration.seconds(0),
                         event -> {
                             try {
-                                graph.resetCanvas();
+                                canvas.resetCanvas();
                                 Project project = ApplicationResources.getProject();
                                 for (NetworkNode n : project.getNetwork().getNodes()) {
                                     n.updateFigure();
-                                    graph.addNetworkNode(n);
+                                    canvas.addNetworkNode(n);
                                     for (NetworkNode n2 : project.getNetwork().getNodes()) {
                                         if (project.getNetwork().containsLink(n, n2)) {
                                             NetworkLink networkLink = project.getNetwork().getLink(n, n2);
@@ -367,7 +362,7 @@ public class MainWindowController implements Loadable {
                                             int totalSlices = linkSpectrum.getSlicesCount();
                                             int occupiedSlices = linkSpectrum.getOccupiedSlices();
                                             int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
-                                            graph.addLink(n.getPosition(), n2.getPosition(), currentPercentage, networkLink.getLength());
+                                            canvas.addLink(n.getPosition(), n2.getPosition(), currentPercentage, networkLink.getLength());
                                         }
                                     }
                                 }
@@ -393,16 +388,16 @@ public class MainWindowController implements Loadable {
     public void resetGraph() {
         try {
             stopUpdateGraph();
-            graph.resetCanvas();
+            canvas.resetCanvas();
             Project project = ApplicationResources.getProject();
             for (NetworkNode n : project.getNetwork().getNodes()) {
                 n.clearOccupied();
                 n.setFigure(n);
-                graph.addNetworkNode(n);
+                canvas.addNetworkNode(n);
                 for (NetworkNode n2 : ApplicationResources.getProject().getNetwork().getNodes()) {
                     NetworkLink networkLink = project.getNetwork().getLink(n, n2);
                     if (ApplicationResources.getProject().getNetwork().containsLink(n, n2)) {
-                        graph.addLink(n.getPosition(), n2.getPosition(), 100, networkLink.getLength());
+                        canvas.addLink(n.getPosition(), n2.getPosition(), 100, networkLink.getLength());
                     }
                 }
             }
@@ -448,16 +443,16 @@ public class MainWindowController implements Loadable {
             ApplicationResources.setProject(project);
             setupGenerators(project);
             loadSuccessful = true;
-            graph.resetCanvas();
+            canvas.resetCanvas();
             mapViewer.setImage(SwingFXUtils.toFXImage(project.getMap(), null));
             //for every node in the network place onto map and for each node add links between
             for (NetworkNode n : project.getNetwork().getNodes()) {
                 n.setFigure(n);
-                graph.addNetworkNode(n);
+                canvas.addNetworkNode(n);
                 for (NetworkNode n2 : project.getNetwork().getNodes()) {
                     NetworkLink networkLink = project.getNetwork().getLink(n, n2);
                     if (project.getNetwork().containsLink(n, n2)) {
-                        graph.addLink(n.getPosition(), n2.getPosition(), 100, networkLink.getLength());
+                        canvas.addLink(n.getPosition(), n2.getPosition(), 100, networkLink.getLength());
                     }
                 }
             }
@@ -500,7 +495,7 @@ public class MainWindowController implements Loadable {
 
     @FXML
     public void whilePaused() {
-        graph.changeState(DrawingState.clickingState);
+        canvas.changeState(DrawingState.clickingState);
         info.setText("Blocked Spectrum: " + this.spectrumBlockedVolume / this.totalVolume * 100 + "%" + "\n"
                 + "Blocked Regenerators: " + this.regeneratorsBlockedVolume / this.totalVolume * 100 + "%" + "\n"
                 + "Blocked Link Failure: " + this.linkFailureBlockedVolume / this.totalVolume * 100 + "%");

@@ -30,7 +30,6 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 
 public class SimulationMenuController {
     public static final int SIMULATION_REPETITION_LABEL_INDEX = 7;
@@ -104,7 +103,7 @@ public class SimulationMenuController {
 	@FXML public void multipleSimulationsSelected(ActionEvent e){
 		boolean isCheckBoxSelected = runMultipleSimulations.isSelected();
 		if(isCheckBoxSelected){
-			runMultipleSimulations.setText("Run single simulation?");
+//			runMultipleSimulations.setText("Run single simulation?");
 			simulationRepetitions = new Label("Simulations at each Erlang");
 			simulationRepetitions.setStyle("-fx-font-weight: bold;");
 
@@ -149,7 +148,7 @@ public class SimulationMenuController {
 			settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX + 3, stepBetweenErlangsLabel);
 			settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX + 4, stepBetweenErlangsField);
 		} else {
-			runMultipleSimulations.setText("Run multiple simulations?");
+//			runMultipleSimulations.setText("Run multiple simulations?");
 
             settings.getChildren().remove(simulationRepetitions);
 			settings.getChildren().remove(numRepetitionsPerErlang);
@@ -202,7 +201,16 @@ public class SimulationMenuController {
                 alert.getDialogPane().setPrefSize(480.0, 100);
                 alert.showAndWait();
                 return;
-            }
+            } else if (demands.getValue() <= 0){
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Set Demands Counts");
+				alert.setHeaderText(null);
+				alert.setContentText("Demands count can't be less than or equal to 0");
+				alert.setResizable(true);
+				alert.getDialogPane().setPrefSize(480.0, 100);
+				alert.showAndWait();
+				return;
+			}
 
             network.setDemandAllocationAlgorithm(algorithms.getValue());
 
@@ -231,6 +239,16 @@ public class SimulationMenuController {
                 clearCancelButton.setText("Cancel Simulation");
                 progressBar.runTask(task, true);
             } else {
+            	if(erlangRangeLowField.getValue() > erlangRangeHighField.getValue()){
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.setTitle("Erlang Range");
+					alert.setHeaderText(null);
+					alert.setContentText("Lower erlang range can't be greater than upper erlang range");
+					alert.setResizable(true);
+					alert.getDialogPane().setPrefSize(480.0, 100);
+					alert.showAndWait();
+					return;
+				}
 				final ExecutorService runMultipleSimulationService = Executors.newSingleThreadExecutor(new ThreadFactory() {
 					@Override
 					public Thread newThread(Runnable runnable) {
@@ -301,7 +319,7 @@ public class SimulationMenuController {
 				finished = true;
 				started = false;
 				ResizableCanvas.getParentController().resetGraph();
-				ResizableCanvas.getParentController().graph.changeState(DrawingState.noActionState);
+				ResizableCanvas.getParentController().canvas.changeState(DrawingState.noActionState);
 				try {
 					progressBar.getRunMultipleSimulationService().shutdownNow();
 					ResizableCanvas.getParentController().initalizeSimulationsAndNetworks();
@@ -358,7 +376,7 @@ public class SimulationMenuController {
 	// pause simulation button
 	@FXML public void pauseSimulation(ActionEvent e) {
 		if (paused && !finished && started) {
-			ResizableCanvas.getParentController().graph.changeState(DrawingState.noActionState);
+			ResizableCanvas.getParentController().canvas.changeState(DrawingState.noActionState);
 			pauseButton.setText("Pause Simulation");
 		} else if (!paused && !finished && started) {
 			ResizableCanvas.getParentController().setExpandedPane(2);
@@ -370,4 +388,8 @@ public class SimulationMenuController {
 		paused ^= true; // swap true/false state
 	}
 
+	// pause simulation button
+	@FXML public void clear(ActionEvent e) {
+		ResizableCanvas.getParentController().canvas.resetCanvas();
+	}
 }
