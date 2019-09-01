@@ -149,7 +149,13 @@ public class Node extends Figure {
 		
 		String nodeName = this.getName();
 		String nodeNumber = nodeName.substring(nodeName.indexOf("_") + 1);
-		gc.fillText(nodeNumber, getCenterPoint().getX() - imageSize / 16f , getCenterPoint().getY() + imageSize / 16f);
+		int nodeNum = Integer.parseInt(nodeNumber);
+		if (nodeNum < 10) {
+			gc.fillText(nodeNumber, getCenterPoint().getX() - imageSize / 16f - 1, getCenterPoint().getY() + imageSize / 16f);
+		} else if (nodeNum < 100) {
+			gc.fillText(nodeNumber, getCenterPoint().getX() - imageSize / 16f - 4.5, getCenterPoint().getY() + imageSize / 16f);
+		}
+
 	}
 	
 

@@ -41,6 +41,24 @@ public class Zooming {
         return conv.convertFloatMatrixToFigureControl(figuresTable);
 	}
 
+	public FigureControl zoom(double scale, boolean enlarge) {
+		changeNodeSize(calculateNodeSize());
+		if(enlarge){
+			factory += 0.001;
+			nodeFactory += 0.001;
+		}
+		else{
+			factory -= 0.001;
+			nodeFactory -= 0.001;
+		}
+		FloatMatrix rotateTable = new FloatMatrix(new float[][] {{1.001f, 0f}, {0f, 1.001f}});
+		FigureControlFloatMatrixConv conv=new FigureControlFloatMatrixConv(list);
+		FloatMatrix figuresTable = conv.convertFigureControlToFloatMatrix();
+		rotateTable = rotateTable.multiply(factory);
+		figuresTable = figuresTable.multiply(rotateTable);
+		return conv.convertFloatMatrixToFigureControl(figuresTable);
+	}
+
 	private void changeNodeSize(float newNodeSize) {
 		Node.changeNodeSize(newNodeSize);
 	}

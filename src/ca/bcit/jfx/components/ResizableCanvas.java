@@ -11,8 +11,13 @@ import ca.bcit.utils.draw.DashedDrawing;
 import ca.bcit.utils.draw.Zooming;
 import ca.bcit.utils.geom.Vector2F;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+
+import java.util.ArrayList;
 import java.util.Map;
 
 public class ResizableCanvas extends Canvas {
@@ -23,32 +28,21 @@ public class ResizableCanvas extends Canvas {
     private static MainWindowController parent;
     private Vector2F startTempPoint;
     private Vector2F endTempPoint;
+    double orgX = 0.0, orgY = 0.0, newX = 0.0, newY = 0.0;
+    double clickedX, clickedY, newClickedX, newClickedY;
+    ArrayList<Vector2F> nodePositions;
 
     public ResizableCanvas() {
         list = new FigureControl(this);
+        nodePositions = new ArrayList<Vector2F>();
         setOnMouseClicked(this::canvasOnMouseClicked);
         setOnMouseDragged(this::canvasOnMouseDragged);
         setOnMousePressed(this::canvasOnMousePressed);
         setOnMouseReleased(this::canvasOnMouseReleased);
-        setOnScroll(this::canvasOnMouseScroll);
     }
 
     public static MainWindowController getParentController() {
         return parent;
-    }
-
-    private void canvasOnMousePressed(MouseEvent e) {
-        updateListBeforeChanges();
-        Vector2F pressedPoint = new Vector2F((float) e.getX(), (float) e.getY());
-        if (isLinkAddingState()) {
-            addLink(pressedPoint);
-        } else if (isLinkDeleteState() || isFewElementsDeleteState()) {
-            startTempPoint = pressedPoint;
-        } else if (isClickingState() && !list.isEmpty()) {
-            Figure temp = findClosestElement(pressedPoint);
-            setSelectedFigure(temp);
-            loadProperties(temp);
-        }
     }
 
     private void canvasOnMouseClicked(MouseEvent e) {
@@ -67,59 +61,55 @@ public class ResizableCanvas extends Canvas {
         updateListBeforeChanges();
     }
 
-    private void canvasOnMouseScroll(ScrollEvent e) {
-        if(!list.isEmpty())
-        {
-            listBeforeChanges.setSelectedFigure(null);
-            Zooming zooming=new Zooming(listBeforeChanges);
-            //parent.loadProperties(null,list);
-            if (e.getDeltaY() > 0)
-                list=new FigureControl(zooming.zoom(true));
-            else
-                list=new FigureControl(zooming.zoom(false));
-            list.redraw();
-        }
-    }
-
-		/**
-		* @deprecated currently not in use
-		*/
-    private void canvasOnMouseReleased(MouseEvent e) {
-        Vector2F releasedPoint = new Vector2F((float) e.getX(), (float) e.getY());
-        if (isLinkAddingState()) {
-            list.changeLinkEndPointAfterDrag(releasedPoint);
-            setSelectedFigure(null);
-        } else if (isNodeDeleteState()) {
-			deleteNode(releasedPoint);
-        } else if (isNodeUnmarkState()) {
-			unmarkNode(releasedPoint);
-		} else if (isFewElementsDeleteState()) {
-            list.deleteElementsFromRectangle(startTempPoint, endTempPoint);
-        } else if (isLinkDeleteState()) {
-            list.deleteLinks(startTempPoint, endTempPoint);
-        }
-        updateListBeforeChanges();
-    }
-
-		/**
-		* @deprecated currently not in use
-		*/
     private void canvasOnMouseDragged(MouseEvent e) {
         Vector2F draggedPoint = new Vector2F((float) e.getX(), (float) e.getY());
-        if (isLinkAddingState()) {
-            list.changeLastLinkEndPoint(draggedPoint);
-            isDrawingLink = true;
-        } else if (isClickingState()) {
-            if (list.getSelectedFigure() instanceof Node)
-                list.changeNodePoint(list.getSelectedFigure(), draggedPoint);
-        } else if (isLinkDeleteState()) {
-            endTempPoint = draggedPoint;
+        if (isDraggingState()) {
+            double moveX = e.getX() - clickedX;
+            double moveY = e.getY() - clickedY;
+            newX = orgX + moveX;
+            newY = orgY + moveY;
+            parent.map.getGraphicsContext2D().clearRect(0,0, parent.map.getWidth(), parent.map.getHeight());
+            parent.map.getGraphicsContext2D().drawImage(parent.mapImage, newX, newY, parent.map.getWidth()*parent.currentScale, parent.map.getHeight()*parent.currentScale);
+
+            for (int i = 0; i < list.getNodeAmount()+list.getLinkAmount(); i++) {
+                if (list.get(i) instanceof Node) {
+                    double nodeX = nodePositions.get(i).getX();
+                    double nodeY = nodePositions.get(i).getY();
+                    double x = nodeX + moveX;
+                    double y = nodeY + moveY;
+                    list.changeNodePoint(list.get(i), new Vector2F((float)x,(float)y));
+                }
+            }
+        }
+    }
+
+    private void canvasOnMousePressed(MouseEvent e) {
+        if (isDraggingState()) {
+            clickedX = e.getX();
+            clickedY = e.getY();
+            for (int i = 0; i < list.getNodeAmount()+list.getLinkAmount(); i++) {
+                Vector2F nodePosition = new Vector2F(list.get(i).getStartPoint().getX(), list.get(i).getStartPoint().getY());
+                nodePositions.add(nodePosition);
+            }
+        }
+    }
+
+    private void canvasOnMouseReleased(MouseEvent e) {
+        if (isDraggingState()) {
+            orgX = newX;
+            orgY = newY;
+            nodePositions.clear();
+        }
+    }
+
+    public void zoom(double oldScale, double newScale) {
+        if (!list.isEmpty()) {
+            updateListBeforeChanges();
+            listBeforeChanges.setSelectedFigure(null);
+            Zooming zooming=new Zooming(listBeforeChanges);
+            boolean enlarge = newScale > oldScale;
+            list=new FigureControl(zooming.zoom(newScale, enlarge));
             list.redraw();
-            DashedDrawing.drawDashedLine(getGraphicsContext2D(), startTempPoint, endTempPoint);
-        } else if (isFewElementsDeleteState()) {
-            endTempPoint = draggedPoint;
-            list.redraw();
-            DashedDrawing.drawDashedRectangle(getGraphicsContext2D(), startTempPoint, endTempPoint);
         }
     }
 
@@ -269,6 +259,10 @@ public class ResizableCanvas extends Canvas {
 
     private boolean isFewElementsDeleteState() {
         return state == DrawingState.fewElementsDeleteState;
+    }
+
+    private boolean isDraggingState() {
+        return state == DrawingState.draggingState;
     }
 
     private void setSelectedFigure(Figure temp) {

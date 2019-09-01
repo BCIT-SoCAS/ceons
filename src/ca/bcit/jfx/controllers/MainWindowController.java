@@ -30,12 +30,15 @@ import javafx.animation.Timeline;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 
 import javafx.scene.layout.*;
@@ -73,13 +76,15 @@ public class MainWindowController implements Loadable {
     @FXML
     public ResizableCanvas graph;
     @FXML
+    public ResizableCanvas map;
+    @FXML
     private Accordion accordion;
     @FXML
     private Label info;
     @FXML
     private TitledPane liveInfoPane;
     @FXML
-    private ImageView mapViewer;
+    private Slider zoomSlider;
     @FXML
     private Button updateTopologyButton;
 
@@ -91,6 +96,8 @@ public class MainWindowController implements Loadable {
     public double spectrumBlockedVolume;
     public double regeneratorsBlockedVolume;
     public double linkFailureBlockedVolume;
+    public Image mapImage;
+    public double currentScale = 1.0;
 
 
     private static Timeline updateTimeline;
@@ -104,14 +111,6 @@ public class MainWindowController implements Loadable {
     }
 
     public void setFile(File file) {this.file = file; }
-
-    public ImageView getMapViewer() {
-        return mapViewer;
-    }
-
-    public void setMapViewer(ImageView mapViewer) {
-        this.mapViewer = mapViewer;
-    }
 
     /**
      * Changes state to add Node to a map
@@ -136,6 +135,16 @@ public class MainWindowController implements Loadable {
     @FXML
     private void nodeSelect(ActionEvent e) {
         graph.changeState(DrawingState.clickingState);
+    }
+
+    @FXML
+    private void drag(ActionEvent e) {
+        graph.changeState(DrawingState.draggingState);
+    }
+
+    @FXML
+    private void clearState(ActionEvent e) {
+        graph.changeState(DrawingState.none);
     }
 
     /**
@@ -230,6 +239,40 @@ public class MainWindowController implements Loadable {
         accordion.setBackground(new Background(bgFill, bg));
 
         simulationMenuController.setProgressBar(progressBar);
+
+        zoomSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            currentScale = newValue.doubleValue();
+            map.setScaleX(newValue.doubleValue());
+            map.setScaleY(newValue.doubleValue());
+            graph.setScaleX(newValue.doubleValue());
+            graph.setScaleY(newValue.doubleValue());
+//            graph.zoom(oldValue.doubleValue(), newValue.doubleValue());
+        });
+
+
+
+    }
+
+    private void initializeDragEvent() {
+        GraphicsContext mapGC = map.getGraphicsContext2D();
+        GraphicsContext graphGC = graph.getGraphicsContext2D();
+        double orgSceneX, orgSceneY;
+
+
+        graph.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+
+            }
+        });
+
+        graph.addEventHandler(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                System.out.println("x: " + event.getSceneX() + ", y: " + event.getSceneY());
+
+            }
+        });
     }
 
     /**
@@ -442,8 +485,9 @@ public class MainWindowController implements Loadable {
             ApplicationResources.setProject(project);
             setupGenerators(project);
             loadSuccessful = true;
+            mapImage = SwingFXUtils.toFXImage(project.getMap(), null);
+            map.getGraphicsContext2D().drawImage(mapImage, 0, 0, map.getWidth(), map.getHeight());
             graph.resetCanvas();
-            mapViewer.setImage(SwingFXUtils.toFXImage(project.getMap(), null));
             //for every node in the network place onto map and for each node add links between
             for (NetworkNode n : project.getNetwork().getNodes()) {
                 n.setFigure(n);
@@ -455,7 +499,6 @@ public class MainWindowController implements Loadable {
                 }
             }
             updateTopologyButton.setDisable(false);
-
         } catch (MapLoadingException ex){
             throw ex;
         } catch (Exception ex) {
@@ -582,5 +625,4 @@ public class MainWindowController implements Loadable {
             throw new MapLoadingException("Topology should contain both international and data center node types");
         }
     }
-
 }

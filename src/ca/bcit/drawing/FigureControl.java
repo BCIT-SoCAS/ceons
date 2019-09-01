@@ -232,6 +232,13 @@ public class FigureControl {
 		redraw();
 	}
 
+	public void changingNodePoint(Figure node, Vector2F vec2f) {
+		vec2f = fitPointToCanvas(vec2f);
+		vec2f=fixNodePoint(vec2f);
+		changeLinksPoint(node, vec2f);
+		redraw();
+	}
+
 	private void changeLinksPoint(Figure node, Vector2F vec2f) {
 		if (isEnoughNodesForAddLink()) {
 			Vector2F fixedOldPoint = fixLinkPoint(node.getStartPoint());
