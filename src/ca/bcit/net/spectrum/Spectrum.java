@@ -5,10 +5,7 @@ import ca.bcit.net.demand.Demand;
 import ca.bcit.utils.IntegerRange;
 import ca.bcit.utils.collections.InsertionSortList;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Spectrum {
 	
@@ -20,7 +17,7 @@ public class Spectrum {
 		if (slicesCount <= 0) throw new NetworkException("The number of slices has to be larger than 0!");
 		if (slicesCount % 2 != 0) throw new NetworkException("The number of slices has to be even!");
 		this.slicesCount = slicesCount;
-		segments = new ArrayList<SpectrumSegment>() {
+		segments = Collections.synchronizedList(new ArrayList<SpectrumSegment>() {
 			private static final long serialVersionUID = 5499411539908254723L;
 			@Override
 			public void add(int arg0, SpectrumSegment arg1) {
@@ -32,7 +29,7 @@ public class Spectrum {
 				if (e.getRange().getLength() == 0) throw new SpectrumException("Cannot add 0 length");
 				return super.add(e);
 			}
-		};
+		});
 		segments.add(new FreeSpectrumSegment(0, slicesCount));
 	}
 	
@@ -62,7 +59,29 @@ public class Spectrum {
 	
 	public int getOccupiedSlices() {
 		int occupiedSlices = getSlicesCount();
-		for (SpectrumSegment segment : segments) if (segment.getType() == FreeSpectrumSegment.TYPE) occupiedSlices -= segment.getRange().getLength();
+		if(!segments.isEmpty()){
+			synchronized (segments){
+				Iterator<SpectrumSegment> it = getSegments().iterator();
+				while(it.hasNext()){
+					SpectrumSegment segment = it.next();
+					if (segment != null && segment.getType().equals(FreeSpectrumSegment.TYPE)) {
+						occupiedSlices -= segment.getRange().getLength();
+					}
+				}
+			}
+//			Iterator<SpectrumSegment> it = getSegments().iterator();
+//			while(it.hasNext()){
+//				SpectrumSegment segment = it.next();
+//				if (segment != null && segment.getType().equals(FreeSpectrumSegment.TYPE)) {
+//					occupiedSlices -= segment.getRange().getLength();
+//				}
+//			}
+//			for (SpectrumSegment segment : segments) {
+//				if (segment != null && segment.getType() == FreeSpectrumSegment.TYPE) {
+//					occupiedSlices -= segment.getRange().getLength();
+//				}
+//			}
+		}
 		return occupiedSlices;
 	}
 	

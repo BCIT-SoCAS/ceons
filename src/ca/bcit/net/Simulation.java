@@ -19,6 +19,7 @@ import ca.bcit.net.spectrum.Spectrum;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import javafx.fxml.FXMLLoader;
 
 import java.io.*;
 import java.util.*;
@@ -70,7 +71,7 @@ public class Simulation {
 		clearVolumeValues();
 
 		//For development set to debug, for release set to info
-		Logger.setLoggerLevel(Logger.LoggerLevel.INFO);
+		Logger.setLoggerLevel(Logger.LoggerLevel.DEBUG);
 		generator.setErlang(erlang);
 		generator.setSeed(seed);
 		generator.setReplicaPreservation(replicaPreservation);
@@ -107,6 +108,7 @@ public class Simulation {
 
 				// cancel button
 				if (SimulationMenuController.cancelled) {
+					Logger.info("Simulation cancelled!");
 					break;
 				}
 
@@ -131,14 +133,15 @@ public class Simulation {
 
 		 //wait for internal cleanup after simulation is done
 		network.waitForDemandsDeath();
+		ResizableCanvas.getParentController().stopUpdateGraph();
 		ResizableCanvas.getParentController().resetGraph();
 
 		// signal GUI menus that simulation is complete
 		SimulationMenuController.finished = true;
-
-		// throw error to avoid printing out data report for cancelled simulations
-		if (SimulationMenuController.cancelled) {
-			Logger.info("Simulation cancelled!");
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SimulationMenu.fxml"));
+		SimulationMenuController simulationMenuController = fxmlLoader.<SimulationMenuController>getController();
+		if (simulationMenuController != null) {
+			simulationMenuController.disableClearSimulationButton();
 		}
 
 		// print basic data in the internal console
@@ -157,61 +160,17 @@ public class Simulation {
 				spectrumBlockedVolume, regeneratorsBlockedVolume, linkFailureBlockedVolume, unhandledVolume, regsPerAllocation,
 				allocations));
 
-
-//		System.out.println(json);
-
 		try {
 			resultsDataFileName = ApplicationResources.getProject().getName().toUpperCase() + "-" + generator.getName()
-					+ "-ERLANG" + erlang + "-SEED" + seed + "-ALPHA" + alpha + ".json";
+					+ "-ERLANG" + erlang + "-SEED" + seed + "-ALPHA" + alpha + "-DEMANDS" + demandsCount +".json";
 			TaskReadyProgressBar.addResultsDataFileName(resultsDataFileName);
 			FileWriter resultsDataWriter  = new FileWriter(new File(resultsDirectory, resultsDataFileName));
 
 			resultsDataWriter.write(json);
 			resultsDataWriter.close();
-
-//			if(printSummary){
-//				File resultsSummaryDirectory = new File(RESULTS_SUMMARY_DIR_NAME);
-//
-//				if (!resultsSummaryDirectory.isDirectory()) {
-//					resultsSummaryDirectory.mkdir();
-//				}
-//
-//				BufferedReader bufferedReader = new BufferedReader(new FileReader(RESULTS_DATA_DIR_NAME + "/" + resultsDataFileName));
-//				JsonObject js = gson.fromJson(bufferedReader, JsonObject.class);
-//				System.out.println(js.getAsJsonObject());
-//
-//				FileWriter resultsSummaryWriter = new FileWriter(new File(resultsSummaryDirectory,ApplicationResources.getProject().getName().toUpperCase() + "-" + generator.getName()
-//						+ "-ERLANG" + erlang + "-SEED" + seed + "-ALPHA" + alpha + ".json"));
-//			}
 		}  catch (IOException e) {
 			e.printStackTrace();
 		}
-
-
-
-//
-//			PrintWriter out = new PrintWriter(savedResultsFile);
-//			out.println("Generator: " + generator.getName());
-//			out.println("Erlang: " + erlang);
-//			out.println("Seed: " + seed);
-//			out.println("Alpha: " + alpha);
-//			out.println("Demands count: " + demandsCount);
-//			out.println("Blocked Spectrum: " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
-//			out.println("Blocked Regenerators: " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
-//			out.println("Blocked Link Failure: " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
-//			out.println("Blocked Unhandled: " + (unhandledVolume / totalVolume) * 100 + "%");
-//			out.println(
-//					"Blocked All: "
-//							+ ((spectrumBlockedVolume / totalVolume) + (regeneratorsBlockedVolume / totalVolume)
-//									+ (linkFailureBlockedVolume / totalVolume) + (unhandledVolume / totalVolume)) * 100
-//							+ "%");
-//			out.println("Average regenerators per allocation: " + (regsPerAllocation / allocations));
-//			out.close();
-//
-//
-//		} catch (IOException e) {
-//			Logger.debug(e);
-//		}
 
 		//Helps slow GUI update between multiple simulations being run back to back
 		try {

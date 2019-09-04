@@ -91,8 +91,8 @@
                 <children>
                     <Button fx:id="StartButton" text="Start Simulation" onAction="#startSimulation"/>
                     <Button fx:id="pauseButton" text="Pause Simulation" onAction="#pauseSimulation"/>
-                    <Button fx:id="clearCancelButton" text="Clear Simulation" onAction="#clearCancelSimulation"/>
-                    <Button fx:id="clear" text="clear canvas" onAction="#clear"/>
+                    <Button fx:id="cancelButton" text="Cancel Simulation" onAction="#cancelSimulation" disable="true"/>
+                    <Button fx:id="clear" text="Clear Canvas" onAction="#clear"/>
                     <Label text="Pause to see statistics in 'Live Info tab'!" wrapText="true"/>
                 </children>
             </VBox>

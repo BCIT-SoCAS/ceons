@@ -29,6 +29,7 @@ import ca.bcit.utils.random.UniformRandomVariable;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
@@ -44,6 +45,8 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.*;
 import javafx.geometry.Insets;
 
+import javafx.util.Duration;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -54,8 +57,13 @@ import java.util.Arrays;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-import javafx.util.Duration;
+
+import org.reactfx.util.FxTimer;
+import org.reactfx.util.Timer;
 
 
 public class MainWindowController implements Loadable {
@@ -89,8 +97,9 @@ public class MainWindowController implements Loadable {
     public double regeneratorsBlockedVolume;
     public double linkFailureBlockedVolume;
 
-
+    private Timer timer;
     private static Timeline updateTimeline;
+    private static ScheduledExecutorService executorService;
 
     public ResizableCanvas getCanvas() {
         return canvas;
@@ -100,7 +109,9 @@ public class MainWindowController implements Loadable {
         this.canvas = canvas;
     }
 
-    public void setFile(File file) {this.file = file; }
+    public void setFile(File file) {
+        this.file = file;
+    }
 
     public ImageView getMapViewer() {
         return mapViewer;
@@ -345,15 +356,45 @@ public class MainWindowController implements Loadable {
 
     // live GUI updates during simulation
     public void updateGraph() {
+
+
+//        Runnable updateCanvasFigures = () -> {
+//            try {
+//                canvas.resetCanvas();
+//                Project project = ApplicationResources.getProject();
+//                for (NetworkNode n : project.getNetwork().getNodes()) {
+//                    n.updateRegeneratorCount();
+//                    canvas.addNetworkNode(n);
+//                    for (NetworkNode n2 : project.getNetwork().getNodes()) {
+//                        if (project.getNetwork().containsLink(n, n2)) {
+//                            NetworkLink networkLink = project.getNetwork().getLink(n, n2);
+//                            Spectrum linkSpectrum = project.getNetwork().getLinkSlices(n, n2);
+//                            int totalSlices = linkSpectrum.getSlicesCount();
+//                            int occupiedSlices = linkSpectrum.getOccupiedSlices();
+//                            int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
+//                            canvas.addLink(n.getPosition(), n2.getPosition(), currentPercentage, networkLink.getLength());
+//                        }
+//                    }
+//                }
+//
+//            } catch (Exception ex) {
+//                ex.printStackTrace();
+//                System.out.println("An exception on updating the network UI");
+//            }
+//        };
+//
+//        executorService = Executors.newScheduledThreadPool(1);
+//        executorService.scheduleAtFixedRate(updateCanvasFigures, 0, 500, TimeUnit.MILLISECONDS);
+
         updateTimeline = new Timeline(
                 new KeyFrame(
-                        Duration.seconds(0),
+                        Duration.millis(200),
                         event -> {
                             try {
                                 canvas.resetCanvas();
                                 Project project = ApplicationResources.getProject();
                                 for (NetworkNode n : project.getNetwork().getNodes()) {
-                                    n.updateFigure();
+                                    n.updateRegeneratorCount();
                                     canvas.addNetworkNode(n);
                                     for (NetworkNode n2 : project.getNetwork().getNodes()) {
                                         if (project.getNetwork().containsLink(n, n2)) {
@@ -368,26 +409,59 @@ public class MainWindowController implements Loadable {
                                 }
 
                             } catch (Exception ex) {
+                                ex.printStackTrace();
                                 System.out.println("An exception on updating the network UI");
                             }
                         }
-                ),
-                new KeyFrame(Duration.seconds(0.5))
+                )
+//                new KeyFrame(Duration.seconds(0.5))
         );
         updateTimeline.setCycleCount(Timeline.INDEFINITE);
         updateTimeline.play();
+
+////        Platform.runLater(updateTimeline::play);
+
+//        timer = FxTimer.runPeriodically(
+//                Duration.ofMillis(1),
+//                () -> {
+//                    try {
+//                        canvas.resetCanvas();
+//                        Project project = ApplicationResources.getProject();
+//                        for (NetworkNode n : project.getNetwork().getNodes()) {
+//                            n.updateRegeneratorCount();
+//                            canvas.addNetworkNode(n);
+//                            for (NetworkNode n2 : project.getNetwork().getNodes()) {
+//                                if (project.getNetwork().containsLink(n, n2)) {
+//                                    NetworkLink networkLink = project.getNetwork().getLink(n, n2);
+//                                    Spectrum linkSpectrum = project.getNetwork().getLinkSlices(n, n2);
+//                                    int totalSlices = linkSpectrum.getSlicesCount();
+//                                    int occupiedSlices = linkSpectrum.getOccupiedSlices();
+//                                    int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
+//                                    canvas.addLink(n.getPosition(), n2.getPosition(), currentPercentage, networkLink.getLength());
+//                                }
+//                            }
+//                        }
+//
+//                    } catch (Exception ex) {
+//                        ex.printStackTrace();
+//                        System.out.println("An exception on updating the network UI");
+//                    }
+//                }
+//        );
+
     }
 
     // stop GUI update
     public void stopUpdateGraph() {
         System.out.println("Timeline stopped");
+//        executorService.shutdownNow();
         updateTimeline.stop();
+//        timer.stop();
     }
 
     // reset the GUI after stop/finish
     public void resetGraph() {
         try {
-            stopUpdateGraph();
             canvas.resetCanvas();
             Project project = ApplicationResources.getProject();
             for (NetworkNode n : project.getNetwork().getNodes()) {
@@ -395,8 +469,8 @@ public class MainWindowController implements Loadable {
                 n.setFigure(n);
                 canvas.addNetworkNode(n);
                 for (NetworkNode n2 : ApplicationResources.getProject().getNetwork().getNodes()) {
-                    NetworkLink networkLink = project.getNetwork().getLink(n, n2);
                     if (ApplicationResources.getProject().getNetwork().containsLink(n, n2)) {
+                        NetworkLink networkLink = project.getNetwork().getLink(n, n2);
                         canvas.addLink(n.getPosition(), n2.getPosition(), 100, networkLink.getLength());
                     }
                 }
@@ -414,11 +488,11 @@ public class MainWindowController implements Loadable {
         if (loadSuccessful) {
             try {
                 initalizeSimulationsAndNetworks();
-            } catch (MapLoadingException ex){
+            } catch (MapLoadingException ex) {
                 new ErrorDialog(ex.getMessage(), ex);
                 ex.printStackTrace();
                 return;
-            } catch (Exception ex){
+            } catch (Exception ex) {
                 new ErrorDialog("An exception occurred while loading the project.", ex);
                 ex.printStackTrace();
                 return;
@@ -458,12 +532,12 @@ public class MainWindowController implements Loadable {
             }
             updateTopologyButton.setDisable(false);
 
-        } catch (MapLoadingException ex){
+        } catch (MapLoadingException ex) {
             throw ex;
         } catch (Exception ex) {
             throw ex;
         } finally {
-            if(loadSuccessful){
+            if (loadSuccessful) {
                 Logger.info("Finished loading project.");
             } else {
                 Logger.info("Loading cancelled");

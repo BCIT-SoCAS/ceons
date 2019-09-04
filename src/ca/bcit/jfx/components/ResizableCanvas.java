@@ -16,7 +16,7 @@ import javafx.scene.input.ScrollEvent;
 import java.util.Map;
 
 public class ResizableCanvas extends Canvas {
-    private FigureControl list;
+    public FigureControl list;
     private FigureControl listBeforeChanges;
     private boolean isDrawingLink;
     private DrawingState state;

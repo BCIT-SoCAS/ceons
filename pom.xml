@@ -35,6 +35,16 @@
 			<artifactId>jfreechart</artifactId>
 			<version>1.5.0</version>
 		</dependency>
+		<dependency>
+			<groupId>de.rototor.pdfbox</groupId>
+			<artifactId>graphics2d</artifactId>
+			<version>0.24</version>
+		</dependency>
+		<dependency>
+			<groupId>org.reactfx</groupId>
+			<artifactId>reactfx</artifactId>
+			<version>2.0-M5</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<sourceDirectory>src</sourceDirectory>

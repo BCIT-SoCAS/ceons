@@ -67,7 +67,7 @@ public class SimulationMenuController {
 	@FXML private UIntField bestPaths;
 	@FXML private UIntField regeneratorsMetricValue;
 	@FXML private Button pauseButton;
-	@FXML private Button clearCancelButton;
+	@FXML private Button cancelButton;
 	private CheckBox[] modulations;
 
 	public static boolean started = false;
@@ -103,7 +103,6 @@ public class SimulationMenuController {
 	@FXML public void multipleSimulationsSelected(ActionEvent e){
 		boolean isCheckBoxSelected = runMultipleSimulations.isSelected();
 		if(isCheckBoxSelected){
-//			runMultipleSimulations.setText("Run single simulation?");
 			simulationRepetitions = new Label("Simulations at each Erlang");
 			simulationRepetitions.setStyle("-fx-font-weight: bold;");
 
@@ -148,7 +147,6 @@ public class SimulationMenuController {
 			settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX + 3, stepBetweenErlangsLabel);
 			settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX + 4, stepBetweenErlangsField);
 		} else {
-//			runMultipleSimulations.setText("Run multiple simulations?");
 
             settings.getChildren().remove(simulationRepetitions);
 			settings.getChildren().remove(numRepetitionsPerErlang);
@@ -174,6 +172,8 @@ public class SimulationMenuController {
 
 	    try {
             Network network = ApplicationResources.getProject().getNetwork();
+
+            // Initial checks
             if (algorithms.getValue() == null) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Set Routing Algorithm");
@@ -192,11 +192,15 @@ public class SimulationMenuController {
                 alert.getDialogPane().setPrefSize(480.0, 100);
                 alert.showAndWait();
                 return;
-            } else if (bestPaths.getValue() > network.getMaxPathsCount()){
+            } else if (bestPaths.getValue() > network.getMaxPathsCount() || bestPaths.getValue() <= 0){
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Set Number of Candidate Paths");
                 alert.setHeaderText(null);
-                alert.setContentText("Number of candidate paths must be less than best paths count");
+                if(bestPaths.getValue() > network.getMaxPathsCount()){
+					alert.setContentText("Number of candidate paths must be less than best paths count");
+				} else {
+					alert.setContentText("Number of candidate paths can't be 0 or negative");
+				}
                 alert.setResizable(true);
                 alert.getDialogPane().setPrefSize(480.0, 100);
                 alert.showAndWait();
@@ -229,21 +233,21 @@ public class SimulationMenuController {
             //Regenerator Metric is always static
             network.setRegeneratorMetricType(MetricType.STATIC);
 
+            cancelButton.setDisable(false);
+
             //If multiple simulations is selected then we will create a single thread executor otherwise to run multiple consecutive simulations back-to-back, otherwise, run one task
             if(!runMultipleSimulations.isSelected()){
                 simulation = new Simulation(network, generators.getValue());
 
                 //TODO: REFACTOR SIMULATION TASK INTO SIMULATION
                 SimulationTask task = new SimulationTask(simulation, seedField.getValue(), Double.parseDouble(alpha.getText()), erlangIntField.getValue(), demands.getValue(), replicaPreservation.isSelected());
-                //gray out settings
-                clearCancelButton.setText("Cancel Simulation");
                 progressBar.runTask(task, true);
             } else {
-            	if(erlangRangeLowField.getValue() > erlangRangeHighField.getValue()){
+            	if(erlangRangeLowField.getValue() > erlangRangeHighField.getValue() || erlangRangeLowField.getValue() == erlangRangeHighField.getValue()){
 					Alert alert = new Alert(Alert.AlertType.ERROR);
 					alert.setTitle("Erlang Range");
 					alert.setHeaderText(null);
-					alert.setContentText("Lower erlang range can't be greater than upper erlang range");
+					alert.setContentText("Lower erlang range can't be equal or greater than upper erlang range");
 					alert.setResizable(true);
 					alert.getDialogPane().setPrefSize(480.0, 100);
 					alert.showAndWait();
@@ -266,19 +270,8 @@ public class SimulationMenuController {
 					int randomSeed = random.nextInt(101);
 
 					for(int erlangValue = erlangRangeLowField.getValue(); erlangValue <= erlangRangeHighField.getValue(); erlangValue+=stepBetweenErlangsField.getValue()){
-						System.out.println(erlangValue);
-						System.out.println(erlangRangeHighField.getValue());
-						System.out.println(numRepetitions);
-						System.out.println(numRepetitionsPerErlang.getValue());
-						//Only read AND write the summary PDF on the last simulation
-						if(numRepetitions < numRepetitionsPerErlang.getValue() && erlangValue < erlangRangeHighField.getValue()){
-							simulation = new Simulation(network, generators.getValue(), false);
-						} else {
-							simulation = new Simulation(network, generators.getValue(), true, totalSimulations, startingErlangValue, erlangValue, endingErlangValue, randomSeed, Double.parseDouble(alpha.getText()));
-						}
+						simulation = new Simulation(network, generators.getValue());
 						SimulationTask simulationTask = new SimulationTask(simulation, randomSeed, Double.parseDouble(alpha.getText()), erlangValue, demands.getValue(), replicaPreservation.isSelected());
-						//gray out settings
-						clearCancelButton.setText("Cancel Simulation");
 						progressBar.runTask(simulationTask, true, runMultipleSimulationService);
 						progressBar.increaseSimulationCount();
 					}
@@ -295,12 +288,8 @@ public class SimulationMenuController {
         }
 	}
 
-	public void isFinished() {
-		clearCancelButton.setText("Clear Simulation");
-	}
-
 	// Cancel simulation button
-	@FXML public void clearCancelSimulation(ActionEvent e) {
+	@FXML public void cancelSimulation(ActionEvent e) {
 
 		paused = true;
 
@@ -311,58 +300,30 @@ public class SimulationMenuController {
 			alert.setContentText("Are you ok with this?");
 
 			Optional<ButtonType> result = alert.showAndWait();
+			//User clicks OK
 			if (result.get() == ButtonType.OK){
 				cancelled = true;
 				paused = false;
-				clearCancelButton.setText("Clear Simulation");
 				pauseButton.setText("Pause Simulation");
 				finished = true;
 				started = false;
 				ResizableCanvas.getParentController().resetGraph();
 				ResizableCanvas.getParentController().canvas.changeState(DrawingState.noActionState);
-				try {
-					progressBar.getRunMultipleSimulationService().shutdownNow();
-					ResizableCanvas.getParentController().initalizeSimulationsAndNetworks();
-				} catch (MapLoadingException ex){
-					new ErrorDialog(ex.getMessage(), ex);
-					ex.printStackTrace();
-					return;
-				} catch (Exception ex){
-					new ErrorDialog("An exception occurred: ", ex);
-					ex.printStackTrace();
-					return;
+				if(runMultipleSimulations.isSelected()){
+					try {
+						progressBar.getRunMultipleSimulationService().shutdownNow();
+						ResizableCanvas.getParentController().initalizeSimulationsAndNetworks();
+					} catch (MapLoadingException ex){
+						new ErrorDialog(ex.getMessage(), ex);
+						ex.printStackTrace();
+						return;
+					} catch (Exception ex){
+						new ErrorDialog("An exception occurred: ", ex);
+						ex.printStackTrace();
+						return;
+					}
 				}
-			} else {
-				paused = false;
-				pauseButton.setText("Pause Simulation");
-				return;
-			}
-		} else {
-			Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-			alert.setTitle("Confirmation");
-			alert.setHeaderText("Reset simulation");
-			alert.setContentText("Are you ok with this?");
-
-			Optional<ButtonType> result = alert.showAndWait();
-			if (result.get() == ButtonType.OK){
-				cancelled = true;
-				paused = false;
-				clearCancelButton.setText("Clear Simulation");
-				pauseButton.setText("Pause Simulation");
-				finished = true;
-				started = false;
-				ResizableCanvas.getParentController().resetGraph();
-				try {
-					ResizableCanvas.getParentController().initalizeSimulationsAndNetworks();
-				} catch (MapLoadingException ex){
-					new ErrorDialog(ex.getMessage(), ex);
-					ex.printStackTrace();
-					return;
-				} catch (Exception ex){
-					new ErrorDialog("An exception occurred while loading the project.", ex);
-					ex.printStackTrace();
-					return;
-				}
+			//User cancels cancel
 			} else {
 				paused = false;
 				pauseButton.setText("Pause Simulation");
@@ -388,8 +349,13 @@ public class SimulationMenuController {
 		paused ^= true; // swap true/false state
 	}
 
-	// pause simulation button
+	// clear canvas button
 	@FXML public void clear(ActionEvent e) {
 		ResizableCanvas.getParentController().canvas.resetCanvas();
+	}
+
+
+	@FXML public void disableClearSimulationButton(){
+		cancelButton.setDisable(true);
 	}
 }
