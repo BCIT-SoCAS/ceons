@@ -61,11 +61,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-
-import org.reactfx.util.FxTimer;
-import org.reactfx.util.Timer;
-
-
 public class MainWindowController implements Loadable {
     private static final int PROPERTIES_PANE_NUMBER = 2;
     private int i;
@@ -414,40 +409,11 @@ public class MainWindowController implements Loadable {
                             }
                         }
                 )
-//                new KeyFrame(Duration.seconds(0.5))
         );
         updateTimeline.setCycleCount(Timeline.INDEFINITE);
         updateTimeline.play();
 
 ////        Platform.runLater(updateTimeline::play);
-
-//        timer = FxTimer.runPeriodically(
-//                Duration.ofMillis(1),
-//                () -> {
-//                    try {
-//                        canvas.resetCanvas();
-//                        Project project = ApplicationResources.getProject();
-//                        for (NetworkNode n : project.getNetwork().getNodes()) {
-//                            n.updateRegeneratorCount();
-//                            canvas.addNetworkNode(n);
-//                            for (NetworkNode n2 : project.getNetwork().getNodes()) {
-//                                if (project.getNetwork().containsLink(n, n2)) {
-//                                    NetworkLink networkLink = project.getNetwork().getLink(n, n2);
-//                                    Spectrum linkSpectrum = project.getNetwork().getLinkSlices(n, n2);
-//                                    int totalSlices = linkSpectrum.getSlicesCount();
-//                                    int occupiedSlices = linkSpectrum.getOccupiedSlices();
-//                                    int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
-//                                    canvas.addLink(n.getPosition(), n2.getPosition(), currentPercentage, networkLink.getLength());
-//                                }
-//                            }
-//                        }
-//
-//                    } catch (Exception ex) {
-//                        ex.printStackTrace();
-//                        System.out.println("An exception on updating the network UI");
-//                    }
-//                }
-//        );
 
     }
 
@@ -456,7 +422,6 @@ public class MainWindowController implements Loadable {
         System.out.println("Timeline stopped");
 //        executorService.shutdownNow();
         updateTimeline.stop();
-//        timer.stop();
     }
 
     // reset the GUI after stop/finish
