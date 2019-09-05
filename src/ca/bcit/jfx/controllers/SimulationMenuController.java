@@ -32,12 +32,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 public class SimulationMenuController {
-    public static final int SIMULATION_REPETITION_LABEL_INDEX = 7;
-	public static final int ERLANG_RANGE_LABEL_INDEX = 9;
-    public static final int ERLANG_LABEL_INDEX = 8;
-    public static final int ERLANG_INT_FIELD_INDEX = 9;
 
-	public static ComboBox<TrafficGenerator> generatorsStatic;
+    public static boolean started = false;
+    public static boolean finished = false;
+    public static boolean paused = false;
+    public static boolean cancelled = false;
+
+    public static TaskReadyProgressBar progressBar;
+    public static ComboBox<TrafficGenerator> generatorsStatic;
+
+    private static final int SIMULATION_REPETITION_LABEL_INDEX = 7;
+    private static final int ERLANG_RANGE_LABEL_INDEX = 9;
+    private static final int ERLANG_LABEL_INDEX = 8;
+    private static final int ERLANG_INT_FIELD_INDEX = 9;
 	
 	@FXML private ComboBox<TrafficGenerator> generators;
 	@FXML private CheckBox runMultipleSimulations;
@@ -70,12 +77,6 @@ public class SimulationMenuController {
 	@FXML private Button cancelButton;
 	private CheckBox[] modulations;
 
-	public static boolean started = false;
-	public static boolean finished = false;
-	public static boolean paused = false;
-	public static boolean cancelled = false;
-
-	public static TaskReadyProgressBar progressBar;
 	/**
 	 * To disable and enable Main Controller settings while simulation is running
 	 */
@@ -262,13 +263,10 @@ public class SimulationMenuController {
 					}
 				});
                 Random random = new Random();
-				int startingErlangValue = erlangRangeLowField.getValue();
-				int endingErlangValue = erlangRangeHighField.getValue();
-				int totalSimulations = numRepetitionsPerErlang.getValue() * (erlangRangeHighField.getValue() - erlangRangeLowField.getValue());
 
 				for(int numRepetitions = 1; numRepetitions <= numRepetitionsPerErlang.getValue(); numRepetitions++){
 					int randomSeed = random.nextInt(101);
-
+                    TaskReadyProgressBar.addResultsDataSeed(randomSeed);
 					for(int erlangValue = erlangRangeLowField.getValue(); erlangValue <= erlangRangeHighField.getValue(); erlangValue+=stepBetweenErlangsField.getValue()){
 						simulation = new Simulation(network, generators.getValue());
 						SimulationTask simulationTask = new SimulationTask(simulation, randomSeed, Double.parseDouble(alpha.getText()), erlangValue, demands.getValue(), replicaPreservation.isSelected());
@@ -307,6 +305,8 @@ public class SimulationMenuController {
 				pauseButton.setText("Pause Simulation");
 				finished = true;
 				started = false;
+				TaskReadyProgressBar.getResultsDataFileNameList().clear();
+				TaskReadyProgressBar.getResultsDataSeedList().clear();
 				ResizableCanvas.getParentController().resetGraph();
 				ResizableCanvas.getParentController().canvas.changeState(DrawingState.noActionState);
 				if(runMultipleSimulations.isSelected()){

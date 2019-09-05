@@ -92,7 +92,6 @@ public class MainWindowController implements Loadable {
     public double regeneratorsBlockedVolume;
     public double linkFailureBlockedVolume;
 
-    private Timer timer;
     private static Timeline updateTimeline;
     private static ScheduledExecutorService executorService;
 
