@@ -76,7 +76,7 @@ Upon setup completion, you will be able to run the simulator with the following 
 
 ## 1) Major components
 
-![image alt text](image_2.png)
+![image alt text](./docs/image_2.png)
 
 <table>
   <tr>
@@ -103,7 +103,7 @@ Upon setup completion, you will be able to run the simulator with the following 
 
 
 ## 2) Network Settings Controller
-![image alt text](image_20.png)
+![image alt text](./docs/image_20.png)
 
 **A:** Create topology button that opens up a dialog window where a user can enter a google maps API key.  Once entered the user can generate a network topology to be loaded.
 
@@ -114,7 +114,7 @@ Upon setup completion, you will be able to run the simulator with the following 
 **D:** Changes the drawing state to none, which has no effect upon user interaction with a loaded network topology.
 
 ## 3) Simulation Settings Controller
-![image alt text](image_21.png)
+![image alt text](./docs/image_21.png)
 
 **A:** Choose between algorithm types (e.g., AMRA, SPF), which dictate how routing occurs in the network and/or how optical resources are allocated.
 
@@ -143,7 +143,7 @@ Upon setup completion, you will be able to run the simulator with the following 
 **M:** Cancels running simulation or reloads simulation if not running
 
 ## 4) Live Info Pane
-![image alt text](image_22.png)
+![image alt text](./docs/image_22.png)
 
 This section holds live information when the simulation is started and paused.  If a node or link is clicked on when the simulator is paused, it displays the resource usage.  
 
@@ -159,7 +159,7 @@ This section is currently under development.  The idea for this area is to hold 
 
 ## 6) Network topology with nodes and links
 
-![image alt text](image_3.png)
+![image alt text](./docs/image_3.png)
 
 <table>
   <tr>
@@ -205,23 +205,23 @@ Red: More than 80% link utilization</td>
 
  1. Click **Load Topology** button.
 
-![image alt text](image_4.png)
+![image alt text](./docs/image_4.png)
 
 Figure A: Main Menu controller showing network settings
 
 2. Select the available **.eon file** containing complete network topology
 
-![image alt text](image_5.png)
+![image alt text](./docs/image_5.png)
 
 Figure B: File chooser to select .eon file types
 
-![image alt text](image_6.png)
+![image alt text](./docs/image_6.png)
 
 Figure C: Main Menu controller showing network settings
 
 3. Once the selected file is opened, the project will be loaded to calculate the paths available in the network. You must wait for paths to calculate before starting the simulator.
 
-![image alt text](image_7.png)
+![image alt text](./docs/image_7.png)
 
 Figure D: Console showing fully loaded project with calculated paths
 
@@ -245,11 +245,11 @@ Figure D: Console showing fully loaded project with calculated paths
 
 2. Press **Start Simulation**.
 
-![image alt text](image_8.png)
+![image alt text](./docs/image_8.png)
 
 Figure A: Loaded Euro28 network topology
 
-![image alt text](image_9.png)
+![image alt text](./docs/image_9.png)
 
 Figure B: Network simulation in progress showing link and regenerator usage
 
@@ -261,7 +261,7 @@ Figure B: Network simulation in progress showing link and regenerator usage
 
 2. Click **OK** 
 
-![image alt text](image_10.png)
+![image alt text](./docs/image_10.png)
 
 Figure A: Canceling the simulation while it’s running
 
@@ -273,7 +273,7 @@ Figure A: Canceling the simulation while it’s running
 
 3. Wait for network topology to finish loading and calculating available paths.
 
-![image alt text](image_11.png)
+![image alt text](./docs/image_11.png)
 
 Figure B: Clearing the simulation when it’s finished, simulation results shown in the console
 
@@ -285,7 +285,7 @@ Traffic Generator will be reset after cancel/clear simulation. Please remember t
 
 2. Click **OK**
 
-![image alt text](image_12.png)
+![image alt text](./docs/image_12.png)
 
 Figure C: Setting Traffic Generator after cancel/clear and map load
 
@@ -297,7 +297,7 @@ Figure C: Setting Traffic Generator after cancel/clear and map load
 
 2. Live Info panel will automatically open
 
-![image alt text](image_13.png)
+![image alt text](./docs/image_13.png)
 
 Figure A: Pausing the simulation to display the current state of the network
 
@@ -307,7 +307,7 @@ Figure A: Pausing the simulation to display the current state of the network
 
 2. Otherwise, to access this information again when paused, click away from node/link on map within the **map region**
 
-![image alt text](image_14.png)
+![image alt text](./docs/image_14.png)
 
 Figure B: Live Info panel populated with current summary statistics on blockage rates
 
@@ -317,7 +317,7 @@ Figure B: Live Info panel populated with current summary statistics on blockage 
 
 2. Node instance information will be populated in the **Live Info** panel
 
-![image alt text](image_15.png)
+![image alt text](./docs/image_15.png)
 
 Figure C: Live Info panel populated with the current node information
 
@@ -327,7 +327,7 @@ Figure C: Live Info panel populated with the current node information
 
 2. Link instance information will be populated in the **Live Info** panel
 
-![image alt text](image_16.png)
+![image alt text](./docs/image_16.png)
 
 Figure D: Live Info panel populated with the current link information
 
@@ -337,7 +337,7 @@ Figure D: Live Info panel populated with the current link information
 
 2. Click **Resume Simulation**
 
-![image alt text](image_17.png)
+![image alt text](./docs/image_17.png)
 
 Figure E: Simulation Settings contains the Resume Simulation button
 
@@ -345,7 +345,7 @@ Figure E: Simulation Settings contains the Resume Simulation button
 
 ## 1)  Why do I get an exception on updating the network UI?
 
-![image alt text](image_18.png)
+![image alt text](./docs/image_18.png)
 
 Figure A: Console displays a logged message about the network topology not being updated
 
@@ -353,7 +353,7 @@ Answer: Sometimes, the canvas is not able to update (redraw) the entire topology
 
 ## 2) Different best paths count between each project load?
 
-![image alt text](image_19.png)
+![image alt text](./docs/image_19.png)
 
 Figure B: Console display different max best paths count from loading the same topology
 
