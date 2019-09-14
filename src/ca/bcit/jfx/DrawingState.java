@@ -11,4 +11,6 @@ public enum DrawingState {
 	nodeMarkReplicaState,
 	nodeMarkInternationalState,
 	nodeUnmarkState,
+    draggingState,
+    none
 }

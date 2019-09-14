@@ -24,7 +24,7 @@ public class StaticMap {
     private ArrayList<LatLng> coordinates;
     private boolean isFirst = true;
 
-    final private Size mapSize = new Size(500,365);
+    final private Size mapSize = new Size(475,302);
 
     /**
      * Constructor for StaticMap
@@ -51,7 +51,7 @@ public class StaticMap {
                     markers.addLocation(latLng);
                 }
                 // show center point
-                // markers.addLocation(this.centerPoint);
+                 markers.addLocation(this.centerPoint);
 
             }
             ImageResult map = StaticMapsApi.newRequest(context, mapSize).center(this.centerPoint).markers(markers).

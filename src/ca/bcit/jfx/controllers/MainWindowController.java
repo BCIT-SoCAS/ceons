@@ -33,12 +33,15 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 
 import javafx.scene.layout.*;
@@ -71,7 +74,9 @@ public class MainWindowController implements Loadable {
     @FXML
     private SimulationMenuController simulationMenuController;
     @FXML
-    public ResizableCanvas canvas;
+    public ResizableCanvas graph;
+    @FXML
+    public ResizableCanvas map;
     @FXML
     private Accordion accordion;
     @FXML
@@ -79,7 +84,7 @@ public class MainWindowController implements Loadable {
     @FXML
     private TitledPane liveInfoPane;
     @FXML
-    private ImageView mapViewer;
+    private Slider zoomSlider;
     @FXML
     private Button updateTopologyButton;
 
@@ -91,28 +96,22 @@ public class MainWindowController implements Loadable {
     public double spectrumBlockedVolume;
     public double regeneratorsBlockedVolume;
     public double linkFailureBlockedVolume;
+    public Image mapImage;
+    public double currentScale = 1.0;
 
     private static Timeline updateTimeline;
     private static ScheduledExecutorService executorService;
 
     public ResizableCanvas getCanvas() {
-        return canvas;
+        return graph;
     }
 
     public void setCanvas(ResizableCanvas canvas) {
-        this.canvas = canvas;
+        this.graph = canvas;
     }
 
     public void setFile(File file) {
         this.file = file;
-    }
-
-    public ImageView getMapViewer() {
-        return mapViewer;
-    }
-
-    public void setMapViewer(ImageView mapViewer) {
-        this.mapViewer = mapViewer;
     }
 
     /**
@@ -122,7 +121,7 @@ public class MainWindowController implements Loadable {
      */
     @FXML
     private void nodeAdd(ActionEvent e) {
-        canvas.changeState(DrawingState.nodeAddingState);
+        graph.changeState(DrawingState.nodeAddingState);
     }
 
     /**
@@ -132,12 +131,22 @@ public class MainWindowController implements Loadable {
      */
     @FXML
     private void linkAdd(ActionEvent e) {
-        canvas.changeState(DrawingState.linkAddingState);
+        graph.changeState(DrawingState.linkAddingState);
     }
 
     @FXML
     private void nodeSelect(ActionEvent e) {
-        canvas.changeState(DrawingState.clickingState);
+        graph.changeState(DrawingState.clickingState);
+    }
+
+    @FXML
+    private void drag(ActionEvent e) {
+        graph.changeState(DrawingState.draggingState);
+    }
+
+    @FXML
+    private void clearState(ActionEvent e) {
+        graph.changeState(DrawingState.none);
     }
 
     /**
@@ -147,7 +156,7 @@ public class MainWindowController implements Loadable {
      */
     @FXML
     private void deleteNodeChose(ActionEvent e) {
-        canvas.changeState(DrawingState.nodeDeleteState);
+        graph.changeState(DrawingState.nodeDeleteState);
     }
 
     /**
@@ -157,7 +166,7 @@ public class MainWindowController implements Loadable {
      */
     @FXML
     private void deleteLinkChose(ActionEvent e) {
-        canvas.changeState(DrawingState.linkDeleteState);
+        graph.changeState(DrawingState.linkDeleteState);
     }
 
     /**
@@ -167,7 +176,7 @@ public class MainWindowController implements Loadable {
      */
     @FXML
     private void deleteFewElementsChose(ActionEvent e) {
-        canvas.changeState(DrawingState.fewElementsDeleteState);
+        graph.changeState(DrawingState.fewElementsDeleteState);
     }
 
     /**
@@ -178,7 +187,7 @@ public class MainWindowController implements Loadable {
 
     @FXML
     private void nodeMarkReplica(ActionEvent e) {
-        canvas.changeState(DrawingState.nodeMarkReplicaState);
+        graph.changeState(DrawingState.nodeMarkReplicaState);
     }
 
     /**
@@ -188,7 +197,7 @@ public class MainWindowController implements Loadable {
      */
     @FXML
     private void nodeMarkInternational(ActionEvent e) {
-        canvas.changeState(DrawingState.nodeMarkInternationalState);
+        graph.changeState(DrawingState.nodeMarkInternationalState);
     }
 
     /**
@@ -198,7 +207,7 @@ public class MainWindowController implements Loadable {
      */
     @FXML
     private void nodeUnmark(ActionEvent e) {
-        canvas.changeState(DrawingState.nodeUnmarkState);
+        graph.changeState(DrawingState.nodeUnmarkState);
     }
 
     @FXML
@@ -218,7 +227,7 @@ public class MainWindowController implements Loadable {
             throw new RuntimeException(e);
         }
 
-        canvas.init(this);
+        graph.init(this);
 
         BackgroundSize bgSize = new BackgroundSize(100, 100, true, true, true, false);
         RadialGradient bgGradient = new RadialGradient(0, 0, 0.5, 0.5, 1, true, CycleMethod.NO_CYCLE, new Stop[]{
@@ -232,6 +241,42 @@ public class MainWindowController implements Loadable {
         accordion.setBackground(new Background(bgFill, bg));
 
         simulationMenuController.setProgressBar(progressBar);
+
+        zoomSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            currentScale = newValue.doubleValue();
+            map.setScaleX(newValue.doubleValue());
+            map.setScaleY(newValue.doubleValue());
+            graph.setScaleX(newValue.doubleValue());
+            graph.setScaleY(newValue.doubleValue());
+
+            // TODO: implement new zooming function
+            // graph.zoom(oldValue.doubleValue(), newValue.doubleValue());
+        });
+
+
+
+    }
+
+    private void initializeDragEvent() {
+        GraphicsContext mapGC = map.getGraphicsContext2D();
+        GraphicsContext graphGC = graph.getGraphicsContext2D();
+        double orgSceneX, orgSceneY;
+
+
+        graph.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+
+            }
+        });
+
+        graph.addEventHandler(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                System.out.println("x: " + event.getSceneX() + ", y: " + event.getSceneY());
+
+            }
+        });
     }
 
     /**
@@ -385,11 +430,11 @@ public class MainWindowController implements Loadable {
                         Duration.millis(200),
                         event -> {
                             try {
-                                canvas.resetCanvas();
+                                graph.resetCanvas();
                                 Project project = ApplicationResources.getProject();
                                 for (NetworkNode n : project.getNetwork().getNodes()) {
                                     n.updateRegeneratorCount();
-                                    canvas.addNetworkNode(n);
+                                    graph.addNetworkNode(n);
                                     for (NetworkNode n2 : project.getNetwork().getNodes()) {
                                         if (project.getNetwork().containsLink(n, n2)) {
                                             NetworkLink networkLink = project.getNetwork().getLink(n, n2);
@@ -397,7 +442,7 @@ public class MainWindowController implements Loadable {
                                             int totalSlices = linkSpectrum.getSlicesCount();
                                             int occupiedSlices = linkSpectrum.getOccupiedSlices();
                                             int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
-                                            canvas.addLink(n.getPosition(), n2.getPosition(), currentPercentage, networkLink.getLength());
+                                            graph.addLink(n.getPosition(), n2.getPosition(), currentPercentage, networkLink.getLength());
                                         }
                                     }
                                 }
@@ -426,16 +471,16 @@ public class MainWindowController implements Loadable {
     // reset the GUI after stop/finish
     public void resetGraph() {
         try {
-            canvas.resetCanvas();
+            graph.resetCanvas();
             Project project = ApplicationResources.getProject();
             for (NetworkNode n : project.getNetwork().getNodes()) {
                 n.clearOccupied();
                 n.setFigure(n);
-                canvas.addNetworkNode(n);
+                graph.addNetworkNode(n);
                 for (NetworkNode n2 : ApplicationResources.getProject().getNetwork().getNodes()) {
                     if (ApplicationResources.getProject().getNetwork().containsLink(n, n2)) {
                         NetworkLink networkLink = project.getNetwork().getLink(n, n2);
-                        canvas.addLink(n.getPosition(), n2.getPosition(), 100, networkLink.getLength());
+                        graph.addLink(n.getPosition(), n2.getPosition(), 100, networkLink.getLength());
                     }
                 }
             }
@@ -481,22 +526,22 @@ public class MainWindowController implements Loadable {
             ApplicationResources.setProject(project);
             setupGenerators(project);
             loadSuccessful = true;
-            canvas.resetCanvas();
-            mapViewer.setImage(SwingFXUtils.toFXImage(project.getMap(), null));
+            mapImage = SwingFXUtils.toFXImage(project.getMap(), null);
+            map.getGraphicsContext2D().drawImage(mapImage, 0, 0, map.getWidth(), map.getHeight());
+            graph.resetCanvas();
             //for every node in the network place onto map and for each node add links between
             for (NetworkNode n : project.getNetwork().getNodes()) {
                 n.setFigure(n);
-                canvas.addNetworkNode(n);
+                graph.addNetworkNode(n);
                 for (NetworkNode n2 : project.getNetwork().getNodes()) {
                     NetworkLink networkLink = project.getNetwork().getLink(n, n2);
                     if (project.getNetwork().containsLink(n, n2)) {
-                        canvas.addLink(n.getPosition(), n2.getPosition(), 100, networkLink.getLength());
+                        graph.addLink(n.getPosition(), n2.getPosition(), 100, networkLink.getLength());
                     }
                 }
             }
             updateTopologyButton.setDisable(false);
-
-        } catch (MapLoadingException ex) {
+        } catch (MapLoadingException ex){
             throw ex;
         } catch (Exception ex) {
             throw ex;
@@ -533,7 +578,7 @@ public class MainWindowController implements Loadable {
 
     @FXML
     public void whilePaused() {
-        canvas.changeState(DrawingState.clickingState);
+        graph.changeState(DrawingState.clickingState);
         info.setText("Blocked Spectrum: " + this.spectrumBlockedVolume / this.totalVolume * 100 + "%" + "\n"
                 + "Blocked Regenerators: " + this.regeneratorsBlockedVolume / this.totalVolume * 100 + "%" + "\n"
                 + "Blocked Link Failure: " + this.linkFailureBlockedVolume / this.totalVolume * 100 + "%");
@@ -622,5 +667,4 @@ public class MainWindowController implements Loadable {
             throw new MapLoadingException("Topology should contain both international and data center node types");
         }
     }
-
 }

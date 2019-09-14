@@ -5,18 +5,12 @@
 <?import ca.bcit.jfx.components.TaskReadyProgressBar?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <!--suppress ALL -->
-<GridPane gridLinesVisible="true" prefWidth="1300.0" prefHeight="1000.0" stylesheets="/ca/bcit/jfx/res/stylesheets/application.cssext" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.MainWindowController">
-	<!-- TO HOLD THE MAP -->
-	<AnchorPane id="AnchorPane" maxHeight="1500" maxWidth="1500" prefWidth="1000" style="-fx-background-color: azure;" >
-		<children>
-			<ImageView fx:id="mapViewer" layoutX="0.0" layoutY="0.0" fitHeight="1000" fitWidth="1000" pickOnBounds="true" preserveRatio="true" />
-		</children>
-	</AnchorPane>
-
+<GridPane gridLinesVisible="true" prefWidth="1300.0" prefHeight="900.0" stylesheets="/ca/bcit/jfx/res/stylesheets/application.cssext" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.MainWindowController">
 	<!-- FOR THE MENU CONTROLLERS-->
 	<columnConstraints>
 		<ColumnConstraints hgrow="SOMETIMES" />
@@ -39,13 +33,15 @@
 				<RowConstraints minHeight="0.0" prefHeight="20.0" />
 			</rowConstraints>
 			<children>
-				<BorderPane id="borderPane">
+				<BorderPane maxWidth="950" maxHeight="605" fx:id="borderPane">
 					<children>
-						<ResizableCanvas fx:id="canvas" height="${borderPane.height}" width="${borderPane.width}" />
+						<ResizableCanvas fx:id="map" />
+						<ResizableCanvas fx:id="graph"/>
 					</children>
 				</BorderPane>
+				<Slider min="1" max="1.8" translateX="30" maxHeight="300" orientation="VERTICAL" fx:id="zoomSlider"/>
 				<Console fx:id="console" wrapText="true" GridPane.rowIndex="1" />
-				<TaskReadyProgressBar fx:id="progressBar" GridPane.rowIndex="2" />
+				<TaskReadyProgressBar fx:id="progressBar" GridPane.rowIndex="2"/>
 			</children>
 		</GridPane>
 		<Accordion fx:id="accordion" GridPane.columnIndex="1" >
@@ -57,13 +53,14 @@
 								<Button onAction="#createButtonClicked" text="Create Topology" GridPane.rowIndex="1" />
 								<Button onAction="#loadButtonClicked" text="Load Topology" GridPane.columnIndex="1" />
 								<Button fx:id="updateTopologyButton" onAction="#updateButtonClicked" text="Update Current Topology" GridPane.columnIndex="2" disable="true"/>
-								<RadioButton fx:id="RBNoneChose" selected="true" text="None" toggleGroup="$RBGroup">
+								<RadioButton onAction="#clearState" fx:id="RBNoneChose" selected="true" text="None" toggleGroup="$RBGroup">
 									<toggleGroup>
 										<ToggleGroup fx:id="RBGroup" />
 									</toggleGroup>
 								</RadioButton>
 								<Separator />
 								<RadioButton onAction="#nodeSelect" text="Select a node/link" toggleGroup="$RBGroup" />
+								<RadioButton onAction="#drag" text="Drag" toggleGroup="$RBGroup" />
 							</children>
 						</VBox>
 					</content>
