@@ -308,7 +308,7 @@ public class SimulationMenuController {
 				TaskReadyProgressBar.getResultsDataFileNameList().clear();
 				TaskReadyProgressBar.getResultsDataSeedList().clear();
 				ResizableCanvas.getParentController().resetGraph();
-				ResizableCanvas.getParentController().canvas.changeState(DrawingState.noActionState);
+				ResizableCanvas.getParentController().graph.changeState(DrawingState.noActionState);
 				if(runMultipleSimulations.isSelected()){
 					try {
 						progressBar.getRunMultipleSimulationService().shutdownNow();
@@ -337,7 +337,7 @@ public class SimulationMenuController {
 	// pause simulation button
 	@FXML public void pauseSimulation(ActionEvent e) {
 		if (paused && !finished && started) {
-			ResizableCanvas.getParentController().canvas.changeState(DrawingState.noActionState);
+			ResizableCanvas.getParentController().graph.changeState(DrawingState.noActionState);
 			pauseButton.setText("Pause Simulation");
 		} else if (!paused && !finished && started) {
 			ResizableCanvas.getParentController().setExpandedPane(2);
@@ -351,7 +351,7 @@ public class SimulationMenuController {
 
 	// clear canvas button
 	@FXML public void clear(ActionEvent e) {
-		ResizableCanvas.getParentController().canvas.resetCanvas();
+		ResizableCanvas.getParentController().graph.resetCanvas();
 	}
 
 
