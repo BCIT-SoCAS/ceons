@@ -63,6 +63,9 @@ import java.nio.file.Files;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import javafx.util.Duration;
+import javax.imageio.ImageIO;
+
 
 public class MainWindowController implements Loadable {
     private static final int PROPERTIES_PANE_NUMBER = 2;
@@ -110,8 +113,16 @@ public class MainWindowController implements Loadable {
         this.graph = canvas;
     }
 
+    public ResizableCanvas getGraph() {
+        return graph;
+    }
+
+    public void setGraph(ResizableCanvas graph) {
+        this.graph = graph;
+    }
+
     public void setFile(File file) {
-        this.file = file;
+        this.file = file; 
     }
 
     /**
@@ -148,6 +159,7 @@ public class MainWindowController implements Loadable {
     private void clearState(ActionEvent e) {
         graph.changeState(DrawingState.none);
     }
+
 
     /**
      * Changes state to delete Node from a map
@@ -241,7 +253,6 @@ public class MainWindowController implements Loadable {
         accordion.setBackground(new Background(bgFill, bg));
 
         simulationMenuController.setProgressBar(progressBar);
-
         zoomSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             currentScale = newValue.doubleValue();
             map.setScaleX(newValue.doubleValue());
@@ -449,7 +460,6 @@ public class MainWindowController implements Loadable {
 
                             } catch (Exception ex) {
                                 ex.printStackTrace();
-                                System.out.println("An exception on updating the network UI");
                             }
                         }
                 )
@@ -482,6 +492,7 @@ public class MainWindowController implements Loadable {
                         NetworkLink networkLink = project.getNetwork().getLink(n, n2);
                         graph.addLink(n.getPosition(), n2.getPosition(), 100, networkLink.getLength());
                     }
+
                 }
             }
 
@@ -497,11 +508,11 @@ public class MainWindowController implements Loadable {
         if (loadSuccessful) {
             try {
                 initalizeSimulationsAndNetworks();
-            } catch (MapLoadingException ex) {
+            } catch (MapLoadingException ex){
                 new ErrorDialog(ex.getMessage(), ex);
                 ex.printStackTrace();
                 return;
-            } catch (Exception ex) {
+            } catch (Exception ex){
                 new ErrorDialog("An exception occurred while loading the project.", ex);
                 ex.printStackTrace();
                 return;
@@ -519,7 +530,6 @@ public class MainWindowController implements Loadable {
 
     public void initalizeSimulationsAndNetworks() throws MapLoadingException, Exception {
         boolean loadSuccessful = false;
-
         try {
             Logger.info("Loading project from " + file.getName() + "...");
             Project project = ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).load(file);

@@ -10,9 +10,18 @@ import javafx.scene.layout.Priority;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+/**
+ * @author Derek Wong
+ * @version 1.0.0
+ * Wrapper class to an dialog box that displays errors
+ */
 public class ErrorDialog {
     private String errorMessage;
 
+    /**
+     * Parameterized constructor to set and display the error dialog box
+     * @param errorMessage to be displayed in the context
+     */
     public ErrorDialog(String errorMessage){
         setErrorMessage(errorMessage);
         Alert alert = new Alert(AlertType.ERROR);
@@ -24,6 +33,12 @@ public class ErrorDialog {
         alert.showAndWait();
     }
 
+
+    /**
+     * Overloaded Parameterized constructor to set and display the error dialog box, includes stack trace of exception
+     * @param errorMessage to be displayed in the context
+     * @param ex exception to be shown along with the stack trace
+     */
     public ErrorDialog(String errorMessage, Exception ex){
         setErrorMessage(errorMessage);
         Alert alert = new Alert(AlertType.ERROR);
@@ -61,15 +76,23 @@ public class ErrorDialog {
         alert.showAndWait();
     }
 
+    /**
+     * Getter for the error message
+     * @return errorMessage
+     */
     private String getErrorMessage() {
         return errorMessage;
     }
 
+    /**
+     * Setter for the error message if not null or empty
+     * @param errorMessage String to be set
+     */
     private void setErrorMessage(String errorMessage) {
         if(errorMessage != null && !errorMessage.isEmpty()){
             this.errorMessage = errorMessage;
         } else {
-            throw new IllegalArgumentException("Error message can't be null");
+            throw new IllegalArgumentException("Error message can't be null or empty");
         }
     }
 
