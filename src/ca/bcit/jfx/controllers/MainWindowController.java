@@ -15,11 +15,13 @@ import ca.bcit.jfx.components.ErrorDialog;
 import ca.bcit.jfx.components.ResizableCanvas;
 import ca.bcit.jfx.components.TaskReadyProgressBar;
 import ca.bcit.net.Network;
+import ca.bcit.net.NetworkLink;
 import ca.bcit.net.NetworkNode;
 import ca.bcit.net.demand.generator.AnycastDemandGenerator;
 import ca.bcit.net.demand.generator.DemandGenerator;
 import ca.bcit.net.demand.generator.TrafficGenerator;
 import ca.bcit.net.demand.generator.UnicastDemandGenerator;
+import ca.bcit.net.spectrum.Spectrum;
 import ca.bcit.utils.Utils;
 import ca.bcit.utils.random.ConstantRandomVariable;
 import ca.bcit.utils.random.MappedRandomVariable;
@@ -27,26 +29,29 @@ import ca.bcit.utils.random.UniformRandomVariable;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 
 import javafx.scene.layout.*;
 import javafx.scene.paint.*;
 import javafx.geometry.Insets;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
+import javafx.util.Duration;
+
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,9 +60,10 @@ import java.util.Arrays;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
-
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import javafx.util.Duration;
-
 import javax.imageio.ImageIO;
 
 
@@ -73,13 +79,15 @@ public class MainWindowController implements Loadable {
     @FXML
     public ResizableCanvas graph;
     @FXML
+    public ResizableCanvas map;
+    @FXML
     private Accordion accordion;
     @FXML
     private Label info;
     @FXML
     private TitledPane liveInfoPane;
     @FXML
-    private ImageView mapViewer;
+    private Slider zoomSlider;
     @FXML
     private Button updateTopologyButton;
 
@@ -91,9 +99,19 @@ public class MainWindowController implements Loadable {
     public double spectrumBlockedVolume;
     public double regeneratorsBlockedVolume;
     public double linkFailureBlockedVolume;
-
+    public Image mapImage;
+    public double currentScale = 1.0;
 
     private static Timeline updateTimeline;
+    private static ScheduledExecutorService executorService;
+
+    public ResizableCanvas getCanvas() {
+        return graph;
+    }
+
+    public void setCanvas(ResizableCanvas canvas) {
+        this.graph = canvas;
+    }
 
     public ResizableCanvas getGraph() {
         return graph;
@@ -105,14 +123,6 @@ public class MainWindowController implements Loadable {
 
     public void setFile(File file) {
         this.file = file; 
-    }
-
-    public ImageView getMapViewer() {
-        return mapViewer;
-    }
-
-    public void setMapViewer(ImageView mapViewer) {
-        this.mapViewer = mapViewer;
     }
 
     /**
@@ -139,6 +149,17 @@ public class MainWindowController implements Loadable {
     private void nodeSelect(ActionEvent e) {
         graph.changeState(DrawingState.clickingState);
     }
+
+    @FXML
+    private void drag(ActionEvent e) {
+        graph.changeState(DrawingState.draggingState);
+    }
+
+    @FXML
+    private void clearState(ActionEvent e) {
+        graph.changeState(DrawingState.none);
+    }
+
 
     /**
      * Changes state to delete Node from a map
@@ -232,6 +253,41 @@ public class MainWindowController implements Loadable {
         accordion.setBackground(new Background(bgFill, bg));
 
         simulationMenuController.setProgressBar(progressBar);
+        zoomSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            currentScale = newValue.doubleValue();
+            map.setScaleX(newValue.doubleValue());
+            map.setScaleY(newValue.doubleValue());
+            graph.setScaleX(newValue.doubleValue());
+            graph.setScaleY(newValue.doubleValue());
+
+            // TODO: implement new zooming function
+            // graph.zoom(oldValue.doubleValue(), newValue.doubleValue());
+        });
+
+
+
+    }
+
+    private void initializeDragEvent() {
+        GraphicsContext mapGC = map.getGraphicsContext2D();
+        GraphicsContext graphGC = graph.getGraphicsContext2D();
+        double orgSceneX, orgSceneY;
+
+
+        graph.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+
+            }
+        });
+
+        graph.addEventHandler(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                System.out.println("x: " + event.getSceneX() + ", y: " + event.getSceneY());
+
+            }
+        });
     }
 
     /**
@@ -350,71 +406,100 @@ public class MainWindowController implements Loadable {
 
     // live GUI updates during simulation
     public void updateGraph() {
+
+
+//        Runnable updateCanvasFigures = () -> {
+//            try {
+//                canvas.resetCanvas();
+//                Project project = ApplicationResources.getProject();
+//                for (NetworkNode n : project.getNetwork().getNodes()) {
+//                    n.updateRegeneratorCount();
+//                    canvas.addNetworkNode(n);
+//                    for (NetworkNode n2 : project.getNetwork().getNodes()) {
+//                        if (project.getNetwork().containsLink(n, n2)) {
+//                            NetworkLink networkLink = project.getNetwork().getLink(n, n2);
+//                            Spectrum linkSpectrum = project.getNetwork().getLinkSlices(n, n2);
+//                            int totalSlices = linkSpectrum.getSlicesCount();
+//                            int occupiedSlices = linkSpectrum.getOccupiedSlices();
+//                            int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
+//                            canvas.addLink(n.getPosition(), n2.getPosition(), currentPercentage, networkLink.getLength());
+//                        }
+//                    }
+//                }
+//
+//            } catch (Exception ex) {
+//                ex.printStackTrace();
+//                System.out.println("An exception on updating the network UI");
+//            }
+//        };
+//
+//        executorService = Executors.newScheduledThreadPool(1);
+//        executorService.scheduleAtFixedRate(updateCanvasFigures, 0, 500, TimeUnit.MILLISECONDS);
+
         updateTimeline = new Timeline(
                 new KeyFrame(
-                        Duration.seconds(0),
+                        Duration.millis(200),
                         event -> {
                             try {
                                 graph.resetCanvas();
                                 Project project = ApplicationResources.getProject();
                                 for (NetworkNode n : project.getNetwork().getNodes()) {
-                                    n.updateFigure();
+                                    n.updateRegeneratorCount();
                                     graph.addNetworkNode(n);
                                     for (NetworkNode n2 : project.getNetwork().getNodes()) {
                                         if (project.getNetwork().containsLink(n, n2)) {
-                                            int totalSlices = project.getNetwork().getLinkSlices(n, n2).getSlicesCount();
-                                            int occupiedSlices = project.getNetwork().getLinkSlices(n, n2).getOccupiedSlices();
+                                            NetworkLink networkLink = project.getNetwork().getLink(n, n2);
+                                            Spectrum linkSpectrum = project.getNetwork().getLinkSlices(n, n2);
+                                            int totalSlices = linkSpectrum.getSlicesCount();
+                                            int occupiedSlices = linkSpectrum.getOccupiedSlices();
                                             int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
-                                            graph.addLink(n.getPosition(), n2.getPosition(), currentPercentage);
+                                            graph.addLink(n.getPosition(), n2.getPosition(), currentPercentage, networkLink.getLength());
                                         }
                                     }
                                 }
 
                             } catch (Exception ex) {
-                                System.out.println("An exception on updating the network UI");
+                                ex.printStackTrace();
                             }
                         }
-                ),
-                new KeyFrame(Duration.seconds(0.5))
+                )
         );
         updateTimeline.setCycleCount(Timeline.INDEFINITE);
         updateTimeline.play();
+
+////        Platform.runLater(updateTimeline::play);
+
     }
 
     // stop GUI update
     public void stopUpdateGraph() {
         System.out.println("Timeline stopped");
+//        executorService.shutdownNow();
         updateTimeline.stop();
     }
 
     // reset the GUI after stop/finish
     public void resetGraph() {
-        Task<Void> task = new Task<Void>() {
-
-            @Override
-            protected Void call() {
-                try {
-                    stopUpdateGraph();
-                    graph.resetCanvas();
-                    for (NetworkNode n : ApplicationResources.getProject().getNetwork().getNodes()) {
-                        n.clearOccupied();
-                        n.setFigure(n);
-                        graph.addNetworkNode(n);
-                        for (NetworkNode n2 : ApplicationResources.getProject().getNetwork().getNodes()) {
-                            if (ApplicationResources.getProject().getNetwork().containsLink(n, n2)) {
-                                graph.addLink(n.getPosition(), n2.getPosition(), 100);
-                            }
-                        }
+        try {
+            graph.resetCanvas();
+            Project project = ApplicationResources.getProject();
+            for (NetworkNode n : project.getNetwork().getNodes()) {
+                n.clearOccupied();
+                n.setFigure(n);
+                graph.addNetworkNode(n);
+                for (NetworkNode n2 : ApplicationResources.getProject().getNetwork().getNodes()) {
+                    if (ApplicationResources.getProject().getNetwork().containsLink(n, n2)) {
+                        NetworkLink networkLink = project.getNetwork().getLink(n, n2);
+                        graph.addLink(n.getPosition(), n2.getPosition(), 100, networkLink.getLength());
                     }
 
-                } catch (Exception ex) {
-                    new ErrorDialog("An exception occurred while updating the project.", ex);
-                    System.out.println(ex.getMessage());
                 }
-                return null;
             }
-        };
-        task.run();
+
+        } catch (Exception ex) {
+            new ErrorDialog("An exception occurred while updating the project.", ex);
+            System.out.println(ex.getMessage());
+        }
     }
 
     @FXML
@@ -443,35 +528,35 @@ public class MainWindowController implements Loadable {
         return (file != null);
     }
 
-    public synchronized void initalizeSimulationsAndNetworks() throws MapLoadingException, Exception {
+    public void initalizeSimulationsAndNetworks() throws MapLoadingException, Exception {
         boolean loadSuccessful = false;
-        
         try {
             Logger.info("Loading project from " + file.getName() + "...");
             Project project = ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).load(file);
             ApplicationResources.setProject(project);
             setupGenerators(project);
             loadSuccessful = true;
+            mapImage = SwingFXUtils.toFXImage(project.getMap(), null);
+            map.getGraphicsContext2D().drawImage(mapImage, 0, 0, map.getWidth(), map.getHeight());
             graph.resetCanvas();
-            mapViewer.setImage(SwingFXUtils.toFXImage(project.getMap(), null));
             //for every node in the network place onto map and for each node add links between
             for (NetworkNode n : project.getNetwork().getNodes()) {
                 n.setFigure(n);
                 graph.addNetworkNode(n);
                 for (NetworkNode n2 : project.getNetwork().getNodes()) {
+                    NetworkLink networkLink = project.getNetwork().getLink(n, n2);
                     if (project.getNetwork().containsLink(n, n2)) {
-                        graph.addLink(n.getPosition(), n2.getPosition(), 100);
+                        graph.addLink(n.getPosition(), n2.getPosition(), 100, networkLink.getLength());
                     }
                 }
             }
             updateTopologyButton.setDisable(false);
-
         } catch (MapLoadingException ex){
             throw ex;
         } catch (Exception ex) {
             throw ex;
         } finally {
-            if(loadSuccessful){
+            if (loadSuccessful) {
                 Logger.info("Finished loading project.");
             } else {
                 Logger.info("Loading cancelled");
@@ -487,11 +572,11 @@ public class MainWindowController implements Loadable {
 
                 i = 1;
                 try {
-                    network.maxPathsCount = network.calculatePaths(() -> updateProgress(i++, network.getNodesPairsCount()));
+                    network.setMaxPathsCount(network.calculatePaths(() -> updateProgress(i++, network.getNodesPairsCount())));
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
-                Console.cout.println("Max best paths count: " + network.maxPathsCount);
+                Console.cout.println("Max best paths count: " + network.getMaxPathsCount());
 
                 return null;
             }
@@ -592,5 +677,4 @@ public class MainWindowController implements Loadable {
             throw new MapLoadingException("Topology should contain both international and data center node types");
         }
     }
-
 }

@@ -2,17 +2,26 @@ package ca.bcit.net;
 
 import ca.bcit.ApplicationResources;
 import ca.bcit.io.Logger;
+import ca.bcit.io.MapLoadingException;
+import ca.bcit.io.SimulationSummary;
+import ca.bcit.io.project.Project;
+import ca.bcit.io.project.ProjectFileFormat;
 import ca.bcit.jfx.components.ResizableCanvas;
+import ca.bcit.jfx.components.TaskReadyProgressBar;
+import ca.bcit.jfx.controllers.MainWindowController;
 import ca.bcit.jfx.controllers.SimulationMenuController;
 import ca.bcit.jfx.tasks.SimulationTask;
 import ca.bcit.net.demand.AnycastDemand;
 import ca.bcit.net.demand.Demand;
 import ca.bcit.net.demand.DemandAllocationResult;
 import ca.bcit.net.demand.generator.TrafficGenerator;
+import ca.bcit.net.spectrum.Spectrum;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import javafx.fxml.FXMLLoader;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.*;
 
 
@@ -23,6 +32,10 @@ import java.util.*;
  *
  */
 public class Simulation {
+
+	public static final String RESULTS_DATA_DIR_NAME = "results data";
+	private String resultsDataFileName;
+
 	private Network network;
 	private TrafficGenerator generator;
 	private double totalVolume;
@@ -33,19 +46,26 @@ public class Simulation {
 	private double allocations;
 	private double unhandledVolume;
 	private final double[] modulationsUsage = new double[6];
-	private boolean runAgain;
 
-	public Simulation(){
-
-	}
+	public Simulation(){}
 
 	public Simulation(Network network, TrafficGenerator generator) {
 		this.network = network;
 		this.generator = generator;
 	}
 
-	public void simulate(long seed, int demandsCount, double alpha, int erlang, boolean replicaPreservation,
-			SimulationTask task) {
+	public Simulation(Network network, TrafficGenerator generator, boolean printSummary) {
+		this.network = network;
+		this.generator = generator;
+	}
+
+	public Simulation(Network network, TrafficGenerator generator, boolean printSummary, int totalSimulations, int startingErlangValue, int currentErlangValue, int endingErlangValue, int randomSeed, double alpha) {
+		this.network = network;
+		this.generator = generator;
+
+	}
+
+	public void simulate(long seed, int demandsCount, double alpha, int erlang, boolean replicaPreservation, SimulationTask task) {
 		SimulationMenuController.finished = false;
 		SimulationMenuController.cancelled = false;
 		clearVolumeValues();
@@ -60,6 +80,7 @@ public class Simulation {
 
 		try {
 			ResizableCanvas.getParentController().updateGraph();
+
 			for (; generator.getGeneratedDemandsCount() < demandsCount;) {
 				SimulationMenuController.started = true;
 
@@ -87,12 +108,13 @@ public class Simulation {
 
 				// cancel button
 				if (SimulationMenuController.cancelled) {
+					Logger.info("Simulation cancelled!");
 					break;
 				}
 
 				task.updateProgress(generator.getGeneratedDemandsCount(), demandsCount);
 			} // loop end here
-			ResizableCanvas.getParentController().stopUpdateGraph();
+
 			// force call the update again here
 		} catch (NetworkException e) {
 			// error in code
@@ -109,16 +131,17 @@ public class Simulation {
 			ResizableCanvas.getParentController().totalVolume += unhandledVolume;
 		}
 
-		// wait for internal cleanup after simulation is done
-//		network.waitForDemandsDeath();
+		 //wait for internal cleanup after simulation is done
+		network.waitForDemandsDeath();
+		ResizableCanvas.getParentController().stopUpdateGraph();
+		ResizableCanvas.getParentController().resetGraph();
 
 		// signal GUI menus that simulation is complete
 		SimulationMenuController.finished = true;
-		ResizableCanvas.getParentController().updateGraph();
-
-		// throw error to avoid printing out data report for cancelled simulations
-		if (SimulationMenuController.cancelled) {
-			Logger.info("Simulation cancelled!");
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SimulationMenu.fxml"));
+		SimulationMenuController simulationMenuController = fxmlLoader.<SimulationMenuController>getController();
+		if (simulationMenuController != null) {
+			simulationMenuController.disableClearSimulationButton();
 		}
 
 		// print basic data in the internal console
@@ -127,29 +150,33 @@ public class Simulation {
 		Logger.info("Blocked Link Failure: " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
 
 		// write the resulting data of a successful simulation to file
-		File dir = new File("results");
-		if (!dir.isDirectory())
-			dir.mkdir();
-		File save = new File(dir, ApplicationResources.getProject().getName().toUpperCase() + "-" + generator.getName()
-				+ "-ERLANG" + erlang + "-ALPHA" + alpha + ".txt");
+		File resultsDirectory = new File(RESULTS_DATA_DIR_NAME);
+		if (!resultsDirectory.isDirectory()) {
+			resultsDirectory.mkdir();
+		}
+
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String json = gson.toJson(new SimulationSummary(generator.getName(), erlang, seed, alpha, demandsCount, totalVolume,
+				spectrumBlockedVolume, regeneratorsBlockedVolume, linkFailureBlockedVolume, unhandledVolume, regsPerAllocation,
+				allocations));
+
 		try {
-			PrintWriter out = new PrintWriter(save);
-			out.println("Generator: " + generator.getName());
-			out.println("Alpha: " + alpha);
-			out.println("Demands count: " + demandsCount);
-			out.println("Blocked Spectrum: " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
-			out.println("Blocked Regenerators: " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
-			out.println("Blocked Link Failure: " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
-			out.println("Blocked Unhandled: " + (unhandledVolume / totalVolume) * 100 + "%");
-			out.println(
-					"Blocked All: "
-							+ ((spectrumBlockedVolume / totalVolume) + (regeneratorsBlockedVolume / totalVolume)
-									+ (linkFailureBlockedVolume / totalVolume) + (unhandledVolume / totalVolume)) * 100
-							+ "%");
-			out.println("Average regenerators per allocation: " + (regsPerAllocation / allocations));
-			out.close();
-		} catch (IOException e) {
-			Logger.debug(e);
+			resultsDataFileName = ApplicationResources.getProject().getName().toUpperCase() + "-" + generator.getName()
+					+ "-ERLANG" + erlang + "-SEED" + seed + "-ALPHA" + alpha + "-DEMANDS" + demandsCount +".json";
+			TaskReadyProgressBar.addResultsDataFileName(resultsDataFileName);
+			FileWriter resultsDataWriter  = new FileWriter(new File(resultsDirectory, resultsDataFileName));
+
+			resultsDataWriter.write(json);
+			resultsDataWriter.close();
+		}  catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		//Helps slow GUI update between multiple simulations being run back to back
+		try {
+			Thread.sleep(2000);
+		} catch(InterruptedException ex) {
+			Thread.currentThread().interrupt();
 		}
 	}
 
@@ -170,6 +197,9 @@ public class Simulation {
 	 * Reset parameters to be used in a new simulation. Called before a set of simulations start.
 	 */
 	private void clearVolumeValues() {
+		MainWindowController mainWindowController = ResizableCanvas.getParentController();
+		Project project = ApplicationResources.getProject();
+		Network network = project.getNetwork();
 		this.totalVolume = 0;
 		this.spectrumBlockedVolume = 0;
 		this.regeneratorsBlockedVolume = 0;
@@ -177,12 +207,20 @@ public class Simulation {
 		this.regsPerAllocation = 0;
 		this.allocations = 0;
 		this.unhandledVolume = 0;
-		ResizableCanvas.getParentController().totalVolume = 0;
-		ResizableCanvas.getParentController().spectrumBlockedVolume = 0;
-		ResizableCanvas.getParentController().regeneratorsBlockedVolume = 0;
-		ResizableCanvas.getParentController().linkFailureBlockedVolume = 0;
-		for (Map.Entry<String, NetworkNode> entries: network.nodes.entrySet()){
-			entries.getValue().clearOccupied();
+		mainWindowController.totalVolume = 0;
+		mainWindowController.spectrumBlockedVolume = 0;
+		mainWindowController.regeneratorsBlockedVolume = 0;
+		mainWindowController.linkFailureBlockedVolume = 0;
+		for(NetworkNode n : network.getNodes()){
+			n.clearOccupied();
+			for(NetworkNode n2 : network.getNodes()){
+				if(network.containsLink(n, n2)){
+					NetworkLink networkLink = network.getLink(n, n2);
+					Spectrum spectrum = network.getLinkSlices(n, n2);
+					networkLink.slicesUp = new Spectrum(NetworkLink.NUMBER_OF_SLICES);
+					networkLink.slicesDown = new Spectrum(NetworkLink.NUMBER_OF_SLICES);
+				}
+			}
 		}
 	}
 
@@ -223,4 +261,5 @@ public class Simulation {
 		totalVolume += demand.getVolume();
 		ResizableCanvas.getParentController().totalVolume += demand.getVolume();
 	}
+
 }

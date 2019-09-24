@@ -32,6 +32,7 @@ import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -194,12 +195,6 @@ public class SaveMapController implements Loadable {
         }
     }
 
-    /*
-     *Populates the table view with information from the currently loaded topology for the user to edit
-     */
-    public void updateButtonClicked() {
-        populateTableWithLoadedTopology();
-    }
 
     /*
      *Used to display a table view with inputs to allow user to build a network topology
@@ -286,7 +281,6 @@ public class SaveMapController implements Loadable {
         loadButton.setOnAction(e -> loadButtonClicked());
 
         Button saveButton = new Button("Save map");
-
         saveButton.setOnAction(e ->
                 {
                     try {
@@ -297,14 +291,10 @@ public class SaveMapController implements Loadable {
                 }
         );
 
-        Button updateButton = new Button("Update current pre-loaded map");
-        updateButton.setOnAction(e -> updateButtonClicked());
-
         HBox hBox = new HBox();
         //Insets: Padding around entire layout
         hBox.setPadding(new Insets(10, 10, 10, 10));
         hBox.setSpacing(20);
-
         hBox.getChildren().addAll(nameInput, connNodeInput, numRegeneratorInput, dcCheckbox, itlCheckbox, standardCheckbox, addButton, deleteButton, saveButton, loadButton);
 
         saveTable = new TableView<>();
@@ -429,7 +419,6 @@ public class SaveMapController implements Loadable {
         for (int i = nodeNumDeleted; i < allNodeDetails.size(); i++) {
             allNodeDetails.get(i).setNodeNum(i);
         }
-
         for (SavedNodeDetails node : allNodeDetails) {
             String connectedNumString = node.getConnectedNodeNum();
             if (!connectedNumString.isEmpty()) {

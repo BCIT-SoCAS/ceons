@@ -45,7 +45,7 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 		return this.figureNode;
 	}
 
-	public void updateFigure() {
+	public void updateRegeneratorCount() {
 		this.figureNode.setRegens(getFreeRegenerators());
 	}
 

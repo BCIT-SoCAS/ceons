@@ -33,6 +33,7 @@ public class ErrorDialog {
         alert.showAndWait();
     }
 
+
     /**
      * Overloaded Parameterized constructor to set and display the error dialog box, includes stack trace of exception
      * @param errorMessage to be displayed in the context

@@ -51,12 +51,17 @@ public class Main extends Application {
 		primaryStage.show();
 		primaryStage.setMinWidth(primaryStage.getWidth());
 		primaryStage.setMinHeight(primaryStage.getHeight());
-		
-		final Canvas canvas = (Canvas) scene.lookup("#graph");
+		primaryStage.setResizable(false);
+
+		final Canvas graph = (Canvas) scene.lookup("#graph");
+		final Canvas map = ((Canvas) scene.lookup("#map"));
+
 		BorderPane pane = (BorderPane) scene.lookup("#borderPane");
-		canvas.widthProperty().bind(pane.widthProperty());
-		canvas.heightProperty().bind(pane.heightProperty());
-		System.out.println(canvas.getBoundsInParent());
+		graph.widthProperty().bind(pane.widthProperty());
+		graph.heightProperty().bind(pane.heightProperty());
+		map.widthProperty().bind(pane.widthProperty());
+		map.heightProperty().bind(pane.heightProperty());
+		System.out.println(graph.getBoundsInParent());
 	}
 	
 	public static void main(String[] args) {

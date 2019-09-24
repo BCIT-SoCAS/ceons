@@ -23,8 +23,7 @@ public class StaticMap {
     private double maxLng;
     private ArrayList<LatLng> coordinates;
     private boolean isFirst = true;
-
-    final private Size mapSize = new Size(500,365);
+    final private Size mapSize = new Size(475,302);
 
     /**
      * Constructor for StaticMap
