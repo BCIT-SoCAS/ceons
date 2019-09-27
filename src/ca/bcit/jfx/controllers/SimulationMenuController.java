@@ -3,10 +3,7 @@ package ca.bcit.jfx.controllers;
 import ca.bcit.ApplicationResources;
 import ca.bcit.io.MapLoadingException;
 import ca.bcit.jfx.DrawingState;
-import ca.bcit.jfx.components.ErrorDialog;
-import ca.bcit.jfx.components.TaskReadyProgressBar;
-import ca.bcit.jfx.components.ResizableCanvas;
-import ca.bcit.jfx.components.UIntField;
+import ca.bcit.jfx.components.*;
 import ca.bcit.jfx.tasks.SimulationTask;
 import ca.bcit.net.MetricType;
 import ca.bcit.net.Modulation;
@@ -17,6 +14,7 @@ import ca.bcit.net.demand.generator.TrafficGenerator;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -24,14 +22,17 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
+import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-public class SimulationMenuController {
+public class SimulationMenuController implements Initializable {
+	private ResourceBundle resources;
 
     public static boolean started = false;
     public static boolean finished = false;
@@ -81,7 +82,9 @@ public class SimulationMenuController {
 	 * To disable and enable Main Controller settings while simulation is running
 	 */
 
-	@FXML public void initialize() {
+	@FXML public void initialize(URL location, ResourceBundle resources) {
+		this.resources = resources;
+
 		for (Field field : MainWindowController.class.getDeclaredFields()) if (field.isAnnotationPresent(FXML.class))
 			try {
 				assert field.get(this) != null : "Id '" + field.getName() + "' was not injected!";
@@ -104,28 +107,26 @@ public class SimulationMenuController {
 	@FXML public void multipleSimulationsSelected(ActionEvent e){
 		boolean isCheckBoxSelected = runMultipleSimulations.isSelected();
 		if(isCheckBoxSelected){
-			simulationRepetitions = new Label("Simulations at each Erlang");
-			simulationRepetitions.setStyle("-fx-font-weight: bold;");
+
+			simulationRepetitions = new CeonsLabel(resources.getString("simulation_parameter_simulations_at_each_erlang"), resources.getString("simulation_parameter_simulations_at_each_erlang_description"));
 
 			numRepetitionsPerErlang = new UIntField(1);
 			numRepetitionsPerErlang.setAlignment(Pos.CENTER);
 
-            erlangRangeLabel = new Label("Erlang Range");
-			erlangRangeLabel.setStyle("-fx-font-weight: bold;");
+            erlangRangeLabel = new CeonsLabel(resources.getString("simulation_parameter_erlang_range"), resources.getString("simulation_parameter_erlang_range_description"));
 
-			stepBetweenErlangsLabel = new Label("Step between Erlangs");
-			stepBetweenErlangsLabel.setStyle("-fx-font-weight: bold;");
+			stepBetweenErlangsLabel = new CeonsLabel(resources.getString("simulation_parameter_step_between_erlangs"), resources.getString("simulation_parameter_step_between_erlangs_description"));
 
 			stepBetweenErlangsField = new UIntField(20);
 			stepBetweenErlangsField.setAlignment(Pos.CENTER);
 
-			erlangRangeLowLabel = new Label("Lower limit");
+			erlangRangeLowLabel = new CeonsLabel(resources.getString("simulation_parameter_lower_limit"), resources.getString("simulation_parameter_lower_limit_description"));
 			erlangRangeLowLabel.setFont(new Font(10));
 
 			erlangRangeLowField = new UIntField(300);
 			erlangRangeLowField.setAlignment(Pos.CENTER);
 
-			erlangRangeHighLabel = new Label("Higher limit");
+			erlangRangeHighLabel = new CeonsLabel(resources.getString("simulation_parameter_higher_limit"), resources.getString("simulation_parameter_higher_limit_description"));
 			erlangRangeHighLabel.setFont(new Font(10));
 
 			erlangRangeHighField = new UIntField(700);
@@ -353,7 +354,6 @@ public class SimulationMenuController {
 	@FXML public void clear(ActionEvent e) {
 		ResizableCanvas.getParentController().graph.resetCanvas();
 	}
-
 
 	@FXML public void disableClearSimulationButton(){
 		cancelButton.setDisable(true);
