@@ -3,59 +3,41 @@
 <?import ca.bcit.jfx.components.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
 <ScrollPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.SimulationMenuController" fitToWidth="true">
     <content>
         <VBox>
             <VBox fx:id="settings" spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
                 <children>
-                    <Label text="Algorithms">
-						<font>
-							<Font name="System Bold"/>
-						</font>
-					</Label>
+                    <CeonsLabel text="%simulation_parameter_alrorithm" tooltipText="%simulation_parameter_alrorithm_description" />
                     <ComboBox fx:id="algorithms" promptText="Choose algorithm... "/>
+
                     <Separator />
-                    <Label text="Traffic Generators">
-						<font>
-							<Font name="System Bold"/>
-						</font>
-					</Label>
+
+                    <CeonsLabel text="%simulation_parameter_traffic_generators" tooltipText="%simulation_parameter_traffic_generators_description" />
                     <ComboBox fx:id="generators" promptText="Choose generator... "/>
+
                     <Separator/>
+
                     <CheckBox fx:id="runMultipleSimulations" text="Run multiple simulations?" onAction="#multipleSimulationsSelected"/>
-                    <Label fx:id="erlangLabel" text="Erlang">
-						<font>
-							<Font name="System Bold"/>
-						</font>
-					</Label>
+
+                    <CeonsLabel fx:id="erlangLabel" text="%simulation_parameter_erlang" tooltipText="%simulation_parameter_erlang_description" />
                     <UIntField fx:id="erlangIntField" alignment="CENTER"/>
-					<HBox fx:id="multipleSimulatonSettingsLabel" alignment="CENTER" spacing="100"></HBox>
-					<HBox fx:id="multipleSimulatonSettingsRange" alignment="CENTER"></HBox>
-                    <Label fx:id="seedLabel" text="Seed">
-						<font>
-							<Font name="System Bold"/>
-						</font>
-					</Label>
+
+                    <HBox fx:id="multipleSimulatonSettingsLabel" alignment="CENTER" spacing="100" />
+                    <HBox fx:id="multipleSimulatonSettingsRange" alignment="CENTER" />
+
+                    <CeonsLabel fx:id="seedLabel" text="%simulation_parameter_seed" tooltipText="%simulation_parameter_seed_description" />
                     <UIntField fx:id="seedField" alignment="CENTER"/>
-                    <Label text="Alpha">
-						<font>
-							<Font name="System Bold"/>
-						</font>
-					</Label>
+
+                    <CeonsLabel text="%simulation_parameter_alpha" tooltipText="%simulation_parameter_alpha_description" />
                     <TextField fx:id="alpha" text="0.0" alignment="CENTER"/>
-                    <Label text="Demands Count">
-						<font>
-							<Font name="System Bold"/>
-						</font>
-					</Label>
+
+                    <CeonsLabel text="%simulation_parameter_demands_count" tooltipText="%simulation_parameter_demands_count_description" />
                     <UIntField fx:id="demands" alignment="CENTER"/>
+
                     <Separator/>
-                    <Label text="Modulations">
-						<font>
-							<Font name="System Bold"/>
-						</font>
-					</Label>
+
+                    <CeonsLabel text="%simulation_parameter_modulations" tooltipText="%simulation_parameter_modulations_description" />
                     <GridPane fx:id="modulationSelection" alignment="CENTER">
                         <columnConstraints>
                             <ColumnConstraints percentWidth="50"/>
@@ -70,23 +52,21 @@
                         </children>
                     </GridPane>
 					<CheckBox fx:id="allowModulationChange" text="Change modulation on path?" selected="true"/>
+
                     <Separator/>
-                    <Label text="Number of Candidate Paths">
-						<font>
-							<Font name="System Bold"/>
-						</font>
-					</Label>
+
+                    <CeonsLabel text="%simulation_parameter_number_of_candidate_paths" tooltipText="%simulation_parameter_number_of_candidate_paths_description" />
                     <UIntField fx:id="bestPaths" alignment="CENTER"/>
+
                     <Separator/>
-					<Label text="Network Survivability">
-						<font>
-							<Font name="System Bold"/>
-						</font>
-					</Label>
+
+                    <CeonsLabel text="%simulation_parameter_network_survivability" tooltipText="%simulation_parameter_network_survivability_description" />
 					<CheckBox fx:id="replicaPreservation" text="Backup replica preservation?" selected="true"/>
-					<Separator/>
+
+                    <Separator/>
                 </children>
             </VBox>
+
             <VBox fx:id="simulatorControl" spacing="8.0" alignment="BOTTOM_CENTER" minHeight="0.0" minWidth="0.0">
                 <children>
                     <Button fx:id="StartButton" text="Start Simulation" onAction="#startSimulation"/>
