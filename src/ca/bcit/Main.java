@@ -25,6 +25,12 @@ import javafx.scene.image.Image;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Enumeration;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class Main extends Application {
 
@@ -42,8 +48,9 @@ public class Main extends Application {
 	
 	@Override
 	public void start(Stage primaryStage) throws IOException {
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(Main.class.getResource("/ca/bcit/jfx/res/views/MainWindow.fxml"));
+		URL resourceUrl = Main.class.getResource("/ca/bcit/jfx/res/views/MainWindow.fxml");
+		ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", new Locale("en", "CA"));
+		FXMLLoader loader = new FXMLLoader(resourceUrl, resourceBundle);
 		GridPane root = (GridPane)loader.load();
 		Scene scene = new Scene(root);
 		primaryStage.setScene(scene);
@@ -61,7 +68,6 @@ public class Main extends Application {
 		graph.heightProperty().bind(pane.heightProperty());
 		map.widthProperty().bind(pane.widthProperty());
 		map.heightProperty().bind(pane.heightProperty());
-		System.out.println(graph.getBoundsInParent());
 	}
 	
 	public static void main(String[] args) {
