@@ -55,12 +55,12 @@
 
                     <Separator/>
 
-                    <CeonsLabel text="%simulation_parameter_number_of_candidate_paths" tooltipText="%simulation_parameter_number_of_candidate_paths_description" />
+                    <CeonsLabel text="%simulation_parameter_number_of_candidate_paths" />
                     <UIntField fx:id="bestPaths" alignment="CENTER"/>
 
                     <Separator/>
 
-                    <CeonsLabel text="%simulation_parameter_network_survivability" tooltipText="%simulation_parameter_network_survivability_description" />
+                    <CeonsLabel text="%simulation_parameter_network_survivability" />
 					<CheckBox fx:id="replicaPreservation" text="Backup replica preservation?" selected="true"/>
 
                     <Separator/>
