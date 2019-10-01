@@ -8,7 +8,7 @@
         <VBox>
             <VBox fx:id="settings" spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
                 <children>
-                    <CeonsLabel text="%simulation_parameter_alrorithm" tooltipText="%simulation_parameter_alrorithm_description" />
+                    <CeonsLabel text="%simulation_parameter_algorithm" tooltipText="%simulation_parameter_algorithm_description" />
                     <ComboBox fx:id="algorithms" promptText="Choose algorithm... "/>
 
                     <Separator />
@@ -32,7 +32,7 @@
                     <CeonsLabel text="%simulation_parameter_alpha" tooltipText="%simulation_parameter_alpha_description" />
                     <TextField fx:id="alpha" text="0.0" alignment="CENTER"/>
 
-                    <CeonsLabel text="%simulation_parameter_demands_count" tooltipText="%simulation_parameter_demands_count_description" />
+                    <CeonsLabel text="%simulation_parameter_number_of_requests" tooltipText="%simulation_parameter_number_of_requests_description" />
                     <UIntField fx:id="demands" alignment="CENTER"/>
 
                     <Separator/>
