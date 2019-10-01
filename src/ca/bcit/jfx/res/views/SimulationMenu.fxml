@@ -33,7 +33,7 @@
                     <CeonsLabel text="%simulation_parameter_alpha" tooltipText="%simulation_parameter_alpha_description" />
                     <TextField fx:id="alpha" text="0.0" alignment="CENTER"/>
 
-                    <CeonsLabel text="%simulation_parameter_demands_count" tooltipText="%simulation_parameter_demands_count_description" />
+                    <CeonsLabel text="%simulation_parameter_number_of_requests" tooltipText="%simulation_parameter_number_of_requests_description" />
                     <UIntField fx:id="demands" alignment="CENTER"/>
 
                     <Separator/>
