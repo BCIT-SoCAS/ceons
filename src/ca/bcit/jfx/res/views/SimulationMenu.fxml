@@ -3,22 +3,23 @@
 <?import ca.bcit.jfx.components.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+
 <ScrollPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.SimulationMenuController" fitToWidth="true">
     <content>
         <VBox>
             <VBox fx:id="settings" spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
                 <children>
                     <CeonsLabel text="%simulation_parameter_algorithm" tooltipText="%simulation_parameter_algorithm_description" />
-                    <ComboBox fx:id="algorithms" promptText="Choose algorithm... "/>
+                    <ComboBox fx:id="algorithms" promptText="%choose_algorithm"/>
 
                     <Separator />
 
                     <CeonsLabel text="%simulation_parameter_traffic_generators" tooltipText="%simulation_parameter_traffic_generators_description" />
-                    <ComboBox fx:id="generators" promptText="Choose generator... "/>
+                    <ComboBox fx:id="generators" promptText="%choose_generator"/>
 
                     <Separator/>
 
-                    <CheckBox fx:id="runMultipleSimulations" text="Run multiple simulations?" onAction="#multipleSimulationsSelected"/>
+                    <CheckBox fx:id="runMultipleSimulations" text="%run_multiple_simulation_question" onAction="#multipleSimulationsSelected"/>
 
                     <CeonsLabel fx:id="erlangLabel" text="%simulation_parameter_erlang" tooltipText="%simulation_parameter_erlang_description" />
                     <UIntField fx:id="erlangIntField" alignment="CENTER"/>
@@ -43,15 +44,15 @@
                             <ColumnConstraints percentWidth="50"/>
                         </columnConstraints>
                         <children>
-                            <CheckBox id="modulation0" text="BPSK" selected="true"/>
-                            <CheckBox id="modulation1" text="QPSK" GridPane.rowIndex="1" selected="true"/>
-                            <CheckBox id="modulation2" text="8QAM" GridPane.rowIndex="2" selected="true"/>
-                            <CheckBox id="modulation3" text="16QAM" GridPane.columnIndex="1" selected="true"/>
-                            <CheckBox id="modulation4" text="32QAM" GridPane.columnIndex="1" GridPane.rowIndex="1" selected="true"/>
-                            <CheckBox id="modulation5" text="64QAM" GridPane.columnIndex="1" GridPane.rowIndex="2" selected="true"/>
+                            <CheckBox id="modulation0" text="%modulation_BPSK" selected="true"/>
+                            <CheckBox id="modulation1" text="%modulation_QPSK" GridPane.rowIndex="1" selected="true"/>
+                            <CheckBox id="modulation2" text="%modulation_8QAM" GridPane.rowIndex="2" selected="true"/>
+                            <CheckBox id="modulation3" text="%modulation_16QAM" GridPane.columnIndex="1" selected="true"/>
+                            <CheckBox id="modulation4" text="%modulation_32QAM" GridPane.columnIndex="1" GridPane.rowIndex="1" selected="true"/>
+                            <CheckBox id="modulation5" text="%modulation_64QAM" GridPane.columnIndex="1" GridPane.rowIndex="2" selected="true"/>
                         </children>
                     </GridPane>
-					<CheckBox fx:id="allowModulationChange" text="Change modulation on path?" selected="true"/>
+					<CheckBox fx:id="allowModulationChange" text="%change_modulation_on_path_question" selected="true"/>
 
                     <Separator/>
 
@@ -61,7 +62,7 @@
                     <Separator/>
 
                     <CeonsLabel text="%simulation_parameter_network_survivability" />
-					<CheckBox fx:id="replicaPreservation" text="Backup replica preservation?" selected="true"/>
+					<CheckBox fx:id="replicaPreservation" text="%backup_replica_preservation_question" selected="true"/>
 
                     <Separator/>
                 </children>
@@ -69,11 +70,11 @@
 
             <VBox fx:id="simulatorControl" spacing="8.0" alignment="BOTTOM_CENTER" minHeight="0.0" minWidth="0.0">
                 <children>
-                    <Button fx:id="StartButton" text="Start Simulation" onAction="#startSimulation"/>
-                    <Button fx:id="pauseButton" text="Pause Simulation" onAction="#pauseSimulation"/>
-                    <Button fx:id="cancelButton" text="Cancel Simulation" onAction="#cancelSimulation" disable="true"/>
-                    <Button fx:id="clear" text="Clear Canvas" onAction="#clear"/>
-                    <Label text="Pause to see statistics in 'Live Info tab'!" wrapText="true"/>
+                    <Button fx:id="StartButton" text="%start_simulation" onAction="#startSimulation"/>
+                    <Button fx:id="pauseButton" text="%pause_simulation" onAction="#pauseSimulation"/>
+                    <Button fx:id="cancelButton" text="%cancel_simulation" onAction="#cancelSimulation" disable="true"/>
+                    <Button fx:id="clear" text="%clear_canvas" onAction="#clear"/>
+                    <Label text="%pause_to_see_statistics_in_live_info_tab" wrapText="true"/>
                 </children>
             </VBox>
         </VBox>

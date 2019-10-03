@@ -30,13 +30,17 @@ public class SavedNodeTypes {
      * @param nodeDetails compares user selection of either/both international and/or data centre node types
      */
     public void setNodeNumType(SavedNodeDetails nodeDetails){
-        if(nodeDetails.getNodeType().equals("International")){
-            nodeNumInternationals.add(nodeDetails.nodeNumToString());
-        } else if(nodeDetails.getNodeType().equals("Data Center, International")){
-            nodeNumReplicas.add(nodeDetails.nodeNumToString());
-            nodeNumInternationals.add(nodeDetails.nodeNumToString());
-        } else if(nodeDetails.getNodeType().equals("Data Center")){
-            nodeNumReplicas.add(nodeDetails.nodeNumToString());
+        switch (nodeDetails.getNodeType()) {
+            case "International":
+                nodeNumInternationals.add(nodeDetails.nodeNumToString());
+                break;
+            case "Data Center, International":
+                nodeNumReplicas.add(nodeDetails.nodeNumToString());
+                nodeNumInternationals.add(nodeDetails.nodeNumToString());
+                break;
+            case "Data Center":
+                nodeNumReplicas.add(nodeDetails.nodeNumToString());
+                break;
         }
     }
 
@@ -47,8 +51,4 @@ public class SavedNodeTypes {
     public HashMap<String, ArrayList<String>> getToSerializeNodeTypes(){
         return toSeralizeNodeTypes;
     }
-
-
-
-
 }
