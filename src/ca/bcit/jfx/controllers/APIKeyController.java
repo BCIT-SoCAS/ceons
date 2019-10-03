@@ -27,7 +27,6 @@ import java.io.PrintWriter;
 import com.google.maps.GeoApiContext;
 import com.google.maps.StaticMapsApi;
 import com.google.maps.model.Size;
-import com.google.maps.ImageResult;
 
 public class APIKeyController implements Initializable {
 	@FXML
@@ -39,7 +38,10 @@ public class APIKeyController implements Initializable {
 	@FXML
 	private Button closeAPIKeyWindowBtn;
 
+	private ResourceBundle resources;
+
 	public void initialize(URL location, ResourceBundle resources) {
+	    this.resources = resources;
 		BackgroundSize bgSize = new BackgroundSize(100, 100, true, true, false, true);
 		BackgroundImage bg = new BackgroundImage(new Image(getClass().getResourceAsStream("/ca/bcit/jfx/res/images/bg.png")),
 			BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, bgSize);
@@ -47,28 +49,26 @@ public class APIKeyController implements Initializable {
 	}
 	 
 	private boolean validateAPIkey(String key) {
-        GeoApiContext context = new GeoApiContext.Builder()
-                .apiKey(key)
-                .build();
+        GeoApiContext context = new GeoApiContext.Builder().apiKey(key).build();
         Size mapSize = new Size(200, 200);
         try {
-            ImageResult map = StaticMapsApi.newRequest(context, mapSize).center("Vancouver").zoom(100).await();
-            System.out.println(map.contentType);
+            StaticMapsApi.newRequest(context, mapSize).center("Vancouver").zoom(100).await();
             return true;
-        } catch (Exception ex) {
-            Logger.info("Invalid API key");
+        }
+        catch (Exception ex) {
+            Logger.info(resources.getString("api_key_is_invalid"));
             return false;
         }
     }
 
     private void writeAPIkeyToFile(String apiKey, File file) {
         try {
-            PrintWriter writer;
-            writer = new PrintWriter(file);
+            PrintWriter writer = new PrintWriter(file);
             writer.println(apiKey);
             writer.close();
-        } catch (IOException ex) {
-            Logger.info("An exception occurred while saving API key");
+        }
+        catch (IOException ex) {
+            Logger.info(resources.getString("an_exception_occurred_while_saving_api_key"));
             Logger.debug(ex);
         }
     }
@@ -77,15 +77,15 @@ public class APIKeyController implements Initializable {
         String apiKey = inputField.getText();
         if (!validateAPIkey(apiKey)) {
 			Alert alert = new Alert(Alert.AlertType.ERROR);
-			alert.setTitle("Warning");
-			alert.setHeaderText("API key is invalid");
+			alert.setTitle(resources.getString("warning"));
+			alert.setHeaderText(resources.getString("api_key_is_invalid"));
             alert.showAndWait();
             return;
         }
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialFileName("api_key");
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TEXT files (*.txt)", "*.txt");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(resources.getString("api_key_file_type_descriptor"), "*.txt");
         fileChooser.getExtensionFilters().add(extFilter);
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
         final File file = fileChooser.showSaveDialog(null);
@@ -95,10 +95,10 @@ public class APIKeyController implements Initializable {
 
             @Override
             protected Void call() {
-                Logger.info("Saving API key to " + file.getName() + " file");
+                Logger.info(resources.getString("saving_api_key_to") + " " + file.getName() + " " + resources.getString("file"));
                 writeAPIkeyToFile(apiKey, file);
-				Logger.info("Finished saving API key");
-				dialogWindow.close();
+                Logger.info(resources.getString("finished_saving_api_key"));
+                dialogWindow.close();
                 return null;
             }
         };
@@ -108,7 +108,7 @@ public class APIKeyController implements Initializable {
 	public void displaySaveAPIKeyWindow(GridPane grid) {
 		Stage dialogWindow = new Stage();
 		dialogWindow.initModality(Modality.APPLICATION_MODAL);
-		dialogWindow.setTitle("Save Google Maps API key");
+		dialogWindow.setTitle(resources.getString("save_google_maps_api_key"));
 		dialogWindow.getIcons().add(new Image(getClass().getResourceAsStream("/ca/bcit/jfx/res/images/LogoBCIT.png")));
 		
 		saveAPIKeyBtn.setOnAction(e -> saveAPIkey(e, saveKeyInput, dialogWindow));

@@ -47,11 +47,10 @@ public class SavedNodeDetails implements YamlSerializable {
      * @param nodeNum node number
      */
     public void setNodeNum(int nodeNum) {
-        if(nodeNum >= 0){
+        if(nodeNum >= 0)
             this.nodeNum = nodeNum;
-        } else {
+        else
             throw new IllegalArgumentException("Node num can't be negative");
-        }
     }
 
     /**
@@ -67,11 +66,10 @@ public class SavedNodeDetails implements YamlSerializable {
      * @param location location name
      */
     public void setLocation(String location) {
-        if(location != null && !location.isEmpty()){
+        if(location != null && !location.isEmpty())
             this.location = location;
-        } else {
+        else
             throw new IllegalArgumentException("Node location can't be null or empty");
-        }
     }
 
     /**
@@ -90,9 +88,8 @@ public class SavedNodeDetails implements YamlSerializable {
         if(connectedNodeNum != null){
             this.connectedNodeNum = connectedNodeNum;
             initConnectedNodeLinkMap(connectedNodeNum);
-        } else {
+        } else
             throw new IllegalArgumentException("Node connection from map creation can't be null");
-        }
     }
 
     /**
@@ -104,7 +101,7 @@ public class SavedNodeDetails implements YamlSerializable {
         //will split the user defined node connections then make a map of all network links to this current node
         List<String> connectedNodeNumStringList = Arrays.asList(connectedNodeNum.split(","));
 
-        for(String otherConnectionNum : connectedNodeNumStringList){
+        for (String otherConnectionNum : connectedNodeNumStringList) {
             ArrayList<String> currentNodeConnection = new ArrayList<String>();
             HashMap<String, Object> currentNodeConnectionLinkLength = new HashMap<String, Object>();
 
@@ -131,11 +128,10 @@ public class SavedNodeDetails implements YamlSerializable {
      * @param numRegenerators number of regenerators
      */
     public void setNumRegenerators(int numRegenerators) {
-        if(numRegenerators >= 0){
+        if (numRegenerators >= 0)
             this.numRegenerators = numRegenerators;
-        } else {
+        else
             throw new IllegalArgumentException("Number of regenerators can't be negative");
-        }
     }
 
     /**
@@ -151,11 +147,10 @@ public class SavedNodeDetails implements YamlSerializable {
      * @param nodeType node type (international, data center, standard)
      */
     public void setNodeType(String nodeType) {
-        if(nodeType != null && !nodeType.isEmpty()){
+        if (nodeType != null && !nodeType.isEmpty())
             this.nodeType = nodeType;
-        } else {
+        else
             throw new IllegalArgumentException("Node type can't be null or empty");
-        }
     }
 
     /**
@@ -195,11 +190,10 @@ public class SavedNodeDetails implements YamlSerializable {
      * @param latLng latitude and longitude
      */
     public void setLatLng(LatLng latLng) {
-        if(latLng != null){
+        if (latLng != null)
             this.latLng = latLng;
-        } else {
+        else
             throw new IllegalArgumentException("Latitude and Longitude can't be null");
-        }
     }
 
     /**

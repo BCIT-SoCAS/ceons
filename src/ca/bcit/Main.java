@@ -1,5 +1,6 @@
 package ca.bcit;
 
+import ca.bcit.i18n.LocaleEnum;
 import ca.bcit.io.YamlSerializable;
 import ca.bcit.io.project.EONProjectFileFormat;
 import ca.bcit.io.project.ProjectFileFormat;
@@ -26,35 +27,42 @@ import javafx.scene.image.Image;
 import javax.swing.*;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Enumeration;
-import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class Main extends Application {
 
-	private int SPLASH_SCREEN_TIMER = 3000;
+	private final static int SPLASH_SCREEN_TIMER = 1000;
+	public static LocaleEnum CURRENT_LOCALE = LocaleEnum.EN_CA;
+	private static Stage primaryStage;
 
 	@Override
 	public void init() throws Exception {
-		// timer for splash screen
 		try {
 			Thread.sleep(SPLASH_SCREEN_TIMER);
-		} catch (InterruptedException e) {
+		}
+		catch (InterruptedException e) {
 			e.printStackTrace();
 		} 
 	}
 	
 	@Override
-	public void start(Stage primaryStage) throws IOException {
+	public void start(Stage stage) throws IOException {
+		primaryStage = stage;
+		loadView(new java.util.Locale("en", "CA"));
+	}
+
+	public static void loadView(java.util.Locale locale) throws IOException {
 		URL resourceUrl = Main.class.getResource("/ca/bcit/jfx/res/views/MainWindow.fxml");
-		ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", new Locale("en", "CA"));
+		ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", locale);
 		FXMLLoader loader = new FXMLLoader(resourceUrl, resourceBundle);
-		GridPane root = (GridPane)loader.load();
+
+		ProjectFileFormat.registerFileFormat(new EONProjectFileFormat(resourceBundle));
+
+		GridPane root = loader.load();
+
 		Scene scene = new Scene(root);
 		primaryStage.setScene(scene);
-		primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/ca/bcit/jfx/res/images/LogoBCIT.png")));
+		primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("/ca/bcit/jfx/res/images/LogoBCIT.png")));
 		primaryStage.show();
 		primaryStage.setMinWidth(primaryStage.getWidth());
 		primaryStage.setMinHeight(primaryStage.getHeight());
@@ -69,27 +77,30 @@ public class Main extends Application {
 		map.widthProperty().bind(pane.widthProperty());
 		map.heightProperty().bind(pane.heightProperty());
 	}
-	
+
 	public static void main(String[] args) {
 		try {
-			YamlSerializable.registerSerializableClass(NetworkNode.class);
-			YamlSerializable.registerSerializableClass(NetworkLink.class);
-			YamlSerializable.registerSerializableClass(Network.class);
-			
-			YamlSerializable.registerSerializableClass(MappedRandomVariable.class);
-			YamlSerializable.registerSerializableClass(UniformRandomVariable.Generic.class);
-			YamlSerializable.registerSerializableClass(ConstantRandomVariable.class);
-			YamlSerializable.registerSerializableClass(IrwinHallRandomVariable.Integer.class);
-			YamlSerializable.registerSerializableClass(UnicastDemandGenerator.class);
-			YamlSerializable.registerSerializableClass(AnycastDemandGenerator.class);
-			YamlSerializable.registerSerializableClass(TrafficGenerator.class);
-			
-			ProjectFileFormat.registerFileFormat(new EONProjectFileFormat());
+			registerYamlSerializableClasses();
 
 			LauncherImpl.launchApplication(Main.class, SplashScreen.class, args);
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Fatal error occured: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Fatal error occurred: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
 		}
+	}
+
+	private static void registerYamlSerializableClasses() throws NoSuchMethodException {
+		YamlSerializable.registerSerializableClass(NetworkNode.class);
+		YamlSerializable.registerSerializableClass(NetworkLink.class);
+		YamlSerializable.registerSerializableClass(Network.class);
+
+		YamlSerializable.registerSerializableClass(MappedRandomVariable.class);
+		YamlSerializable.registerSerializableClass(UniformRandomVariable.Generic.class);
+		YamlSerializable.registerSerializableClass(ConstantRandomVariable.class);
+		YamlSerializable.registerSerializableClass(IrwinHallRandomVariable.Integer.class);
+		YamlSerializable.registerSerializableClass(UnicastDemandGenerator.class);
+		YamlSerializable.registerSerializableClass(AnycastDemandGenerator.class);
+		YamlSerializable.registerSerializableClass(TrafficGenerator.class);
 	}
 }

@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+
 <TitledPane animated="true" prefHeight="350.0" prefWidth="350.0" text="Properties" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:id="titledPane" fx:controller="ca.bcit.jfx.controllers.NodePropertiesController">
   <content>
     <AnchorPane prefHeight="180.0" prefWidth="350.0">
@@ -20,13 +21,13 @@
                 <RowConstraints prefHeight="184.0" />
               </rowConstraints>
                <children>
-                  <Label text="Type:" />
+                  <Label text="%type" />:
                   <Label fx:id="nodeGroup" GridPane.columnIndex="1" />
-                  <Label text="Name" GridPane.rowIndex="1" />
-                  <Label text="Regenerators Remaining" GridPane.rowIndex="5" minWidth="200"/>
+                  <Label text="%name" GridPane.rowIndex="1" />
+                  <Label text="%regenerators_remaining" GridPane.rowIndex="5" minWidth="200"/>
                   <Label fx:id="regenNum" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                   <Label fx:id="nodeName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                  <Label alignment="BOTTOM_CENTER" contentDisplay="RIGHT" text="Connected with:" textAlignment="CENTER" GridPane.rowIndex="3" />
+                  <Label alignment="BOTTOM_CENTER" contentDisplay="RIGHT" text="%connected_with" textAlignment="CENTER" GridPane.rowIndex="3" />:
                   <ListView fx:id="listView" prefHeight="200.0" maxWidth="100" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="TOP" onMouseClicked="#listViewMouseClicked">
                      <GridPane.margin>
                         <Insets />
@@ -42,13 +43,13 @@
                       <RowConstraints prefHeight="21.0" />
                     </rowConstraints>
                      <children>
-                        <Label text="X:" />
-                        <Label text="Y:" GridPane.rowIndex="1" />
+                        <Label text="%x_label" />
+                        <Label text="%y_label" GridPane.rowIndex="1" />
                         <Label prefHeight="25.0" GridPane.columnIndex="1" fx:id="xID"/>
                         <Label GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="yID"/>
                      </children>
                   </GridPane>
-                  <Label alignment="TOP_LEFT" text="Point on screen:" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                  <Label alignment="TOP_LEFT" text="%point_on_screen_label" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
                </children>
             </GridPane>
          </children></AnchorPane>

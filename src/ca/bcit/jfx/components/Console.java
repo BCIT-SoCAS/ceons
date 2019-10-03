@@ -31,7 +31,6 @@ public class Console extends TextArea {
 	}
 	
 	private static class ConsoleInputStream extends InputStream {
-
 		final Console console;
 		Object monitor;
 		final StringBuffer buffer = new StringBuffer();
@@ -49,25 +48,36 @@ public class Console extends TextArea {
 		}
 		
 		private void requestInput() throws IOException {
-			if (monitor != null) throw new IOException("Tried to read from console on separate threads at the same time.");
+			if (monitor != null)
+				throw new IOException("Tried to read from console on separate threads at the same time.");
+
 			monitor = new Object();
-			if (Platform.isFxApplicationThread()) console.setEditable(true);
-			else Platform.runLater(() -> console.setEditable(true));
+
+			if (Platform.isFxApplicationThread())
+				console.setEditable(true);
+			else
+				Platform.runLater(() -> console.setEditable(true));
+
 			synchronized(monitor) {
 				try {
 					monitor.wait();
-				} catch (InterruptedException e) {
+				}
+				catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
-			if (Platform.isFxApplicationThread()) console.setEditable(false);
-			else Platform.runLater(() -> console.setEditable(false));
+
+			if (Platform.isFxApplicationThread())
+				console.setEditable(false);
+			else
+				Platform.runLater(() -> console.setEditable(false));
 			monitor = null;
 		}
 		
 		@Override
 		public int read() throws IOException {
-			if (buffer.length() == 0) requestInput();
+			if (buffer.length() == 0)
+				requestInput();
 			int result = buffer.charAt(0);
 			buffer.deleteCharAt(0);
 			return result;
@@ -78,14 +88,16 @@ public class Console extends TextArea {
 			if (buffer.length() == 0)
 				try {
 					requestInput();
-				} catch (IOException e1) {
+				}
+				catch (IOException e1) {
 					e1.printStackTrace();
 				}
 			int i;
 			for (i = 0; i < bytes.length && buffer.length() != 0; i++)
 				try {
 					bytes[i] = (byte) read();
-				} catch (IOException e) {
+				}
+				catch (IOException e) {
 					e.printStackTrace();
 				}
 			return i;
@@ -96,14 +108,16 @@ public class Console extends TextArea {
 			if (buffer.length() == 0)
 				try {
 					requestInput();
-				} catch (IOException e1) {
+				}
+				catch (IOException e1) {
 					e1.printStackTrace();
 				}
 			int i;
 			for (i = 0; i < length && buffer.length() != 0; i++)
 				try {
 					bytes[offset + i] = (byte) read();
-				} catch (IOException e) {
+				}
+				catch (IOException e) {
 					e.printStackTrace();
 				}
 			return i;
@@ -132,20 +146,23 @@ public class Console extends TextArea {
 		if (!isEditable()) return;
 		
 		switch(e.getCode()) {
-		case BACK_SPACE:
-			if (inputStream.buffer.length() <= 0) e.consume();
-			else inputStream.deleteCharacter();
-			break;
-		case ENTER:
-			inputStream.appendCharacter('\n');
-			synchronized (inputStream.monitor) {
-				inputStream.monitor.notify();
-			}
-			break;
-		default:
-			if (e.getText().length() > 0) inputStream.appendCharacter(e.getText().charAt(0));
-			else e.consume();
-			break;
+			case BACK_SPACE:
+				if (inputStream.buffer.length() <= 0)
+					e.consume();
+				else
+					inputStream.deleteCharacter();
+				break;
+			case ENTER:
+				inputStream.appendCharacter('\n');
+				synchronized (inputStream.monitor) {
+					inputStream.monitor.notify();
+				}
+				break;
+			default:
+				if (e.getText().length() > 0)
+					inputStream.appendCharacter(e.getText().charAt(0));
+				else
+					e.consume();
 		}
 	}
 }

@@ -48,15 +48,16 @@ public class ResizableCanvas extends Canvas {
     private void canvasOnMousePressed(MouseEvent e) {
         updateListBeforeChanges();
         Vector2F pressedPoint = new Vector2F((float) e.getX(), (float) e.getY());
-        if (isLinkAddingState()) {
+        if (isLinkAddingState())
             addLink(pressedPoint);
-        } else if (isLinkDeleteState() || isFewElementsDeleteState()) {
+        else if (isLinkDeleteState() || isFewElementsDeleteState())
             startTempPoint = pressedPoint;
-        } else if (isClickingState() && !list.isEmpty()) {
+        else if (isClickingState() && !list.isEmpty()) {
             Figure closestElement = findClosestElement(pressedPoint);
             setSelectedFigure(closestElement);
             loadProperties(closestElement);
-        } else if (isDraggingState()) {
+        }
+        else if (isDraggingState()) {
             clickedX = e.getX();
             clickedY = e.getY();
             for (int i = 0; i < list.getNodeAmount()+list.getLinkAmount(); i++) {
@@ -71,14 +72,16 @@ public class ResizableCanvas extends Canvas {
         if (isNodeAddingState()) {
             setSelectedFigure(null);
             addNode(clickedPoint);
-        } else if (isClickingState()) {
+        }
+        else if (isClickingState()) {
             if (isDrawingLink)
                 isDrawingLink = false;
-        } else if (isNodeMarkReplicaState()) {
+        }
+        else if (isNodeMarkReplicaState())
 			markNode(clickedPoint, "replicas");
-		} else if (isNodeMarkInternationalState()) {
+		else if (isNodeMarkInternationalState())
 			markNode(clickedPoint, "international");
-		}
+
         updateListBeforeChanges();
     }
 
@@ -92,7 +95,7 @@ public class ResizableCanvas extends Canvas {
             parent.map.getGraphicsContext2D().clearRect(0,0, parent.map.getWidth(), parent.map.getHeight());
             parent.map.getGraphicsContext2D().drawImage(parent.mapImage, newX, newY, parent.map.getWidth()*parent.currentScale, parent.map.getHeight()*parent.currentScale);
 
-            for (int i = 0; i < list.getNodeAmount()+list.getLinkAmount(); i++) {
+            for (int i = 0; i < list.getNodeAmount()+list.getLinkAmount(); i++)
                 if (list.get(i) instanceof Node) {
                     double nodeX = nodePositions.get(i).getX();
                     double nodeY = nodePositions.get(i).getY();
@@ -100,7 +103,6 @@ public class ResizableCanvas extends Canvas {
                     double y = nodeY + moveY;
                     list.changeNodePoint(list.get(i), new Vector2F((float)x,(float)y));
                 }
-            }
         }
     }
 
@@ -287,7 +289,6 @@ public class ResizableCanvas extends Canvas {
     private void loadProperties(Figure temp) {
         parent.loadProperties(temp, list);
     }
-
 
     private void updateListBeforeChanges() {
         listBeforeChanges = new FigureControl(list);

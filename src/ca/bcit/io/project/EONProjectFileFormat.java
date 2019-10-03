@@ -12,7 +12,6 @@ import com.google.maps.ImageResult;
 import javafx.collections.ObservableList;
 import javafx.stage.FileChooser.ExtensionFilter;
 
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -23,17 +22,24 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+
 public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
+	private final ResourceBundle resources;
+
+	public EONProjectFileFormat(ResourceBundle resources) {
+		super();
+		this.resources = resources;
+	}
 
 	@Override
 	public ExtensionFilter getExtensionFilter() {
-		return new ExtensionFilter("EON project files", "*.eon");
+		return new ExtensionFilter(resources.getString("eon_project_files"), "*.eon");
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Project load(File file, Void parameter) throws IOException {
 		ZipFile zip = new ZipFile(file);
@@ -94,7 +100,7 @@ public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
 		SavedNodeTypes savedNodeTypes = new SavedNodeTypes();
 		SavedNodeLinks savedNodeLinks = new SavedNodeLinks();
 
-		for(SavedNodeDetails nodeDetails : tableList){
+		for (SavedNodeDetails nodeDetails : tableList) {
 			savedNodeTypes.setNodeNumType(nodeDetails);
 			savedNodeLinks.setNodeNumLinks(nodeDetails, tableList);
 		}
