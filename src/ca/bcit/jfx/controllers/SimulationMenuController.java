@@ -269,6 +269,7 @@ public class SimulationMenuController {
                     TaskReadyProgressBar.addResultsDataSeed(randomSeed);
 					for(int erlangValue = erlangRangeLowField.getValue(); erlangValue <= erlangRangeHighField.getValue(); erlangValue+=stepBetweenErlangsField.getValue()){
 						simulation = new Simulation(network, generators.getValue());
+						simulation.setMultipleSimulations(true);
 						SimulationTask simulationTask = new SimulationTask(simulation, randomSeed, Double.parseDouble(alpha.getText()), erlangValue, demands.getValue(), replicaPreservation.isSelected());
 						progressBar.runTask(simulationTask, true, runMultipleSimulationService);
 						progressBar.increaseSimulationCount();

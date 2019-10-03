@@ -22,6 +22,8 @@ import com.google.gson.JsonObject;
 import javafx.fxml.FXMLLoader;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 
@@ -46,6 +48,7 @@ public class Simulation {
 	private double allocations;
 	private double unhandledVolume;
 	private final double[] modulationsUsage = new double[6];
+	private boolean multipleSimulations = false;
 
 	public Simulation(){}
 
@@ -154,6 +157,12 @@ public class Simulation {
 		if (!resultsDirectory.isDirectory()) {
 			resultsDirectory.mkdir();
 		}
+		File resultsProjectDirectory = new File(RESULTS_DATA_DIR_NAME + "/" + ApplicationResources.getProject().getName().toUpperCase());
+		if (isMultipleSimulations()) {
+			if (!resultsProjectDirectory.isDirectory()) {
+				resultsProjectDirectory.mkdir();
+			}
+		}
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		String json = gson.toJson(new SimulationSummary(generator.getName(), erlang, seed, alpha, demandsCount, totalVolume,
@@ -161,10 +170,11 @@ public class Simulation {
 				allocations));
 
 		try {
-			resultsDataFileName = ApplicationResources.getProject().getName().toUpperCase() + "-" + generator.getName()
-					+ "-ERLANG" + erlang + "-SEED" + seed + "-ALPHA" + alpha + "-DEMANDS" + demandsCount +".json";
+			resultsDataFileName = ApplicationResources.getProject().getName().toUpperCase() +
+					new SimpleDateFormat("_yyyy_MM_dd_HH_mm_ss").format(new Date()) +".json";
 			TaskReadyProgressBar.addResultsDataFileName(resultsDataFileName);
-			FileWriter resultsDataWriter  = new FileWriter(new File(resultsDirectory, resultsDataFileName));
+			FileWriter resultsDataWriter  = new FileWriter(new File(
+					isMultipleSimulations() ? resultsProjectDirectory : resultsDirectory, resultsDataFileName));
 
 			resultsDataWriter.write(json);
 			resultsDataWriter.close();
@@ -262,4 +272,11 @@ public class Simulation {
 		ResizableCanvas.getParentController().totalVolume += demand.getVolume();
 	}
 
+	public boolean isMultipleSimulations() {
+		return multipleSimulations;
+	}
+
+	public void setMultipleSimulations(boolean multipleSimulations) {
+		this.multipleSimulations = multipleSimulations;
+	}
 }

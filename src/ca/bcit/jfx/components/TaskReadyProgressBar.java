@@ -30,7 +30,9 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import java.awt.*;
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.*;
 
 public class TaskReadyProgressBar extends StackPane {
@@ -108,7 +110,7 @@ public class TaskReadyProgressBar extends StackPane {
                 // Extract JSON data
                 for (String resultsDataFileName : resultsDataFileNameList) {
                     try {
-                        BufferedReader bufferedReader = new BufferedReader(new FileReader(Simulation.RESULTS_DATA_DIR_NAME + "/" + resultsDataFileName));
+                        BufferedReader bufferedReader = new BufferedReader(new FileReader(Simulation.RESULTS_DATA_DIR_NAME + "/" + ApplicationResources.getProject().getName().toUpperCase() + "/" + resultsDataFileName));
 
                         Gson gson = new GsonBuilder().setPrettyPrinting().create();
                         JsonObject js = gson.fromJson(bufferedReader, JsonObject.class);
@@ -190,8 +192,8 @@ public class TaskReadyProgressBar extends StackPane {
                     int demandsCountValue = resultsDataJsonList.get(0).get("demandsCountValue").getAsInt();
 
 
-                    document.save(resultsSummaryDirectory + "\\" + ApplicationResources.getProject().getName().toUpperCase() + "-" + trafficGeneratorName
-                            + "-ERLANG_" + startingErlangValue + "_TO_" + endingErlangValue + "-SEED{" + seedValuesGlob + "}-ALPHA" + alphaValue + "-DEMANDS" + demandsCountValue + ".pdf");
+                    document.save(resultsSummaryDirectory + "\\" + ApplicationResources.getProject().getName().toUpperCase() +
+                            new SimpleDateFormat("_yyyy_MM_dd_HH_mm_ss").format(new Date()) + ".pdf");
                     document.close();
                 } catch (IOException ex) {
                     ex.printStackTrace();
