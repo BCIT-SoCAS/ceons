@@ -154,21 +154,16 @@ public class Simulation {
 
 		// write the resulting data of a successful simulation to file
 		File resultsDirectory = new File(RESULTS_DATA_DIR_NAME);
-		if (!resultsDirectory.isDirectory()) {
+		if (!resultsDirectory.isDirectory())
 			resultsDirectory.mkdir();
-		}
 		File resultsProjectDirectory = new File(RESULTS_DATA_DIR_NAME + "/" + ApplicationResources.getProject().getName().toUpperCase());
-		if (isMultipleSimulations()) {
-			if (!resultsProjectDirectory.isDirectory()) {
+		if (isMultipleSimulations())
+			if (!resultsProjectDirectory.isDirectory())
 				resultsProjectDirectory.mkdir();
-			}
-		}
-
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		String json = gson.toJson(new SimulationSummary(generator.getName(), erlang, seed, alpha, demandsCount, totalVolume,
 				spectrumBlockedVolume, regeneratorsBlockedVolume, linkFailureBlockedVolume, unhandledVolume, regsPerAllocation,
 				allocations));
-
 		try {
 			resultsDataFileName = ApplicationResources.getProject().getName().toUpperCase() +
 					new SimpleDateFormat("_yyyy_MM_dd_HH_mm_ss").format(new Date()) +".json";
