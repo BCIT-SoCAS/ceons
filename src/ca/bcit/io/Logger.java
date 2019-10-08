@@ -2,6 +2,8 @@ package ca.bcit.io;
 
 import ca.bcit.jfx.components.Console;
 
+import java.util.Arrays;
+
 public class Logger {
 
 	public enum LoggerLevel {
@@ -15,17 +17,16 @@ public class Logger {
 
 	private static LoggerLevel loggerLevel = LoggerLevel.DEBUG;
 
-
-	
 	public static void debug(String message) {
-		if (loggerLevel == LoggerLevel.DEBUG) Console.cout.println(message);
+		if (loggerLevel == LoggerLevel.DEBUG) Console.cout.appendText(message + '\n');
 	}
-	
+
 	public static void debug(Exception e) {
-		e.printStackTrace(Console.cout);
+		Console.cout.appendText(e.getLocalizedMessage() + '\n');
+		Console.cout.appendText(Arrays.toString(e.getStackTrace()) + '\n');
 	}
-	
+
 	public static void info(String message) {
-		Console.cout.println(message);
+		Console.cout.appendText(message + '\n');
 	}
 }

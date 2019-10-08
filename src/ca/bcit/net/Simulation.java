@@ -1,11 +1,10 @@
 package ca.bcit.net;
 
 import ca.bcit.ApplicationResources;
+import ca.bcit.Main;
 import ca.bcit.io.Logger;
-import ca.bcit.io.MapLoadingException;
 import ca.bcit.io.SimulationSummary;
 import ca.bcit.io.project.Project;
-import ca.bcit.io.project.ProjectFileFormat;
 import ca.bcit.jfx.components.ResizableCanvas;
 import ca.bcit.jfx.components.TaskReadyProgressBar;
 import ca.bcit.jfx.controllers.MainWindowController;
@@ -16,9 +15,9 @@ import ca.bcit.net.demand.Demand;
 import ca.bcit.net.demand.DemandAllocationResult;
 import ca.bcit.net.demand.generator.TrafficGenerator;
 import ca.bcit.net.spectrum.Spectrum;
+import ca.bcit.utils.LocaleUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import javafx.fxml.FXMLLoader;
 
 import java.io.*;
@@ -138,11 +137,11 @@ public class Simulation {
 
 		// signal GUI menus that simulation is complete
 		SimulationMenuController.finished = true;
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SimulationMenu.fxml"));
+		ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SimulationMenu.fxml"), resourceBundle);
 		SimulationMenuController simulationMenuController = fxmlLoader.<SimulationMenuController>getController();
-		if (simulationMenuController != null) {
+		if (simulationMenuController != null)
 			simulationMenuController.disableClearSimulationButton();
-		}
 
 		// print basic data in the internal console
 		Logger.info("Blocked Spectrum: " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
