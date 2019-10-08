@@ -24,6 +24,7 @@ import ca.bcit.net.demand.generator.DemandGenerator;
 import ca.bcit.net.demand.generator.TrafficGenerator;
 import ca.bcit.net.demand.generator.UnicastDemandGenerator;
 import ca.bcit.net.spectrum.Spectrum;
+import ca.bcit.utils.LocaleUtils;
 import ca.bcit.utils.Utils;
 import ca.bcit.utils.random.ConstantRandomVariable;
 import ca.bcit.utils.random.MappedRandomVariable;
@@ -62,9 +63,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.util.concurrent.ScheduledExecutorService;
-
-import static ca.bcit.i18n.LocaleEnum.PL_PL;
-import static ca.bcit.i18n.LocaleEnum.PT_BR;
 
 public class MainWindowController implements Loadable, Initializable {
     private static final int PROPERTIES_PANE_NUMBER = 2;
@@ -243,8 +241,7 @@ public class MainWindowController implements Loadable, Initializable {
         localeCombo.getSelectionModel().selectedItemProperty().addListener(MainWindowController::localeChanged);
 
         try {
-            Utils.setStaticFinal(Console.class, "cout", console.out);
-            Utils.setStaticFinal(Console.class, "cin", console.in);
+            Utils.setStaticFinal(Console.class, "cout", console);
         }
         catch (Exception e) {
             throw new RuntimeException(e);
@@ -280,20 +277,7 @@ public class MainWindowController implements Loadable, Initializable {
         try {
             if (!newLanguage.equals(Main.CURRENT_LOCALE.label)) {
                 Main.CURRENT_LOCALE = LocaleEnum.getEnumByString(newLanguage);
-
-                Locale locale;
-                switch (Objects.requireNonNull(LocaleEnum.getEnumByString(newLanguage))) {
-                    case PL_PL:
-                        locale = new Locale("pl", "PL");
-                        break;
-                    case PT_BR:
-                        locale = new Locale("pt", "BR");
-                        break;
-                    default:
-                        locale = new Locale("en", "CA");
-                }
-
-                Main.loadView(locale);
+                Main.loadView(LocaleUtils.getLocaleFromLocaleEnum(LocaleEnum.getEnumByString(newLanguage)));
             }
         }
         catch (Exception e) {
@@ -338,7 +322,8 @@ public class MainWindowController implements Loadable, Initializable {
 
     private void loadCurrentSummary(double spectrumBlocked, double regeneratorsBlocked, double linkFailureBlocked, double totalVolume) {
         TitledPane properties = new TitledPane();
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/LiveInfoSummary.fxml"));
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/LiveInfoSummary.fxml"), resourceBundle);
         try {
             properties = (TitledPane) fxmlLoader.load();
         }
@@ -355,7 +340,8 @@ public class MainWindowController implements Loadable, Initializable {
 
     private void loadNodeProperties(Figure temp, FigureControl list) {
         TitledPane properties = new TitledPane();
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/NodeProperties.fxml"));
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/NodeProperties.fxml"), resourceBundle);
         try {
             properties = (TitledPane) fxmlLoader.load();
         }
@@ -372,7 +358,8 @@ public class MainWindowController implements Loadable, Initializable {
 
     private void loadLinkProperties(Figure temp, FigureControl list) {
         TitledPane properties = new TitledPane();
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/LinkProperties.fxml"));
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/LinkProperties.fxml"), resourceBundle);
         try {
             properties = fxmlLoader.load();
         }
@@ -403,8 +390,9 @@ public class MainWindowController implements Loadable, Initializable {
         String rootPath = System.getProperty("user.dir");
         Path apiKeyPath = Paths.get(rootPath + "/api_key.txt");
         GridPane grid = new GridPane();
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
         if (Files.exists(apiKeyPath)) {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SaveMapWindow.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SaveMapWindow.fxml"), resourceBundle);
             fxmlLoader.load();
             SaveMapController controller = fxmlLoader.getController();
             if (controller != null)
@@ -412,7 +400,7 @@ public class MainWindowController implements Loadable, Initializable {
 
         }
         else {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/APIKeyWindow.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/APIKeyWindow.fxml"), resourceBundle);
             grid = fxmlLoader.load();
             APIKeyController controller = fxmlLoader.getController();
             if (controller != null)
@@ -423,7 +411,8 @@ public class MainWindowController implements Loadable, Initializable {
 
     @FXML
     public void updateButtonClicked() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SaveMapWindow.fxml"));
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SaveMapWindow.fxml"), resourceBundle);
         fxmlLoader.load();
         SaveMapController controller = fxmlLoader.getController();
         controller.displaySaveMapWindow();
@@ -603,7 +592,7 @@ public class MainWindowController implements Loadable, Initializable {
             catch (Throwable e) {
                 e.printStackTrace();
             }
-            Console.cout.println(resources.getString("max_best_paths_count_label") + " " + network.getMaxPathsCount());
+            Logger.info(resources.getString("max_best_paths_count_label") + " " + network.getMaxPathsCount());
 
             return null;
             }

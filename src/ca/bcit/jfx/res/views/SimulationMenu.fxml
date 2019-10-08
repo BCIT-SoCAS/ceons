@@ -60,11 +60,6 @@
                     <UIntField fx:id="bestPaths" alignment="CENTER"/>
 
                     <Separator/>
-
-                    <CeonsLabel text="%simulation_parameter_network_survivability" />
-					<CheckBox fx:id="replicaPreservation" text="%backup_replica_preservation_question" selected="true"/>
-
-                    <Separator/>
                 </children>
             </VBox>
 

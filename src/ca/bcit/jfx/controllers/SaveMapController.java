@@ -1,6 +1,7 @@
 package ca.bcit.jfx.controllers;
 
 import ca.bcit.ApplicationResources;
+import ca.bcit.Main;
 import ca.bcit.io.Logger;
 import ca.bcit.io.MapLoadingException;
 import ca.bcit.io.create.NewTopology;
@@ -11,6 +12,7 @@ import ca.bcit.jfx.components.ResizableCanvas;
 import ca.bcit.jfx.components.ErrorDialog;
 import ca.bcit.net.Network;
 import ca.bcit.net.NetworkNode;
+import ca.bcit.utils.LocaleUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -195,7 +197,8 @@ public class SaveMapController implements Loadable, Initializable {
             task.run();
         }
         else {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/APIKeyWindow.fxml"));
+            ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/APIKeyWindow.fxml"), resourceBundle);
             grid = fxmlLoader.load();
             APIKeyController controller = fxmlLoader.getController();
             if (controller != null) {
