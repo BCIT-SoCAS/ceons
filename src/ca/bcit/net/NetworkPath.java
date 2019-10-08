@@ -1,7 +1,6 @@
 package ca.bcit.net;
 
 import ca.bcit.graph.Path;
-import ca.bcit.io.Logger;
 
 /**
  * Path between nodes
