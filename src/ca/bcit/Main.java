@@ -10,6 +10,7 @@ import ca.bcit.net.NetworkNode;
 import ca.bcit.net.demand.generator.AnycastDemandGenerator;
 import ca.bcit.net.demand.generator.TrafficGenerator;
 import ca.bcit.net.demand.generator.UnicastDemandGenerator;
+import ca.bcit.utils.LocaleUtils;
 import ca.bcit.utils.random.ConstantRandomVariable;
 import ca.bcit.utils.random.IrwinHallRandomVariable;
 import ca.bcit.utils.random.MappedRandomVariable;
@@ -26,14 +27,17 @@ import javafx.scene.image.Image;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class Main extends Application {
 
-	private final static int SPLASH_SCREEN_TIMER = 1000;
+	private final static int SPLASH_SCREEN_TIMER = 3000;
 	public static LocaleEnum CURRENT_LOCALE = LocaleEnum.EN_CA;
 	private static Stage primaryStage;
+	private static URL resourceUrl;
+	private static InputStream iconResourceStream;
 
 	@Override
 	public void init() throws Exception {
@@ -48,11 +52,12 @@ public class Main extends Application {
 	@Override
 	public void start(Stage stage) throws IOException {
 		primaryStage = stage;
-		loadView(new java.util.Locale("en", "CA"));
+		resourceUrl = getClass().getResource("/ca/bcit/jfx/res/views/MainWindow.fxml");
+		iconResourceStream = getClass().getResourceAsStream("/ca/bcit/jfx/res/images/LogoBCIT.png");
+		loadView(LocaleUtils.getLocaleFromLocaleEnum(CURRENT_LOCALE));
 	}
 
 	public static void loadView(java.util.Locale locale) throws IOException {
-		URL resourceUrl = Main.class.getResource("/ca/bcit/jfx/res/views/MainWindow.fxml");
 		ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", locale);
 		FXMLLoader loader = new FXMLLoader(resourceUrl, resourceBundle);
 
@@ -62,7 +67,7 @@ public class Main extends Application {
 
 		Scene scene = new Scene(root);
 		primaryStage.setScene(scene);
-		primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("/ca/bcit/jfx/res/images/LogoBCIT.png")));
+		primaryStage.getIcons().add(new Image(iconResourceStream));
 		primaryStage.show();
 		primaryStage.setMinWidth(primaryStage.getWidth());
 		primaryStage.setMinHeight(primaryStage.getHeight());
