@@ -90,9 +90,10 @@ public class APIKeyController implements Initializable {
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
         final File file = fileChooser.showSaveDialog(null);
 
-        if (file == null) return;
-        Task<Void> task = new Task<Void>() {
+        if (file == null)
+            return;
 
+        Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() {
                 Logger.info(resources.getString("saving_api_key_to") + " " + file.getName() + " " + resources.getString("file"));
