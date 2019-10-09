@@ -162,7 +162,9 @@ public class SaveMapController implements Loadable, Initializable {
             fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
             file = fileChooser.showSaveDialog(null);
 
-            if (file == null) return;
+            if (file == null)
+                return;
+
             Task<Void> task = new Task<Void>() {
 
                 @Override
@@ -182,6 +184,7 @@ public class SaveMapController implements Loadable, Initializable {
                         ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).save(file, ApplicationResources.getProject(), saveTable.getItems(), newTopology.getMap());
                         saveWindow.close();
                         MainWindowController controller = ResizableCanvas.getParentController();
+                        controller.setFileChooser(fileChooser);
                         controller.setFile(file);
                         Logger.info(resources.getString("finished_saving_project"));
                         new InformationDialog(resources.getString("project_successfully_saved_initializing_now"), resources);
@@ -446,16 +449,17 @@ public class SaveMapController implements Loadable, Initializable {
      * @return node type
      */
     private String getSelectedNodeType() {
-        boolean dcSelected = dcCheckbox.isSelected();
-        boolean itlSelected = itlCheckbox.isSelected();
+        boolean dataCenterSelected = dcCheckbox.isSelected();
+        boolean internationalSelected = itlCheckbox.isSelected();
         boolean standardSelected = standardCheckbox.isSelected();
-        if (dcSelected && !itlSelected && !standardSelected)
+
+        if (dataCenterSelected && !internationalSelected && !standardSelected)
             return resources.getString("data_center");
-        else if (dcSelected && itlSelected && !standardSelected)
+        else if (dataCenterSelected && internationalSelected && !standardSelected)
             return resources.getString("data_center") + ", " + resources.getString("international");
-        else if (!dcSelected && itlSelected && !standardSelected)
+        else if (!dataCenterSelected && internationalSelected && !standardSelected)
             return resources.getString("international");
-        else if (!dcSelected && !itlSelected && standardSelected)
+        else if (!dataCenterSelected && !internationalSelected && standardSelected)
             return resources.getString("standard");
 
         return resources.getString("standard");

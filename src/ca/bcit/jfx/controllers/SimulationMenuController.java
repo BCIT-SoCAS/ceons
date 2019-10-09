@@ -64,7 +64,6 @@ public class SimulationMenuController implements Initializable {
 	@FXML private UIntField seedField;
 	@FXML private TextField alpha;
 	@FXML private UIntField demands;
-	@FXML private CheckBox replicaPreservation;
 	@FXML private VBox settings;
 	@FXML private HBox multipleSimulatonSettingsLabel;
 	@FXML private HBox multipleSimulatonSettingsRange;
@@ -243,7 +242,7 @@ public class SimulationMenuController implements Initializable {
                 simulation = new Simulation(network, generators.getValue());
 
                 //TODO: REFACTOR SIMULATION TASK INTO SIMULATION
-                SimulationTask task = new SimulationTask(simulation, seedField.getValue(), Double.parseDouble(alpha.getText()), erlangIntField.getValue(), demands.getValue(), replicaPreservation.isSelected(), resources);
+                SimulationTask task = new SimulationTask(simulation, seedField.getValue(), Double.parseDouble(alpha.getText()), erlangIntField.getValue(), demands.getValue(), true, resources);
                 progressBar.runTask(task, true, resources);
             }
             else {
@@ -267,12 +266,12 @@ public class SimulationMenuController implements Initializable {
 				});
                 Random random = new Random();
 
-				for(int numRepetitions = 1; numRepetitions <= numRepetitionsPerErlang.getValue(); numRepetitions++){
+				for (int numRepetitions = 1; numRepetitions <= numRepetitionsPerErlang.getValue(); numRepetitions++){
 					int randomSeed = random.nextInt(101);
                     TaskReadyProgressBar.addResultsDataSeed(randomSeed);
-					for(int erlangValue = erlangRangeLowField.getValue(); erlangValue <= erlangRangeHighField.getValue(); erlangValue+=stepBetweenErlangsField.getValue()){
+					for (int erlangValue = erlangRangeLowField.getValue(); erlangValue <= erlangRangeHighField.getValue(); erlangValue+=stepBetweenErlangsField.getValue()){
 						simulation = new Simulation(network, generators.getValue());
-						SimulationTask simulationTask = new SimulationTask(simulation, randomSeed, Double.parseDouble(alpha.getText()), erlangValue, demands.getValue(), replicaPreservation.isSelected(), resources);
+						SimulationTask simulationTask = new SimulationTask(simulation, randomSeed, Double.parseDouble(alpha.getText()), erlangValue, demands.getValue(), true, resources);
 						progressBar.runTask(simulationTask, true, runMultipleSimulationService, resources);
 						progressBar.increaseSimulationCount();
 					}
@@ -280,6 +279,7 @@ public class SimulationMenuController implements Initializable {
             }
         }
 	    catch (NullPointerException ex) {
+	    	ex.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle(resources.getString("starting_simulation"));
             alert.setHeaderText(null);
