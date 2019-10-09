@@ -699,4 +699,8 @@ public class MainWindowController implements Loadable, Initializable {
             throw new MapLoadingException(resources.getString("topology_should_contain_both_international_and_data_center_node_types"));
         }
     }
+
+    public void setFileChooser(FileChooser fileChooser) {
+        this.fileChooser = fileChooser;
+    }
 }

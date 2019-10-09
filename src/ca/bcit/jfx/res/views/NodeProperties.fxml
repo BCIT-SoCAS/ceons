@@ -21,13 +21,13 @@
                 <RowConstraints prefHeight="184.0" />
               </rowConstraints>
                <children>
-                  <Label text="%type" />:
+                  <Label text="%type_label" />
                   <Label fx:id="nodeGroup" GridPane.columnIndex="1" />
                   <Label text="%name" GridPane.rowIndex="1" />
                   <Label text="%regenerators_remaining" GridPane.rowIndex="5" minWidth="200"/>
                   <Label fx:id="regenNum" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                   <Label fx:id="nodeName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                  <Label alignment="BOTTOM_CENTER" contentDisplay="RIGHT" text="%connected_with" textAlignment="CENTER" GridPane.rowIndex="3" />:
+                  <Label alignment="BOTTOM_CENTER" contentDisplay="RIGHT" text="%connected_with_label" textAlignment="CENTER" GridPane.rowIndex="3" />
                   <ListView fx:id="listView" prefHeight="200.0" maxWidth="100" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="TOP" onMouseClicked="#listViewMouseClicked">
                      <GridPane.margin>
                         <Insets />
