@@ -61,6 +61,9 @@ public class SaveMapController implements Loadable {
      *Add a new row of node details when the add button is clicked
      */
     public void addButtonClicked() {
+        if (numRegeneratorInput.getText().equals("")) {
+            numRegeneratorInput.setText("100");
+        }
         try {
             SavedNodeDetails savedNodeDetails = new SavedNodeDetails(getNextNodeNum(), nameInput.getText(), connNodeInput.getText(), Integer.parseInt(numRegeneratorInput.getText()), getSelectedNodeType());
             saveTable.getItems().add(savedNodeDetails);
@@ -70,7 +73,7 @@ public class SaveMapController implements Loadable {
 
         nameInput.clear();
         connNodeInput.clear();
-        numRegeneratorInput.setText("100");
+        numRegeneratorInput.clear();
         itlCheckbox.setSelected(false);
         dcCheckbox.setSelected(false);
         standardCheckbox.setSelected(false);
@@ -171,7 +174,7 @@ public class SaveMapController implements Loadable {
                         MainWindowController controller = ResizableCanvas.getParentController();
                         controller.setFile(file);
                         Logger.info("Finished saving project.");
-                        new InformationDialog("Project successfully saved...  Initializing now");
+                        new InformationDialog("Project successfully saved.");
                         controller.initalizeSimulationsAndNetworks();
                     } catch (Exception ex) {
                         new ErrorDialog("An exception occurred while saving the project!", ex);
@@ -264,8 +267,7 @@ public class SaveMapController implements Loadable {
 
         numRegeneratorInput = new TextField();
         numRegeneratorInput.setStyle("-fx-prompt-text-fill: derive(-fx-control-inner-background, -30%);");
-        numRegeneratorInput.setText("100");
-        numRegeneratorInput.setPromptText("Enter # of regenerators");
+        numRegeneratorInput.setPromptText("Enter # of regenerators (Default is 100)");
 
         itlCheckbox = new CheckBox("International");
         dcCheckbox = new CheckBox("Data Center");
