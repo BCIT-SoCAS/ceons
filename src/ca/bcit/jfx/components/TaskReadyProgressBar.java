@@ -2,6 +2,7 @@ package ca.bcit.jfx.components;
 
 import ca.bcit.ApplicationResources;
 import ca.bcit.io.Logger;
+import ca.bcit.jfx.controllers.SimulationMenuController;
 import ca.bcit.net.Simulation;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -49,6 +50,7 @@ public class TaskReadyProgressBar extends StackPane {
     private final Label label = new Label("");
     private ExecutorService runMultipleSimulationService;
     private int numSimulationsLeft = 0;
+    private Thread thread;
 
     public TaskReadyProgressBar() {
         super();
@@ -71,6 +73,10 @@ public class TaskReadyProgressBar extends StackPane {
         label.textProperty().unbind();
     }
 
+    public Thread getThread(){
+        return this.thread;
+    }
+
     public void runTask(Task<?> task, boolean daemon) {
         bind(task);
         task.setOnSucceeded(e -> {
@@ -85,7 +91,7 @@ public class TaskReadyProgressBar extends StackPane {
             Logger.debug(e.getSource().toString() + " was cancelled!");
         });
         ;
-        Thread thread = new Thread(task);
+        this.thread = new Thread(task);
         thread.setDaemon(daemon);
         thread.start();
     }
@@ -214,7 +220,7 @@ public class TaskReadyProgressBar extends StackPane {
         });
 
         //Start the thread task execution
-        Thread thread = new Thread(task);
+        this.thread = new Thread(task);
         thread.setDaemon(daemon);
         runMultipleSimulationService.execute(thread);
     }

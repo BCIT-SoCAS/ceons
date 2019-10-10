@@ -14,14 +14,16 @@ public class SimulationTask extends Task<Void> {
 	private final int erlang;
 	private final double alpha;
 	private final boolean replicaPreservation;
+	private final SimulationMenuController c;
 	
-	public SimulationTask(Simulation simulation, long seed, double alpha, int erlang, int demandsCount, boolean replicaPreservation) {
+	public SimulationTask(Simulation simulation, long seed, double alpha, int erlang, int demandsCount, boolean replicaPreservation, SimulationMenuController c) {
 		this.simulation = simulation;
 		this.seed = seed;
 		this.erlang = erlang;
 		this.demandsCount = demandsCount;
 		this.alpha = alpha;
 		this.replicaPreservation = replicaPreservation;
+		this.c = c;
 	}
 	@Override
 	protected Void call() {
@@ -29,8 +31,10 @@ public class SimulationTask extends Task<Void> {
 			Logger.info("\n");
 			Logger.info("Starting simulation! " + "\n\tSeed: " + seed + "\n\tAlpha: " + alpha + "\n\tErlang: " + erlang +
 					"\n\tDemands Count: " + demandsCount + "\n\tReplica Preservation: " + replicaPreservation);
+			c.setRunning(true);
 			simulation.simulate(seed, demandsCount, alpha, erlang, replicaPreservation, this);
 			Logger.info("Simulation finished!");
+			c.setRunning(false);
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}

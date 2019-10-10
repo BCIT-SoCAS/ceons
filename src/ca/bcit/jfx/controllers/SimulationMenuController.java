@@ -18,6 +18,7 @@ import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -95,6 +96,7 @@ public class SimulationMenuController {
 			modulations[modulation.ordinal()] = ((CheckBox) settings.lookup("#modulation" + modulation.ordinal()));
 		
 		generatorsStatic = generators;
+
 	}
 	
 	void setProgressBar(TaskReadyProgressBar progressBar) {
@@ -241,8 +243,9 @@ public class SimulationMenuController {
                 simulation = new Simulation(network, generators.getValue());
 
                 //TODO: REFACTOR SIMULATION TASK INTO SIMULATION
-                SimulationTask task = new SimulationTask(simulation, seedField.getValue(), Double.parseDouble(alpha.getText()), erlangIntField.getValue(), demands.getValue(), replicaPreservation.isSelected());
+                SimulationTask task = new SimulationTask(simulation, seedField.getValue(), Double.parseDouble(alpha.getText()), erlangIntField.getValue(), demands.getValue(), replicaPreservation.isSelected(), this);
                 progressBar.runTask(task, true);
+                setRunning(true);
             } else {
             	if(erlangRangeLowField.getValue() > erlangRangeHighField.getValue() || erlangRangeLowField.getValue() == erlangRangeHighField.getValue()){
 					Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -270,7 +273,7 @@ public class SimulationMenuController {
 					for(int erlangValue = erlangRangeLowField.getValue(); erlangValue <= erlangRangeHighField.getValue(); erlangValue+=stepBetweenErlangsField.getValue()){
 						simulation = new Simulation(network, generators.getValue());
 						simulation.setMultipleSimulations(true);
-						SimulationTask simulationTask = new SimulationTask(simulation, randomSeed, Double.parseDouble(alpha.getText()), erlangValue, demands.getValue(), replicaPreservation.isSelected());
+						SimulationTask simulationTask = new SimulationTask(simulation, randomSeed, Double.parseDouble(alpha.getText()), erlangValue, demands.getValue(), replicaPreservation.isSelected(), this);
 						progressBar.runTask(simulationTask, true, runMultipleSimulationService);
 						progressBar.increaseSimulationCount();
 					}
@@ -284,7 +287,24 @@ public class SimulationMenuController {
             alert.setResizable(true);
             alert.getDialogPane().setPrefSize(480.0, 100);
             alert.showAndWait();
+            setRunning(false);
         }
+	}
+	
+	public void setRunning(boolean isRunning){
+		for (Node node: new Node[] {generators,
+		runMultipleSimulations, simulationRepetitions, erlangLabel, stepBetweenErlangsLabel, erlangRangeLabel,
+		erlangRangeLowLabel, erlangRangeHighLabel, seedLabel, erlangIntField, erlangRangeLowField, numRepetitionsPerErlang,
+		stepBetweenErlangsField, erlangRangeHighField, seedField, alpha, demands, replicaPreservation, settings,
+		multipleSimulatonSettingsLabel, multipleSimulatonSettingsRange, algorithms, allowModulationChange, bestPaths,
+		regeneratorsMetricValue
+		}) {
+			try {
+				node.setDisable(isRunning);
+			} catch (NullPointerException e){
+				System.out.println("Disabled Node");
+			}
+		}
 	}
 
 	// Cancel simulation button
