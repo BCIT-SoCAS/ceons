@@ -4,7 +4,6 @@ import com.google.maps.ImageResult;
 import com.google.maps.model.LatLng;
 import java.util.ArrayList;
 
-
 public class NewTopology {
     private StaticMap staticMap;
     private ArrayList<SavedNodeDetails> savedNodeDetailsList;
@@ -56,11 +55,10 @@ public class NewTopology {
         double lat = savedNodeDetails.getLatLng().lat;
         long latDistance = StaticMap.distance(centerPoint.lat, lat, centerPoint.lng, centerPoint.lng);
 
-        if ((centerPoint.lat - lat) > 0) {
+        if ((centerPoint.lat - lat) > 0)
             y = (int) Math.round(latDistance/meterPerPixel + centerHeight);
-        } else {
+        else
             y = (int) Math.round(centerHeight - latDistance/meterPerPixel);
-        }
 
         return y;
     }
@@ -78,13 +76,11 @@ public class NewTopology {
         double lng = savedNodeDetails.getLatLng().lng;
         long lngDistance = StaticMap.distance(centerPoint.lat, centerPoint.lat, centerPoint.lng, lng);
 
-        if ((centerPoint.lng - lng) > 0) {
+        if ((centerPoint.lng - lng) > 0)
             x = (int) Math.round(centerWidth - lngDistance/meterPerPixel);
-        } else {
+        else
             x = (int) Math.round(lngDistance/meterPerPixel + centerWidth);
-        }
 
         return x;
     }
-
 }

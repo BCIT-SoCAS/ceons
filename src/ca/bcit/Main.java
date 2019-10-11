@@ -64,7 +64,6 @@ public class Main extends Application {
 		ProjectFileFormat.registerFileFormat(new EONProjectFileFormat(resourceBundle));
 
 		GridPane root = loader.load();
-
 		Scene scene = new Scene(root);
 		primaryStage.setScene(scene);
 		primaryStage.getIcons().add(new Image(iconResourceStream));

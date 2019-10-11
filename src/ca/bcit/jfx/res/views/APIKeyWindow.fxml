@@ -12,7 +12,7 @@
 		<ColumnConstraints percentWidth="50" />
 	</columnConstraints>
 	<children>
-		<Text styleClass="title-text" wrappingWidth="470.0" textAlignment="CENTER" text="%finished_saving_api_key" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2" GridPane.rowSpan="1" />
+		<Text styleClass="title-text" wrappingWidth="470.0" textAlignment="CENTER" text="%save_google_maps_api_key_to_file" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2" GridPane.rowSpan="1" />
 		<TextField fx:id="saveKeyInput" promptText="%please_enter_google_maps_api_key" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2" GridPane.rowSpan="1" focusTraversable="false"/>
 		<Button fx:id="saveAPIKeyBtn" maxWidth="Infinity" text="%save"  GridPane.fillWidth="true" GridPane.columnIndex="0" GridPane.rowIndex="2" />
 		<Button fx:id="closeAPIKeyWindowBtn" maxWidth="Infinity" text="%cancel" GridPane.fillWidth="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />

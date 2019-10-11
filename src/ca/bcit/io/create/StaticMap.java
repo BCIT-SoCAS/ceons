@@ -46,20 +46,17 @@ public class StaticMap {
             StaticMapsRequest.Markers markers = new StaticMapsRequest.Markers();
             if (hasMarker) {
                 markers.size(StaticMapsRequest.Markers.MarkersSize.tiny);
-                for(LatLng latLng : this.coordinates) {
+                for(LatLng latLng : this.coordinates)
                     markers.addLocation(latLng);
-                }
                 // show center point
                 // markers.addLocation(this.centerPoint);
-
             }
-            ImageResult map = StaticMapsApi.newRequest(context, mapSize).center(this.centerPoint).markers(markers).
-                    zoom(this.zoomLevel).scale(2).await();
-            BufferedImage img = ImageIO.read(new ByteArrayInputStream(map.imageData));
-            System.out.println("image generated");
+            ImageResult map = StaticMapsApi.newRequest(context, mapSize).center(this.centerPoint).markers(markers).zoom(this.zoomLevel).scale(2).await();
+            ImageIO.read(new ByteArrayInputStream(map.imageData));
             return map;
-        } catch (Exception e) {
-            System.out.println("Failed to generate static map:" + e);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -74,19 +71,19 @@ public class StaticMap {
             this.minLng = latlng.lng;
             this.maxLng = latlng.lng;
             this.isFirst = false;
-        } else {
-            if (latlng.lat < minLat) {
-                minLat = latlng.lat;
-            } else if (latlng.lat > maxLat) {
-                maxLat = latlng.lat;
-            }
-            if (latlng.lng < minLng) {
-                minLng = latlng.lng;
-            } else if (latlng.lng > maxLng) {
-                maxLng = latlng.lng;
-            }
         }
-        System.out.println(savedNodeDetails.getLocation() + " added, coordinate: " + latlng.lat + ", " + latlng.lng);
+        else {
+            if (latlng.lat < minLat)
+                minLat = latlng.lat;
+            else if (latlng.lat > maxLat)
+                maxLat = latlng.lat;
+
+            if (latlng.lng < minLng)
+                minLng = latlng.lng;
+            else if (latlng.lng > maxLng)
+                maxLng = latlng.lng;
+        }
+
         return savedNodeDetails;
     }
 
@@ -122,8 +119,6 @@ public class StaticMap {
         center.lat = (this.minLat + this.maxLat)/2;
         center.lng = (this.minLng + this.maxLng)/2;
         this.centerPoint = center;
-
-        System.out.println("center point: " + this.centerPoint.lat + ", " + this.centerPoint.lng);
     }
 
     /**
@@ -136,20 +131,13 @@ public class StaticMap {
         long minVerticalDistancePerPixel = minHeight/this.mapSize.height;
         long minDistancePerPixel = 0;
 
-        if(minHorizontalDistancePerPixel > minVerticalDistancePerPixel) {
-            minDistancePerPixel = minHorizontalDistancePerPixel;
-        } else {
-            minDistancePerPixel = minVerticalDistancePerPixel;
-        }
+        minDistancePerPixel = Math.max(minHorizontalDistancePerPixel, minVerticalDistancePerPixel);
 
-        for (int i = 20; i > 0; i--) {
+        for (int i = 20; i > 0; i--)
             if (minDistancePerPixel < calMetersPerPx(this.centerPoint.lat, i)) {
                 this.zoomLevel = i;
                 break;
             }
-        }
-
-        System.out.println("Zoom level: " + this.zoomLevel);
     }
 
     /**
@@ -178,10 +166,11 @@ public class StaticMap {
             // Handle successful request.
             latLng.lng = result[0].geometry.location.lng;
             latLng.lat = result[0].geometry.location.lat;
-        } catch (Exception e) {
-            // Handle error
-            System.out.println("Failed to get lat and lng for " + location + " :" + e);
         }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return latLng;
     }
 
@@ -194,8 +183,7 @@ public class StaticMap {
      * el2 End altitude in meters
      * @returns Distance in Meters
      */
-    public static long distance(double lat1, double lat2, double lon1,
-                                double lon2) {
+    public static long distance(double lat1, double lat2, double lon1, double lon2) {
         final int R = 6371; // Radius of the earth
         double latDistance = Math.toRadians(lat2 - lat1);
         double lonDistance = Math.toRadians(lon2 - lon1);
@@ -208,5 +196,4 @@ public class StaticMap {
         distance = Math.pow(distance, 2) + Math.pow(height, 2);
         return Math.round(Math.sqrt(distance)) * 1000;
     }
-
 }
