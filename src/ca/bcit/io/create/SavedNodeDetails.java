@@ -1,6 +1,8 @@
 package ca.bcit.io.create;
 
+import ca.bcit.Main;
 import ca.bcit.net.NetworkLink;
+import ca.bcit.utils.LocaleUtils;
 import com.google.maps.model.LatLng;
 import ca.bcit.io.YamlSerializable;
 
@@ -47,10 +49,12 @@ public class SavedNodeDetails implements YamlSerializable {
      * @param nodeNum node number
      */
     public void setNodeNum(int nodeNum) {
-        if(nodeNum >= 0)
+        if (nodeNum >= 0)
             this.nodeNum = nodeNum;
-        else
-            throw new IllegalArgumentException("Node num can't be negative");
+        else {
+            ResourceBundle resources = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));;
+            throw new IllegalArgumentException(resources.getString("node_num_cannot_be_null"));
+        }
     }
 
     /**
@@ -66,10 +70,12 @@ public class SavedNodeDetails implements YamlSerializable {
      * @param location location name
      */
     public void setLocation(String location) {
-        if(location != null && !location.isEmpty())
+        if (location != null && !location.isEmpty())
             this.location = location;
-        else
-            throw new IllegalArgumentException("Node location can't be null or empty");
+        else {
+            ResourceBundle resources = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));;
+            throw new IllegalArgumentException(resources.getString("node_location_cannot_be_null_or_empty"));
+        }
     }
 
     /**
@@ -85,11 +91,14 @@ public class SavedNodeDetails implements YamlSerializable {
      * @param connectedNodeNum node numbers of the connected node, ex: "1,2,3"
      */
     public void setConnectedNodeNum(String connectedNodeNum) {
-        if(connectedNodeNum != null){
+        if (connectedNodeNum != null) {
             this.connectedNodeNum = connectedNodeNum;
             initConnectedNodeLinkMap(connectedNodeNum);
-        } else
-            throw new IllegalArgumentException("Node connection from map creation can't be null");
+        }
+        else {
+            ResourceBundle resources = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));;
+            throw new IllegalArgumentException(resources.getString("node_connection_from_map_creation_cannot_be_null"));
+        }
     }
 
     /**
@@ -130,8 +139,10 @@ public class SavedNodeDetails implements YamlSerializable {
     public void setNumRegenerators(int numRegenerators) {
         if (numRegenerators >= 0)
             this.numRegenerators = numRegenerators;
-        else
-            throw new IllegalArgumentException("Number of regenerators can't be negative");
+        else {
+            ResourceBundle resources = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));;
+            throw new IllegalArgumentException(resources.getString("number_of_regenerator_cannot_be_negative"));
+        }
     }
 
     /**
@@ -147,10 +158,13 @@ public class SavedNodeDetails implements YamlSerializable {
      * @param nodeType node type (international, data center, standard)
      */
     public void setNodeType(String nodeType) {
+        System.out.println(nodeType);
         if (nodeType != null && !nodeType.isEmpty())
             this.nodeType = nodeType;
-        else
-            throw new IllegalArgumentException("Node type can't be null or empty");
+        else {
+            ResourceBundle resources = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
+            throw new IllegalArgumentException(resources.getString("node_type_cannot_be_null_or_empty"));
+        }
     }
 
     /**
@@ -192,8 +206,10 @@ public class SavedNodeDetails implements YamlSerializable {
     public void setLatLng(LatLng latLng) {
         if (latLng != null)
             this.latLng = latLng;
-        else
-            throw new IllegalArgumentException("Latitude and Longitude can't be null");
+        else {
+            ResourceBundle resources = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
+            throw new IllegalArgumentException(resources.getString("latitude_and_longitude_cannot_be_null"));
+        }
     }
 
     /**

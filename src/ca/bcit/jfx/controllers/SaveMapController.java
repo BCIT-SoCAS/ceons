@@ -498,7 +498,7 @@ public class SaveMapController implements Loadable, Initializable {
                 else if (n1.getNodeGroups().size() == ONE_GROUP_MEMBERSHIP) {
                     if (n1.getNodeGroups().containsKey("replicas"))
                         nodeTypesToString = resources.getString("data_center");
-                    else if (n1.getNodeGroups().containsKey(resources.getString("international")))
+                    else if (n1.getNodeGroups().containsKey("international"))
                         nodeTypesToString = resources.getString("international");
                 }
                 else
