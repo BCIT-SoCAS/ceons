@@ -1,10 +1,12 @@
 package ca.bcit.jfx.controllers;
 
 import ca.bcit.ApplicationResources;
+import ca.bcit.Main;
 import ca.bcit.drawing.Figure;
 import ca.bcit.drawing.FigureControl;
 import ca.bcit.drawing.Link;
 import ca.bcit.drawing.Node;
+import ca.bcit.i18n.LocaleEnum;
 import ca.bcit.io.Logger;
 import ca.bcit.io.MapLoadingException;
 import ca.bcit.io.project.Project;
@@ -22,6 +24,7 @@ import ca.bcit.net.demand.generator.DemandGenerator;
 import ca.bcit.net.demand.generator.TrafficGenerator;
 import ca.bcit.net.demand.generator.UnicastDemandGenerator;
 import ca.bcit.net.spectrum.Spectrum;
+import ca.bcit.utils.LocaleUtils;
 import ca.bcit.utils.Utils;
 import ca.bcit.utils.random.ConstantRandomVariable;
 import ca.bcit.utils.random.MappedRandomVariable;
@@ -29,7 +32,7 @@ import ca.bcit.utils.random.UniformRandomVariable;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
@@ -37,10 +40,10 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 
+import javafx.fxml.Initializable;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 
@@ -53,21 +56,15 @@ import javafx.util.Duration;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Arrays;
+import java.net.URL;
+import java.util.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import javafx.util.Duration;
-import javax.imageio.ImageIO;
 
-
-public class MainWindowController implements Loadable {
+public class MainWindowController implements Loadable, Initializable {
     private static final int PROPERTIES_PANE_NUMBER = 2;
     private int i;
     @FXML
@@ -90,6 +87,8 @@ public class MainWindowController implements Loadable {
     private Slider zoomSlider;
     @FXML
     private Button updateTopologyButton;
+    @FXML
+    private ComboBox<String> localeCombo;
 
     FileChooser fileChooser;
 
@@ -104,6 +103,8 @@ public class MainWindowController implements Loadable {
 
     private static Timeline updateTimeline;
     private static ScheduledExecutorService executorService;
+
+    private ResourceBundle resources;
 
     public ResizableCanvas getCanvas() {
         return graph;
@@ -223,19 +224,26 @@ public class MainWindowController implements Loadable {
     }
 
     @FXML
-    public void initialize() {
+    public void initialize(URL location, ResourceBundle resources) {
+        this.resources = resources;
+
         for (Field field : MainWindowController.class.getDeclaredFields())
             if (field.isAnnotationPresent(FXML.class))
                 try {
                     assert field.get(this) != null : "Id '" + field.getName() + "' was not injected!";
-                } catch (IllegalArgumentException | IllegalAccessException e) {
+                }
+                catch (IllegalArgumentException | IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
 
+        localeCombo.setItems(new ObservableListWrapper<>(LocaleEnum.labels()));
+        localeCombo.setValue(Main.CURRENT_LOCALE.label);
+        localeCombo.getSelectionModel().selectedItemProperty().addListener(MainWindowController::localeChanged);
+
         try {
-            Utils.setStaticFinal(Console.class, "cout", console.out);
-            Utils.setStaticFinal(Console.class, "cin", console.in);
-        } catch (Exception e) {
+            Utils.setStaticFinal(Console.class, "cout", console);
+        }
+        catch (Exception e) {
             throw new RuntimeException(e);
         }
 
@@ -243,9 +251,9 @@ public class MainWindowController implements Loadable {
 
         BackgroundSize bgSize = new BackgroundSize(100, 100, true, true, true, false);
         RadialGradient bgGradient = new RadialGradient(0, 0, 0.5, 0.5, 1, true, CycleMethod.NO_CYCLE, new Stop[]{
-                new Stop(0, Color.web("#004B9E")),
-                new Stop(0.5, Color.web("#004B9E")),
-                new Stop(1, Color.web("#003C79"))
+            new Stop(0, Color.web("#004B9E")),
+            new Stop(0.5, Color.web("#004B9E")),
+            new Stop(1, Color.web("#003C79"))
         });
         List<BackgroundFill> bgFill = Arrays.asList(new BackgroundFill(bgGradient, CornerRadii.EMPTY, Insets.EMPTY));
         List<BackgroundImage> bg = Arrays.asList(new BackgroundImage(new Image(getClass().getResourceAsStream("/ca/bcit/jfx/res/images/LogoEON.png")),
@@ -263,9 +271,18 @@ public class MainWindowController implements Loadable {
             // TODO: implement new zooming function
             // graph.zoom(oldValue.doubleValue(), newValue.doubleValue());
         });
+    }
 
-
-
+    private static void localeChanged(ObservableValue<? extends String> selected, String oldLanguage, String newLanguage) {
+        try {
+            if (!newLanguage.equals(Main.CURRENT_LOCALE.label)) {
+                Main.CURRENT_LOCALE = LocaleEnum.getEnumByString(newLanguage);
+                Main.loadView(LocaleUtils.getLocaleFromLocaleEnum(LocaleEnum.getEnumByString(newLanguage)));
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void initializeDragEvent() {
@@ -273,19 +290,15 @@ public class MainWindowController implements Loadable {
         GraphicsContext graphGC = graph.getGraphicsContext2D();
         double orgSceneX, orgSceneY;
 
-
         graph.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
-            public void handle(MouseEvent event) {
-
-            }
+            public void handle(MouseEvent event) {}
         });
 
         graph.addEventHandler(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 System.out.println("x: " + event.getSceneX() + ", y: " + event.getSceneY());
-
             }
         });
     }
@@ -298,59 +311,65 @@ public class MainWindowController implements Loadable {
      */
     public void loadProperties(Figure fig, FigureControl list) {
         {
-            if (fig instanceof Node) {
+            if (fig instanceof Node)
                 loadNodeProperties(fig, list);
-            } else if (fig instanceof Link) {
+            else if (fig instanceof Link)
                 loadLinkProperties(fig, list);
-            } else
+            else
                 loadCurrentSummary(this.spectrumBlockedVolume, this.regeneratorsBlockedVolume, this.linkFailureBlockedVolume, this.totalVolume);
         }
     }
 
     private void loadCurrentSummary(double spectrumBlocked, double regeneratorsBlocked, double linkFailureBlocked, double totalVolume) {
         TitledPane properties = new TitledPane();
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/LiveInfoSummary.fxml"));
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/LiveInfoSummary.fxml"), resourceBundle);
         try {
             properties = (TitledPane) fxmlLoader.load();
-        } catch (IOException e1) {
+        }
+        catch (IOException e1) {
             e1.printStackTrace();
         }
         LiveInfoSummaryController controller = fxmlLoader.<LiveInfoSummaryController>getController();
-        if (controller != null) {
+        if (controller != null)
             controller.fillInformation(spectrumBlocked, regeneratorsBlocked, linkFailureBlocked, totalVolume);
-        }
+
         setLiveInfoPaneContent(properties);
         setExpandedPane(PROPERTIES_PANE_NUMBER);
     }
 
     private void loadNodeProperties(Figure temp, FigureControl list) {
         TitledPane properties = new TitledPane();
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/NodeProperties.fxml"));
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/NodeProperties.fxml"), resourceBundle);
         try {
             properties = (TitledPane) fxmlLoader.load();
-        } catch (IOException e1) {
+        }
+        catch (IOException e1) {
             e1.printStackTrace();
         }
         NodePropertiesController controller = fxmlLoader.<NodePropertiesController>getController();
-        if (controller != null) {
+        if (controller != null)
             controller.initData(list, temp);
-        }
+
         setLiveInfoPaneContent(properties);
         setExpandedPane(PROPERTIES_PANE_NUMBER);
     }
 
     private void loadLinkProperties(Figure temp, FigureControl list) {
         TitledPane properties = new TitledPane();
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/LinkProperties.fxml"));
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/LinkProperties.fxml"), resourceBundle);
         try {
             properties = fxmlLoader.load();
-        } catch (IOException e1) {
+        }
+        catch (IOException e1) {
             e1.printStackTrace();
         }
         LinkPropertiesController controller = fxmlLoader.<LinkPropertiesController>getController();
-        if (controller != null) {
+        if (controller != null)
             controller.initData(list, temp);
-        }
+
         setLiveInfoPaneContent(properties);
         setExpandedPane(PROPERTIES_PANE_NUMBER);
     }
@@ -371,34 +390,37 @@ public class MainWindowController implements Loadable {
         String rootPath = System.getProperty("user.dir");
         Path apiKeyPath = Paths.get(rootPath + "/api_key.txt");
         GridPane grid = new GridPane();
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
         if (Files.exists(apiKeyPath)) {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SaveMapWindow.fxml"));
-            grid = fxmlLoader.load();
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SaveMapWindow.fxml"), resourceBundle);
+            fxmlLoader.load();
             SaveMapController controller = fxmlLoader.getController();
-            if (controller != null) {
+            if (controller != null)
                 controller.displaySaveMapWindow();
-            }
-        } else {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/APIKeyWindow.fxml"));
+
+        }
+        else {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/APIKeyWindow.fxml"), resourceBundle);
             grid = fxmlLoader.load();
             APIKeyController controller = fxmlLoader.getController();
-            if (controller != null) {
+            if (controller != null)
                 controller.displaySaveAPIKeyWindow(grid);
-            }
+
         }
     }
 
     @FXML
     public void updateButtonClicked() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SaveMapWindow.fxml"));
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SaveMapWindow.fxml"), resourceBundle);
         fxmlLoader.load();
         SaveMapController controller = fxmlLoader.getController();
         controller.displaySaveMapWindow();
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() {
-                controller.populateTableWithLoadedTopology();
-                return null;
+            controller.populateTableWithLoadedTopology();
+            return null;
             }
         };
         task.run();
@@ -406,7 +428,6 @@ public class MainWindowController implements Loadable {
 
     // live GUI updates during simulation
     public void updateGraph() {
-
 
 //        Runnable updateCanvasFigures = () -> {
 //            try {
@@ -437,32 +458,32 @@ public class MainWindowController implements Loadable {
 //        executorService.scheduleAtFixedRate(updateCanvasFigures, 0, 500, TimeUnit.MILLISECONDS);
 
         updateTimeline = new Timeline(
-                new KeyFrame(
-                        Duration.millis(200),
-                        event -> {
-                            try {
-                                graph.resetCanvas();
-                                Project project = ApplicationResources.getProject();
-                                for (NetworkNode n : project.getNetwork().getNodes()) {
-                                    n.updateRegeneratorCount();
-                                    graph.addNetworkNode(n);
-                                    for (NetworkNode n2 : project.getNetwork().getNodes()) {
-                                        if (project.getNetwork().containsLink(n, n2)) {
-                                            NetworkLink networkLink = project.getNetwork().getLink(n, n2);
-                                            Spectrum linkSpectrum = project.getNetwork().getLinkSlices(n, n2);
-                                            int totalSlices = linkSpectrum.getSlicesCount();
-                                            int occupiedSlices = linkSpectrum.getOccupiedSlices();
-                                            int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
-                                            graph.addLink(n.getPosition(), n2.getPosition(), currentPercentage, networkLink.getLength());
-                                        }
-                                    }
+            new KeyFrame(
+                Duration.millis(200),
+                event -> {
+                    try {
+                        graph.resetCanvas();
+                        Project project = ApplicationResources.getProject();
+                        for (NetworkNode n : project.getNetwork().getNodes()) {
+                            n.updateRegeneratorCount();
+                            graph.addNetworkNode(n);
+                            for (NetworkNode n2 : project.getNetwork().getNodes())
+                                if (project.getNetwork().containsLink(n, n2)) {
+                                    NetworkLink networkLink = project.getNetwork().getLink(n, n2);
+                                    Spectrum linkSpectrum = project.getNetwork().getLinkSlices(n, n2);
+                                    int totalSlices = linkSpectrum.getSlicesCount();
+                                    int occupiedSlices = linkSpectrum.getOccupiedSlices();
+                                    int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
+                                    graph.addLink(n.getPosition(), n2.getPosition(), currentPercentage, networkLink.getLength());
                                 }
-
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
                         }
-                )
+
+                    }
+                    catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            )
         );
         updateTimeline.setCycleCount(Timeline.INDEFINITE);
         updateTimeline.play();
@@ -473,7 +494,6 @@ public class MainWindowController implements Loadable {
 
     // stop GUI update
     public void stopUpdateGraph() {
-        System.out.println("Timeline stopped");
 //        executorService.shutdownNow();
         updateTimeline.stop();
     }
@@ -487,17 +507,16 @@ public class MainWindowController implements Loadable {
                 n.clearOccupied();
                 n.setFigure(n);
                 graph.addNetworkNode(n);
-                for (NetworkNode n2 : ApplicationResources.getProject().getNetwork().getNodes()) {
+                for (NetworkNode n2 : ApplicationResources.getProject().getNetwork().getNodes())
                     if (ApplicationResources.getProject().getNetwork().containsLink(n, n2)) {
                         NetworkLink networkLink = project.getNetwork().getLink(n, n2);
                         graph.addLink(n.getPosition(), n2.getPosition(), 100, networkLink.getLength());
                     }
-
-                }
             }
 
-        } catch (Exception ex) {
-            new ErrorDialog("An exception occurred while updating the project.", ex);
+        }
+        catch (Exception ex) {
+            new ErrorDialog(resources.getString("an_exception_occurred_while_updating_the_project"), ex, resources);
             System.out.println(ex.getMessage());
         }
     }
@@ -508,14 +527,14 @@ public class MainWindowController implements Loadable {
         if (loadSuccessful) {
             try {
                 initalizeSimulationsAndNetworks();
-            } catch (MapLoadingException ex){
-                new ErrorDialog(ex.getMessage(), ex);
+            }
+            catch (MapLoadingException ex){
+                new ErrorDialog(ex.getMessage(), ex, resources);
                 ex.printStackTrace();
-                return;
-            } catch (Exception ex){
-                new ErrorDialog("An exception occurred while loading the project.", ex);
+            }
+            catch (Exception ex){
+                new ErrorDialog(resources.getString("an_exception_occurred_while_loading_the_project"), ex, resources);
                 ex.printStackTrace();
-                return;
             }
         }
     }
@@ -531,7 +550,8 @@ public class MainWindowController implements Loadable {
     public void initalizeSimulationsAndNetworks() throws MapLoadingException, Exception {
         boolean loadSuccessful = false;
         try {
-            Logger.info("Loading project from " + file.getName() + "...");
+            Logger.info(resources.getString("loading_project_from") + " " + file.getName() + "...");
+
             Project project = ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).load(file);
             ApplicationResources.setProject(project);
             setupGenerators(project);
@@ -545,22 +565,17 @@ public class MainWindowController implements Loadable {
                 graph.addNetworkNode(n);
                 for (NetworkNode n2 : project.getNetwork().getNodes()) {
                     NetworkLink networkLink = project.getNetwork().getLink(n, n2);
-                    if (project.getNetwork().containsLink(n, n2)) {
+                    if (project.getNetwork().containsLink(n, n2))
                         graph.addLink(n.getPosition(), n2.getPosition(), 100, networkLink.getLength());
-                    }
                 }
             }
             updateTopologyButton.setDisable(false);
-        } catch (MapLoadingException ex){
-            throw ex;
-        } catch (Exception ex) {
-            throw ex;
-        } finally {
-            if (loadSuccessful) {
-                Logger.info("Finished loading project.");
-            } else {
-                Logger.info("Loading cancelled");
-            }
+        }
+        finally {
+            if (loadSuccessful)
+                Logger.info(resources.getString("finished_loading_project"));
+            else
+                Logger.info(resources.getString("loading_cancelled"));
         }
 
 
@@ -568,30 +583,36 @@ public class MainWindowController implements Loadable {
 
             @Override
             protected Void call() {
-                Network network = ApplicationResources.getProject().getNetwork();
+            Network network = ApplicationResources.getProject().getNetwork();
 
-                i = 1;
-                try {
-                    network.setMaxPathsCount(network.calculatePaths(() -> updateProgress(i++, network.getNodesPairsCount())));
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-                Console.cout.println("Max best paths count: " + network.getMaxPathsCount());
+            i = 1;
+            try {
+                network.setMaxPathsCount(network.calculatePaths(() -> updateProgress(i++, network.getNodesPairsCount())));
+            }
+            catch (Throwable e) {
+                e.printStackTrace();
+            }
+            Logger.info(resources.getString("max_best_paths_count_label") + " " + network.getMaxPathsCount());
 
-                return null;
+            return null;
             }
 
 
         };
-        SimulationMenuController.progressBar.runTask(task2, true);
+        SimulationMenuController.progressBar.runTask(task2, true, resources);
     }
 
     @FXML
     public void whilePaused() {
         graph.changeState(DrawingState.clickingState);
-        info.setText("Blocked Spectrum: " + this.spectrumBlockedVolume / this.totalVolume * 100 + "%" + "\n"
-                + "Blocked Regenerators: " + this.regeneratorsBlockedVolume / this.totalVolume * 100 + "%" + "\n"
-                + "Blocked Link Failure: " + this.linkFailureBlockedVolume / this.totalVolume * 100 + "%");
+
+        String blockedSpectrum = spectrumBlockedVolume / totalVolume * 100 * 100 + "%";
+        String blockedRegenerators = regeneratorsBlockedVolume / totalVolume * 100 + "%";
+        String blockedLinkFailure = linkFailureBlockedVolume / totalVolume * 100 + "%";
+
+        info.setText(resources.getString("blocked_spectrum_label") + " " + blockedSpectrum + "\n"
+                + resources.getString("blocked_regenerators_label") + " " + blockedRegenerators + "\n"
+                + resources.getString("blocked_link_failure_label") + " " + blockedLinkFailure);
     }
 
     /**
@@ -618,7 +639,7 @@ public class MainWindowController implements Loadable {
                     new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
 
 
-            generators.add(new TrafficGenerator("No Backup", new MappedRandomVariable<>(subGenerators)));
+            generators.add(new TrafficGenerator(resources.getString("no_backup"), new MappedRandomVariable<>(subGenerators)));
 
             subGenerators = new ArrayList<>();
 
@@ -633,7 +654,7 @@ public class MainWindowController implements Loadable {
             subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
                     new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
 
-            generators.add(new TrafficGenerator("Dedicated Backup", new MappedRandomVariable<>(subGenerators)));
+            generators.add(new TrafficGenerator(resources.getString("dedicated_backup"), new MappedRandomVariable<>(subGenerators)));
 
             subGenerators = new ArrayList<>();
 
@@ -670,11 +691,16 @@ public class MainWindowController implements Loadable {
             subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
                     new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
 
-            generators.add(new TrafficGenerator("Shared Backup", new MappedRandomVariable<>(subGenerators)));
+            generators.add(new TrafficGenerator(resources.getString("shared_backup"), new MappedRandomVariable<>(subGenerators)));
 
             SimulationMenuController.generatorsStatic.setItems(new ObservableListWrapper<>(generators));
-        } catch (NullPointerException ex) {
-            throw new MapLoadingException("Topology should contain both international and data center node types");
         }
+        catch (NullPointerException ex) {
+            throw new MapLoadingException(resources.getString("topology_should_contain_both_international_and_data_center_node_types"));
+        }
+    }
+
+    public void setFileChooser(FileChooser fileChooser) {
+        this.fileChooser = fileChooser;
     }
 }

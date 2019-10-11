@@ -16,13 +16,10 @@ import javafx.scene.input.MouseEvent;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-/**
- * Created by Admin on 2015-02-02.
- */
 public class NodePropertiesController implements Initializable {
     @FXML
-		private Label nodeName;
-		@FXML
+    private Label nodeName;
+    @FXML
     private Label nodeGroup;
     @FXML
     private Label regenNum;
@@ -34,79 +31,77 @@ public class NodePropertiesController implements Initializable {
     private Label yID;
     @FXML
     private TitledPane titledPane;
+
     private FigureControl list;
     private Figure actualNode;
+    private ResourceBundle resources;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        this.resources = resources;
+
         listView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue!=null) {
+            if (newValue != null)
                 list.setSelectedFigure(list.findFigureByName(newValue));
-            }
         });
+
         nodeName.textProperty().addListener((observable, oldValue, newValue) -> {
             actualNode = list.findFigureByName(oldValue);
-            if (!list.containsFigureWithName(newValue)) {
+            if (!list.containsFigureWithName(newValue))
                 actualNode.setName(newValue);
-            }
         });
     }
+
     @FXML
-    private void listViewMouseClicked(MouseEvent e)
-    {
-        if(e.getClickCount()==2)
-        {
+    private void listViewMouseClicked(MouseEvent e) {
+        if (e.getClickCount()==2) {
             String selectedNode=listView.getSelectionModel().getSelectedItem();
             Figure node= list.findFigureByName(selectedNode);
             fillInformation(node);
             listView.getSelectionModel().clearSelection();
         }
     }
-    public void initData(FigureControl _list, Figure _node) {
-        list = _list;
-        actualNode = _node;
-        fillInformation(_node);
+    public void initData(FigureControl figureControl, Figure figure) {
+        list = figureControl;
+        actualNode = figure;
+        fillInformation(figure);
     }
 
-    private void fillInformation(Figure fig)
-    {
-			Node node = (Node) fig;
-			nodeName.setText(node.getName());
+    private void fillInformation(Figure fig) {
+        Node node = (Node) fig;
+        nodeName.setText(node.getName());
 
-			Boolean isReplica = (Boolean) node.getNodeGroups().get("replicas");
-			Boolean isInternational = (Boolean) node.getNodeGroups().get("international");
-			if (Boolean.TRUE.equals(isReplica) && Boolean.TRUE.equals(isInternational)) {
-				nodeGroup.setText("Data Center, International");
-			} else if (Boolean.TRUE.equals(isReplica)) {
-				nodeGroup.setText("Data Center");
-			} else if (Boolean.TRUE.equals(isInternational)) {
-				nodeGroup.setText("International");
-			} else {
-				nodeGroup.setText("Standard");
-			}
+        Boolean isReplica = (Boolean) node.getNodeGroups().get("replicas");
+        Boolean isInternational = (Boolean) node.getNodeGroups().get("international");
+        if (Boolean.TRUE.equals(isReplica) && Boolean.TRUE.equals(isInternational))
+            nodeGroup.setText(resources.getString("data_center") + ", " + resources.getString("international"));
+        else if (Boolean.TRUE.equals(isReplica))
+            nodeGroup.setText(resources.getString("data_center"));
+        else if (Boolean.TRUE.equals(isInternational))
+            nodeGroup.setText(resources.getString("international"));
+        else
+            nodeGroup.setText(resources.getString("standard"));
 
-			ObservableList<String> obList=list.generateNodeConnections(node);
-			listView.setItems(obList);
-			xID.setText(((Float)node.getStartPoint().getX()).toString());
-			yID.setText(((Float)node.getStartPoint().getY()).toString());
-			regenNum.setText(Integer.toString(node.getInfo()));
+        ObservableList<String> obList=list.generateNodeConnections(node);
+        listView.setItems(obList);
+        xID.setText(((Float)node.getStartPoint().getX()).toString());
+        yID.setText(((Float)node.getStartPoint().getY()).toString());
+        regenNum.setText(Integer.toString(node.getInfo()));
     }
 
     @FXML
-    private void onActionTextField(ActionEvent event)
-    {
+    private void onActionTextField(ActionEvent event) {
         Vector2F vec2F= getVector2FFromTextFields();
         Figure node=list.findFigureByName(nodeName.getText());
         list.changeNodePoint(node,vec2F);
         fillInformation(node);
     }
 
-    private Vector2F getVector2FFromTextFields()
-    {
+    private Vector2F getVector2FFromTextFields() {
         return new Vector2F(Float.parseFloat(xID.getText()),Float.parseFloat(yID.getText()));
     }
 
-    public TitledPane getTitledPane()
-    {
+    public TitledPane getTitledPane() {
         return titledPane;
     }
 }
