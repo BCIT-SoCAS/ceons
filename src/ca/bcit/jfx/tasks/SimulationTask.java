@@ -5,6 +5,8 @@ import ca.bcit.jfx.controllers.SimulationMenuController;
 import ca.bcit.net.Simulation;
 import javafx.concurrent.Task;
 
+import java.util.ResourceBundle;
+
 public class SimulationTask extends Task<Void> {
 	
 	private final Simulation simulation;
@@ -24,6 +26,7 @@ public class SimulationTask extends Task<Void> {
 		this.replicaPreservation = replicaPreservation;
 		this.simulationMenuController = controller;
 	}
+
 	@Override
 	protected Void call() {
 		try {
@@ -35,8 +38,10 @@ public class SimulationTask extends Task<Void> {
 			Logger.info("Simulation finished!");
 			simulationMenuController.setRunning(false);
 		} catch (Throwable e) {
+
 			e.printStackTrace();
 		}
+
 		return null;
 	}
 	
@@ -49,5 +54,4 @@ public class SimulationTask extends Task<Void> {
 	public void updateMessage(String message) {
 		super.updateMessage(message);
 	}
-
 }

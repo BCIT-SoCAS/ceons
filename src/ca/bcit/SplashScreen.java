@@ -17,7 +17,6 @@ public class SplashScreen extends Preloader {
 	
 	@Override
 	public void init() throws Exception {
-
 		// If preloader has complex UI it's initialization can be done in SplashScreen#init
 		Platform.runLater(() -> {
 			try {

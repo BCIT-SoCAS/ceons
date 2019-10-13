@@ -10,7 +10,8 @@ public class UIntField extends TextField {
 	
 	public UIntField(int uint) {
 		super(String.valueOf(uint));
-		if (uint < 0) throw new IllegalArgumentException("UIntField cannot be initialized with negative value: " + uint + ".");
+		if (uint < 0)
+			throw new IllegalArgumentException("UIntField cannot be initialized with negative value: " + uint + ".");
 	}
 	
 	@Override

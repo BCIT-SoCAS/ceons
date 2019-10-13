@@ -6,15 +6,11 @@ import ca.bcit.drawing.Link;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-/**
- * Created by Admin on 2015-02-03.
- */
 public class LinkPropertiesController implements Initializable {
     private FigureControl list;
     private Figure actualLink;
@@ -28,6 +24,7 @@ public class LinkPropertiesController implements Initializable {
     private Label labelUsage;
     @FXML
     private Label lengthID;
+
     public void initialize(URL location, ResourceBundle resources) {
         addListenerToTextFieldName();
         addListenerToTextFieldLength();
@@ -36,12 +33,12 @@ public class LinkPropertiesController implements Initializable {
     private void addListenerToTextFieldLength() {
         lengthID.textProperty().addListener((observable, oldValue, newValue) -> {
             actualLink = list.findFigureByName(nameID.getText());
-            int newLength=0;
+            int newLength = 0;
             try {
                 newLength = Integer.parseInt(newValue);
-            }catch(NumberFormatException e)
-            {
             }
+            catch(NumberFormatException ignored) {}
+
             if (newLength<0) {
                 newLength=0;
                 lengthID.setText("0");
@@ -53,19 +50,17 @@ public class LinkPropertiesController implements Initializable {
     private void addListenerToTextFieldName() {
         nameID.textProperty().addListener((observable, oldValue, newValue) -> {
             actualLink = list.findFigureByName(oldValue);
-            if (!list.containsFigureWithName(newValue)) {
+            if (!list.containsFigureWithName(newValue))
                 actualLink.setName(newValue);
-            }
             //else
               //  textFieldName.setText(oldValue);
         });
     }
 
-    public void initData(FigureControl _list, Figure _actualLink )
-    {
-        list=_list;
-        actualLink =_actualLink;
-        fillInformation(_actualLink);
+    public void initData(FigureControl figureControl, Figure figure) {
+        list = figureControl;
+        actualLink = figure;
+        fillInformation(figure);
     }
 
     private void fillInformation(Figure temp) {
@@ -77,21 +72,11 @@ public class LinkPropertiesController implements Initializable {
         labelEndNode.setText(endNode);
         labelUsage.setText(100- temp.getInfo() + "%");
     }
-    @FXML
-    private void labelEndNodeMouseClicked(MouseEvent e)
-    {
-
-    }
-    @FXML
-    private void labelStartNodeMouseClicked(MouseEvent e)
-    {
-
-    }
 
     @FXML
-    private void labelUsageMouseClicked(MouseEvent e)
-    {
-
-    }
-
+    private void labelEndNodeMouseClicked(MouseEvent e) { }
+    @FXML
+    private void labelStartNodeMouseClicked(MouseEvent e) { }
+    @FXML
+    private void labelUsageMouseClicked(MouseEvent e) { }
 }

@@ -1,11 +1,10 @@
 package ca.bcit.net;
 
 import ca.bcit.ApplicationResources;
+import ca.bcit.Main;
 import ca.bcit.io.Logger;
-import ca.bcit.io.MapLoadingException;
 import ca.bcit.io.SimulationSummary;
 import ca.bcit.io.project.Project;
-import ca.bcit.io.project.ProjectFileFormat;
 import ca.bcit.jfx.components.ResizableCanvas;
 import ca.bcit.jfx.components.TaskReadyProgressBar;
 import ca.bcit.jfx.controllers.MainWindowController;
@@ -16,9 +15,9 @@ import ca.bcit.net.demand.Demand;
 import ca.bcit.net.demand.DemandAllocationResult;
 import ca.bcit.net.demand.generator.TrafficGenerator;
 import ca.bcit.net.spectrum.Spectrum;
+import ca.bcit.utils.LocaleUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import javafx.fxml.FXMLLoader;
 
 import java.io.*;
@@ -65,13 +64,14 @@ public class Simulation {
 	public Simulation(Network network, TrafficGenerator generator, boolean printSummary, int totalSimulations, int startingErlangValue, int currentErlangValue, int endingErlangValue, int randomSeed, double alpha) {
 		this.network = network;
 		this.generator = generator;
-
 	}
 
 	public void simulate(long seed, int demandsCount, double alpha, int erlang, boolean replicaPreservation, SimulationTask task) {
 		SimulationMenuController.finished = false;
 		SimulationMenuController.cancelled = false;
 		clearVolumeValues();
+
+		ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
 
 		//For development set to debug, for release set to info
 		Logger.setLoggerLevel(Logger.LoggerLevel.DEBUG);
@@ -111,7 +111,7 @@ public class Simulation {
 
 				// cancel button
 				if (SimulationMenuController.cancelled) {
-					Logger.info("Simulation cancelled!");
+					Logger.info(resourceBundle.getString("simulation_cancelled"));
 					break;
 				}
 
@@ -119,9 +119,9 @@ public class Simulation {
 			} // loop end here
 
 			// force call the update again here
-		} catch (NetworkException e) {
-			// error in code
-			Logger.info("Network exception: " + e.getMessage());
+		}
+		catch (NetworkException e) {
+			Logger.info(resourceBundle.getString("network_exception_label") + " " + resourceBundle.getString(e.getMessage()));
 			for (; generator.getGeneratedDemandsCount() < demandsCount;) {
 				Demand demand = generator.next();
 				unhandledVolume += demand.getVolume();
@@ -141,16 +141,14 @@ public class Simulation {
 
 		// signal GUI menus that simulation is complete
 		SimulationMenuController.finished = true;
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SimulationMenu.fxml"));
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SimulationMenu.fxml"), resourceBundle);
 		SimulationMenuController simulationMenuController = fxmlLoader.<SimulationMenuController>getController();
-		if (simulationMenuController != null) {
+		if (simulationMenuController != null)
 			simulationMenuController.disableClearSimulationButton();
-		}
 
-		// print basic data in the internal console
-		Logger.info("Blocked Spectrum: " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
-		Logger.info("Blocked Regenerators: " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
-		Logger.info("Blocked Link Failure: " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
+		Logger.info(resourceBundle.getString("blocked_spectrum_label") + " " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
+		Logger.info(resourceBundle.getString("blocked_regenerators_label") + " " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
+		Logger.info(resourceBundle.getString("blocked_link_failure_label") + " " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
 
 		// write the resulting data of a successful simulation to file
 		File resultsDirectory = new File(RESULTS_DATA_DIR_NAME);
@@ -173,14 +171,16 @@ public class Simulation {
 
 			resultsDataWriter.write(json);
 			resultsDataWriter.close();
-		}  catch (IOException e) {
+		}
+		catch (IOException e) {
 			e.printStackTrace();
 		}
 
 		//Helps slow GUI update between multiple simulations being run back to back
 		try {
 			Thread.sleep(2000);
-		} catch(InterruptedException ex) {
+		}
+		catch(InterruptedException ex) {
 			Thread.currentThread().interrupt();
 		}
 	}
