@@ -15,6 +15,7 @@ import ca.bcit.net.Simulation;
 import ca.bcit.net.algo.RMSAAlgorithm;
 import ca.bcit.net.demand.generator.TrafficGenerator;
 import com.sun.javafx.collections.ObservableListWrapper;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -46,7 +47,7 @@ public class SimulationMenuController {
     private static final int ERLANG_RANGE_LABEL_INDEX = 9;
     private static final int ERLANG_LABEL_INDEX = 8;
     private static final int ERLANG_INT_FIELD_INDEX = 9;
-	
+
 	@FXML private ComboBox<TrafficGenerator> generators;
 	@FXML private CheckBox runMultipleSimulations;
 	@FXML private Label simulationRepetitions;
@@ -76,6 +77,8 @@ public class SimulationMenuController {
 	@FXML private UIntField regeneratorsMetricValue;
 	@FXML private Button pauseButton;
 	@FXML private Button cancelButton;
+	@FXML private Button StartButton;
+	@FXML public Label pauseInfoLabel;
 	private CheckBox[] modulations;
 
 	/**
@@ -94,8 +97,11 @@ public class SimulationMenuController {
 		modulations = new CheckBox[Modulation.values().length];
 		for (Modulation modulation : Modulation.values())
 			modulations[modulation.ordinal()] = ((CheckBox) settings.lookup("#modulation" + modulation.ordinal()));
-		
 		generatorsStatic = generators;
+		pauseButton.managedProperty().bind(pauseButton.visibleProperty());
+		StartButton.managedProperty().bind(StartButton.visibleProperty());
+		cancelButton.managedProperty().bind(cancelButton.visibleProperty());
+		pauseInfoLabel.managedProperty().bind(pauseInfoLabel.visibleProperty());
 
 	}
 	
@@ -266,7 +272,6 @@ public class SimulationMenuController {
 					}
 				});
                 Random random = new Random();
-
 				for(int numRepetitions = 1; numRepetitions <= numRepetitionsPerErlang.getValue(); numRepetitions++){
 					int randomSeed = random.nextInt(101);
                     TaskReadyProgressBar.addResultsDataSeed(randomSeed);
@@ -301,10 +306,17 @@ public class SimulationMenuController {
 		}) {
 			try {
 				node.setDisable(isRunning);
-			} catch (NullPointerException e){
-				System.out.println("Disabled Node");
+			} catch (NullPointerException ignored){
+
 			}
 		}
+		pauseButton.setDisable(!isRunning);
+		pauseInfoLabel.setVisible(isRunning);
+		cancelButton.setDisable(!isRunning);
+		StartButton.setDisable(isRunning);
+		pauseButton.setVisible(isRunning);
+		cancelButton.setVisible(isRunning);
+		StartButton.setVisible(!isRunning);
 	}
 
 	// Cancel simulation button

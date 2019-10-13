@@ -1,7 +1,6 @@
 package ca.bcit.jfx.tasks;
 
 import ca.bcit.io.Logger;
-import ca.bcit.jfx.components.ResizableCanvas;
 import ca.bcit.jfx.controllers.SimulationMenuController;
 import ca.bcit.net.Simulation;
 import javafx.concurrent.Task;
@@ -14,16 +13,16 @@ public class SimulationTask extends Task<Void> {
 	private final int erlang;
 	private final double alpha;
 	private final boolean replicaPreservation;
-	private final SimulationMenuController c;
+	private final SimulationMenuController simulationMenuController;
 	
-	public SimulationTask(Simulation simulation, long seed, double alpha, int erlang, int demandsCount, boolean replicaPreservation, SimulationMenuController c) {
+	public SimulationTask(Simulation simulation, long seed, double alpha, int erlang, int demandsCount, boolean replicaPreservation, SimulationMenuController controller) {
 		this.simulation = simulation;
 		this.seed = seed;
 		this.erlang = erlang;
 		this.demandsCount = demandsCount;
 		this.alpha = alpha;
 		this.replicaPreservation = replicaPreservation;
-		this.c = c;
+		this.simulationMenuController = controller;
 	}
 	@Override
 	protected Void call() {
@@ -31,10 +30,10 @@ public class SimulationTask extends Task<Void> {
 			Logger.info("\n");
 			Logger.info("Starting simulation! " + "\n\tSeed: " + seed + "\n\tAlpha: " + alpha + "\n\tErlang: " + erlang +
 					"\n\tDemands Count: " + demandsCount + "\n\tReplica Preservation: " + replicaPreservation);
-			c.setRunning(true);
+			simulationMenuController.setRunning(true);
 			simulation.simulate(seed, demandsCount, alpha, erlang, replicaPreservation, this);
 			Logger.info("Simulation finished!");
-			c.setRunning(false);
+			simulationMenuController.setRunning(false);
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}

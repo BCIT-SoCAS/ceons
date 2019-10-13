@@ -30,8 +30,8 @@
 						</font>
 					</Label>
                     <UIntField fx:id="erlangIntField" alignment="CENTER"/>
-					<HBox fx:id="multipleSimulatonSettingsLabel" alignment="CENTER" spacing="100"></HBox>
-					<HBox fx:id="multipleSimulatonSettingsRange" alignment="CENTER"></HBox>
+                    <HBox fx:id="multipleSimulatonSettingsLabel" alignment="CENTER" spacing="100"/>
+                    <HBox fx:id="multipleSimulatonSettingsRange" alignment="CENTER"/>
                     <Label fx:id="seedLabel" text="Seed">
 						<font>
 							<Font name="System Bold"/>
@@ -90,10 +90,10 @@
             <VBox fx:id="simulatorControl" spacing="8.0" alignment="BOTTOM_CENTER" minHeight="0.0" minWidth="0.0">
                 <children>
                     <Button fx:id="StartButton" text="Start Simulation" onAction="#startSimulation"/>
-                    <Button fx:id="pauseButton" text="Pause Simulation" onAction="#pauseSimulation"/>
-                    <Button fx:id="cancelButton" text="Cancel Simulation" onAction="#cancelSimulation" disable="true"/>
+                    <Button fx:id="pauseButton" text="Pause Simulation" visible="false" disable="true" onAction="#pauseSimulation"/>
+                    <Button fx:id="cancelButton" text="Cancel Simulation" visible="false" onAction="#cancelSimulation" disable="true"/>
                     <Button fx:id="clear" text="Clear Canvas" onAction="#clear"/>
-                    <Label text="Pause to see statistics in 'Live Info tab'!" wrapText="true"/>
+                    <Label fx:id="pauseInfoLabel" visible="false" text="Pause to see statistics in 'Live Info tab'!" wrapText="true"/>
                 </children>
             </VBox>
         </VBox>

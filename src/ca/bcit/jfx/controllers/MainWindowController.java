@@ -54,6 +54,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Arrays;
 
@@ -242,13 +243,11 @@ public class MainWindowController implements Loadable {
         graph.init(this);
 
         BackgroundSize bgSize = new BackgroundSize(100, 100, true, true, true, false);
-        RadialGradient bgGradient = new RadialGradient(0, 0, 0.5, 0.5, 1, true, CycleMethod.NO_CYCLE, new Stop[]{
-                new Stop(0, Color.web("#004B9E")),
+        RadialGradient bgGradient = new RadialGradient(0, 0, 0.5, 0.5, 1, true, CycleMethod.NO_CYCLE, new Stop(0, Color.web("#004B9E")),
                 new Stop(0.5, Color.web("#004B9E")),
-                new Stop(1, Color.web("#003C79"))
-        });
-        List<BackgroundFill> bgFill = Arrays.asList(new BackgroundFill(bgGradient, CornerRadii.EMPTY, Insets.EMPTY));
-        List<BackgroundImage> bg = Arrays.asList(new BackgroundImage(new Image(getClass().getResourceAsStream("/ca/bcit/jfx/res/images/LogoEON.png")),
+                new Stop(1, Color.web("#003C79")));
+        List<BackgroundFill> bgFill = Collections.singletonList(new BackgroundFill(bgGradient, CornerRadii.EMPTY, Insets.EMPTY));
+        List<BackgroundImage> bg = Collections.singletonList(new BackgroundImage(new Image(getClass().getResourceAsStream("/ca/bcit/jfx/res/images/LogoEON.png")),
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, bgSize));
         accordion.setBackground(new Background(bgFill, bg));
 
@@ -511,11 +510,9 @@ public class MainWindowController implements Loadable {
             } catch (MapLoadingException ex){
                 new ErrorDialog(ex.getMessage(), ex);
                 ex.printStackTrace();
-                return;
             } catch (Exception ex){
                 new ErrorDialog("An exception occurred while loading the project.", ex);
                 ex.printStackTrace();
-                return;
             }
         }
     }
