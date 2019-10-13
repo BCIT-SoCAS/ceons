@@ -5,7 +5,7 @@ import ca.bcit.jfx.controllers.SimulationMenuController;
 import ca.bcit.net.Simulation;
 import javafx.concurrent.Task;
 
-public class SimulationTask extends Task<Void> {
+public class SimulationTask extends Task<Void>{
 	
 	private final Simulation simulation;
 	private final long seed;
@@ -49,5 +49,4 @@ public class SimulationTask extends Task<Void> {
 	public void updateMessage(String message) {
 		super.updateMessage(message);
 	}
-
 }

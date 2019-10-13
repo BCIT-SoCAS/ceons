@@ -272,17 +272,37 @@ public class SimulationMenuController {
 					}
 				});
                 Random random = new Random();
+//				for(int numRepetitions = 1; numRepetitions <= numRepetitionsPerErlang.getValue(); numRepetitions++){
+//					int randomSeed = random.nextInt(101);
+//                    TaskReadyProgressBar.addResultsDataSeed(randomSeed);
+//					for(int erlangValue = erlangRangeLowField.getValue(); erlangValue <= erlangRangeHighField.getValue(); erlangValue+=stepBetweenErlangsField.getValue()){
+//						simulation = new Simulation(network, generators.getValue());
+//						simulation.setMultipleSimulations(true);
+//						SimulationTask simulationTask = new SimulationTask(simulation, randomSeed, Double.parseDouble(alpha.getText()), erlangValue, demands.getValue(), replicaPreservation.isSelected(), this);
+//						progressBar.runTask(simulationTask, true, runMultipleSimulationService);
+//						progressBar.increaseSimulationCount();
+//					}
+//				}
+				ArrayList<ArrayList> tasks = new ArrayList<>();
 				for(int numRepetitions = 1; numRepetitions <= numRepetitionsPerErlang.getValue(); numRepetitions++){
 					int randomSeed = random.nextInt(101);
-                    TaskReadyProgressBar.addResultsDataSeed(randomSeed);
+					TaskReadyProgressBar.addResultsDataSeed(randomSeed);
 					for(int erlangValue = erlangRangeLowField.getValue(); erlangValue <= erlangRangeHighField.getValue(); erlangValue+=stepBetweenErlangsField.getValue()){
 						simulation = new Simulation(network, generators.getValue());
 						simulation.setMultipleSimulations(true);
-						SimulationTask simulationTask = new SimulationTask(simulation, randomSeed, Double.parseDouble(alpha.getText()), erlangValue, demands.getValue(), replicaPreservation.isSelected(), this);
-						progressBar.runTask(simulationTask, true, runMultipleSimulationService);
-						progressBar.increaseSimulationCount();
+//						SimulationTask simulationTask = new SimulationTask(simulation, randomSeed, Double.parseDouble(alpha.getText()), erlangValue, demands.getValue(), replicaPreservation.isSelected(), this);
+						ArrayList taskSettingsArray = new ArrayList();
+						taskSettingsArray.add(simulation);
+						taskSettingsArray.add(randomSeed);
+						taskSettingsArray.add(Double.parseDouble(alpha.getText()));
+						taskSettingsArray.add(erlangValue);
+						taskSettingsArray.add(demands.getValue());
+						taskSettingsArray.add(replicaPreservation.isSelected());
+						taskSettingsArray.add(this);
+						tasks.add(taskSettingsArray);
 					}
 				}
+				progressBar.runTasks(tasks, true, runMultipleSimulationService);
             }
         } catch (NullPointerException ex) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
