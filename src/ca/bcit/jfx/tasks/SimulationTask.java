@@ -4,8 +4,9 @@ import ca.bcit.io.Logger;
 import ca.bcit.jfx.controllers.SimulationMenuController;
 import ca.bcit.net.Simulation;
 import javafx.concurrent.Task;
+import java.util.ResourceBundle;
 
-public class SimulationTask extends Task<Void>{
+public class SimulationTask extends Task<Void> {
 	
 	private final Simulation simulation;
 	private final long seed;
@@ -14,25 +15,28 @@ public class SimulationTask extends Task<Void>{
 	private final double alpha;
 	private final boolean replicaPreservation;
 	private final SimulationMenuController simulationMenuController;
-	
-	public SimulationTask(Simulation simulation, long seed, double alpha, int erlang, int demandsCount, boolean replicaPreservation, SimulationMenuController controller) {
+	private final ResourceBundle resources;
+
+	public SimulationTask(Simulation simulation, long seed, double alpha, int erlang, int demandsCount, boolean replicaPreservation, SimulationMenuController controller, ResourceBundle resources) {
 		this.simulation = simulation;
 		this.seed = seed;
 		this.erlang = erlang;
 		this.demandsCount = demandsCount;
 		this.alpha = alpha;
 		this.replicaPreservation = replicaPreservation;
+		this.resources = resources;
 		this.simulationMenuController = controller;
 	}
+
 	@Override
 	protected Void call() {
 		try {
 			Logger.info("\n");
-			Logger.info("Starting simulation! " + "\n\tSeed: " + seed + "\n\tAlpha: " + alpha + "\n\tErlang: " + erlang +
-					"\n\tDemands Count: " + demandsCount + "\n\tReplica Preservation: " + replicaPreservation);
+			Logger.info(resources.getString("starting_simulation") + "! " + "\n\t" + resources.getString("simulation_parameter_seed") + ": " + seed + "\n\t" + resources.getString("simulation_parameter_alpha") + ": " + alpha + "\n\t" + resources.getString("simulation_parameter_erlang") + ": " + erlang +
+					"\n\t" + resources.getString("simulation_parameter_number_of_requests") + ": " + demandsCount + "\n\t" + resources.getString("simulation_parameter_replica_preservation") + ": " + replicaPreservation);
 			simulationMenuController.setRunning(true);
 			simulation.simulate(seed, demandsCount, alpha, erlang, replicaPreservation, this);
-			Logger.info("Simulation finished!");
+			Logger.info(resources.getString("simulation_finished") + "!");
 			simulationMenuController.setRunning(false);
 		} catch (Throwable e) {
 			e.printStackTrace();

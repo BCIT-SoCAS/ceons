@@ -35,6 +35,7 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.ResourceBundle;
 import java.util.concurrent.*;
 
 public class TaskReadyProgressBar extends StackPane {
@@ -73,30 +74,31 @@ public class TaskReadyProgressBar extends StackPane {
         bar.progressProperty().unbind();
         label.textProperty().unbind();
     }
-
     public Thread getThread(){
         return this.thread;
     }
-
-    public void runTask(Task<?> task, boolean daemon) {
+    public void runTask(Task<?> task, boolean daemon, ResourceBundle resources) {
         bind(task);
+
         task.setOnSucceeded(e -> {
             unbind();
         });
+
         task.setOnFailed(e -> {
             unbind();
-            Logger.debug(e.getSource().toString() + " failed!");
+            Logger.debug(e.getSource().toString() + " " + resources.getString("failed") + "!");
         });
+
         task.setOnCancelled(e -> {
             unbind();
-            Logger.debug(e.getSource().toString() + " was cancelled!");
+            Logger.debug(e.getSource().toString() + " " + resources.getString("was_cancelled") + "!");
         });
         this.thread = new Thread(task);
         thread.setDaemon(daemon);
         thread.start();
     }
 
-    public void runTasks(ArrayList<ArrayList> tasks, boolean daemon, ExecutorService runMultipleSimulationService) {
+    public void runTasks(ArrayList<ArrayList> tasks, boolean daemon, ExecutorService runMultipleSimulationService, ResourceBundle resources) {
         setRunMultipleSimulationService(runMultipleSimulationService);
         Task task = new Task() {
             @Override
@@ -105,8 +107,8 @@ public class TaskReadyProgressBar extends StackPane {
                     int count = 0;
                     for (ArrayList task : tasks) {
                         Logger.info("\n");
-                        Logger.info("Starting simulation! " + "\n\tSeed: " + task.get(1) + "\n\tAlpha: " + task.get(2) + "\n\tErlang: " + task.get(3) +
-                                "\n\tDemands Count: " + task.get(4) + "\n\tReplica Preservation: " + task.get(5));
+                        Logger.info(resources.getString("starting_simulation") + "! " + "\n\t" + resources.getString("simulation_parameter_seed") + ": " + task.get(1) + "\n\t" + resources.getString("simulation_parameter_alpha") + ": " + task.get(2) + "\n\t" + resources.getString("simulation_parameter_erlang") + ": " + task.get(3) +
+                                "\n\t" + resources.getString("simulation_parameter_number_of_requests") + ": " + task.get(4) + "\n\t" + resources.getString("simulation_parameter_replica_preservation") + ": " + task.get(5));
                         ((SimulationMenuController) task.get(6)).setRunning(true);
                         ((Simulation) task.get(0)).simulate((int) task.get(1), (int) task.get(4), (double) task.get(2), (int) task.get(3), (boolean) task.get(5));
                         Logger.info("Simulation finished!");
@@ -123,7 +125,6 @@ public class TaskReadyProgressBar extends StackPane {
         task.setOnSucceeded(e -> {
             unbind();
             runMultipleSimulationService.shutdown();
-
             try {
                 if (!runMultipleSimulationService.awaitTermination(2500, TimeUnit.MILLISECONDS)) {
                     runMultipleSimulationService.shutdownNow();
@@ -158,10 +159,8 @@ public class TaskReadyProgressBar extends StackPane {
             }
             File resultsSummaryDirectory = new File(RESULTS_SUMMARY_DIR_NAME);
 
-            if (!resultsSummaryDirectory.isDirectory()) {
+            if (!resultsSummaryDirectory.isDirectory())
                 resultsSummaryDirectory.mkdir();
-            }
-
 
             // Write to PDF
             try (PDDocument document = new PDDocument()) {
@@ -230,11 +229,11 @@ public class TaskReadyProgressBar extends StackPane {
         });
         task.setOnFailed(e -> {
             unbind();
-            Logger.debug(e.getSource().toString() + " failed!");
+            Logger.debug(e.getSource().toString() + " " + resources.getString("failed") + "!");
         });
         task.setOnCancelled(e -> {
             unbind();
-            Logger.debug(e.getSource().toString() + " was cancelled!");
+            Logger.debug(e.getSource().toString() + " " + resources.getString("was_cancelled") + "!");
         });
         thread = new Thread(task);
         thread.setDaemon(daemon);
@@ -276,7 +275,7 @@ public class TaskReadyProgressBar extends StackPane {
 
         int simulationsInErlangRange = resultsDataJsonList.size()/resultsDataSeedList.size();
 
-        for(int i = 0; i < simulationsInErlangRange; i++){
+        for (int i = 0; i < simulationsInErlangRange; i++) {
             int erlangValue = 0;
             double noSpectrumBlockedVolumePercentage = 0.0;
             double noRegeneratorsBlockedVolumePercentage = 0.0;
@@ -287,7 +286,7 @@ public class TaskReadyProgressBar extends StackPane {
             erlangValue = resultsDataJsonList.get(i).get("erlangValue").getAsInt();
 
             // Multiple simulations per Erlang
-            if(resultsDataSeedList.size() > 1){
+            if (resultsDataSeedList.size() > 1)
                 for(int j = 0; j < resultsDataSeedList.size(); j++){
                     JsonObject resultsDataJson = resultsDataJsonList.get(i + (j*simulationsInErlangRange));
                     System.out.println(resultsDataJson.get("noRegeneratorsBlockedVolumePercentage").getAsDouble());
@@ -298,7 +297,7 @@ public class TaskReadyProgressBar extends StackPane {
                     totalBlockedVolumePercentage += resultsDataJson.get("totalBlockedVolumePercentage").getAsDouble();
                     averageRegeneratiorsPerAllocation += resultsDataJson.get("averageRegeneratiorsPerAllocation").getAsDouble();
                 }
-            } else {
+            else {
                 JsonObject resultsDataJson = resultsDataJsonList.get(i);
                 noSpectrumBlockedVolumePercentage = resultsDataJson.get("noSpectrumBlockedVolumePercentage").getAsDouble();
                 System.out.println(resultsDataJson.get("noRegeneratorsBlockedVolumePercentage").getAsDouble());
@@ -313,8 +312,6 @@ public class TaskReadyProgressBar extends StackPane {
             series3.add( erlangValue, linkFailureBlockedVolumePercentage );
         }
 
-
-
         final XYSeriesCollection dataset = new XYSeriesCollection();
         dataset.addSeries(series1);
         dataset.addSeries(series2);
@@ -322,14 +319,12 @@ public class TaskReadyProgressBar extends StackPane {
 
         return dataset;
     }
-
     private JFreeChart createChartXY(final XYDataset dataset, final String title,  final String yLabel, final String xLabel) {
-
         // create the chart...
         final JFreeChart chart = ChartFactory.createXYLineChart(title, // chart
                 // title
                 xLabel, // x axis label
-                yLabel, // y axis label
+                yLabel, // y axis lab
                 dataset, // data
                 PlotOrientation.VERTICAL, true, // include legend
                 true, // tooltips
@@ -361,7 +356,5 @@ public class TaskReadyProgressBar extends StackPane {
         domainAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 
         return chart;
-
     }
-
 }

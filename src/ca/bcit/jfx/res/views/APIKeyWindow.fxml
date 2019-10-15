@@ -5,12 +5,16 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.Text?>
 
-<GridPane fx:id="saveAPIKeyPane" styleClass="grid-pane" alignment="CENTER" hgap="10.0" vgap="20.0" prefWidth="520.0" prefHeight="300.0" stylesheets="/ca/bcit/jfx/res/stylesheets/dialogWindow.cssext" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.APIKeyController">
-	<padding><Insets top="25" right="25" bottom="25" left="25"/></padding> 
+<GridPane fx:id="saveAPIKeyPane" styleClass="grid-pane" alignment="CENTER"  hgap="10.0" vgap="20.0" prefWidth="520.0" prefHeight="300.0" stylesheets="/ca/bcit/jfx/res/stylesheets/dialogWindow.cssext" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.APIKeyController">
+	<padding><Insets top="25" right="25" bottom="25" left="25"/></padding>
+	<columnConstraints>
+		<ColumnConstraints percentWidth="50" />
+		<ColumnConstraints percentWidth="50" />
+	</columnConstraints>
 	<children>
-		<Text styleClass="title-text" text="Save Google Maps API key to a file" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2" GridPane.rowSpan="1" />
-		<TextField fx:id="saveKeyInput" promptText="Please enter Google Maps API key" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2" GridPane.rowSpan="1" focusTraversable="false"/>
-		<Button fx:id="saveAPIKeyBtn" text="Save" prefWidth="220.0" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-		<Button fx:id="closeAPIKeyWindowBtn" text="Cancel" prefWidth="220.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+		<Text styleClass="title-text" wrappingWidth="470.0" textAlignment="CENTER" text="%save_google_maps_api_key_to_file" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2" GridPane.rowSpan="1" />
+		<TextField fx:id="saveKeyInput" promptText="%please_enter_google_maps_api_key" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.columnSpan="2" GridPane.rowSpan="1" focusTraversable="false"/>
+		<Button fx:id="saveAPIKeyBtn" maxWidth="Infinity" text="%save"  GridPane.fillWidth="true" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+		<Button fx:id="closeAPIKeyWindowBtn" maxWidth="Infinity" text="%cancel" GridPane.fillWidth="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 	</children>
 </GridPane>
