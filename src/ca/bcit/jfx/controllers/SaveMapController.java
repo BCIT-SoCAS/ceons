@@ -83,7 +83,7 @@ public class SaveMapController implements Loadable, Initializable {
 
         nameInput.clear();
         connNodeInput.clear();
-        numRegeneratorInput.setText("100");
+        numRegeneratorInput.clear();
         itlCheckbox.setSelected(false);
         dcCheckbox.setSelected(false);
         standardCheckbox.setSelected(false);
@@ -279,8 +279,7 @@ public class SaveMapController implements Loadable, Initializable {
 
         numRegeneratorInput = new TextField();
         numRegeneratorInput.setStyle("-fx-prompt-text-fill: derive(-fx-control-inner-background, -30%);");
-        numRegeneratorInput.setText("100");
-        numRegeneratorInput.setPromptText("Enter # of regenerators");
+        numRegeneratorInput.setPromptText("Enter regenerators (100)");
 
         itlCheckbox = new CheckBox(resources.getString("international"));
         dcCheckbox = new CheckBox(resources.getString("data_center"));
