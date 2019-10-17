@@ -1,10 +1,10 @@
 package ca.bcit.jfx.tasks;
 
 import ca.bcit.io.Logger;
-import ca.bcit.jfx.components.ResizableCanvas;
-import ca.bcit.jfx.controllers.SimulationMenuController;
 import ca.bcit.net.Simulation;
 import javafx.concurrent.Task;
+
+import java.util.ResourceBundle;
 
 public class SimulationTask extends Task<Void> {
 	
@@ -14,8 +14,10 @@ public class SimulationTask extends Task<Void> {
 	private final int erlang;
 	private final double alpha;
 	private final boolean replicaPreservation;
+	private ResourceBundle resources;
 	
-	public SimulationTask(Simulation simulation, long seed, double alpha, int erlang, int demandsCount, boolean replicaPreservation) {
+	public SimulationTask(Simulation simulation, long seed, double alpha, int erlang, int demandsCount, boolean replicaPreservation, ResourceBundle resources) {
+		this.resources = resources;
 		this.simulation = simulation;
 		this.seed = seed;
 		this.erlang = erlang;
@@ -23,17 +25,20 @@ public class SimulationTask extends Task<Void> {
 		this.alpha = alpha;
 		this.replicaPreservation = replicaPreservation;
 	}
+
 	@Override
 	protected Void call() {
 		try {
 			Logger.info("\n");
-			Logger.info("Starting simulation! " + "\n\tSeed: " + seed + "\n\tAlpha: " + alpha + "\n\tErlang: " + erlang +
-					"\n\tDemands Count: " + demandsCount + "\n\tReplica Preservation: " + replicaPreservation);
+			Logger.info(resources.getString("starting_simulation") + "! " + "\n\t" + resources.getString("simulation_parameter_seed") + ": " + seed + "\n\t" + resources.getString("simulation_parameter_alpha") + ": " + alpha + "\n\t" + resources.getString("simulation_parameter_erlang") + ": " + erlang +
+					"\n\t" + resources.getString("simulation_parameter_number_of_requests") + ": " + demandsCount + "\n\t" + resources.getString("simulation_parameter_replica_preservation") + ": " + replicaPreservation);
 			simulation.simulate(seed, demandsCount, alpha, erlang, replicaPreservation, this);
-			Logger.info("Simulation finished!");
-		} catch (Throwable e) {
+			Logger.info(resources.getString("simulation_finished") + "!");
+		}
+		catch (Throwable e) {
 			e.printStackTrace();
 		}
+
 		return null;
 	}
 	
@@ -46,5 +51,4 @@ public class SimulationTask extends Task<Void> {
 	public void updateMessage(String message) {
 		super.updateMessage(message);
 	}
-
 }

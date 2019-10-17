@@ -3,6 +3,8 @@ package ca.bcit.jfx.components;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
+import java.util.ResourceBundle;
+
 /**
  * @author Derek Wong
  * @version 1.0.0
@@ -15,10 +17,10 @@ public class InformationDialog {
      * Parameterized constructor to set and display the information dialog box
      * @param informationMessage to be displayed in the context
      */
-    public InformationDialog(String informationMessage){
+    public InformationDialog(String informationMessage, ResourceBundle resources){
         setInformationMessage(informationMessage);
         Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("Information Dialog");
+        alert.setTitle(resources.getString("information_dialog"));
         alert.setHeaderText(null);
         alert.setContentText(getInformationMessage());
 
@@ -38,12 +40,9 @@ public class InformationDialog {
      * @param informationMessage String to be set
      */
     private void setInformationMessage(String informationMessage) {
-        if(informationMessage != null && !informationMessage.isEmpty()){
+        if (informationMessage != null && !informationMessage.isEmpty())
             this.informationMessage = informationMessage;
-        } else {
+        else
             throw new IllegalArgumentException("Information message can't be null or empty");
-        }
     }
-
-
 }

@@ -9,6 +9,7 @@ import javafx.scene.layout.Priority;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ResourceBundle;
 
 /**
  * @author Derek Wong
@@ -22,28 +23,27 @@ public class ErrorDialog {
      * Parameterized constructor to set and display the error dialog box
      * @param errorMessage to be displayed in the context
      */
-    public ErrorDialog(String errorMessage){
-        setErrorMessage(errorMessage);
+    public ErrorDialog(String errorMessage, ResourceBundle resources){
+        setErrorMessage(errorMessage, resources);
         Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle("Error Dialog");
-        alert.setHeaderText("Known Error!");
+        alert.setTitle(resources.getString("error_dialog"));
+        alert.setHeaderText(resources.getString("known_error"));
         alert.setContentText(getErrorMessage());
         alert.setResizable(true);
         alert.getDialogPane().setPrefWidth(500);
         alert.showAndWait();
     }
 
-
     /**
      * Overloaded Parameterized constructor to set and display the error dialog box, includes stack trace of exception
      * @param errorMessage to be displayed in the context
      * @param ex exception to be shown along with the stack trace
      */
-    public ErrorDialog(String errorMessage, Exception ex){
-        setErrorMessage(errorMessage);
+    public ErrorDialog(String errorMessage, Exception ex, ResourceBundle resources){
+        setErrorMessage(errorMessage, resources);
         Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle("Exception Dialog");
-        alert.setHeaderText("Unhandled Exception Error!");
+        alert.setTitle(resources.getString("exception_dialog"));
+        alert.setHeaderText(resources.getString("unhandled_exception_error"));
         alert.setContentText(errorMessage);
         alert.setResizable(true);
         alert.getDialogPane().setMinWidth(500);
@@ -54,7 +54,7 @@ public class ErrorDialog {
         ex.printStackTrace(pw);
         String exceptionText = sw.toString();
 
-        Label label = new Label("The exception stacktrace was:");
+        Label label = new Label(resources.getString("exception_stacktrace_label"));
 
         TextArea textArea = new TextArea(exceptionText);
         textArea.setEditable(false);
@@ -88,13 +88,10 @@ public class ErrorDialog {
      * Setter for the error message if not null or empty
      * @param errorMessage String to be set
      */
-    private void setErrorMessage(String errorMessage) {
-        if(errorMessage != null && !errorMessage.isEmpty()){
+    private void setErrorMessage(String errorMessage, ResourceBundle resources) {
+        if(errorMessage != null && !errorMessage.isEmpty())
             this.errorMessage = errorMessage;
-        } else {
-            throw new IllegalArgumentException("Error message can't be null or empty");
-        }
+        else
+            throw new IllegalArgumentException(resources.getString("error_message_cannot_be_null_or_empty"));
     }
-
-
 }

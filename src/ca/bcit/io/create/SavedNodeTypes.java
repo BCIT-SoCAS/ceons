@@ -1,7 +1,11 @@
 package ca.bcit.io.create;
 
+import ca.bcit.Main;
+import ca.bcit.utils.LocaleUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.ResourceBundle;
 
 /**
  * SavedNodeTypes class to hold all user-defined node types prior to saving into YAML file
@@ -30,14 +34,15 @@ public class SavedNodeTypes {
      * @param nodeDetails compares user selection of either/both international and/or data centre node types
      */
     public void setNodeNumType(SavedNodeDetails nodeDetails){
-        if(nodeDetails.getNodeType().equals("International")){
+        ResourceBundle resources = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
+
+        String nodeType = nodeDetails.getNodeType();
+
+        if (nodeType.equals(resources.getString("international")) || nodeType.equals(resources.getString("data_center") + ", " + resources.getString("international")))
             nodeNumInternationals.add(nodeDetails.nodeNumToString());
-        } else if(nodeDetails.getNodeType().equals("Data Center, International")){
+
+        if (nodeType.equals(resources.getString("data_center")) || nodeType.equals(resources.getString("data_center") + ", " + resources.getString("international")))
             nodeNumReplicas.add(nodeDetails.nodeNumToString());
-            nodeNumInternationals.add(nodeDetails.nodeNumToString());
-        } else if(nodeDetails.getNodeType().equals("Data Center")){
-            nodeNumReplicas.add(nodeDetails.nodeNumToString());
-        }
     }
 
     /**
@@ -47,8 +52,4 @@ public class SavedNodeTypes {
     public HashMap<String, ArrayList<String>> getToSerializeNodeTypes(){
         return toSeralizeNodeTypes;
     }
-
-
-
-
 }
