@@ -267,7 +267,7 @@ public class SaveMapController implements Loadable {
 
         numRegeneratorInput = new TextField();
         numRegeneratorInput.setStyle("-fx-prompt-text-fill: derive(-fx-control-inner-background, -30%);");
-        numRegeneratorInput.setPromptText("Enter # of regenerators (Default is 100)");
+        numRegeneratorInput.setPromptText("Enter regenerators (100)");
 
         itlCheckbox = new CheckBox("International");
         dcCheckbox = new CheckBox("Data Center");
