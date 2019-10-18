@@ -13,6 +13,8 @@ import ca.bcit.jfx.components.ErrorDialog;
 import ca.bcit.net.Network;
 import ca.bcit.net.NetworkNode;
 import ca.bcit.utils.LocaleUtils;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
