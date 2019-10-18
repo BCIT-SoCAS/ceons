@@ -21,6 +21,7 @@ import com.google.gson.GsonBuilder;
 import javafx.fxml.FXMLLoader;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -45,6 +46,7 @@ public class Simulation {
 	private double allocations;
 	private double unhandledVolume;
 	private final double[] modulationsUsage = new double[6];
+	private boolean multipleSimulations = false;
 
 	public Simulation(){}
 
@@ -151,17 +153,137 @@ public class Simulation {
 		File resultsDirectory = new File(RESULTS_DATA_DIR_NAME);
 		if (!resultsDirectory.isDirectory())
 			resultsDirectory.mkdir();
-
+		File resultsProjectDirectory = new File(RESULTS_DATA_DIR_NAME + "/" + ApplicationResources.getProject().getName().toUpperCase());
+		if (isMultipleSimulations())
+			if (!resultsProjectDirectory.isDirectory())
+				resultsProjectDirectory.mkdir();
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		String json = gson.toJson(new SimulationSummary(generator.getName(), erlang, seed, alpha, demandsCount, totalVolume,
 				spectrumBlockedVolume, regeneratorsBlockedVolume, linkFailureBlockedVolume, unhandledVolume, regsPerAllocation,
 				allocations));
+		try {
+			resultsDataFileName = ApplicationResources.getProject().getName().toUpperCase() +
+					new SimpleDateFormat("_yyyy_MM_dd_HH_mm_ss").format(new Date()) +".json";
+			TaskReadyProgressBar.addResultsDataFileName(resultsDataFileName);
+			FileWriter resultsDataWriter  = new FileWriter(new File(
+					isMultipleSimulations() ? resultsProjectDirectory : resultsDirectory, resultsDataFileName));
+
+			resultsDataWriter.write(json);
+			resultsDataWriter.close();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		//Helps slow GUI update between multiple simulations being run back to back
+		try {
+			Thread.sleep(2000);
+		}
+		catch(InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
+	}
+
+	public void simulate(long seed, int demandsCount, double alpha, int erlang, boolean replicaPreservation) {
+		SimulationMenuController.finished = false;
+		SimulationMenuController.cancelled = false;
+		clearVolumeValues();
+
+		ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
+
+		//For development set to debug, for release set to info
+		Logger.setLoggerLevel(Logger.LoggerLevel.DEBUG);
+		generator.setErlang(erlang);
+		generator.setSeed(seed);
+		generator.setReplicaPreservation(replicaPreservation);
+		network.setSeed(seed);
+		Random linkCutter = new Random(seed);
 
 		try {
-			resultsDataFileName = ApplicationResources.getProject().getName().toUpperCase() + "-" + generator.getName()
-					+ "-ERLANG" + erlang + "-SEED" + seed + "-ALPHA" + alpha + "-DEMANDS" + demandsCount +".json";
+			ResizableCanvas.getParentController().updateGraph();
+
+			for (; generator.getGeneratedDemandsCount() < demandsCount;) {
+				SimulationMenuController.started = true;
+
+				Demand demand = generator.next();
+
+				// handle the demand for the specific simulation
+				if (linkCutter.nextDouble() < alpha / erlang)
+					for (Demand reallocate : network.cutLink())
+						if (reallocate.reallocate())
+							handleDemand(reallocate);
+						else {
+							linkFailureBlockedVolume += reallocate.getVolume();
+							ResizableCanvas.getParentController().linkFailureBlockedVolume += reallocate.getVolume();
+						}
+				else {
+					handleDemand(demand);
+					if (demand instanceof AnycastDemand)
+						handleDemand(generator.next());
+				}
+
+				network.update();
+
+				// pause button
+				pause();
+
+				// cancel button
+				if (SimulationMenuController.cancelled) {
+					Logger.info(resourceBundle.getString("simulation_cancelled"));
+					break;
+				}
+
+			} // loop end here
+
+			// force call the update again here
+		}
+		catch (NetworkException e) {
+			Logger.info(resourceBundle.getString("network_exception_label") + " " + resourceBundle.getString(e.getMessage()));
+			for (; generator.getGeneratedDemandsCount() < demandsCount;) {
+				Demand demand = generator.next();
+				unhandledVolume += demand.getVolume();
+
+				if (demand instanceof AnycastDemand)
+					unhandledVolume += generator.next().getVolume();
+			}
+			totalVolume += unhandledVolume;
+			ResizableCanvas.getParentController().totalVolume += unhandledVolume;
+		}
+
+		//wait for internal cleanup after simulation is done
+		network.waitForDemandsDeath();
+		ResizableCanvas.getParentController().stopUpdateGraph();
+		ResizableCanvas.getParentController().resetGraph();
+
+		// signal GUI menus that simulation is complete
+		SimulationMenuController.finished = true;
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SimulationMenu.fxml"), resourceBundle);
+		SimulationMenuController simulationMenuController = fxmlLoader.<SimulationMenuController>getController();
+		if (simulationMenuController != null)
+			simulationMenuController.disableClearSimulationButton();
+
+		Logger.info(resourceBundle.getString("blocked_spectrum_label") + " " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
+		Logger.info(resourceBundle.getString("blocked_regenerators_label") + " " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
+		Logger.info(resourceBundle.getString("blocked_link_failure_label") + " " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
+
+		// write the resulting data of a successful simulation to file
+		File resultsDirectory = new File(RESULTS_DATA_DIR_NAME);
+		if (!resultsDirectory.isDirectory())
+			resultsDirectory.mkdir();
+		File resultsProjectDirectory = new File(RESULTS_DATA_DIR_NAME + "/" + ApplicationResources.getProject().getName().toUpperCase());
+		if (isMultipleSimulations())
+			if (!resultsProjectDirectory.isDirectory())
+				resultsProjectDirectory.mkdir();
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String json = gson.toJson(new SimulationSummary(generator.getName(), erlang, seed, alpha, demandsCount, totalVolume,
+				spectrumBlockedVolume, regeneratorsBlockedVolume, linkFailureBlockedVolume, unhandledVolume, regsPerAllocation,
+				allocations));
+		try {
+			resultsDataFileName = ApplicationResources.getProject().getName().toUpperCase() +
+					new SimpleDateFormat("_yyyy_MM_dd_HH_mm_ss").format(new Date()) +".json";
 			TaskReadyProgressBar.addResultsDataFileName(resultsDataFileName);
-			FileWriter resultsDataWriter  = new FileWriter(new File(resultsDirectory, resultsDataFileName));
+			FileWriter resultsDataWriter  = new FileWriter(new File(
+					isMultipleSimulations() ? resultsProjectDirectory : resultsDirectory, resultsDataFileName));
 
 			resultsDataWriter.write(json);
 			resultsDataWriter.close();
@@ -261,4 +383,11 @@ public class Simulation {
 		ResizableCanvas.getParentController().totalVolume += demand.getVolume();
 	}
 
+	public boolean isMultipleSimulations() {
+		return multipleSimulations;
+	}
+
+	public void setMultipleSimulations(boolean multipleSimulations) {
+		this.multipleSimulations = multipleSimulations;
+	}
 }

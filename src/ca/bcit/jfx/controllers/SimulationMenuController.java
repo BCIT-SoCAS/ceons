@@ -16,6 +16,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -46,7 +47,7 @@ public class SimulationMenuController implements Initializable {
     private static final int ERLANG_RANGE_LABEL_INDEX = 9;
     private static final int ERLANG_LABEL_INDEX = 8;
     private static final int ERLANG_INT_FIELD_INDEX = 9;
-	
+
 	@FXML private ComboBox<TrafficGenerator> generators;
 	@FXML private CheckBox runMultipleSimulations;
 	@FXML private Label simulationRepetitions;
@@ -75,6 +76,8 @@ public class SimulationMenuController implements Initializable {
 	@FXML private UIntField regeneratorsMetricValue;
 	@FXML private Button pauseButton;
 	@FXML private Button cancelButton;
+	@FXML private Button StartButton;
+	@FXML public Label pauseInfoLabel;
 	private CheckBox[] modulations;
 
 	/**
@@ -97,8 +100,12 @@ public class SimulationMenuController implements Initializable {
 		modulations = new CheckBox[Modulation.values().length];
 		for (Modulation modulation : Modulation.values())
 			modulations[modulation.ordinal()] = ((CheckBox) settings.lookup("#modulation" + modulation.ordinal()));
-		
 		generatorsStatic = generators;
+		pauseButton.managedProperty().bind(pauseButton.visibleProperty());
+		StartButton.managedProperty().bind(StartButton.visibleProperty());
+		cancelButton.managedProperty().bind(cancelButton.visibleProperty());
+		pauseInfoLabel.managedProperty().bind(pauseInfoLabel.visibleProperty());
+
 	}
 	
 	void setProgressBar(TaskReadyProgressBar progressBar) {
@@ -242,11 +249,10 @@ public class SimulationMenuController implements Initializable {
                 simulation = new Simulation(network, generators.getValue());
 
                 //TODO: REFACTOR SIMULATION TASK INTO SIMULATION
-                SimulationTask task = new SimulationTask(simulation, seedField.getValue(), Double.parseDouble(alpha.getText()), erlangIntField.getValue(), demands.getValue(), true, resources);
+                SimulationTask task = new SimulationTask(simulation, seedField.getValue(), Double.parseDouble(alpha.getText()), erlangIntField.getValue(), demands.getValue(), true, this, resources);
                 progressBar.runTask(task, true, resources);
-            }
-            else {
-            	if (erlangRangeLowField.getValue() > erlangRangeHighField.getValue() || erlangRangeLowField.getValue() == erlangRangeHighField.getValue()){
+            } else {
+            	if(erlangRangeLowField.getValue() > erlangRangeHighField.getValue() || erlangRangeLowField.getValue() == erlangRangeHighField.getValue()){
 					Alert alert = new Alert(Alert.AlertType.ERROR);
 					alert.setTitle(resources.getString("erlang_range"));
 					alert.setHeaderText(null);
@@ -265,17 +271,25 @@ public class SimulationMenuController implements Initializable {
 					}
 				});
                 Random random = new Random();
-
-				for (int numRepetitions = 1; numRepetitions <= numRepetitionsPerErlang.getValue(); numRepetitions++){
+				ArrayList<ArrayList> tasks = new ArrayList<>();
+				for(int numRepetitions = 1; numRepetitions <= numRepetitionsPerErlang.getValue(); numRepetitions++){
 					int randomSeed = random.nextInt(101);
+
                     TaskReadyProgressBar.addResultsDataSeed(randomSeed);
 					for (int erlangValue = erlangRangeLowField.getValue(); erlangValue <= erlangRangeHighField.getValue(); erlangValue+=stepBetweenErlangsField.getValue()){
 						simulation = new Simulation(network, generators.getValue());
-						SimulationTask simulationTask = new SimulationTask(simulation, randomSeed, Double.parseDouble(alpha.getText()), erlangValue, demands.getValue(), true, resources);
-						progressBar.runTask(simulationTask, true, runMultipleSimulationService, resources);
-						progressBar.increaseSimulationCount();
+						simulation.setMultipleSimulations(true);
+						ArrayList taskSettingsArray = new ArrayList();
+						taskSettingsArray.add(simulation);
+						taskSettingsArray.add(randomSeed);
+						taskSettingsArray.add(Double.parseDouble(alpha.getText()));
+						taskSettingsArray.add(erlangValue);
+						taskSettingsArray.add(demands.getValue());
+						taskSettingsArray.add(true);
+						tasks.add(taskSettingsArray);
 					}
 				}
+				progressBar.runTasks(tasks, true, runMultipleSimulationService, resources, this);
             }
         }
 	    catch (NullPointerException ex) {
@@ -287,7 +301,29 @@ public class SimulationMenuController implements Initializable {
             alert.setResizable(true);
             alert.getDialogPane().setPrefSize(480.0, 100);
             alert.showAndWait();
+            setRunning(false);
         }
+	}
+	
+	public void setRunning(boolean isRunning){
+		for (Node node: new Node[] {generators,
+		runMultipleSimulations, simulationRepetitions, erlangLabel, stepBetweenErlangsLabel, erlangRangeLabel,
+		erlangRangeLowLabel, erlangRangeHighLabel, seedLabel, erlangIntField, erlangRangeLowField, numRepetitionsPerErlang,
+		stepBetweenErlangsField, erlangRangeHighField, seedField, alpha, demands,  settings,
+		multipleSimulatonSettingsLabel, multipleSimulatonSettingsRange, algorithms, allowModulationChange, bestPaths,
+		regeneratorsMetricValue
+		}) {
+			try {
+				node.setDisable(isRunning);
+			} catch (NullPointerException ignored){}
+		}
+		pauseButton.setDisable(!isRunning);
+		pauseInfoLabel.setVisible(isRunning);
+		cancelButton.setDisable(!isRunning);
+		StartButton.setDisable(isRunning);
+		pauseButton.setVisible(isRunning);
+		cancelButton.setVisible(isRunning);
+		StartButton.setVisible(!isRunning);
 	}
 
 	// Cancel simulation button

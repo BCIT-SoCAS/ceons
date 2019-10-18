@@ -2,12 +2,14 @@ package ca.bcit.jfx.components;
 
 import ca.bcit.ApplicationResources;
 import ca.bcit.io.Logger;
+import ca.bcit.jfx.controllers.SimulationMenuController;
 import ca.bcit.net.Simulation;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import de.rototor.pdfbox.graphics2d.PdfBoxGraphics2D;
 import javafx.concurrent.Task;
+import javafx.scene.control.TextInputDialog;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.util.Matrix;
 import org.jfree.chart.axis.NumberAxis;
@@ -30,7 +32,9 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import java.awt.*;
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.concurrent.*;
 
@@ -48,6 +52,7 @@ public class TaskReadyProgressBar extends StackPane {
     private final Label label = new Label("");
     private ExecutorService runMultipleSimulationService;
     private int numSimulationsLeft = 0;
+    private Thread thread;
 
     public TaskReadyProgressBar() {
         super();
@@ -69,7 +74,9 @@ public class TaskReadyProgressBar extends StackPane {
         bar.progressProperty().unbind();
         label.textProperty().unbind();
     }
-
+    public Thread getThread(){
+        return this.thread;
+    }
     public void runTask(Task<?> task, boolean daemon, ResourceBundle resources) {
         bind(task);
 
@@ -86,132 +93,148 @@ public class TaskReadyProgressBar extends StackPane {
             unbind();
             Logger.debug(e.getSource().toString() + " " + resources.getString("was_cancelled") + "!");
         });
-
-        Thread thread = new Thread(task);
+        this.thread = new Thread(task);
         thread.setDaemon(daemon);
         thread.start();
     }
 
-    public void runTask(Task<?> task, boolean daemon, ExecutorService runMultipleSimulationService, ResourceBundle resources) {
-        bind(task);
+    public void runTasks(ArrayList<ArrayList> tasks, boolean daemon, ExecutorService runMultipleSimulationService, ResourceBundle resources, SimulationMenuController controller) {
         setRunMultipleSimulationService(runMultipleSimulationService);
+        Task task = new Task() {
+            @Override
+            protected Object call() throws Exception {
+                try {
+                    this.updateProgress(0, tasks.size());
+                    int count = 0;
+                    for (ArrayList task : tasks) {
+                        Logger.info("\n");
+                        Logger.info(resources.getString("starting_simulation") + "! " + "\n\t" + resources.getString("simulation_parameter_seed") + ": " + task.get(1) + "\n\t" + resources.getString("simulation_parameter_alpha") + ": " + task.get(2) + "\n\t" + resources.getString("simulation_parameter_erlang") + ": " + task.get(3) +
+                                "\n\t" + resources.getString("simulation_parameter_number_of_requests") + ": " + task.get(4) + "\n\t" + resources.getString("simulation_parameter_replica_preservation") + ": " + task.get(5));
+                        controller.setRunning(true);
+                        ((Simulation) task.get(0)).simulate((int) task.get(1), (int) task.get(4), (double) task.get(2), (int) task.get(3), (boolean) task.get(5));
+                        Logger.info(resources.getString("simulation_finished") + "!");
+                        controller.setRunning(false);
+                        this.updateProgress(++count, tasks.size());
+                    }
+                } catch(Throwable e){
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+        bind(task);
         task.setOnSucceeded(e -> {
             unbind();
-            numSimulationsLeft--;
-            if (numSimulationsLeft == 0) {
-                runMultipleSimulationService.shutdown();
-
-                try {
-                    if (!runMultipleSimulationService.awaitTermination(2500, TimeUnit.MILLISECONDS))
-                        runMultipleSimulationService.shutdownNow();
-                }
-                catch (InterruptedException ex) {
+            runMultipleSimulationService.shutdown();
+            try {
+                if (!runMultipleSimulationService.awaitTermination(2500, TimeUnit.MILLISECONDS)) {
                     runMultipleSimulationService.shutdownNow();
                 }
+            } catch (InterruptedException ex) {
+                runMultipleSimulationService.shutdownNow();
+            }
 
-                // Extract JSON data
-                for (String resultsDataFileName : resultsDataFileNameList) {
-                    try {
-                        BufferedReader bufferedReader = new BufferedReader(new FileReader(Simulation.RESULTS_DATA_DIR_NAME + "/" + resultsDataFileName));
+            // Extract JSON data
+            for (String resultsDataFileName : resultsDataFileNameList) {
+                try {
+                    BufferedReader bufferedReader = new BufferedReader(new FileReader(Simulation.RESULTS_DATA_DIR_NAME + "/" + ApplicationResources.getProject().getName().toUpperCase() + "/" + resultsDataFileName));
 
-                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                        JsonObject js = gson.fromJson(bufferedReader, JsonObject.class);
+                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                    JsonObject js = gson.fromJson(bufferedReader, JsonObject.class);
 
-                        resultsDataJsonList.add(js);
+                    resultsDataJsonList.add(js);
 
-                        System.out.println(js.getAsJsonObject());
-                    }
-                    catch (IOException ex) {
-                        ex.printStackTrace();
-                        resultsDataFileNameList.clear();
-                        resultsDataJsonList.clear();
-                    }
-                }
+                    System.out.println(js.getAsJsonObject());
 
-                File resultsSummaryDirectory = new File(RESULTS_SUMMARY_DIR_NAME);
-
-                if (!resultsSummaryDirectory.isDirectory())
-                    resultsSummaryDirectory.mkdir();
-
-                // Write to PDF
-                try (PDDocument document = new PDDocument()) {
-                    PDPage page = new PDPage();
-                    document.addPage(page);
-                    PDFont font = PDType1Font.HELVETICA_BOLD;
-
-                    PDPageContentStream contentStream = new PDPageContentStream(document, page);
-                    contentStream.beginText();
-                    contentStream.setFont(font, 12);
-                    contentStream.newLineAtOffset(150, 750);
-                    contentStream.showText(resources.getString("simulation_summary_label"));
-
-                    contentStream.endText();
-
-                    PdfBoxGraphics2D pdfBoxGraphics2D = new PdfBoxGraphics2D(document, 800, 400);
-                    Rectangle rectangle = new Rectangle(800, 400);
-
-                    //Create dataset and chart
-                    XYDataset dataset = createDatasetXY();
-                    JFreeChart chart = createChartXY(dataset, resources);
-                    chart.draw(pdfBoxGraphics2D, rectangle);
-
-                    pdfBoxGraphics2D.dispose();
-
-                    PDFormXObject appearanceStream = pdfBoxGraphics2D.getXFormObject();
-                    Matrix matrix = new Matrix();
-                    matrix.translate(0, 30);
-                    matrix.scale(0.7f, 1f);
-
-                    contentStream.saveGraphicsState();
-                    contentStream.transform(matrix);
-                    contentStream.drawForm(appearanceStream);
-                    contentStream.restoreGraphicsState();
-
-                    contentStream.close();
-
-                    //Get simulator settings
-                    String trafficGeneratorName = resultsDataJsonList.get(0).get("trafficGeneratorName").getAsString();
-                    int startingErlangValue = resultsDataJsonList.get(0).get("erlangValue").getAsInt();
-                    int endingErlangValue = resultsDataJsonList.get(resultsDataJsonList.size()-1).get("erlangValue").getAsInt();
-                    String seedValuesGlob = "";
-                    if(resultsDataSeedList.size() > 1)
-                        for(int i = 0; i < resultsDataSeedList.size(); i++)
-                            if(i < resultsDataSeedList.size() - 1)
-                                seedValuesGlob += resultsDataSeedList.get(i) + ",";
-                            else
-                                seedValuesGlob += resultsDataSeedList.get(i);
-                    else
-                        seedValuesGlob = resultsDataJsonList.get(0).get("seedValue").getAsString();
-
-                    double alphaValue = resultsDataJsonList.get(0).get("alphaValue").getAsDouble();
-                    int demandsCountValue = resultsDataJsonList.get(0).get("demandsCountValue").getAsInt();
-
-                    document.save(resultsSummaryDirectory + "\\" + ApplicationResources.getProject().getName().toUpperCase() + "-" + trafficGeneratorName
-                            + "-ERLANG_" + startingErlangValue + "_TO_" + endingErlangValue + "-SEED{" + seedValuesGlob + "}-ALPHA" + alphaValue + "-DEMANDS" + demandsCountValue + ".pdf");
-                }
-                catch (IOException ex) {
+                } catch (IOException ex) {
                     ex.printStackTrace();
-                }
-                finally {
                     resultsDataFileNameList.clear();
-                    resultsDataSeedList.clear();
                     resultsDataJsonList.clear();
                 }
             }
-        });
+            // TODO: Get highest and lowest to validate users chosen PDF Range and Domain
+            double highestBlockPercentageVolume;
+            for (JsonObject b: resultsDataJsonList) {
+                double temp = b.getAsJsonPrimitive("totalBlockedVolumePercentage").getAsDouble();
+                System.out.println(temp);
+            }
+            File resultsSummaryDirectory = new File(RESULTS_SUMMARY_DIR_NAME);
 
+            if (!resultsSummaryDirectory.isDirectory())
+                resultsSummaryDirectory.mkdir();
+
+            // Write to PDF
+            try (PDDocument document = new PDDocument()) {
+
+                PDPage page = new PDPage();
+                document.addPage(page);
+                PDFont font = PDType1Font.HELVETICA_BOLD;
+
+                PDPageContentStream contentStream = new PDPageContentStream(document, page);
+                contentStream.beginText();
+                contentStream.setFont(font, 12);
+                contentStream.newLineAtOffset(150, 750);
+                contentStream.showText(resources.getString("simulation_summary_label"));
+                contentStream.endText();
+
+                PdfBoxGraphics2D pdfBoxGraphics2D = new PdfBoxGraphics2D(document, 800, 400);
+                Rectangle rectangle = new Rectangle(800, 400);
+
+                TextInputDialog textInputDialog = new TextInputDialog(resources.getString("report_blocked_volume_percentage_from_insufficient_resources"));
+                textInputDialog.setHeaderText(resources.getString("pdf_summary_graph_label"));
+                textInputDialog.showAndWait();
+                String graphName = textInputDialog.getResult();
+                textInputDialog = new TextInputDialog(resources.getString("blocked_volume_percentage"));
+                textInputDialog.setHeaderText(resources.getString("pdf_graph_range_label"));
+                textInputDialog.showAndWait();
+                String graphRangeName = textInputDialog.getResult();
+                textInputDialog = new TextInputDialog(resources.getString("erlang"));
+                textInputDialog.setHeaderText(resources.getString("pdf_graph_domain_label"));
+                textInputDialog.showAndWait();
+                String graphRDomainName = textInputDialog.getResult();
+
+                //Create dataset and chart
+                //TODO: PDF Graph Range Generation Should be Based off user input
+                XYDataset dataset = createDatasetXY();
+                JFreeChart chart = createChartXY(dataset, graphName, graphRangeName, graphRDomainName);
+                chart.getXYPlot().getDomainAxis().setLowerBound(0);
+                chart.getXYPlot().getRangeAxis().setUpperBound(0.1);
+                chart.getXYPlot().getRangeAxis().setLowerBound(0);
+                chart.draw(pdfBoxGraphics2D, rectangle);
+
+                pdfBoxGraphics2D.dispose();
+
+                PDFormXObject appearanceStream = pdfBoxGraphics2D.getXFormObject();
+                Matrix matrix = new Matrix();
+                matrix.translate(0, 30);
+                matrix.scale(0.7f, 1f);
+
+                contentStream.saveGraphicsState();
+                contentStream.transform(matrix);
+                contentStream.drawForm(appearanceStream);
+                contentStream.restoreGraphicsState();
+                contentStream.close();
+
+                document.save(resultsSummaryDirectory + File.separator + ApplicationResources.getProject().getName().toUpperCase() +
+                        new SimpleDateFormat("_yyyy_MM_dd_HH_mm_ss").format(new Date()) + ".pdf");
+                document.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            } finally {
+                resultsDataFileNameList.clear();
+                resultsDataSeedList.clear();
+                resultsDataJsonList.clear();
+            }
+        });
         task.setOnFailed(e -> {
             unbind();
             Logger.debug(e.getSource().toString() + " " + resources.getString("failed") + "!");
         });
-
         task.setOnCancelled(e -> {
             unbind();
             Logger.debug(e.getSource().toString() + " " + resources.getString("was_cancelled") + "!");
         });
-
-        //Start the thread task execution
-        Thread thread = new Thread(task);
+        thread = new Thread(task);
         thread.setDaemon(daemon);
         runMultipleSimulationService.execute(thread);
     }
@@ -295,13 +318,12 @@ public class TaskReadyProgressBar extends StackPane {
 
         return dataset;
     }
-
-    private JFreeChart createChartXY(final XYDataset dataset, ResourceBundle resources) {
+    private JFreeChart createChartXY(final XYDataset dataset, final String title,  final String yLabel, final String xLabel) {
         // create the chart...
-        final JFreeChart chart = ChartFactory.createXYLineChart(resources.getString("report_blocked_volume_percentage_from_insufficient_resources_vs_erlangs"), // chart
+        final JFreeChart chart = ChartFactory.createXYLineChart(title, // chart
                 // title
-                resources.getString("erlang"), // x axis label
-                resources.getString("report_blocked_volume_percentage"), // y axis label
+                xLabel, // x axis label
+                yLabel, // y axis lab
                 dataset, // data
                 PlotOrientation.VERTICAL, true, // include legend
                 true, // tooltips
