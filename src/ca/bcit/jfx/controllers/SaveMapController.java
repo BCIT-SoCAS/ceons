@@ -278,7 +278,7 @@ public class SaveMapController implements Loadable, Initializable {
         connNodeInput.setPromptText(resources.getString("enter_connected_nodes"));
 
         numRegeneratorInput = new TextField();
-        numRegeneratorInput.setStyle("-fx-prompt-text-fill: derive(-fx-control-inner-background, -30%);-fx-pref-width: 200");
+        numRegeneratorInput.setStyle("-fx-prompt-text-fill: derive(-fx-control-inner-background, -30%);-fx-pref-width: 230");
         numRegeneratorInput.setPromptText(resources.getString("number_of_regenerators_placeholder"));
 
         itlCheckbox = new CheckBox(resources.getString("international"));
