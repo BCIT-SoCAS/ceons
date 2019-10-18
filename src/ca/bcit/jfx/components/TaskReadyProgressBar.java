@@ -98,7 +98,7 @@ public class TaskReadyProgressBar extends StackPane {
         thread.start();
     }
 
-    public void runTasks(ArrayList<ArrayList> tasks, boolean daemon, ExecutorService runMultipleSimulationService, ResourceBundle resources) {
+    public void runTasks(ArrayList<ArrayList> tasks, boolean daemon, ExecutorService runMultipleSimulationService, ResourceBundle resources, SimulationMenuController controller) {
         setRunMultipleSimulationService(runMultipleSimulationService);
         Task task = new Task() {
             @Override
@@ -109,10 +109,10 @@ public class TaskReadyProgressBar extends StackPane {
                         Logger.info("\n");
                         Logger.info(resources.getString("starting_simulation") + "! " + "\n\t" + resources.getString("simulation_parameter_seed") + ": " + task.get(1) + "\n\t" + resources.getString("simulation_parameter_alpha") + ": " + task.get(2) + "\n\t" + resources.getString("simulation_parameter_erlang") + ": " + task.get(3) +
                                 "\n\t" + resources.getString("simulation_parameter_number_of_requests") + ": " + task.get(4) + "\n\t" + resources.getString("simulation_parameter_replica_preservation") + ": " + task.get(5));
-                        ((SimulationMenuController) task.get(6)).setRunning(true);
+                        controller.setRunning(true);
                         ((Simulation) task.get(0)).simulate((int) task.get(1), (int) task.get(4), (double) task.get(2), (int) task.get(3), (boolean) task.get(5));
                         Logger.info("Simulation finished!");
-                        ((SimulationMenuController) task.get(6)).setRunning(false);
+                        controller.setRunning(false);
                         this.updateProgress(++count, tasks.size());
                     }
                 } catch(Throwable e){

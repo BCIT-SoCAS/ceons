@@ -286,11 +286,10 @@ public class SimulationMenuController implements Initializable {
 						taskSettingsArray.add(erlangValue);
 						taskSettingsArray.add(demands.getValue());
 						taskSettingsArray.add(true);
-						taskSettingsArray.add(this);
 						tasks.add(taskSettingsArray);
 					}
 				}
-				progressBar.runTasks(tasks, true, runMultipleSimulationService, resources);
+				progressBar.runTasks(tasks, true, runMultipleSimulationService, resources, this);
             }
         }
 	    catch (NullPointerException ex) {
