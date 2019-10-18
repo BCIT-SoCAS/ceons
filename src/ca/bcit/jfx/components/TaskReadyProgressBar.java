@@ -104,6 +104,7 @@ public class TaskReadyProgressBar extends StackPane {
             @Override
             protected Object call() throws Exception {
                 try {
+                    this.updateProgress(0, tasks.size());
                     int count = 0;
                     for (ArrayList task : tasks) {
                         Logger.info("\n");
@@ -111,7 +112,7 @@ public class TaskReadyProgressBar extends StackPane {
                                 "\n\t" + resources.getString("simulation_parameter_number_of_requests") + ": " + task.get(4) + "\n\t" + resources.getString("simulation_parameter_replica_preservation") + ": " + task.get(5));
                         controller.setRunning(true);
                         ((Simulation) task.get(0)).simulate((int) task.get(1), (int) task.get(4), (double) task.get(2), (int) task.get(3), (boolean) task.get(5));
-                        Logger.info("Simulation finished!");
+                        Logger.info(resources.getString("simulation_finished") + "!");
                         controller.setRunning(false);
                         this.updateProgress(++count, tasks.size());
                     }
@@ -173,26 +174,24 @@ public class TaskReadyProgressBar extends StackPane {
                 contentStream.beginText();
                 contentStream.setFont(font, 12);
                 contentStream.newLineAtOffset(150, 750);
-                contentStream.showText("Simulation Summary: ");
+                contentStream.showText(resources.getString("simulation_summary_label"));
                 contentStream.endText();
 
                 PdfBoxGraphics2D pdfBoxGraphics2D = new PdfBoxGraphics2D(document, 800, 400);
                 Rectangle rectangle = new Rectangle(800, 400);
 
-                TextInputDialog textInputDialog = new TextInputDialog("Blocked Volume Percentage From Insufficient Resources");
-                textInputDialog.setHeaderText("PDF Summary Graph Label");
+                TextInputDialog textInputDialog = new TextInputDialog(resources.getString("report_blocked_volume_percentage_from_insufficient_resources"));
+                textInputDialog.setHeaderText(resources.getString("pdf_summary_graph_label"));
                 textInputDialog.showAndWait();
                 String graphName = textInputDialog.getResult();
-                textInputDialog = new TextInputDialog("Blocked Volume Percentage (%)");
-                textInputDialog.setHeaderText("PDF Graph Range Label");
+                textInputDialog = new TextInputDialog(resources.getString("blocked_volume_percentage"));
+                textInputDialog.setHeaderText(resources.getString("pdf_graph_range_label"));
                 textInputDialog.showAndWait();
                 String graphRangeName = textInputDialog.getResult();
-                textInputDialog = new TextInputDialog("Erlang");
-                textInputDialog.setHeaderText("PDF Graph Domain Label");
+                textInputDialog = new TextInputDialog(resources.getString("erlang"));
+                textInputDialog.setHeaderText(resources.getString("pdf_graph_domain_label"));
                 textInputDialog.showAndWait();
                 String graphRDomainName = textInputDialog.getResult();
-
-
 
                 //Create dataset and chart
                 //TODO: PDF Graph Range Generation Should be Based off user input
@@ -216,7 +215,7 @@ public class TaskReadyProgressBar extends StackPane {
                 contentStream.restoreGraphicsState();
                 contentStream.close();
 
-                document.save(resultsSummaryDirectory + "\\" + ApplicationResources.getProject().getName().toUpperCase() +
+                document.save(resultsSummaryDirectory + File.separator + ApplicationResources.getProject().getName().toUpperCase() +
                         new SimpleDateFormat("_yyyy_MM_dd_HH_mm_ss").format(new Date()) + ".pdf");
                 document.close();
             } catch (IOException ex) {
