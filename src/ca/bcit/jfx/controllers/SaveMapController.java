@@ -70,6 +70,9 @@ public class SaveMapController implements Loadable, Initializable {
      *Add a new row of node details when the add button is clicked
      */
     public void addButtonClicked() {
+        if (numRegeneratorInput.getText().equals(""))
+            numRegeneratorInput.setText("100");
+
         try {
             SavedNodeDetails savedNodeDetails = new SavedNodeDetails(getNextNodeNum(), nameInput.getText(), connNodeInput.getText(), Integer.parseInt(numRegeneratorInput.getText()), getSelectedNodeType());
             saveTable.getItems().add(savedNodeDetails);
@@ -80,7 +83,7 @@ public class SaveMapController implements Loadable, Initializable {
 
         nameInput.clear();
         connNodeInput.clear();
-        numRegeneratorInput.setText("100");
+        numRegeneratorInput.clear();
         itlCheckbox.setSelected(false);
         dcCheckbox.setSelected(false);
         standardCheckbox.setSelected(false);
@@ -275,9 +278,8 @@ public class SaveMapController implements Loadable, Initializable {
         connNodeInput.setPromptText(resources.getString("enter_connected_nodes"));
 
         numRegeneratorInput = new TextField();
-        numRegeneratorInput.setStyle("-fx-prompt-text-fill: derive(-fx-control-inner-background, -30%);");
-        numRegeneratorInput.setText("100");
-        numRegeneratorInput.setPromptText("Enter # of regenerators");
+        numRegeneratorInput.setStyle("-fx-prompt-text-fill: derive(-fx-control-inner-background, -30%);-fx-pref-width: 200");
+        numRegeneratorInput.setPromptText(resources.getString("number_of_regenerators_placeholder"));
 
         itlCheckbox = new CheckBox(resources.getString("international"));
         dcCheckbox = new CheckBox(resources.getString("data_center"));
