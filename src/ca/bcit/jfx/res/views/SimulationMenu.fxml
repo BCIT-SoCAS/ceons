@@ -10,7 +10,12 @@
             <VBox fx:id="settings" spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
                 <children>
                     <CeonsLabel text="%simulation_parameter_algorithm" tooltipText="%simulation_parameter_algorithm_description" />
-                    <ComboBox fx:id="algorithms" promptText="%choose_algorithm"/>
+                    <GridPane alignment="center">
+                        <children>
+                            <ComboBox fx:id="algorithms" promptText="%choose_algorithm" GridPane.columnIndex="1"/>
+                            <Hyperlink fx:id="algorithmsLink" text="?" GridPane.columnIndex="2" style="-fx-font-size: 20;" />
+                        </children>
+                    </GridPane>
 
                     <Separator />
 

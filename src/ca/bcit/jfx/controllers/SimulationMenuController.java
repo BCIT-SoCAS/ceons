@@ -18,11 +18,19 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
+import java.awt.*;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -78,6 +86,7 @@ public class SimulationMenuController implements Initializable {
 	@FXML private Button cancelButton;
 	@FXML private Button StartButton;
 	@FXML public Label pauseInfoLabel;
+	@FXML private Hyperlink algorithmsLink;
 	private CheckBox[] modulations;
 
 	/**
@@ -100,6 +109,27 @@ public class SimulationMenuController implements Initializable {
 		modulations = new CheckBox[Modulation.values().length];
 		for (Modulation modulation : Modulation.values())
 			modulations[modulation.ordinal()] = ((CheckBox) settings.lookup("#modulation" + modulation.ordinal()));
+
+		algorithmsLink.setOnMouseClicked(e -> {
+			if (algorithms.getValue() == null) {
+				Alert selectAlgoAlert = new Alert(Alert.AlertType.ERROR);
+				selectAlgoAlert.setHeaderText("Select an Algorithm to view documentation");
+				selectAlgoAlert.show();
+			} else if (algorithms.getValue().toString().equals("AMRA")){
+				try {
+					Desktop.getDesktop().browse(new URI("https://www.researchgate.net/publication/277329671_Adaptive_Modulation_and_Regenerator-Aware_Dynamic_Routing_Algorithm_in_Elastic_Optical_Networks"));
+				} catch (IOException | URISyntaxException ex) {
+					ex.printStackTrace();
+				}
+			} else if (algorithms.getValue().toString().equals("SPF")){
+				try {
+					Desktop.getDesktop().browse(new URI("https://pubsonline.informs.org/doi/pdf/10.1287/opre.24.6.1164"));
+				} catch (IOException | URISyntaxException ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+		
 		generatorsStatic = generators;
 		pauseButton.managedProperty().bind(pauseButton.visibleProperty());
 		StartButton.managedProperty().bind(StartButton.visibleProperty());
@@ -204,15 +234,24 @@ public class SimulationMenuController implements Initializable {
                 alert.showAndWait();
                 return;
             }
-            else if (bestPaths.getValue() > network.getMaxPathsCount() || bestPaths.getValue() <= 0){
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle(resources.getString("set_number_of_candidate_paths"));
-                alert.setHeaderText(null);
-                alert.setContentText(resources.getString("number_of_candidate_paths_must_be_greater_than_zero_and_less_than_or_equal_best_paths_count"));
-                alert.setResizable(true);
-                alert.getDialogPane().setPrefSize(480.0, 100);
-                alert.showAndWait();
-                return;
+			else if (bestPaths.getValue() > network.getMaxPathsCount() || bestPaths.getValue() <= 0){
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Set Number of Candidate Paths");
+				alert.setHeaderText(null);
+				if(bestPaths.getValue() > network.getMaxPathsCount()){
+					alert.setContentText("Number of candidate paths must be less than best paths count");
+//					bestPaths.replaceText(0, bestPaths.getText().length(), String.valueOf(network.getMaxPathsCount()));
+				} else {
+					alert.setContentText("Number of candidate paths can't be 0 or negative");
+				}
+				bestPaths.setStyle("-fx-border-color: red; -fx-border-width: 1; -fx-border-radius: 2");
+				bestPaths.setOnKeyTyped(event -> {
+					bestPaths.setStyle("-fx-border-width: 0;");
+				});
+				alert.setResizable(true);
+				alert.getDialogPane().setPrefSize(480.0, 100);
+				alert.showAndWait();
+				return;
             }
             else if (demands.getValue() <= 0){
 				Alert alert = new Alert(Alert.AlertType.ERROR);

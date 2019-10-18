@@ -403,9 +403,13 @@ public class MainWindowController implements Loadable, Initializable {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/APIKeyWindow.fxml"), resourceBundle);
             grid = fxmlLoader.load();
             APIKeyController controller = fxmlLoader.getController();
-            if (controller != null)
+            FXMLLoader fxmlLoader2 = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SaveMapWindow.fxml"), resourceBundle);
+            fxmlLoader2.load();
+            SaveMapController saveMapController = fxmlLoader2.getController();
+            if (controller != null) {
                 controller.displaySaveAPIKeyWindow(grid);
-
+                saveMapController.displaySaveMapWindow();
+            }
         }
     }
 
