@@ -7,18 +7,18 @@ import ca.bcit.net.demand.DemandAllocationResult;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * RMSA Algorithm, AMRA (IEEE ICC)
- * 
- * @author Michal
- *
- */
-public class AMRA extends RMSAAlgorithm {
-
-	@Override
-	public String getName() {
+public class AMRA implements IRMSAAlgorithm{
+	public String getKey(){
 		return "AMRA";
-	}
+	};
+
+	public String getName(){
+		return "AMRA";
+	};
+
+	public String getDocumentationURL(){
+		return "https://pubsonline.informs.org/doi/pdf/10.1287/opre.24.6.1164";
+	};
 
 	@Override
 	public DemandAllocationResult allocateDemand(Demand demand, Network network) {
@@ -27,6 +27,7 @@ public class AMRA extends RMSAAlgorithm {
 		List<PartedPath> candidatePaths = demand.getCandidatePaths(false, network);
 		if (candidatePaths.isEmpty())
 			return DemandAllocationResult.NO_SPECTRUM;
+
 		candidatePaths = applyMetrics(network, volume, candidatePaths);
 
 		if (candidatePaths.isEmpty())
@@ -41,7 +42,8 @@ public class AMRA extends RMSAAlgorithm {
 					break;
 				}
 
-		} catch (NetworkException storage) {
+		}
+		catch (NetworkException storage) {
 			workingPathSuccess = false;
 			return DemandAllocationResult.NO_REGENERATORS;
 		}
@@ -63,25 +65,24 @@ public class AMRA extends RMSAAlgorithm {
 
 				return new DemandAllocationResult(demand.getWorkingPath());
 			}
-		} catch (NetworkException e) {
+		}
+		catch (NetworkException e) {
 			workingPathSuccess = false;
 			return DemandAllocationResult.NO_REGENERATORS;
 		}
 
-
 		return new DemandAllocationResult(demand.getWorkingPath());
 	}
 
-	private List<PartedPath> applyMetrics(Network network, int volume, List<PartedPath> candidatePaths) {
+	private static List<PartedPath> applyMetrics(Network network, int volume, List<PartedPath> candidatePaths) {
 		pathLoop: for (PartedPath path : candidatePaths) {
 			path.mergeRegeneratorlessParts();
 
 			// choosing modulations for parts
 			for (PathPart part : path) {
 				for (Modulation modulation : network.getAllowedModulations())
-					if (modulation.modulationDistances[volume] >= part.getLength()) {
+					if (modulation.modulationDistances[volume] >= part.getLength())
 						part.setModulationIfBetter(modulation, calculateModulationMetric(network, part, modulation));
-					}
 
 				if (part.getModulation() == null)
 					continue pathLoop;
@@ -113,11 +114,10 @@ public class AMRA extends RMSAAlgorithm {
 		return candidatePaths;
 	}
 
-	private int calculateModulationMetric(Network network, PathPart part, Modulation modulation) {
-		int metric;
-
+	private static int calculateModulationMetric(Network network, PathPart part, Modulation modulation) {
 		double slicesOccupationPercentage = part.getOccupiedSlicesPercentage() * 100;
 		int slicesOccupationMetric;
+
 		if (slicesOccupationPercentage <= 90)
 			if (slicesOccupationPercentage <= 75)
 				if (slicesOccupationPercentage <= 60)
@@ -134,7 +134,7 @@ public class AMRA extends RMSAAlgorithm {
 				slicesOccupationMetric = 4;
 		else
 			slicesOccupationMetric = 5;
-		metric = network.getDynamicModulationMetric(modulation, slicesOccupationMetric);
-	return metric;
+
+		return network.getDynamicModulationMetric(modulation, slicesOccupationMetric);
 	}
 }

@@ -87,7 +87,7 @@ public class SaveMapController implements Loadable, Initializable {
         nameInput.clear();
         connNodeInput.clear();
         numRegeneratorInput.clear();
-        nodeTypeInput.setValue("Standard");
+        nodeTypeInput.setValue(resources.getString("standard"));
     }
 
     /*
@@ -260,7 +260,12 @@ public class SaveMapController implements Loadable, Initializable {
             t.getTableView().getItems().get(t.getTablePosition().getRow()).setNumRegenerators(t.getNewValue());
         });
 
-        String[] nodeTypes = { "Standard", "Data Center", "International", "Data Center, International" };
+        String[] nodeTypes = {
+            resources.getString("standard"),
+            resources.getString("data_center"),
+            resources.getString("international"),
+            resources.getString("data_center") + ", " + resources.getString("international")
+        };
 
         //Node Type Column
         TableColumn<SavedNodeDetails, String> nodeTypeColumn = new TableColumn<>(resources.getString("node_type"));
@@ -284,9 +289,8 @@ public class SaveMapController implements Loadable, Initializable {
         numRegeneratorInput.setStyle("-fx-prompt-text-fill: derive(-fx-control-inner-background, -30%);-fx-pref-width: 230");
         numRegeneratorInput.setPromptText(resources.getString("number_of_regenerators_placeholder"));
 
-        nodeTypeInput = new ComboBox<>(FXCollections
-                .observableArrayList(nodeTypes));
-        nodeTypeInput.setValue("Standard");
+        nodeTypeInput = new ComboBox<>(FXCollections.observableArrayList(nodeTypes));
+        nodeTypeInput.setValue(resources.getString("standard"));
 
         //Buttons
         Button addButton = new Button(resources.getString("add"));

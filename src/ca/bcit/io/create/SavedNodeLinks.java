@@ -39,9 +39,7 @@ public class SavedNodeLinks {
                     int nodeBNum = Integer.parseInt(entry.getKey().get(1).split("_")[1]);
                     LatLng nodeBLatLng = tableList.get(nodeBNum).getLatLng();
                     int length = (int)StaticMap.distance(nodeALatLng.lat, nodeBLatLng.lat, nodeALatLng.lng, nodeBLatLng.lng)/1000;
-                    // ------------------------------------------------------------------------------------------------------------------------------------------
-                    System.out.println("Link: Node_" + nodeANum + ", Node_" + nodeBNum + ", length=" + length);
-                    // ------------------------------------------------------------------------------------------------------------------------------------------
+
                     HashMap<String, Object> link = new HashMap<String, Object>();
                     link.put("length", length);
                     link.put("class", NetworkLink.class.getName());

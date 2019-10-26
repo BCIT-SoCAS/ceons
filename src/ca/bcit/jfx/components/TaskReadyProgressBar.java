@@ -143,10 +143,8 @@ public class TaskReadyProgressBar extends StackPane {
                     JsonObject js = gson.fromJson(bufferedReader, JsonObject.class);
 
                     resultsDataJsonList.add(js);
-
-                    System.out.println(js.getAsJsonObject());
-
-                } catch (IOException ex) {
+                }
+                catch (IOException ex) {
                     ex.printStackTrace();
                     resultsDataFileNameList.clear();
                     resultsDataJsonList.clear();
@@ -154,10 +152,7 @@ public class TaskReadyProgressBar extends StackPane {
             }
             // TODO: Get highest and lowest to validate users chosen PDF Range and Domain
             double highestBlockPercentageVolume;
-            for (JsonObject b: resultsDataJsonList) {
-                double temp = b.getAsJsonPrimitive("totalBlockedVolumePercentage").getAsDouble();
-                System.out.println(temp);
-            }
+
             File resultsSummaryDirectory = new File(RESULTS_SUMMARY_DIR_NAME);
 
             if (!resultsSummaryDirectory.isDirectory())
@@ -288,7 +283,6 @@ public class TaskReadyProgressBar extends StackPane {
             if (resultsDataSeedList.size() > 1)
                 for(int j = 0; j < resultsDataSeedList.size(); j++){
                     JsonObject resultsDataJson = resultsDataJsonList.get(i + (j*simulationsInErlangRange));
-                    System.out.println(resultsDataJson.get("noRegeneratorsBlockedVolumePercentage").getAsDouble());
                     noSpectrumBlockedVolumePercentage += resultsDataJson.get("noSpectrumBlockedVolumePercentage").getAsDouble();
                     noRegeneratorsBlockedVolumePercentage += resultsDataJson.get("noRegeneratorsBlockedVolumePercentage").getAsDouble();
                     linkFailureBlockedVolumePercentage += resultsDataJson.get("linkFailureBlockedVolumePercentage").getAsDouble();
@@ -299,7 +293,6 @@ public class TaskReadyProgressBar extends StackPane {
             else {
                 JsonObject resultsDataJson = resultsDataJsonList.get(i);
                 noSpectrumBlockedVolumePercentage = resultsDataJson.get("noSpectrumBlockedVolumePercentage").getAsDouble();
-                System.out.println(resultsDataJson.get("noRegeneratorsBlockedVolumePercentage").getAsDouble());
                 noRegeneratorsBlockedVolumePercentage = resultsDataJson.get("noRegeneratorsBlockedVolumePercentage").getAsDouble();
                 linkFailureBlockedVolumePercentage = resultsDataJson.get("linkFailureBlockedVolumePercentage").getAsDouble();
                 unhandledVolumePercentage = resultsDataJson.get("unhandledVolumePercentage").getAsDouble();

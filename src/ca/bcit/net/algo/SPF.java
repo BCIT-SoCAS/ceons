@@ -6,12 +6,18 @@ import ca.bcit.net.demand.DemandAllocationResult;
 
 import java.util.List;
 
-public class SPF extends RMSAAlgorithm {
-
-    @Override
-    protected String getName() {
+public class SPF implements IRMSAAlgorithm {
+    public String getKey(){
         return "SPF";
-    }
+    };
+
+    public String getName(){
+        return "SPF";
+    };
+
+    public String getDocumentationURL(){
+        return "https://www.researchgate.net/publication/277329671_Adaptive_Modulation_and_Regenerator-Aware_Dynamic_Routing_Algorithm_in_Elastic_Optical_Networks";
+    };
 
     @Override
     public DemandAllocationResult allocateDemand(Demand demand, Network network) {
@@ -31,36 +37,38 @@ public class SPF extends RMSAAlgorithm {
                     workingPathSuccess = true;
                     break;
                 }
-
-        } catch (NetworkException storage) {
+        }
+        catch (NetworkException storage) {
             workingPathSuccess = false;
             return DemandAllocationResult.NO_REGENERATORS;
         }
+
         if (!workingPathSuccess)
             return DemandAllocationResult.NO_SPECTRUM;
+
         try {
             if (demand.allocateBackup()) {
                 volume = (int) Math.ceil(demand.getSqueezedVolume() / 10) - 1;
 
                 if (candidatePaths.isEmpty())
-                    return new DemandAllocationResult(
-                            demand.getWorkingPath());
+                    return new DemandAllocationResult(demand.getWorkingPath());
+
                 for (PartedPath path : candidatePaths)
                     if (demand.allocate(network, path))
                         return new DemandAllocationResult(demand.getWorkingPath(), demand.getBackupPath());
 
                 return new DemandAllocationResult(demand.getWorkingPath());
             }
-        } catch (NetworkException e) {
+        }
+        catch (NetworkException e) {
             workingPathSuccess = false;
             return DemandAllocationResult.NO_REGENERATORS;
         }
 
-
         return new DemandAllocationResult(demand.getWorkingPath());
     }
 
-    private List<PartedPath> sortByLength(Network network, int volume, List<PartedPath> candidatePaths) {
+    private static List<PartedPath> sortByLength(Network network, int volume, List<PartedPath> candidatePaths) {
         pathLoop:
         for (PartedPath path : candidatePaths) {
             path.setMetric(path.getPath().getLength());
@@ -77,15 +85,16 @@ public class SPF extends RMSAAlgorithm {
                     continue pathLoop;
             }
         }
+
         for (int i = 0; i < candidatePaths.size(); i++)
-            for (PathPart spec: candidatePaths.get(i).getParts()){
+            for (PathPart spec: candidatePaths.get(i).getParts())
                 if (spec.getOccupiedSlicesPercentage() > 80.0) {
                     candidatePaths.remove(i);
                     i--;
                 }
-            }
 
         candidatePaths.sort(PartedPath::compareTo);
+
         return candidatePaths;
     }
 }

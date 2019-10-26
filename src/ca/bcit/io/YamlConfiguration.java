@@ -27,8 +27,8 @@ public class YamlConfiguration {
 //		this.parser = new Yaml(dumperOptions);
 		this.parser = new Yaml();
 		config = deserializeAll(parser.load(stream));
-//		System.out.println("Config: " + config);
 	}
+
 	@SuppressWarnings("rawtypes")
 	public YamlConfiguration() {
 		this.dumperOptions = new DumperOptions();

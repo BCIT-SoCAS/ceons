@@ -1,6 +1,7 @@
 package ca.bcit.jfx.controllers;
 
 import ca.bcit.ApplicationResources;
+import ca.bcit.Main;
 import ca.bcit.io.MapLoadingException;
 import ca.bcit.jfx.DrawingState;
 import ca.bcit.jfx.components.*;
@@ -9,7 +10,6 @@ import ca.bcit.net.MetricType;
 import ca.bcit.net.Modulation;
 import ca.bcit.net.Network;
 import ca.bcit.net.Simulation;
-import ca.bcit.net.algo.RMSAAlgorithm;
 import ca.bcit.net.demand.generator.TrafficGenerator;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.event.ActionEvent;
@@ -28,14 +28,10 @@ import javafx.scene.text.Font;
 import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Random;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -76,7 +72,7 @@ public class SimulationMenuController implements Initializable {
 	@FXML private VBox settings;
 	@FXML private HBox multipleSimulatonSettingsLabel;
 	@FXML private HBox multipleSimulatonSettingsRange;
-	@FXML private ComboBox<RMSAAlgorithm> algorithms;
+	@FXML private ComboBox<String> algorithms;
 	@FXML private ToggleGroup regeneratorsMetric;
 	@FXML private ToggleGroup modulationMetric;
 	@FXML private CheckBox allowModulationChange;
@@ -104,32 +100,29 @@ public class SimulationMenuController implements Initializable {
 				throw new RuntimeException(e);
 			}
 
-		algorithms.setItems(new ObservableListWrapper<>(new ArrayList<>(RMSAAlgorithm.getRegisteredAlgorithms())));
-		
-		modulations = new CheckBox[Modulation.values().length];
-		for (Modulation modulation : Modulation.values())
-			modulations[modulation.ordinal()] = ((CheckBox) settings.lookup("#modulation" + modulation.ordinal()));
+		algorithms.setItems(new ObservableListWrapper<>(new ArrayList<>(Main.getRegisteredAlgorithms().keySet())));
 
 		algorithmsLink.setOnMouseClicked(e -> {
 			if (algorithms.getValue() == null) {
 				Alert selectAlgoAlert = new Alert(Alert.AlertType.ERROR);
-				selectAlgoAlert.setHeaderText("Select an Algorithm to view documentation");
+				selectAlgoAlert.setHeaderText(resources.getString("select_an_algorithm_to_view_the_documentation"));
 				selectAlgoAlert.show();
-			} else if (algorithms.getValue().toString().equals("AMRA")){
+			}
+			else {
+				String algoKey = algorithms.getValue();
 				try {
-					Desktop.getDesktop().browse(new URI("https://www.researchgate.net/publication/277329671_Adaptive_Modulation_and_Regenerator-Aware_Dynamic_Routing_Algorithm_in_Elastic_Optical_Networks"));
-				} catch (IOException | URISyntaxException ex) {
-					ex.printStackTrace();
+					Desktop.getDesktop().browse(new URI(Main.getRegisteredAlgorithms().get(algoKey).getDocumentationURL()));
 				}
-			} else if (algorithms.getValue().toString().equals("SPF")){
-				try {
-					Desktop.getDesktop().browse(new URI("https://pubsonline.informs.org/doi/pdf/10.1287/opre.24.6.1164"));
-				} catch (IOException | URISyntaxException ex) {
+				catch (IOException | URISyntaxException ex) {
 					ex.printStackTrace();
 				}
 			}
 		});
-		
+
+		modulations = new CheckBox[Modulation.values().length];
+		for (Modulation modulation : Modulation.values())
+			modulations[modulation.ordinal()] = ((CheckBox) settings.lookup("#modulation" + modulation.ordinal()));
+
 		generatorsStatic = generators;
 		pauseButton.managedProperty().bind(pauseButton.visibleProperty());
 		StartButton.managedProperty().bind(StartButton.visibleProperty());
@@ -264,7 +257,7 @@ public class SimulationMenuController implements Initializable {
 				return;
 			}
 
-            network.setDemandAllocationAlgorithm(algorithms.getValue());
+            network.setDemandAllocationAlgorithm(Main.getRegisteredAlgorithms().get(algorithms.getValue()));
 
             //Initially remove all modulations first and add back modulations that user selects
             for (Modulation modulation : network.getAllowedModulations()) network.disallowModulation(modulation);

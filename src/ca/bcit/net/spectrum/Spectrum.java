@@ -116,12 +116,9 @@ public class Spectrum {
 	
 	public void allocate(AllocatableSpectrumSegment segment) {
 		int i = firstOverlapIndex(0, segments.size(), segment);
-		if (i == -1 || segment.getRange().getEndOffset() > slicesCount) {
-			System.out.println("Segment: " + segment);
-			System.out.println("Spectrum:");
-			for (SpectrumSegment segmentI : segments) System.out.println("  - " + segmentI);
+		if (i == -1 || segment.getRange().getEndOffset() > slicesCount)
 			throw new SpectrumException("Cannot allocate segment that is out of spectrum bounds!");
-		}
+
 		SpectrumSegment segmentI = segments.get(i);
 		if (segmentI.getRange().contains(segment.getRange())) {
 			InsertionSortList<SpectrumSegment> segments = new InsertionSortList<>();

@@ -7,6 +7,7 @@ import ca.bcit.io.project.ProjectFileFormat;
 import ca.bcit.net.Network;
 import ca.bcit.net.NetworkLink;
 import ca.bcit.net.NetworkNode;
+import ca.bcit.net.algo.IRMSAAlgorithm;
 import ca.bcit.net.demand.generator.AnycastDemandGenerator;
 import ca.bcit.net.demand.generator.TrafficGenerator;
 import ca.bcit.net.demand.generator.UnicastDemandGenerator;
@@ -28,16 +29,18 @@ import javafx.scene.image.Image;
 import javax.swing.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 public class Main extends Application {
-
 	private final static int SPLASH_SCREEN_TIMER = 3000;
 	public static LocaleEnum CURRENT_LOCALE = LocaleEnum.EN_CA;
 	private static Stage primaryStage;
 	private static URL resourceUrl;
 	private static InputStream iconResourceStream;
+	private static HashMap<String, IRMSAAlgorithm> registeredAlgorithms = new HashMap<>();
 
 	@Override
 	public void init() throws Exception {
@@ -58,10 +61,10 @@ public class Main extends Application {
 	}
 
 	public static void loadView(java.util.Locale locale) throws IOException {
-		ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", locale);
-		FXMLLoader loader = new FXMLLoader(resourceUrl, resourceBundle);
+		ResourceBundle resources = ResourceBundle.getBundle("ca.bcit.bundles.lang", locale);
+		FXMLLoader loader = new FXMLLoader(resourceUrl, resources);
 
-		ProjectFileFormat.registerFileFormat(new EONProjectFileFormat(resourceBundle));
+		ProjectFileFormat.registerFileFormat(new EONProjectFileFormat(resources));
 
 		GridPane root = loader.load();
 		Scene scene = new Scene(root);
@@ -84,6 +87,8 @@ public class Main extends Application {
 
 	public static void main(String[] args) {
 		try {
+			registerRMSAAlgorithms();
+
 			registerYamlSerializableClasses();
 
 			LauncherImpl.launchApplication(Main.class, SplashScreen.class, args);
@@ -106,5 +111,29 @@ public class Main extends Application {
 		YamlSerializable.registerSerializableClass(UnicastDemandGenerator.class);
 		YamlSerializable.registerSerializableClass(AnycastDemandGenerator.class);
 		YamlSerializable.registerSerializableClass(TrafficGenerator.class);
+	}
+
+	private static void registerRMSAAlgorithms() throws Exception {
+		registerAlgorithm("ca.bcit.net.algo.SPF");
+		registerAlgorithm("ca.bcit.net.algo.AMRA");
+	}
+
+	private static void registerAlgorithm(String algorithmClassFullName) throws Exception {
+		try {
+			Class algoClass = Class.forName(algorithmClassFullName);
+			Method getKeyMethod = algoClass.getMethod("getKey");
+			Object algo = algoClass.newInstance();
+
+			if (!registeredAlgorithms.containsKey(getKeyMethod.invoke(algo)))
+				registeredAlgorithms.put((String) getKeyMethod.invoke(algo), (IRMSAAlgorithm) algo);
+		}
+		catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+			ResourceBundle resources = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(CURRENT_LOCALE));
+			throw new Exception(resources.getString("the_algorithm_could_not_be_registered") + ": " + algorithmClassFullName);
+		}
+	}
+
+	public static HashMap<String, IRMSAAlgorithm> getRegisteredAlgorithms() {
+		return registeredAlgorithms;
 	}
 }
