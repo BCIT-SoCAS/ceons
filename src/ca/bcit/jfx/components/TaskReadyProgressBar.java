@@ -12,18 +12,17 @@ import de.rototor.pdfbox.graphics2d.PdfBoxGraphics2D;
 import javafx.concurrent.Task;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.StackPane;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.util.Matrix;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -39,6 +38,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -47,7 +47,7 @@ public class TaskReadyProgressBar extends StackPane {
     private static ArrayList<Integer> resultsDataSeedList = new ArrayList<Integer>();
     private ArrayList<JsonObject> resultsDataJsonList = new ArrayList<JsonObject>();
 
-    private static final String RESULTS_SUMMARY_DIR_NAME = "results summary";
+    public static String RESULTS_SUMMARY_DIR_NAME = "results summary";
     private static final String NO_SPECTRUM_BLOCKED_VOLUME_PERCENTAGE = "SBP";
     private static final String NO_REGENERATORS_BLOCKED_VOLUME_PERCENTAGE = "RBP";
     private static final String LINK_FAILURE_BLOCKED_VOLUME_PERCENTAGE = "LFBP";
@@ -57,6 +57,10 @@ public class TaskReadyProgressBar extends StackPane {
     private ExecutorService runMultipleSimulationService;
     private int numSimulationsLeft = 0;
     private Thread thread;
+
+    public String graphLabel;
+    public String YLabel;
+    public String XLabel;
 
     public TaskReadyProgressBar() {
         super();
@@ -76,8 +80,32 @@ public class TaskReadyProgressBar extends StackPane {
         label.textProperty().unbind();
     }
 
-    public Thread getThread(){
+    public Thread getThread() {
         return this.thread;
+    }
+
+    public void runTask(Task<?> task, boolean daemon, SimulationMenuController controller) {
+        bind(task);
+
+        task.setOnSucceeded(e -> {
+            controller.setMultipleSimulationsRan(false);
+            unbind();
+        });
+
+        task.setOnFailed(e -> {
+            controller.setMultipleSimulationsRan(false);
+            unbind();
+            Logger.debug(e.getSource().toString() + " " + LocaleUtils.translate("failed") + "!");
+        });
+
+        task.setOnCancelled(e -> {
+            controller.setMultipleSimulationsRan(false);
+            unbind();
+            Logger.debug(e.getSource().toString() + " " + LocaleUtils.translate("was_cancelled") + "!");
+        });
+        this.thread = new Thread(task);
+        thread.setDaemon(daemon);
+        thread.start();
     }
 
     public void runTask(Task<?> task, boolean daemon) {
@@ -110,6 +138,7 @@ public class TaskReadyProgressBar extends StackPane {
                     this.updateProgress(0, tasks.size());
                     int count = 0;
                     for (ArrayList task : tasks) {
+                        if (this.isCancelled()) break;
                         Logger.info("\n");
                         Logger.info(LocaleUtils.translate("starting_simulation") + "! " + "\n\t" + LocaleUtils.translate("simulation_parameter_seed") + ": " + task.get(1) + "\n\t" + LocaleUtils.translate("simulation_parameter_alpha") + ": " + task.get(2) + "\n\t" + LocaleUtils.translate("simulation_parameter_erlang") + ": " + task.get(3) +
                                 "\n\t" + LocaleUtils.translate("simulation_parameter_number_of_requests") + ": " + task.get(4) + "\n\t" + LocaleUtils.translate("simulation_parameter_replica_preservation") + ": " + task.get(5));
@@ -118,8 +147,9 @@ public class TaskReadyProgressBar extends StackPane {
                         Logger.info(LocaleUtils.translate("simulation_finished") + "!");
                         controller.setRunning(false);
                         this.updateProgress(++count, tasks.size());
+                        if (this.isCancelled()) break;
                     }
-                } catch(Throwable e){
+                } catch (Throwable e) {
                     e.printStackTrace();
                 }
                 return null;
@@ -128,6 +158,7 @@ public class TaskReadyProgressBar extends StackPane {
         bind(task);
         task.setOnSucceeded(e -> {
             unbind();
+            controller.setMultipleSimulationsRan(true);
             runMultipleSimulationService.shutdown();
             try {
                 if (!runMultipleSimulationService.awaitTermination(2500, TimeUnit.MILLISECONDS)) {
@@ -136,105 +167,136 @@ public class TaskReadyProgressBar extends StackPane {
             } catch (InterruptedException ex) {
                 runMultipleSimulationService.shutdownNow();
             }
-
-            // Extract JSON data
-            for (String resultsDataFileName : resultsDataFileNameList) {
-                try {
-                    BufferedReader bufferedReader = new BufferedReader(new FileReader(Simulation.RESULTS_DATA_DIR_NAME + "/" + ApplicationResources.getProject().getName().toUpperCase() + "/" + resultsDataFileName));
-
-                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                    JsonObject js = gson.fromJson(bufferedReader, JsonObject.class);
-
-                    resultsDataJsonList.add(js);
-                }
-                catch (IOException ex) {
-                    ex.printStackTrace();
-                    resultsDataFileNameList.clear();
-                    resultsDataJsonList.clear();
-                }
-            }
-            // TODO: Get highest and lowest to validate users chosen PDF Range and Domain
-            double highestBlockPercentageVolume;
-
-            File resultsSummaryDirectory = new File(RESULTS_SUMMARY_DIR_NAME);
-
-            if (!resultsSummaryDirectory.isDirectory())
-                resultsSummaryDirectory.mkdir();
-
-            // Write to PDF
-            try (PDDocument document = new PDDocument()) {
-
-                PDPage page = new PDPage();
-                document.addPage(page);
-                PDFont font = PDType1Font.HELVETICA_BOLD;
-
-                PDPageContentStream contentStream = new PDPageContentStream(document, page);
-                contentStream.beginText();
-                contentStream.setFont(font, 12);
-                contentStream.newLineAtOffset(150, 750);
-                contentStream.showText(LocaleUtils.translate("simulation_summary_label"));
-                contentStream.endText();
-
-                PdfBoxGraphics2D pdfBoxGraphics2D = new PdfBoxGraphics2D(document, 800, 400);
-                Rectangle rectangle = new Rectangle(800, 400);
-
-                TextInputDialog textInputDialog = new TextInputDialog(LocaleUtils.translate("report_blocked_volume_percentage_from_insufficient_resources"));
-                textInputDialog.setHeaderText(LocaleUtils.translate("pdf_summary_graph_label"));
-                textInputDialog.showAndWait();
-                String graphName = textInputDialog.getResult();
-                textInputDialog = new TextInputDialog(LocaleUtils.translate("blocked_volume_percentage"));
-                textInputDialog.setHeaderText(LocaleUtils.translate("pdf_graph_range_label"));
-                textInputDialog.showAndWait();
-                String graphRangeName = textInputDialog.getResult();
-                textInputDialog = new TextInputDialog(LocaleUtils.translate("erlang"));
-                textInputDialog.setHeaderText(LocaleUtils.translate("pdf_graph_domain_label"));
-                textInputDialog.showAndWait();
-                String graphRDomainName = textInputDialog.getResult();
-
-                //Create dataset and chart
-                //TODO: PDF Graph Range Generation Should be Based off user input
-                XYDataset dataset = createDatasetXY();
-                JFreeChart chart = createChartXY(dataset, graphName, graphRangeName, graphRDomainName);
-                chart.getXYPlot().getDomainAxis().setLowerBound(0);
-                chart.getXYPlot().getRangeAxis().setUpperBound(0.1);
-                chart.getXYPlot().getRangeAxis().setLowerBound(0);
-                chart.draw(pdfBoxGraphics2D, rectangle);
-
-                pdfBoxGraphics2D.dispose();
-
-                PDFormXObject appearanceStream = pdfBoxGraphics2D.getXFormObject();
-                Matrix matrix = new Matrix();
-                matrix.translate(0, 30);
-                matrix.scale(0.7f, 1f);
-
-                contentStream.saveGraphicsState();
-                contentStream.transform(matrix);
-                contentStream.drawForm(appearanceStream);
-                contentStream.restoreGraphicsState();
-                contentStream.close();
-
-                document.save(resultsSummaryDirectory + File.separator + ApplicationResources.getProject().getName().toUpperCase() +
-                        new SimpleDateFormat("_yyyy_MM_dd_HH_mm_ss").format(new Date()) + ".pdf");
-                document.close();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            } finally {
-                resultsDataFileNameList.clear();
-                resultsDataSeedList.clear();
-                resultsDataJsonList.clear();
-            }
         });
         task.setOnFailed(e -> {
+            controller.setMultipleSimulationsRan(false);
             unbind();
             Logger.debug(e.getSource().toString() + " " + LocaleUtils.translate("failed") + "!");
         });
         task.setOnCancelled(e -> {
+            controller.setMultipleSimulationsRan(false);
             unbind();
             Logger.debug(e.getSource().toString() + " " + LocaleUtils.translate("was_cancelled") + "!");
         });
         thread = new Thread(task);
         thread.setDaemon(daemon);
         runMultipleSimulationService.execute(thread);
+    }
+
+    public void initializePDFGen(ResourceBundle resources) {
+        graphLabel = resources.getString("report_blocked_volume_percentage_from_insufficient_resources");
+        XLabel = resources.getString("erlang");
+        YLabel = resources.getString("blocked_volume_percentage");
+    }
+
+    public void generatePDF() {
+
+        File resultsSummaryDirectory = new File(RESULTS_SUMMARY_DIR_NAME);
+        if (!resultsSummaryDirectory.isDirectory())
+            resultsSummaryDirectory.mkdirs();
+
+        // Write to PDF
+        try (PDDocument document = new PDDocument()) {
+
+            PDPage page = new PDPage(new PDRectangle(PDRectangle.A4.getHeight(), PDRectangle.A4.getWidth()));
+            document.addPage(page);
+            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+            PdfBoxGraphics2D pdfBoxGraphics2D = new PdfBoxGraphics2D(document, 1150, 550);
+            Rectangle rectangle = new Rectangle(1150, 550);
+
+            //Create dataset and chart
+            JFreeChart chart = generateChart(graphLabel, YLabel, XLabel);
+            chart.draw(pdfBoxGraphics2D, rectangle);
+
+            pdfBoxGraphics2D.dispose();
+
+            PDFormXObject appearanceStream = pdfBoxGraphics2D.getXFormObject();
+            Matrix matrix = new Matrix();
+            matrix.translate(0, 30);
+            matrix.scale(0.7f, 1f);
+
+            contentStream.saveGraphicsState();
+            contentStream.transform(matrix);
+            contentStream.drawForm(appearanceStream);
+            contentStream.restoreGraphicsState();
+            contentStream.close();
+
+            document.save(resultsSummaryDirectory + File.separator + ApplicationResources.getProject().getName().toUpperCase() +
+                    new SimpleDateFormat("_yyyy_MM_dd_HH_mm_ss").format(new Date()) + ".pdf");
+        }
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        finally {
+            RESULTS_SUMMARY_DIR_NAME = "results summary";
+            resultsDataFileNameList.clear();
+            resultsDataSeedList.clear();
+            resultsDataJsonList.clear();
+        }
+    }
+
+    public void readData() {
+        for (String resultsDataFileName : resultsDataFileNameList)
+            try {
+                BufferedReader bufferedReader = new BufferedReader(new FileReader(Simulation.RESULTS_DATA_DIR_NAME + "/" + ApplicationResources.getProject().getName().toUpperCase() + "/" + resultsDataFileName));
+
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                JsonObject js = gson.fromJson(bufferedReader, JsonObject.class);
+
+                resultsDataJsonList.add(js);
+
+                System.out.println(js.getAsJsonObject());
+
+            }
+            catch (IOException ex) {
+                ex.printStackTrace();
+                resultsDataFileNameList.clear();
+                resultsDataJsonList.clear();
+            }
+    }
+
+    public JFreeChart generateChart(String graphLabel, String YLabel, String XLabel) {
+        readData();
+        double highestBlockPercentageVolume = 0;
+        double lowestBlockPercentageVolume = 999999999;
+        int lowestErlang = resultsDataJsonList.get(0).get("erlangValue").getAsInt();
+        int highestErlang = resultsDataJsonList.get(resultsDataJsonList.size() - 1).get("erlangValue").getAsInt();
+        int erlangStep = 20;
+        boolean stepFound = false;
+        int simulationsOnStep = 0;
+        for (JsonObject b : resultsDataJsonList) {
+            double tempBlockPercentage = b.get("totalBlockedVolumePercentage").getAsDouble();
+            if (highestBlockPercentageVolume < tempBlockPercentage)
+                highestBlockPercentageVolume = tempBlockPercentage;
+            if (lowestBlockPercentageVolume > tempBlockPercentage)
+                lowestBlockPercentageVolume = tempBlockPercentage;
+            if (!stepFound) {
+                simulationsOnStep++;
+                int erlang = b.get("erlangValue").getAsInt();
+                if (lowestErlang == erlang)
+                    continue;
+                erlangStep = erlang - lowestErlang;
+                stepFound = true;
+            }
+        }
+        XYDataset dataset = createDatasetXY();
+        JFreeChart chart = createChartXY(dataset, graphLabel, YLabel, XLabel);
+        chart.getXYPlot().getDomainAxis().setLowerBound(lowestErlang);
+        chart.getXYPlot().getDomainAxis().setUpperBound(highestErlang);
+        if (highestBlockPercentageVolume == 0) {
+            chart.getXYPlot().getRangeAxis().setUpperBound(0.1);
+            ((NumberAxis) chart.getXYPlot().getRangeAxis()).setTickUnit(new NumberTickUnit(0.01));
+        } else {
+            chart.getXYPlot().getRangeAxis().setUpperBound(highestBlockPercentageVolume);
+            ((NumberAxis) chart.getXYPlot().getRangeAxis()).setTickUnit(new NumberTickUnit(highestBlockPercentageVolume/10));
+        }
+        chart.getXYPlot().getRangeAxis().setLowerBound(0);
+        ((NumberAxis) chart.getXYPlot().getDomainAxis()).setTickUnit(new NumberTickUnit(erlangStep));
+        Font font = new Font("Helvetica", Font.BOLD, 12);
+        chart.getXYPlot().getDomainAxis().setLabelFont(font);
+        chart.getXYPlot().getRangeAxis().setLabelFont(font);
+        chart.getTitle().setFont(font);
+        return chart;
     }
 
     private void setRunMultipleSimulationService(ExecutorService runMultipleSimulationService) {
@@ -253,24 +315,24 @@ public class TaskReadyProgressBar extends StackPane {
         resultsDataFileNameList.add(resultsDataFileName);
     }
 
-    public static ArrayList<String> getResultsDataFileNameList(){
+    public static ArrayList<String> getResultsDataFileNameList() {
         return resultsDataFileNameList;
     }
 
-    public static void addResultsDataSeed(Integer seedValue){
+    public static void addResultsDataSeed(Integer seedValue) {
         resultsDataSeedList.add(seedValue);
     }
 
-    public static ArrayList<Integer> getResultsDataSeedList(){
+    public static ArrayList<Integer> getResultsDataSeedList() {
         return resultsDataSeedList;
     }
 
-    private XYDataset createDatasetXY(){
+    private XYDataset createDatasetXY() {
         XYSeries series1 = new XYSeries(NO_SPECTRUM_BLOCKED_VOLUME_PERCENTAGE);
         XYSeries series2 = new XYSeries(NO_REGENERATORS_BLOCKED_VOLUME_PERCENTAGE);
         XYSeries series3 = new XYSeries(LINK_FAILURE_BLOCKED_VOLUME_PERCENTAGE);
 
-        int simulationsInErlangRange = resultsDataJsonList.size()/resultsDataSeedList.size();
+        int simulationsInErlangRange = resultsDataJsonList.size() / resultsDataSeedList.size();
 
         for (int i = 0; i < simulationsInErlangRange; i++) {
             int erlangValue = 0;
@@ -284,8 +346,8 @@ public class TaskReadyProgressBar extends StackPane {
 
             // Multiple simulations per Erlang
             if (resultsDataSeedList.size() > 1)
-                for(int j = 0; j < resultsDataSeedList.size(); j++){
-                    JsonObject resultsDataJson = resultsDataJsonList.get(i + (j*simulationsInErlangRange));
+                for (int j = 0; j < resultsDataSeedList.size(); j++) {
+                    JsonObject resultsDataJson = resultsDataJsonList.get(i + (j * simulationsInErlangRange));
                     noSpectrumBlockedVolumePercentage += resultsDataJson.get("noSpectrumBlockedVolumePercentage").getAsDouble();
                     noRegeneratorsBlockedVolumePercentage += resultsDataJson.get("noRegeneratorsBlockedVolumePercentage").getAsDouble();
                     linkFailureBlockedVolumePercentage += resultsDataJson.get("linkFailureBlockedVolumePercentage").getAsDouble();
@@ -302,9 +364,9 @@ public class TaskReadyProgressBar extends StackPane {
                 totalBlockedVolumePercentage = resultsDataJson.get("totalBlockedVolumePercentage").getAsDouble();
                 averageRegeneratiorsPerAllocation = resultsDataJson.get("averageRegeneratiorsPerAllocation").getAsDouble();
             }
-            series1.add( erlangValue, noSpectrumBlockedVolumePercentage );
-            series2.add( erlangValue, noRegeneratorsBlockedVolumePercentage );
-            series3.add( erlangValue, linkFailureBlockedVolumePercentage );
+            series1.add(erlangValue, noSpectrumBlockedVolumePercentage);
+            series2.add(erlangValue, noRegeneratorsBlockedVolumePercentage);
+            series3.add(erlangValue, linkFailureBlockedVolumePercentage);
         }
 
         final XYSeriesCollection dataset = new XYSeriesCollection();
@@ -315,7 +377,8 @@ public class TaskReadyProgressBar extends StackPane {
         return dataset;
     }
 
-    private JFreeChart createChartXY(final XYDataset dataset, final String title,  final String yLabel, final String xLabel) {
+    private JFreeChart createChartXY(final XYDataset dataset, final String title, final String yLabel, final String xLabel) {
+        // create the chart...
         final JFreeChart chart = ChartFactory.createXYLineChart(title, // chart
                 // title
                 xLabel, // x axis label
@@ -331,9 +394,9 @@ public class TaskReadyProgressBar extends StackPane {
 
         // get a reference to the plot for further customisation...
         final XYPlot plot = chart.getXYPlot();
-        plot.setBackgroundPaint(Color.lightGray);
-        plot.setDomainGridlinePaint(Color.white);
-        plot.setRangeGridlinePaint(Color.white);
+        plot.setBackgroundPaint(Color.white);
+        plot.setDomainGridlinePaint(Color.lightGray);
+        plot.setRangeGridlinePaint(Color.lightGray);
 
         final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         plot.setRenderer(renderer);

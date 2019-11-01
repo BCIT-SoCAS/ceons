@@ -44,41 +44,59 @@
 								<Button onAction="#loadButtonClicked" text="%load_topology" GridPane.columnIndex="1" />
 								<Button fx:id="updateTopologyButton" onAction="#updateButtonClicked" text="%update_current_topology" GridPane.columnIndex="2" disable="true"/>
 
-								<CeonsLabel text="%control_settings_mouse_mode" />
-								<RadioButton onAction="#clearState" fx:id="RBNoneChose" selected="true" text="%none" toggleGroup="$RBGroup">
-									<toggleGroup>
-										<ToggleGroup fx:id="RBGroup" />
-									</toggleGroup>
-								</RadioButton>
-								<RadioButton onAction="#nodeSelect" text="%mouse_mode_select_node_or_link" toggleGroup="$RBGroup" />
-								<RadioButton onAction="#drag" text="%mouse_mode_drag" toggleGroup="$RBGroup" />
+                                <CeonsLabel text="%control_settings_mouse_mode"/>
+                                <RadioButton onAction="#clearState" fx:id="RBNoneChose" selected="true" text="%none"
+                                             toggleGroup="$RBGroup">
+                                    <toggleGroup>
+                                        <ToggleGroup fx:id="RBGroup"/>
+                                    </toggleGroup>
+                                </RadioButton>
+                                <RadioButton onAction="#nodeSelect" text="%mouse_mode_select_node_or_link"
+                                             toggleGroup="$RBGroup"/>
+                                <RadioButton onAction="#drag" text="%mouse_mode_drag" toggleGroup="$RBGroup"/>
 
-								<Separator />
+                                <Separator/>
 
-								<CeonsLabel text="%control_settings_language" />
-								<ComboBox fx:id="localeCombo" layoutX="15.0" layoutY="33.0" promptText="%choose_language" />
-							</children>
-						</VBox>
-					</content>
-				</TitledPane>
-				<TitledPane animated="true" text="%tab_name_simulation_settings">
-					<content>
-						<fx:include fx:id="simulationMenu" source="/ca/bcit/jfx/res/views/SimulationMenu.fxml" />
-					</content>
-				</TitledPane>
-				<TitledPane fx:id="liveInfoPane" animated="true" text="%tab_name_live_info">
-					<content>
-						<VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" >
-							<Label fx:id="info"></Label>
-						</VBox>
-					</content>
-				</TitledPane>
-				<TitledPane fx:id="fullSummaryPane" animated="true" text="%tab_name_full_summary">
-					<content>
-						<AnchorPane prefHeight="180.0" prefWidth="200.0" />
-					</content>
-				</TitledPane>
-			</panes>
-		</Accordion>
-	</children>
+                                <CeonsLabel text="%control_settings_language"/>
+                                <ComboBox fx:id="localeCombo" layoutX="15.0" layoutY="33.0"
+                                          promptText="%choose_language"/>
+                            </children>
+                        </VBox>
+                    </content>
+                </TitledPane>
+                <TitledPane animated="true" text="%tab_name_simulation_settings">
+                    <content>
+                        <fx:include fx:id="simulationMenu" source="/ca/bcit/jfx/res/views/SimulationMenu.fxml"/>
+                    </content>
+                </TitledPane>
+                <TitledPane fx:id="liveInfoPane" animated="true" text="%tab_name_live_info">
+                    <content>
+                        <VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <Label fx:id="info"></Label>
+                        </VBox>
+                    </content>
+                </TitledPane>
+                <TitledPane fx:id="fullSummaryPane" animated="true" text="%result_generation">
+                    <content>
+                        <VBox prefHeight="180" prefWidth="200">
+                            <Label text="%pdf_summary_graph_label"/>
+                            <TextField text="%report_blocked_volume_percentage_from_insufficient_resources_vs_erlangs" fx:id="titleLabel"/>
+                            <Label text="%pdf_graph_domain_label"/>
+                            <TextField text="%erlang" fx:id="XLabel"/>
+                            <Label text="%pdf_graph_range_label"/>
+                            <TextField text="%blocked_volume_percentage" fx:id="YLabel"/>
+							<Label text="%download_file_path" />
+							<TextField fx:id="PDFFilePath" />
+                            <CheckBox text="Open Folder after Download" fx:id="openPDF" />
+							<Button text="%choose_file_path" onMouseClicked="#chooseFilePath" />
+                            <Button text="%reset_to_defaults" onMouseClicked="#resetParams"/>
+                            <Button text="%preview_pdf" onMouseClicked="#previewPDF"/>
+                            <Button text="%download_pdf" fx:id="generateButton" onMouseClicked="#generatePDF"/>
+                            <Button text="%view_data_files" onMouseClicked="#openDataFiles" />
+                        </VBox>
+                    </content>
+                </TitledPane>
+            </panes>
+        </Accordion>
+    </children>
 </GridPane>

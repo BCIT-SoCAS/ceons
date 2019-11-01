@@ -40,36 +40,53 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
-import javafx.stage.FileChooser;
-
 import javafx.scene.layout.*;
-import javafx.scene.paint.*;
-import javafx.geometry.Insets;
-
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.RadialGradient;
+import javafx.scene.paint.Stop;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.fx.ChartViewer;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.net.URL;
-import java.util.*;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.Files;
+import java.util.ResourceBundle;
 import java.util.concurrent.ScheduledExecutorService;
 
 public class MainWindowController implements Initializable {
     private static final int PROPERTIES_PANE_NUMBER = 2;
+    public TitledPane fullSummaryPane;
+    public TextField XLabel;
+    public TextField YLabel;
+    public Button generateButton;
+    public TextField titleLabel;
+    public TextField PDFFilePath;
+    public DirectoryChooser directoryChooser = new DirectoryChooser();
+    public CheckBox openPDF;
     private int i;
     @FXML
     private Console console;
@@ -124,7 +141,7 @@ public class MainWindowController implements Initializable {
     }
 
     public void setFile(File file) {
-        this.file = file; 
+        this.file = file;
     }
 
     /**
@@ -255,7 +272,6 @@ public class MainWindowController implements Initializable {
         List<BackgroundImage> bg = Collections.singletonList(new BackgroundImage(new Image(getClass().getResourceAsStream("/ca/bcit/jfx/res/images/LogoEON.png")),
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, bgSize));
         accordion.setBackground(new Background(bgFill, bg));
-
         simulationMenuController.setProgressBar(progressBar);
 
         zoomSlider.setMin(Settings.ZOOM_MIN_LEVEL);
@@ -271,6 +287,9 @@ public class MainWindowController implements Initializable {
 
         graph.scaleXProperty().addListener(observable -> graph.list.redraw());
         graph.scaleYProperty().addListener(observable -> graph.list.redraw());
+
+        PDFFilePath.setText(System.getProperty("user.dir")+"\\results summary");
+        directoryChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
     }
 
     private static void localeChanged(ObservableValue<? extends String> selected, String oldLanguage, String newLanguage) {
@@ -399,8 +418,8 @@ public class MainWindowController implements Initializable {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() {
-            controller.populateTableWithLoadedTopology();
-            return null;
+                controller.populateTableWithLoadedTopology();
+                return null;
             }
         };
         task.run();
@@ -408,32 +427,31 @@ public class MainWindowController implements Initializable {
 
     public void updateGraph() {
         updateTimeline = new Timeline(
-            new KeyFrame(
-                Duration.millis(200),
-                event -> {
-                    try {
-                        graph.resetCanvas();
-                        Project project = ApplicationResources.getProject();
-                        for (NetworkNode n : project.getNetwork().getNodes()) {
-                            n.updateRegeneratorCount();
-                            graph.addNetworkNode(n);
-                            for (NetworkNode n2 : project.getNetwork().getNodes())
-                                if (project.getNetwork().containsLink(n, n2)) {
-                                    NetworkLink networkLink = project.getNetwork().getLink(n, n2);
-                                    Spectrum linkSpectrum = project.getNetwork().getLinkSlices(n, n2);
-                                    int totalSlices = linkSpectrum.getSlicesCount();
-                                    int occupiedSlices = linkSpectrum.getOccupiedSlices();
-                                    int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
-                                    graph.addLink(n.getPosition(), n2.getPosition(), currentPercentage, networkLink.getLength());
+                new KeyFrame(
+                        Duration.millis(200),
+                        event -> {
+                            try {
+                                graph.resetCanvas();
+                                Project project = ApplicationResources.getProject();
+                                for (NetworkNode n : project.getNetwork().getNodes()) {
+                                    n.updateRegeneratorCount();
+                                    graph.addNetworkNode(n);
+                                    for (NetworkNode n2 : project.getNetwork().getNodes())
+                                        if (project.getNetwork().containsLink(n, n2)) {
+                                            NetworkLink networkLink = project.getNetwork().getLink(n, n2);
+                                            Spectrum linkSpectrum = project.getNetwork().getLinkSlices(n, n2);
+                                            int totalSlices = linkSpectrum.getSlicesCount();
+                                            int occupiedSlices = linkSpectrum.getOccupiedSlices();
+                                            int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
+                                            graph.addLink(n.getPosition(), n2.getPosition(), currentPercentage, networkLink.getLength());
+                                        }
                                 }
-                        }
 
-                    }
-                    catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            )
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                )
         );
         updateTimeline.setCycleCount(Timeline.INDEFINITE);
         updateTimeline.play();
@@ -645,5 +663,82 @@ public class MainWindowController implements Initializable {
 
     public void setFileChooser(FileChooser fileChooser) {
         this.fileChooser = fileChooser;
+    }
+
+    public void generatePDF() {
+        if (simulationMenuController.isMultipleSimulationsRan()) {
+            SimulationMenuController.progressBar.initializePDFGen(Settings.getCurrentResources());
+            SimulationMenuController.progressBar.graphLabel = titleLabel.getText();
+            SimulationMenuController.progressBar.XLabel = XLabel.getText();
+            SimulationMenuController.progressBar.YLabel = YLabel.getText();
+            String path = PDFFilePath.getText();
+            path = path.replace("\\", File.separator);
+            TaskReadyProgressBar.RESULTS_SUMMARY_DIR_NAME = path;
+            SimulationMenuController.progressBar.generatePDF();
+            simulationMenuController.setMultipleSimulationsRan(false);
+            if (openPDF.isSelected()) {
+                File file = new File(path);
+                try {
+                    Desktop.getDesktop().open(file);
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                    Alert alert = new Alert(AlertType.ERROR);
+                    alert.setTitle(LocaleUtils.translate("error_opening_file"));
+                    alert.setHeaderText(LocaleUtils.translate("we_cannot_open_the_file_on_your_operationg_system"));
+                    alert.setContentText(null);
+                }
+            }
+            resetParams();
+        }
+        else
+            pdfErrorAlert();
+    }
+
+    public void previewPDF() {
+        if (simulationMenuController.isMultipleSimulationsRan()) {
+            JFreeChart chart = SimulationMenuController.progressBar.generateChart(titleLabel.getText(), YLabel.getText(), XLabel.getText());
+            ChartViewer viewer = new ChartViewer(chart);
+            Stage stage = new Stage();
+            stage.setScene(new Scene(viewer));
+            stage.setTitle(LocaleUtils.translate("jfreechart_preview"));
+            stage.setWidth(1000);
+            stage.setHeight(800);
+            stage.showAndWait();
+        }
+        else
+            pdfErrorAlert();
+    }
+
+    public void resetParams(){
+        titleLabel.setText(LocaleUtils.translate("report_blocked_volume_percentage_from_insufficient_resources_vs_erlangs"));
+        YLabel.setText(LocaleUtils.translate("blocked_volume_percentage"));
+        XLabel.setText(LocaleUtils.translate("erlang"));
+        PDFFilePath.setText(System.getProperty("user.dir")+"\\results summary");
+    }
+
+    public void chooseFilePath(){
+        File file = directoryChooser.showDialog(XLabel.getScene().getWindow());
+        PDFFilePath.setText(file.getAbsolutePath());
+    }
+    public void openDataFiles() {
+        File file = new File(System.getProperty("user.dir")+"\\results data");
+        try {
+            Desktop.getDesktop().open(file);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle(LocaleUtils.translate("error_opening_file"));
+            alert.setHeaderText(LocaleUtils.translate("we_cannot_open_the_file_on_your_operationg_system"));
+            alert.setContentText(null);
+        }
+    }
+    private void pdfErrorAlert(){
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle(LocaleUtils.translate("error_generating_pdf"));
+        alert.setHeaderText(LocaleUtils.translate("run_rerun_multiple_simulations_to_generate_a_new_pdf"));
+        alert.setContentText(LocaleUtils.translate("to_generate_a_pdf_please_run_simulation_with_the_multiple_simulation_checkbox_selected"));
+        alert.showAndWait();
     }
 }

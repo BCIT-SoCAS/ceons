@@ -40,7 +40,8 @@ import java.util.concurrent.ThreadFactory;
 public class SimulationMenuController implements Initializable {
     public static boolean started = false;
     public static boolean finished = false;
-    public static boolean paused = false;
+
+	public static boolean paused = false;
     public static boolean cancelled = false;
 
     public static TaskReadyProgressBar progressBar;
@@ -83,6 +84,7 @@ public class SimulationMenuController implements Initializable {
 	@FXML public Label pauseInfoLabel;
 	@FXML private Hyperlink algorithmsLink;
 	private CheckBox[] modulations;
+	private boolean multipleSimulationsRan = false;
 
 	/**
 	 * To disable and enable Main Controller settings while simulation is running
@@ -270,14 +272,15 @@ public class SimulationMenuController implements Initializable {
             cancelButton.setDisable(false);
 
             //If multiple simulations is selected then we will create a single thread executor otherwise to run multiple consecutive simulations back-to-back, otherwise, run one task
-            if(!runMultipleSimulations.isSelected()){
+            if (!runMultipleSimulations.isSelected()) {
                 simulation = new Simulation(network, generators.getValue());
 
                 //TODO: REFACTOR SIMULATION TASK INTO SIMULATION
                 SimulationTask task = new SimulationTask(simulation, seedField.getValue(), Double.parseDouble(alpha.getText()), erlangIntField.getValue(), demands.getValue(), true, this);
                 progressBar.runTask(task, true);
-            } else {
-            	if(erlangRangeLowField.getValue() > erlangRangeHighField.getValue() || erlangRangeLowField.getValue() == erlangRangeHighField.getValue()){
+            }
+            else {
+            	if (erlangRangeLowField.getValue() > erlangRangeHighField.getValue() || erlangRangeLowField.getValue() == erlangRangeHighField.getValue()){
 					Alert alert = new Alert(Alert.AlertType.ERROR);
 					alert.setTitle(LocaleUtils.translate("erlang_range"));
 					alert.setHeaderText(null);
@@ -297,7 +300,7 @@ public class SimulationMenuController implements Initializable {
 				});
                 Random random = new Random();
 				ArrayList<ArrayList> tasks = new ArrayList<>();
-				for(int numRepetitions = 1; numRepetitions <= numRepetitionsPerErlang.getValue(); numRepetitions++){
+				for (int numRepetitions = 1; numRepetitions <= numRepetitionsPerErlang.getValue(); numRepetitions++){
 					int randomSeed = random.nextInt(101);
 
                     TaskReadyProgressBar.addResultsDataSeed(randomSeed);
@@ -329,7 +332,15 @@ public class SimulationMenuController implements Initializable {
             setRunning(false);
         }
 	}
-	
+
+	public void setMultipleSimulationsRan(boolean multipleSimulationsRan) {
+		this.multipleSimulationsRan = multipleSimulationsRan;
+	}
+
+	public boolean isMultipleSimulationsRan() {
+		return multipleSimulationsRan;
+	}
+
 	public void setRunning(boolean isRunning){
 		for (Node node: new Node[] {generators,
 		runMultipleSimulations, simulationRepetitions, erlangLabel, stepBetweenErlangsLabel, erlangRangeLabel,
@@ -372,7 +383,7 @@ public class SimulationMenuController implements Initializable {
 				TaskReadyProgressBar.getResultsDataSeedList().clear();
 				ResizableCanvas.getParentController().resetGraph();
 				ResizableCanvas.getParentController().graph.changeState(DrawingState.noActionState);
-				if (runMultipleSimulations.isSelected()) {
+				if (runMultipleSimulations.isSelected())
 					try {
 						progressBar.getRunMultipleSimulationService().shutdownNow();
 						ResizableCanvas.getParentController().initializeSimulationsAndNetworks();
@@ -387,8 +398,6 @@ public class SimulationMenuController implements Initializable {
 						ex.printStackTrace();
 						return;
 					}
-				}
-			//User cancels cancel
 			}
 			else {
 				paused = false;
