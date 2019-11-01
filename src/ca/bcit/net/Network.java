@@ -3,7 +3,7 @@ package ca.bcit.net;
 import ca.bcit.graph.Graph;
 import ca.bcit.graph.Relation;
 import ca.bcit.io.YamlSerializable;
-import ca.bcit.net.algo.RMSAAlgorithm;
+import ca.bcit.net.algo.IRMSAAlgorithm;
 import ca.bcit.net.demand.Demand;
 import ca.bcit.net.demand.DemandAllocationResult;
 import ca.bcit.net.demand.generator.TrafficGenerator;
@@ -34,7 +34,7 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	private MetricType regeneratorMetricType;
 	private int regeneratorMetricValue = 5;
 	
-	private RMSAAlgorithm demandAllocationAlgorithm;
+	private IRMSAAlgorithm demandAllocationAlgorithm;
 
 	private TrafficGenerator trafficGenerator;
 	private int bestPathsCount;
@@ -64,7 +64,7 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	
 	// DEMANDS
 	
-	public void setDemandAllocationAlgorithm(RMSAAlgorithm algorithm) {
+	public void setDemandAllocationAlgorithm(IRMSAAlgorithm algorithm) {
 		this.demandAllocationAlgorithm = algorithm;
 	}
 	

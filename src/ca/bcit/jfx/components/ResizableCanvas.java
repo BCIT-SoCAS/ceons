@@ -194,7 +194,6 @@ public class ResizableCanvas extends Canvas {
      * @param name  name of the node
      */
     public void addNode(Vector2F vec2F, String name) {
-        System.out.println(vec2F.getX());
         list.add(new Node(vec2F, name));
     }
 

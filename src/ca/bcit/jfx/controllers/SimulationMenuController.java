@@ -1,6 +1,7 @@
 package ca.bcit.jfx.controllers;
 
 import ca.bcit.ApplicationResources;
+import ca.bcit.Main;
 import ca.bcit.io.MapLoadingException;
 import ca.bcit.jfx.DrawingState;
 import ca.bcit.jfx.components.*;
@@ -9,7 +10,6 @@ import ca.bcit.net.MetricType;
 import ca.bcit.net.Modulation;
 import ca.bcit.net.Network;
 import ca.bcit.net.Simulation;
-import ca.bcit.net.algo.RMSAAlgorithm;
 import ca.bcit.net.demand.generator.TrafficGenerator;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.event.ActionEvent;
@@ -18,16 +18,20 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
+import java.awt.*;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Random;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -68,7 +72,7 @@ public class SimulationMenuController implements Initializable {
 	@FXML private VBox settings;
 	@FXML private HBox multipleSimulatonSettingsLabel;
 	@FXML private HBox multipleSimulatonSettingsRange;
-	@FXML private ComboBox<RMSAAlgorithm> algorithms;
+	@FXML private ComboBox<String> algorithms;
 	@FXML private ToggleGroup regeneratorsMetric;
 	@FXML private ToggleGroup modulationMetric;
 	@FXML private CheckBox allowModulationChange;
@@ -78,6 +82,7 @@ public class SimulationMenuController implements Initializable {
 	@FXML private Button cancelButton;
 	@FXML private Button StartButton;
 	@FXML public Label pauseInfoLabel;
+	@FXML private Hyperlink algorithmsLink;
 	private CheckBox[] modulations;
 
 	/**
@@ -95,11 +100,29 @@ public class SimulationMenuController implements Initializable {
 				throw new RuntimeException(e);
 			}
 
-		algorithms.setItems(new ObservableListWrapper<>(new ArrayList<>(RMSAAlgorithm.getRegisteredAlgorithms())));
-		
+		algorithms.setItems(new ObservableListWrapper<>(new ArrayList<>(Main.getRegisteredAlgorithms().keySet())));
+
+		algorithmsLink.setOnMouseClicked(e -> {
+			if (algorithms.getValue() == null) {
+				Alert selectAlgoAlert = new Alert(Alert.AlertType.ERROR);
+				selectAlgoAlert.setHeaderText(resources.getString("select_an_algorithm_to_view_the_documentation"));
+				selectAlgoAlert.show();
+			}
+			else {
+				String algoKey = algorithms.getValue();
+				try {
+					Desktop.getDesktop().browse(new URI(Main.getRegisteredAlgorithms().get(algoKey).getDocumentationURL()));
+				}
+				catch (IOException | URISyntaxException ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+
 		modulations = new CheckBox[Modulation.values().length];
 		for (Modulation modulation : Modulation.values())
 			modulations[modulation.ordinal()] = ((CheckBox) settings.lookup("#modulation" + modulation.ordinal()));
+
 		generatorsStatic = generators;
 		pauseButton.managedProperty().bind(pauseButton.visibleProperty());
 		StartButton.managedProperty().bind(StartButton.visibleProperty());
@@ -204,15 +227,24 @@ public class SimulationMenuController implements Initializable {
                 alert.showAndWait();
                 return;
             }
-            else if (bestPaths.getValue() > network.getMaxPathsCount() || bestPaths.getValue() <= 0){
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle(resources.getString("set_number_of_candidate_paths"));
-                alert.setHeaderText(null);
-                alert.setContentText(resources.getString("number_of_candidate_paths_must_be_greater_than_zero_and_less_than_or_equal_best_paths_count"));
-                alert.setResizable(true);
-                alert.getDialogPane().setPrefSize(480.0, 100);
-                alert.showAndWait();
-                return;
+			else if (bestPaths.getValue() > network.getMaxPathsCount() || bestPaths.getValue() <= 0){
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Set Number of Candidate Paths");
+				alert.setHeaderText(null);
+				if(bestPaths.getValue() > network.getMaxPathsCount()){
+					alert.setContentText("Number of candidate paths must be less than best paths count");
+//					bestPaths.replaceText(0, bestPaths.getText().length(), String.valueOf(network.getMaxPathsCount()));
+				} else {
+					alert.setContentText("Number of candidate paths can't be 0 or negative");
+				}
+				bestPaths.setStyle("-fx-border-color: red; -fx-border-width: 1; -fx-border-radius: 2");
+				bestPaths.setOnKeyTyped(event -> {
+					bestPaths.setStyle("-fx-border-width: 0;");
+				});
+				alert.setResizable(true);
+				alert.getDialogPane().setPrefSize(480.0, 100);
+				alert.showAndWait();
+				return;
             }
             else if (demands.getValue() <= 0){
 				Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -225,7 +257,7 @@ public class SimulationMenuController implements Initializable {
 				return;
 			}
 
-            network.setDemandAllocationAlgorithm(algorithms.getValue());
+            network.setDemandAllocationAlgorithm(Main.getRegisteredAlgorithms().get(algorithms.getValue()));
 
             //Initially remove all modulations first and add back modulations that user selects
             for (Modulation modulation : network.getAllowedModulations()) network.disallowModulation(modulation);

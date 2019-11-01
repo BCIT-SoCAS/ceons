@@ -158,7 +158,6 @@ public class SavedNodeDetails implements YamlSerializable {
      * @param nodeType node type (international, data center, standard)
      */
     public void setNodeType(String nodeType) {
-        System.out.println(nodeType);
         if (nodeType != null && !nodeType.isEmpty())
             this.nodeType = nodeType;
         else {

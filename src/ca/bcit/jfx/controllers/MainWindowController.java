@@ -294,13 +294,6 @@ public class MainWindowController implements Loadable, Initializable {
             @Override
             public void handle(MouseEvent event) {}
         });
-
-        graph.addEventHandler(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                System.out.println("x: " + event.getSceneX() + ", y: " + event.getSceneY());
-            }
-        });
     }
 
     /**
@@ -403,9 +396,13 @@ public class MainWindowController implements Loadable, Initializable {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/APIKeyWindow.fxml"), resourceBundle);
             grid = fxmlLoader.load();
             APIKeyController controller = fxmlLoader.getController();
-            if (controller != null)
+            FXMLLoader fxmlLoader2 = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SaveMapWindow.fxml"), resourceBundle);
+            fxmlLoader2.load();
+            SaveMapController saveMapController = fxmlLoader2.getController();
+            if (controller != null) {
                 controller.displaySaveAPIKeyWindow(grid);
-
+                saveMapController.displaySaveMapWindow();
+            }
         }
     }
 
@@ -448,9 +445,9 @@ public class MainWindowController implements Loadable, Initializable {
 //                    }
 //                }
 //
-//            } catch (Exception ex) {
+//            }
+//            catch (Exception ex) {
 //                ex.printStackTrace();
-//                System.out.println("An exception on updating the network UI");
 //            }
 //        };
 //
@@ -517,7 +514,6 @@ public class MainWindowController implements Loadable, Initializable {
         }
         catch (Exception ex) {
             new ErrorDialog(resources.getString("an_exception_occurred_while_updating_the_project"), ex, resources);
-            System.out.println(ex.getMessage());
         }
     }
 

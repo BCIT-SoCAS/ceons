@@ -37,7 +37,6 @@ public class NewTopology {
             SavedNodeDetails savedNodeDetails = savedNodeDetailsList.get(i);
             savedNodeDetails.setX(calXCoord(savedNodeDetails));
             savedNodeDetails.setY(calYCoord(savedNodeDetails));
-            System.out.println(savedNodeDetails.toString());
         }
         return staticMap;
     }

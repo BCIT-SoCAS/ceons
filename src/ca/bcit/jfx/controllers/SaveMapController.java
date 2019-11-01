@@ -24,6 +24,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
@@ -53,7 +54,7 @@ public class SaveMapController implements Loadable, Initializable {
     private Stage saveWindow;
     private TableView<SavedNodeDetails> saveTable;
     private TextField nodeNumInput, nameInput, connNodeInput, numRegeneratorInput;
-    private CheckBox dcCheckbox, itlCheckbox, standardCheckbox;
+    private ComboBox<String> nodeTypeInput;
     private FileChooser fileChooser;
     private File file;
 
@@ -86,9 +87,7 @@ public class SaveMapController implements Loadable, Initializable {
         nameInput.clear();
         connNodeInput.clear();
         numRegeneratorInput.clear();
-        itlCheckbox.setSelected(false);
-        dcCheckbox.setSelected(false);
-        standardCheckbox.setSelected(false);
+        nodeTypeInput.setValue(resources.getString("standard"));
     }
 
     /*
@@ -261,11 +260,18 @@ public class SaveMapController implements Loadable, Initializable {
             t.getTableView().getItems().get(t.getTablePosition().getRow()).setNumRegenerators(t.getNewValue());
         });
 
+        String[] nodeTypes = {
+            resources.getString("standard"),
+            resources.getString("data_center"),
+            resources.getString("international"),
+            resources.getString("data_center") + ", " + resources.getString("international")
+        };
+
         //Node Type Column
         TableColumn<SavedNodeDetails, String> nodeTypeColumn = new TableColumn<>(resources.getString("node_type"));
         nodeTypeColumn.setMinWidth(400);
         nodeTypeColumn.setCellValueFactory(new PropertyValueFactory<>("nodeType"));
-        nodeTypeColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        nodeTypeColumn.setCellFactory(ComboBoxTableCell.forTableColumn(nodeTypes));
         nodeTypeColumn.setOnEditCommit((TableColumn.CellEditEvent<SavedNodeDetails, String> t) -> {
             t.getTableView().getItems().get(t.getTablePosition().getRow()).setNodeType(t.getNewValue());
         });
@@ -283,9 +289,8 @@ public class SaveMapController implements Loadable, Initializable {
         numRegeneratorInput.setStyle("-fx-prompt-text-fill: derive(-fx-control-inner-background, -30%);-fx-pref-width: 230");
         numRegeneratorInput.setPromptText(resources.getString("number_of_regenerators_placeholder"));
 
-        itlCheckbox = new CheckBox(resources.getString("international"));
-        dcCheckbox = new CheckBox(resources.getString("data_center"));
-        standardCheckbox = new CheckBox(resources.getString("standard"));
+        nodeTypeInput = new ComboBox<>(FXCollections.observableArrayList(nodeTypes));
+        nodeTypeInput.setValue(resources.getString("standard"));
 
         //Buttons
         Button addButton = new Button(resources.getString("add"));
@@ -311,7 +316,7 @@ public class SaveMapController implements Loadable, Initializable {
         //Insets: Padding around entire layout
         hBox.setPadding(new Insets(10, 10, 10, 10));
         hBox.setSpacing(20);
-        hBox.getChildren().addAll(nameInput, connNodeInput, numRegeneratorInput, dcCheckbox, itlCheckbox, standardCheckbox, addButton, deleteButton, saveButton, loadButton);
+        hBox.getChildren().addAll(nameInput, connNodeInput, numRegeneratorInput, nodeTypeInput, addButton, deleteButton, saveButton, loadButton);
 
         saveTable = new TableView<>();
         saveTable.setItems(getSavedNodeDetails());
@@ -454,20 +459,7 @@ public class SaveMapController implements Loadable, Initializable {
      * @return node type
      */
     private String getSelectedNodeType() {
-        boolean dataCenterSelected = dcCheckbox.isSelected();
-        boolean internationalSelected = itlCheckbox.isSelected();
-        boolean standardSelected = standardCheckbox.isSelected();
-
-        if (dataCenterSelected && !internationalSelected && !standardSelected)
-            return resources.getString("data_center");
-        else if (dataCenterSelected && internationalSelected && !standardSelected)
-            return resources.getString("data_center") + ", " + resources.getString("international");
-        else if (!dataCenterSelected && internationalSelected && !standardSelected)
-            return resources.getString("international");
-        else if (!dataCenterSelected && !internationalSelected && standardSelected)
-            return resources.getString("standard");
-
-        return resources.getString("standard");
+        return nodeTypeInput.getValue();
     }
 
     /**
