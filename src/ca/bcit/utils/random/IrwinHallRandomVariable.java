@@ -5,9 +5,7 @@ import ca.bcit.io.YamlSerializable;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public abstract class IrwinHallRandomVariable<N> extends RandomVariable<N> {
-	
 	final int rank;
 	
 	IrwinHallRandomVariable(int rank) {
@@ -21,7 +19,6 @@ public abstract class IrwinHallRandomVariable<N> extends RandomVariable<N> {
 	}
 
 	public static class Integer extends IrwinHallRandomVariable<java.lang.Integer> implements YamlSerializable {
-
 		int offset, width;
 		
 		public Integer(int min, int max, int rank) {

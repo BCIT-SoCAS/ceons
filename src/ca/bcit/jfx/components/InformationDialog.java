@@ -1,13 +1,12 @@
 package ca.bcit.jfx.components;
 
+import ca.bcit.utils.LocaleUtils;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
 import java.util.ResourceBundle;
 
 /**
- * @author Derek Wong
- * @version 1.0.0
  * Wrapper class to a dialog box that displays information
  */
 public class InformationDialog {
@@ -17,10 +16,10 @@ public class InformationDialog {
      * Parameterized constructor to set and display the information dialog box
      * @param informationMessage to be displayed in the context
      */
-    public InformationDialog(String informationMessage, ResourceBundle resources){
+    public InformationDialog(String informationMessage){
         setInformationMessage(informationMessage);
         Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle(resources.getString("information_dialog"));
+        alert.setTitle(LocaleUtils.translate("information_dialog"));
         alert.setHeaderText(null);
         alert.setContentText(getInformationMessage());
 

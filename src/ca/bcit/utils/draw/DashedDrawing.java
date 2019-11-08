@@ -22,14 +22,16 @@ public class DashedDrawing {
 		gc.moveTo(vec1.getX(), vec1.getY());
 		if (dashAmmount % 2 == 1)
 			dashAmmount += 1;
+
 		for (int i = 0; i < dashAmmount; i++) {
-			if (on) {
+			if (on)
 				gc.lineTo(vec1.getX() - i * xMove, vec1.getY() - i * yMove);
-			} else {
+			else
 				gc.moveTo(vec1.getX() - i * xMove, vec1.getY() - i * yMove);
-			}
+
 			on = !on;
 		}
+
 		gc.closePath();
 		gc.stroke();
 		gc.setLineWidth(1);

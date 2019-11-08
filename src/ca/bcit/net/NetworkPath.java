@@ -4,8 +4,6 @@ import ca.bcit.graph.Path;
 
 /**
  * Path between nodes
- * @author Michal
- *
  */
 public class NetworkPath extends Path<NetworkNode> {
 
@@ -25,12 +23,14 @@ public class NetworkPath extends Path<NetworkNode> {
 		try {
 			for (int i = 0; i < size(); i++) {
 				int index = path.path.indexOf(get(i));
-				if (index == -1) continue;
+				if (index == -1)
+					continue;
 				if (i != 0 && index != 0 && get(i - 1).equals(path.path.get(index - 1)) || i != 0 && index != path.path.size() - 1 && get(i - 1).equals(path.path.get(index + 1)) ||
 						i != size() - 1 && index != 0 && get(i + 1).equals(path.path.get(index - 1)) || i != size() - 1 && index != path.path.size() - 1 && get(i + 1).equals(path.path.get(index + 1)))
 					return false;
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			return false;
 		}
 		return true;

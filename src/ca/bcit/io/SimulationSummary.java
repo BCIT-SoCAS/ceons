@@ -39,8 +39,10 @@ public class SimulationSummary {
         noRegeneratorsBlockedVolumePercentage = regeneratorsBlockedVolume / totalVolume * 100;
         linkFailureBlockedVolumePercentage = linkFailureBlockedVolume / totalVolume * 100;
         unhandledVolumePercentage = unhandledVolume / totalVolume * 100;
-        totalBlockedVolumePercentage = ((spectrumBlockedVolume / totalVolume) + (regeneratorsBlockedVolume / totalVolume)
-                + (linkFailureBlockedVolume / totalVolume) + (unhandledVolume / totalVolume)) * 100;
+        totalBlockedVolumePercentage = ((spectrumBlockedVolume / totalVolume)
+                                        + (regeneratorsBlockedVolume / totalVolume)
+                                        + (linkFailureBlockedVolume / totalVolume)
+                                        + (unhandledVolume / totalVolume)) * 100;
         averageRegeneratiorsPerAllocation = regsPerAllocation / allocations;
     }
 }

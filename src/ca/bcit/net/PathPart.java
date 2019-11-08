@@ -31,7 +31,8 @@ public class PathPart {
 			destination = other.destination;
 		else if (source == other.destination)
 			source = other.source;
-		else throw new NetworkException("Cannot merge PathParts that are not adjacent!");
+		else
+			throw new NetworkException("Cannot merge PathParts that are not adjacent!");
 		length += other.length;
 		spectra.addAll(other.spectra);
 		return this;
@@ -61,7 +62,8 @@ public class PathPart {
 	
 	public Spectrum getSlices() {
 		Spectrum result = new Spectrum(NetworkLink.NUMBER_OF_SLICES);
-		for (Spectrum slices : this.spectra) result = result.merge(slices);
+		for (Spectrum slices : this.spectra)
+			result = result.merge(slices);
 		return result;
 	}
 	

@@ -1,6 +1,5 @@
 package ca.bcit.io.create;
 
-import ca.bcit.Main;
 import ca.bcit.net.NetworkLink;
 import ca.bcit.utils.LocaleUtils;
 import com.google.maps.model.LatLng;
@@ -51,10 +50,8 @@ public class SavedNodeDetails implements YamlSerializable {
     public void setNodeNum(int nodeNum) {
         if (nodeNum >= 0)
             this.nodeNum = nodeNum;
-        else {
-            ResourceBundle resources = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));;
-            throw new IllegalArgumentException(resources.getString("node_num_cannot_be_null"));
-        }
+        else
+            throw new IllegalArgumentException(LocaleUtils.translate("node_num_cannot_be_null"));
     }
 
     /**
@@ -72,10 +69,8 @@ public class SavedNodeDetails implements YamlSerializable {
     public void setLocation(String location) {
         if (location != null && !location.isEmpty())
             this.location = location;
-        else {
-            ResourceBundle resources = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));;
-            throw new IllegalArgumentException(resources.getString("node_location_cannot_be_null_or_empty"));
-        }
+        else
+            throw new IllegalArgumentException(LocaleUtils.translate("node_location_cannot_be_null_or_empty"));
     }
 
     /**
@@ -95,10 +90,8 @@ public class SavedNodeDetails implements YamlSerializable {
             this.connectedNodeNum = connectedNodeNum;
             initConnectedNodeLinkMap(connectedNodeNum);
         }
-        else {
-            ResourceBundle resources = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));;
-            throw new IllegalArgumentException(resources.getString("node_connection_from_map_creation_cannot_be_null"));
-        }
+        else
+            throw new IllegalArgumentException(LocaleUtils.translate("node_connection_from_map_creation_cannot_be_null"));
     }
 
     /**
@@ -139,10 +132,8 @@ public class SavedNodeDetails implements YamlSerializable {
     public void setNumRegenerators(int numRegenerators) {
         if (numRegenerators >= 0)
             this.numRegenerators = numRegenerators;
-        else {
-            ResourceBundle resources = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));;
-            throw new IllegalArgumentException(resources.getString("number_of_regenerator_cannot_be_negative"));
-        }
+        else
+            throw new IllegalArgumentException(LocaleUtils.translate("number_of_regenerator_cannot_be_negative"));
     }
 
     /**
@@ -160,10 +151,8 @@ public class SavedNodeDetails implements YamlSerializable {
     public void setNodeType(String nodeType) {
         if (nodeType != null && !nodeType.isEmpty())
             this.nodeType = nodeType;
-        else {
-            ResourceBundle resources = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
-            throw new IllegalArgumentException(resources.getString("node_type_cannot_be_null_or_empty"));
-        }
+        else
+            throw new IllegalArgumentException(LocaleUtils.translate("node_type_cannot_be_null_or_empty"));
     }
 
     /**
@@ -205,10 +194,8 @@ public class SavedNodeDetails implements YamlSerializable {
     public void setLatLng(LatLng latLng) {
         if (latLng != null)
             this.latLng = latLng;
-        else {
-            ResourceBundle resources = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
-            throw new IllegalArgumentException(resources.getString("latitude_and_longitude_cannot_be_null"));
-        }
+        else
+            throw new IllegalArgumentException(LocaleUtils.translate("latitude_and_longitude_cannot_be_null"));
     }
 
     /**

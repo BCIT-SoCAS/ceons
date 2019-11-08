@@ -10,9 +10,6 @@ import ca.bcit.drawing.Node;
 
 /**
  * Network Node with information about the regenerators
- * 
- * @author Michal
- *
  */
 public class NetworkNode extends PositionedNode implements YamlSerializable {
 
@@ -141,14 +138,12 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 	 * @param deallocate
 	 */
 	public void occupyRegenerators(int count, boolean deallocate) {
-		if (deallocate) {
+		if (deallocate)
 			occupiedRegenerators += count;
-		} else if ((count > regeneratorsCount - occupiedRegenerators || occupiedRegenerators < 0) && !deallocate) {
-			throw new NetworkException(
-					"Regenerators occupation exception! (" + occupiedRegenerators + "/" + regeneratorsCount + ")");
-		} else {
+		else if (count > regeneratorsCount - occupiedRegenerators || occupiedRegenerators < 0)
+			throw new NetworkException("Regenerators occupation exception! (" + occupiedRegenerators + "/" + regeneratorsCount + ")");
+		else
 			occupiedRegenerators += count;
-		}
 	}
 
 	/**
@@ -169,8 +164,7 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 	 */
 	@Override
 	public String toString() {
-        return "{name: " + name + ", regenerators: " + regeneratorsCount + ", xcoordinate: " + getPosition().getX() +
-                ", ycoordinate: " + getPosition().getY() + "}";
+        return "{name: " + name + ", regenerators: " + regeneratorsCount + ", xcoordinate: " + getPosition().getX() + ", ycoordinate: " + getPosition().getY() + "}";
 	}
 
 	/**

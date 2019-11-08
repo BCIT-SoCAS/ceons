@@ -3,7 +3,6 @@ package ca.bcit.net.spectrum;
 import ca.bcit.utils.IntegerRange;
 
 public abstract class SpectrumSegment implements Comparable<SpectrumSegment> {
-	
 	final IntegerRange range;
 	
 	SpectrumSegment(IntegerRange range) {
@@ -19,7 +18,8 @@ public abstract class SpectrumSegment implements Comparable<SpectrumSegment> {
 	protected abstract boolean canJoin(SpectrumSegment other);
 	
 	public SpectrumSegment join(SpectrumSegment other) {
-		if (!canJoin(other) || !range.isAdjacent(other.range)) throw new SpectrumException("Segments joining conditions were not fulfilled.");
+		if (!canJoin(other) || !range.isAdjacent(other.range))
+			throw new SpectrumException("Segments joining conditions were not fulfilled.");
 		return clone(range.add(other.range));
 	}
 	

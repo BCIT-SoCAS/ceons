@@ -1,5 +1,6 @@
 package ca.bcit.utils;
 
+import ca.bcit.Settings;
 import ca.bcit.i18n.LocaleEnum;
 
 import java.util.Locale;
@@ -16,5 +17,9 @@ public class LocaleUtils {
         }
 
         throw new IllegalArgumentException("Invalid locale");
+    }
+
+    public static String translate(String key) {
+        return Settings.getCurrentResources().getString(key);
     }
 }

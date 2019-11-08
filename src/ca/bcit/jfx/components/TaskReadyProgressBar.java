@@ -4,25 +4,26 @@ import ca.bcit.ApplicationResources;
 import ca.bcit.io.Logger;
 import ca.bcit.jfx.controllers.SimulationMenuController;
 import ca.bcit.net.Simulation;
+import ca.bcit.utils.LocaleUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import de.rototor.pdfbox.graphics2d.PdfBoxGraphics2D;
 import javafx.concurrent.Task;
-import javafx.scene.control.TextInputDialog;
-import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
-import org.apache.pdfbox.util.Matrix;
-import org.jfree.chart.axis.NumberAxis;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.StackPane;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.util.Matrix;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -31,12 +32,15 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.ResourceBundle;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class TaskReadyProgressBar extends StackPane {
     private static ArrayList<String> resultsDataFileNameList = new ArrayList<String>();
@@ -74,10 +78,12 @@ public class TaskReadyProgressBar extends StackPane {
         bar.progressProperty().unbind();
         label.textProperty().unbind();
     }
+
     public Thread getThread(){
         return this.thread;
     }
-    public void runTask(Task<?> task, boolean daemon, ResourceBundle resources) {
+
+    public void runTask(Task<?> task, boolean daemon) {
         bind(task);
 
         task.setOnSucceeded(e -> {
@@ -86,19 +92,19 @@ public class TaskReadyProgressBar extends StackPane {
 
         task.setOnFailed(e -> {
             unbind();
-            Logger.debug(e.getSource().toString() + " " + resources.getString("failed") + "!");
+            Logger.debug(e.getSource().toString() + " " + LocaleUtils.translate("failed") + "!");
         });
 
         task.setOnCancelled(e -> {
             unbind();
-            Logger.debug(e.getSource().toString() + " " + resources.getString("was_cancelled") + "!");
+            Logger.debug(e.getSource().toString() + " " + LocaleUtils.translate("was_cancelled") + "!");
         });
         this.thread = new Thread(task);
         thread.setDaemon(daemon);
         thread.start();
     }
 
-    public void runTasks(ArrayList<ArrayList> tasks, boolean daemon, ExecutorService runMultipleSimulationService, ResourceBundle resources, SimulationMenuController controller) {
+    public void runTasks(ArrayList<ArrayList> tasks, boolean daemon, ExecutorService runMultipleSimulationService, SimulationMenuController controller) {
         setRunMultipleSimulationService(runMultipleSimulationService);
         Task task = new Task() {
             @Override
@@ -108,11 +114,11 @@ public class TaskReadyProgressBar extends StackPane {
                     int count = 0;
                     for (ArrayList task : tasks) {
                         Logger.info("\n");
-                        Logger.info(resources.getString("starting_simulation") + "! " + "\n\t" + resources.getString("simulation_parameter_seed") + ": " + task.get(1) + "\n\t" + resources.getString("simulation_parameter_alpha") + ": " + task.get(2) + "\n\t" + resources.getString("simulation_parameter_erlang") + ": " + task.get(3) +
-                                "\n\t" + resources.getString("simulation_parameter_number_of_requests") + ": " + task.get(4) + "\n\t" + resources.getString("simulation_parameter_replica_preservation") + ": " + task.get(5));
+                        Logger.info(LocaleUtils.translate("starting_simulation") + "! " + "\n\t" + LocaleUtils.translate("simulation_parameter_seed") + ": " + task.get(1) + "\n\t" + LocaleUtils.translate("simulation_parameter_alpha") + ": " + task.get(2) + "\n\t" + LocaleUtils.translate("simulation_parameter_erlang") + ": " + task.get(3) +
+                                "\n\t" + LocaleUtils.translate("simulation_parameter_number_of_requests") + ": " + task.get(4) + "\n\t" + LocaleUtils.translate("simulation_parameter_replica_preservation") + ": " + task.get(5));
                         controller.setRunning(true);
                         ((Simulation) task.get(0)).simulate((int) task.get(1), (int) task.get(4), (double) task.get(2), (int) task.get(3), (boolean) task.get(5));
-                        Logger.info(resources.getString("simulation_finished") + "!");
+                        Logger.info(LocaleUtils.translate("simulation_finished") + "!");
                         controller.setRunning(false);
                         this.updateProgress(++count, tasks.size());
                     }
@@ -169,22 +175,22 @@ public class TaskReadyProgressBar extends StackPane {
                 contentStream.beginText();
                 contentStream.setFont(font, 12);
                 contentStream.newLineAtOffset(150, 750);
-                contentStream.showText(resources.getString("simulation_summary_label"));
+                contentStream.showText(LocaleUtils.translate("simulation_summary_label"));
                 contentStream.endText();
 
                 PdfBoxGraphics2D pdfBoxGraphics2D = new PdfBoxGraphics2D(document, 800, 400);
                 Rectangle rectangle = new Rectangle(800, 400);
 
-                TextInputDialog textInputDialog = new TextInputDialog(resources.getString("report_blocked_volume_percentage_from_insufficient_resources"));
-                textInputDialog.setHeaderText(resources.getString("pdf_summary_graph_label"));
+                TextInputDialog textInputDialog = new TextInputDialog(LocaleUtils.translate("report_blocked_volume_percentage_from_insufficient_resources"));
+                textInputDialog.setHeaderText(LocaleUtils.translate("pdf_summary_graph_label"));
                 textInputDialog.showAndWait();
                 String graphName = textInputDialog.getResult();
-                textInputDialog = new TextInputDialog(resources.getString("blocked_volume_percentage"));
-                textInputDialog.setHeaderText(resources.getString("pdf_graph_range_label"));
+                textInputDialog = new TextInputDialog(LocaleUtils.translate("blocked_volume_percentage"));
+                textInputDialog.setHeaderText(LocaleUtils.translate("pdf_graph_range_label"));
                 textInputDialog.showAndWait();
                 String graphRangeName = textInputDialog.getResult();
-                textInputDialog = new TextInputDialog(resources.getString("erlang"));
-                textInputDialog.setHeaderText(resources.getString("pdf_graph_domain_label"));
+                textInputDialog = new TextInputDialog(LocaleUtils.translate("erlang"));
+                textInputDialog.setHeaderText(LocaleUtils.translate("pdf_graph_domain_label"));
                 textInputDialog.showAndWait();
                 String graphRDomainName = textInputDialog.getResult();
 
@@ -223,11 +229,11 @@ public class TaskReadyProgressBar extends StackPane {
         });
         task.setOnFailed(e -> {
             unbind();
-            Logger.debug(e.getSource().toString() + " " + resources.getString("failed") + "!");
+            Logger.debug(e.getSource().toString() + " " + LocaleUtils.translate("failed") + "!");
         });
         task.setOnCancelled(e -> {
             unbind();
-            Logger.debug(e.getSource().toString() + " " + resources.getString("was_cancelled") + "!");
+            Logger.debug(e.getSource().toString() + " " + LocaleUtils.translate("was_cancelled") + "!");
         });
         thread = new Thread(task);
         thread.setDaemon(daemon);
@@ -311,8 +317,8 @@ public class TaskReadyProgressBar extends StackPane {
 
         return dataset;
     }
+
     private JFreeChart createChartXY(final XYDataset dataset, final String title,  final String yLabel, final String xLabel) {
-        // create the chart...
         final JFreeChart chart = ChartFactory.createXYLineChart(title, // chart
                 // title
                 xLabel, // x axis label
@@ -326,19 +332,13 @@ public class TaskReadyProgressBar extends StackPane {
         // OPTIONAL CUSTOMISATION OF THE CHART
         chart.setBackgroundPaint(Color.white);
 
-        // final StandardLegend legend = (StandardLegend) chart.getLegend();
-        // legend.setDisplaySeriesShapes(true);
-
         // get a reference to the plot for further customisation...
         final XYPlot plot = chart.getXYPlot();
         plot.setBackgroundPaint(Color.lightGray);
-        // plot.setAxisOffset(new Spacer(Spacer.ABSOLUTE, 5.0, 5.0, 5.0, 5.0));
         plot.setDomainGridlinePaint(Color.white);
         plot.setRangeGridlinePaint(Color.white);
 
         final XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-//        renderer.setSeriesLinesVisible(0, false);
-//        renderer.setSeriesShapesVisible(1, false);
         plot.setRenderer(renderer);
 
         // change the auto tick unit selection to integer units only...

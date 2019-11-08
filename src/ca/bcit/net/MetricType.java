@@ -4,7 +4,6 @@ package ca.bcit.net;
  *
  */
 public enum MetricType {
-
 	STATIC, DYNAMIC;
 	
 	public static MetricType valueOf2(String string) {

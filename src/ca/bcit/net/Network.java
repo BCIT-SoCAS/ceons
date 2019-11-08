@@ -17,10 +17,8 @@ import java.util.Map.Entry;
 
 /**
  * Class Network has main data about the network 
- *
  */
 public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Network> implements YamlSerializable {
-	
 	final Map<String, NetworkNode> nodes = new HashMap<>();
 	private final Map<String, List<NetworkNode>> nodesGroups = new HashMap<>();
 
@@ -52,7 +50,7 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	}
 
 	public void setMaxPathsCount(int maxPathsCount) {
-		if(maxPathsCount >= 0)
+		if (maxPathsCount >= 0)
 			this.maxPathsCount = maxPathsCount;
 		else
 			throw new IllegalArgumentException("max_path_count_must_be_positive");

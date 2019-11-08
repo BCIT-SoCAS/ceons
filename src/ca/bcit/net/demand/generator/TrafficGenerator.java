@@ -55,9 +55,11 @@ public class TrafficGenerator implements DemandStream<Demand>, YamlSerializable 
 		if (lastAnycast == null) {
 			DemandGenerator<?> generator = generators.next();
 			demand = generator.next();
-			if (demand instanceof AnycastDemand) lastAnycast = generator;
+			if (demand instanceof AnycastDemand)
+				lastAnycast = generator;
 			generatedDemandsCount++;
-		} else {
+		}
+		else {
 			demand = lastAnycast.next();
 			lastAnycast = null;
 		}

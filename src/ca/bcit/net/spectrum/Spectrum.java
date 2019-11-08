@@ -8,25 +8,28 @@ import ca.bcit.utils.collections.InsertionSortList;
 import java.util.*;
 
 public class Spectrum {
-	
 	private List<SpectrumSegment> segments;
 	private int slicesCount;
 	private int occupiedSlices;
 	
 	public Spectrum(int slicesCount) {
-		if (slicesCount <= 0) throw new NetworkException("The number of slices has to be larger than 0!");
-		if (slicesCount % 2 != 0) throw new NetworkException("The number of slices has to be even!");
+		if (slicesCount <= 0)
+			throw new NetworkException("The number of slices has to be larger than 0!");
+		if (slicesCount % 2 != 0)
+			throw new NetworkException("The number of slices has to be even!");
 		this.slicesCount = slicesCount;
 		segments = Collections.synchronizedList(new ArrayList<SpectrumSegment>() {
 			private static final long serialVersionUID = 5499411539908254723L;
 			@Override
 			public void add(int arg0, SpectrumSegment arg1) {
-				if (arg1.getRange().getLength() == 0) throw new SpectrumException("Cannot add 0 length");
+				if (arg1.getRange().getLength() == 0)
+					throw new SpectrumException("Cannot add 0 length");
 				super.add(arg0, arg1);
 			}
 			@Override
 			public boolean add(SpectrumSegment e) {
-				if (e.getRange().getLength() == 0) throw new SpectrumException("Cannot add 0 length");
+				if (e.getRange().getLength() == 0)
+					throw new SpectrumException("Cannot add 0 length");
 				return super.add(e);
 			}
 		});
@@ -40,12 +43,15 @@ public class Spectrum {
 			occupiedSlices = segments.get(0).getRange().getLength();
 		for (int i = 1; i < segments.size(); i++) {
 			SpectrumSegment segment = segments.get(i);
-			if (segment instanceof AllocatableSpectrumSegment) occupiedSlices += segment.getRange().getLength();
+			if (segment instanceof AllocatableSpectrumSegment)
+				occupiedSlices += segment.getRange().getLength();
+
 			try {
 				segments.set(i - 1, segment.join(segments.get(i - 1)));
 				segments.remove(i);
 				i--;
-			} catch (SpectrumException e) {}
+			}
+			catch (SpectrumException e) {}
 		}
 	}
 	
@@ -59,57 +65,51 @@ public class Spectrum {
 	
 	public int getOccupiedSlices() {
 		int occupiedSlices = getSlicesCount();
-		if(!segments.isEmpty()){
-			synchronized (segments){
-				Iterator<SpectrumSegment> it = getSegments().iterator();
-				while(it.hasNext()){
-					SpectrumSegment segment = it.next();
-					if (segment != null && segment.getType().equals(FreeSpectrumSegment.TYPE)) {
+		if (!segments.isEmpty()) {
+			synchronized (segments) {
+				for (SpectrumSegment segment : getSegments())
+					if (segment != null && segment.getType().equals(FreeSpectrumSegment.TYPE))
 						occupiedSlices -= segment.getRange().getLength();
-					}
-				}
 			}
-//			Iterator<SpectrumSegment> it = getSegments().iterator();
-//			while(it.hasNext()){
-//				SpectrumSegment segment = it.next();
-//				if (segment != null && segment.getType().equals(FreeSpectrumSegment.TYPE)) {
-//					occupiedSlices -= segment.getRange().getLength();
-//				}
-//			}
-//			for (SpectrumSegment segment : segments) {
-//				if (segment != null && segment.getType() == FreeSpectrumSegment.TYPE) {
-//					occupiedSlices -= segment.getRange().getLength();
-//				}
-//			}
 		}
 		return occupiedSlices;
 	}
 	
 	private int firstOverlapIndex(int min, int max, SpectrumSegment segment) {
-		if (min == max) return -1;
+		if (min == max)
+			return -1;
 		int mid = (max - min) / 2 + min;
-		if (segment.getRange().getOffset() >= segments.get(mid).getRange().getEndOffset()) return firstOverlapIndex(mid + 1, max, segment);
-		else if (segment.getRange().getOffset() < segments.get(mid).getRange().getOffset()) return firstOverlapIndex(min, mid, segment);
-		else return mid;
+		if (segment.getRange().getOffset() >= segments.get(mid).getRange().getEndOffset())
+			return firstOverlapIndex(mid + 1, max, segment);
+		else if (segment.getRange().getOffset() < segments.get(mid).getRange().getOffset())
+			return firstOverlapIndex(min, mid, segment);
+		else
+			return mid;
 	}
 	
 	public boolean canAllocate(AllocatableSpectrumSegment segment) {
 		int i = firstOverlapIndex(0, segments.size(), segment);
-		if (i == -1 || segment.getRange().getEndOffset() > slicesCount) return false;
+		if (i == -1 || segment.getRange().getEndOffset() > slicesCount)
+			return false;
 		for (; i < segments.size() && segments.get(i).getRange().getOffset() < segment.getRange().getOffset(); i++)
-		for (SpectrumSegment s : segments) if (s.getRange().isOverlapping(segment.getRange()) && !segment.canAllocate(s)) return false;
+			for (SpectrumSegment s : segments)
+				if (s.getRange().isOverlapping(segment.getRange()) && !segment.canAllocate(s))
+					return false;
 		return true;
 	}
 
 	public Spectrum merge(Spectrum other) {
-		if (slicesCount != other.slicesCount) throw new SpectrumException("Cannot merge spectra that are not equal size.");
+		if (slicesCount != other.slicesCount)
+			throw new SpectrumException("Cannot merge spectra that are not equal size.");
 		List<SpectrumSegment> segments = new ArrayList<>();
 		for (int i = 0, j = 0; i < this.segments.size() && j < other.segments.size();) {
 			SpectrumSegment segmentI = this.segments.get(i), segmentJ = other.segments.get(j);
 			if (segmentI.getRange().isOverlapping(segmentJ.getRange()))
 				segments.add(segmentI.merge(segmentI.getRange().multiply(segmentJ.getRange()), segmentJ));
-			if (segmentI.getRange().getEndOffset() < segmentJ.getRange().getEndOffset()) i++;
-			else j++;
+			if (segmentI.getRange().getEndOffset() < segmentJ.getRange().getEndOffset())
+				i++;
+			else
+				j++;
 		}
 		return new Spectrum(segments, slicesCount);
 	}
@@ -134,8 +134,10 @@ public class Spectrum {
 			segments.add(i, segment.allocate(segment.getRange().multiply(segmentI.getRange()), segmentI));
 			IntegerRange range = segmentI.getRange().subtract(segment.getRange());
 			if (range.getLength() != 0) {
-				if (i == start) segments.add(i, segmentI.clone(range));
-				else segments.add(i + 1, segmentI.clone(range));
+				if (i == start)
+					segments.add(i, segmentI.clone(range));
+				else
+					segments.add(i + 1, segmentI.clone(range));
 				i++;
 			}
 			segments.remove(i + 1);
@@ -156,20 +158,28 @@ public class Spectrum {
 	public void deallocate(Demand demand) {
 		for (int i = 0; i < segments.size(); i++) if (segments.get(i) instanceof AllocatableSpectrumSegment && ((AllocatableSpectrumSegment) segments.get(i)).isOwnedBy(demand)) {
 			segments.set(i, ((AllocatableSpectrumSegment) segments.get(i)).deallocate(demand));
-			if (i != 0) try {
-				segments.set(i - 1, segments.get(i - 1).join(segments.get(i)));
-				segments.remove(i);
-				i--;
-			} catch (SpectrumException e) {}
-			if (i != segments.size() - 1) try {
-				segments.set(i, segments.get(i).join(segments.get(i + 1)));
-				segments.remove(i + 1);
-			} catch (SpectrumException e) {}
+			if (i != 0)
+				try {
+					segments.set(i - 1, segments.get(i - 1).join(segments.get(i)));
+					segments.remove(i);
+					i--;
+				}
+				catch (SpectrumException e) {}
+
+			if (i != segments.size() - 1)
+				try {
+					segments.set(i, segments.get(i).join(segments.get(i + 1)));
+					segments.remove(i + 1);
+				}
+				catch (SpectrumException e) {}
 		}
 	}
 	
 	public int canAllocateWorking(int volume) {
-		for (SpectrumSegment segment : segments) if (segment.getType() == FreeSpectrumSegment.TYPE && segment.getRange().getLength() >= volume) return segment.getRange().getOffset();
+		for (SpectrumSegment segment : segments)
+			if (segment.getType() == FreeSpectrumSegment.TYPE && segment.getRange().getLength() >= volume)
+				return segment.getRange().getOffset();
+
 		return -1;
 	}
 	
@@ -178,13 +188,16 @@ public class Spectrum {
 		for (int i = segments.size() - 1; i >= 0; i--)
 			if (segments.get(i).getType() == FreeSpectrumSegment.TYPE || segments.get(i).getType() == BackupSpectrumSegment.TYPE && ((BackupSpectrumSegment) segments.get(i)).isDisjoint(demand)) {
 				if (segments.get(i).getRange().getLength() + gatheredVolume >= volume)
-					if (offset == -1) return segments.get(i).getRange().getEndOffset() - volume;
-					else return offset - volume + gatheredVolume;
+					if (offset == -1)
+						return segments.get(i).getRange().getEndOffset() - volume;
+					else
+						return offset - volume + gatheredVolume;
 				else {
 					offset = segments.get(i).getRange().getOffset();
 					gatheredVolume += segments.get(i).getRange().getLength();
 				}
-			} else {
+			}
+			else {
 				offset = -1;
 				gatheredVolume = 0;
 			}

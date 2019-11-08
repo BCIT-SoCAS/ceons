@@ -15,10 +15,10 @@ import java.util.Map;
  */
 public class Node extends Figure {
 	
-	private static final LinearGradient nodeFill = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,	new Stop[] {new Stop(0, Color.MAGENTA), new Stop(0.5f, Color.PURPLE)});
+	private static final LinearGradient nodeFill = new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE, new Stop(0, Color.MAGENTA), new Stop(0.5f, Color.PURPLE));
 	
 	public static float imageSize = 45;
-	private int Regens = 100;
+	private int regens = 100;
 	private Map<String, Boolean> nodeGroups = new HashMap<>();
 
 	public Node(Node node) {
@@ -27,7 +27,6 @@ public class Node extends Figure {
 		loadImage();
 	}
 
-
 	/**
 	 * @deprecated Old method to draw nodes by index number instead of node name.
 	 * @param startPoint 		the coordinates of Node
@@ -35,9 +34,7 @@ public class Node extends Figure {
 	 */
 	@Deprecated
 	public Node(Vector2F startPoint, int number) {
-
-		super(new Vector2F(startPoint.getX() - imageSize / 2, startPoint.getY()
-				- imageSize / 2), "Node" + number);
+		super(new Vector2F(startPoint.getX() - imageSize / 2, startPoint.getY() - imageSize / 2), "Node" + number);
 		loadImage();
 	}
 
@@ -64,7 +61,7 @@ public class Node extends Figure {
 	 */
 	public Node(Vector2F startPoint, String _name, int Regens, Map nodeGroups) {
 		super(new Vector2F(startPoint.getX() - imageSize / 2, startPoint.getY() - imageSize / 2), _name);
-		this.Regens = Regens;
+		this.regens = Regens;
 		this.nodeGroups = nodeGroups;
 		loadImage();
 	}
@@ -74,7 +71,7 @@ public class Node extends Figure {
 	 * @return the percentage currently stored in this node.
 	 */
 	public int getRegens() {
-		return this.Regens;
+		return this.regens;
 	}
 
 	/**
@@ -103,7 +100,7 @@ public class Node extends Figure {
 	 * @param regens number of regenerators for the particular node
 	 */
     public void setRegens(int regens) {
-		this.Regens = regens;
+		this.regens = regens;
 	}
 
 	/**
@@ -122,13 +119,16 @@ public class Node extends Figure {
 			gc.fillOval(startPoint.getX() - imageSize / 8f, startPoint.getY() - imageSize / 8f, imageSize + imageSize / 4f, imageSize + imageSize / 4f);
 			gc.setFill(Color.GRAY);
 			gc.fillOval(startPoint.getX() - imageSize / 16f, startPoint.getY() - imageSize / 16f, imageSize + imageSize / 8f, imageSize + imageSize / 8f);
-		} else if (Boolean.TRUE.equals(isReplica)) {
+		}
+		else if (Boolean.TRUE.equals(isReplica)) {
 			gc.setFill(Color.GRAY);
 			gc.fillOval(startPoint.getX() - imageSize / 16f, startPoint.getY() - imageSize / 16f, imageSize + imageSize / 8f, imageSize + imageSize / 8f);
-		} else if (Boolean.TRUE.equals(isInternational)) {
+		}
+		else if (Boolean.TRUE.equals(isInternational)) {
 			gc.setFill(Color.web("#448ef6"));
 			gc.fillOval(startPoint.getX() - imageSize / 16f, startPoint.getY() - imageSize / 16f, imageSize + imageSize / 8f, imageSize + imageSize / 8f);
-		} else {
+		}
+		else {
 			gc.setFill(Color.WHITE);
 			gc.fillOval(startPoint.getX() - imageSize / 16f, startPoint.getY() - imageSize / 16f, imageSize + imageSize / 8f, imageSize + imageSize / 8f);
 		}
@@ -150,12 +150,10 @@ public class Node extends Figure {
 		String nodeName = this.getName();
 		String nodeNumber = nodeName.substring(nodeName.indexOf("_") + 1);
 		int nodeNum = Integer.parseInt(nodeNumber);
-		if (nodeNum < 10) {
+		if (nodeNum < 10)
 			gc.fillText(nodeNumber, getCenterPoint().getX() - imageSize / 16f - 1, getCenterPoint().getY() + imageSize / 16f);
-		} else if (nodeNum < 100) {
+		else if (nodeNum < 100)
 			gc.fillText(nodeNumber, getCenterPoint().getX() - imageSize / 16f - 4.5, getCenterPoint().getY() + imageSize / 16f);
-		}
-
 	}
 	
 
@@ -165,12 +163,13 @@ public class Node extends Figure {
 	 */
 	private int[] getColor() {
 		int[] rgb = new int[3];
-		if (this.Regens > 50) {
-			rgb[0] = (50 - (this.Regens - 50)) * 5;
+		if (this.regens > 50) {
+			rgb[0] = (50 - (this.regens - 50)) * 5;
 			rgb[1] = 255;
-		} else {
+		}
+		else {
 			rgb[0] = 255;
-			rgb[1] = this.Regens * 5;
+			rgb[1] = this.regens * 5;
 		}
 		return rgb;
 	}
@@ -178,8 +177,7 @@ public class Node extends Figure {
 	@Override
 	public boolean equals(Object obj) {
 		Node temp = (Node) obj;
-		return (temp.getStartPoint().equals(startPoint) && temp.name
-				.equals((name)));
+		return (temp.getStartPoint().equals(startPoint) && temp.name.equals((name)));
 	}
 
 	protected void loadImage() {}
@@ -196,20 +194,16 @@ public class Node extends Figure {
 
 	@Override
 	protected void drawOutline(GraphicsContext gc, Color color) {
-		DashedDrawing.drawDashedCircle(gc, new Vector2F(startPoint.getX()
-				+ imageSize / 2, startPoint.getY() + imageSize / 2),
-				imageSize / 2 + 3, Color.GRAY);
+		DashedDrawing.drawDashedCircle(gc, new Vector2F(startPoint.getX() + imageSize / 2, startPoint.getY() + imageSize / 2), imageSize / 2 + 3, Color.GRAY);
 	}
-
-
 
 	public static void changeNodeSize(float newNodeSize) {
 		imageSize = newNodeSize;
+
 		if (imageSize < 12)
 			imageSize = 12;
 		else if (imageSize > 64)
 			imageSize = 64;
-
 	}
 
 	public static float getStartNodeSize() {

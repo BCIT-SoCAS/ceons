@@ -10,8 +10,6 @@ import java.util.Map;
 
 /**
  * SavedNodeLinks class to hold all user-defined links prior to saving into YAML file
- * @author Shaun Tseng, Derek Wong
- * @version 1.0.0
  */
 public class SavedNodeLinks {
     private HashMap<ArrayList<String>, HashMap<String, Object>> toSerializeNodeLinks;
@@ -29,11 +27,11 @@ public class SavedNodeLinks {
      * @param tableList contains all user defined node details, used to query location in distance calculation
      */
     public void setNodeNumLinks(SavedNodeDetails nodeDetails, ObservableList<SavedNodeDetails> tableList){
-        for(Map.Entry<ArrayList<String>, HashMap<String, Object>> entry : nodeDetails.getConnectedNodeLinkMap().entrySet()) {
-            if(!toSerializeNodeLinks.containsKey(entry.getKey())){
+        for (Map.Entry<ArrayList<String>, HashMap<String, Object>> entry : nodeDetails.getConnectedNodeLinkMap().entrySet())
+            if (!toSerializeNodeLinks.containsKey(entry.getKey())) {
                 //Will see if there is a connected node specified by user
                 boolean hasLink = !(entry.getKey().get(0).split("_").length == 1);
-                if(hasLink) {
+                if (hasLink) {
                     int nodeANum = Integer.parseInt(entry.getKey().get(0).split("_")[1]);
                     LatLng nodeALatLng = tableList.get(nodeANum).getLatLng();
                     int nodeBNum = Integer.parseInt(entry.getKey().get(1).split("_")[1]);
@@ -46,7 +44,6 @@ public class SavedNodeLinks {
                     toSerializeNodeLinks.put(entry.getKey(), link);
                 }
             }
-        }
     }
 
     /**

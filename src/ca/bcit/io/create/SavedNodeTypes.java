@@ -1,16 +1,12 @@
 package ca.bcit.io.create;
 
-import ca.bcit.Main;
 import ca.bcit.utils.LocaleUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.ResourceBundle;
 
 /**
  * SavedNodeTypes class to hold all user-defined node types prior to saving into YAML file
- * @author Derek Wong
- * @version 1.0.0
  */
 public class SavedNodeTypes {
     private ArrayList<String> nodeNumReplicas;
@@ -34,14 +30,12 @@ public class SavedNodeTypes {
      * @param nodeDetails compares user selection of either/both international and/or data centre node types
      */
     public void setNodeNumType(SavedNodeDetails nodeDetails){
-        ResourceBundle resources = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
-
         String nodeType = nodeDetails.getNodeType();
 
-        if (nodeType.equals(resources.getString("international")) || nodeType.equals(resources.getString("data_center") + ", " + resources.getString("international")))
+        if (nodeType.equals(LocaleUtils.translate("international")) || nodeType.equals(LocaleUtils.translate("data_center") + ", " + LocaleUtils.translate("international")))
             nodeNumInternationals.add(nodeDetails.nodeNumToString());
 
-        if (nodeType.equals(resources.getString("data_center")) || nodeType.equals(resources.getString("data_center") + ", " + resources.getString("international")))
+        if (nodeType.equals(LocaleUtils.translate("data_center")) || nodeType.equals(LocaleUtils.translate("data_center") + ", " + LocaleUtils.translate("international")))
             nodeNumReplicas.add(nodeDetails.nodeNumToString());
     }
 

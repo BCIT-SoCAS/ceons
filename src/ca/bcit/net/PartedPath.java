@@ -12,8 +12,6 @@ import java.util.function.Consumer;
 
 /**
  * Used for calculation of metrics in each segment of network path
- * @author Michal
- *
  */
 public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 

@@ -52,8 +52,6 @@ public class LinkPropertiesController implements Initializable {
             actualLink = list.findFigureByName(oldValue);
             if (!list.containsFigureWithName(newValue))
                 actualLink.setName(newValue);
-            //else
-              //  textFieldName.setText(oldValue);
         });
     }
 

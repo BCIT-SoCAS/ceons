@@ -1,7 +1,8 @@
 package ca.bcit.jfx.controllers;
 
+import ca.bcit.Application;
 import ca.bcit.ApplicationResources;
-import ca.bcit.Main;
+import ca.bcit.Settings;
 import ca.bcit.drawing.Figure;
 import ca.bcit.drawing.FigureControl;
 import ca.bcit.drawing.Link;
@@ -67,7 +68,7 @@ import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.util.concurrent.ScheduledExecutorService;
 
-public class MainWindowController implements Loadable, Initializable {
+public class MainWindowController implements Initializable {
     private static final int PROPERTIES_PANE_NUMBER = 2;
     private int i;
     @FXML
@@ -106,8 +107,6 @@ public class MainWindowController implements Loadable, Initializable {
 
     private static Timeline updateTimeline;
     private static ScheduledExecutorService executorService;
-
-    private ResourceBundle resources;
 
     public ResizableCanvas getCanvas() {
         return graph;
@@ -227,9 +226,7 @@ public class MainWindowController implements Loadable, Initializable {
     }
 
     @FXML
-    public void initialize(URL location, ResourceBundle resources) {
-        this.resources = resources;
-
+    public void initialize(URL location, ResourceBundle resourceBundle) {
         for (Field field : MainWindowController.class.getDeclaredFields())
             if (field.isAnnotationPresent(FXML.class))
                 try {
@@ -240,7 +237,7 @@ public class MainWindowController implements Loadable, Initializable {
                 }
 
         localeCombo.setItems(new ObservableListWrapper<>(LocaleEnum.labels()));
-        localeCombo.setValue(Main.CURRENT_LOCALE.label);
+        localeCombo.setValue(Settings.CURRENT_LOCALE.label);
         localeCombo.getSelectionModel().selectedItemProperty().addListener(MainWindowController::localeChanged);
 
         try {
@@ -275,9 +272,9 @@ public class MainWindowController implements Loadable, Initializable {
 
     private static void localeChanged(ObservableValue<? extends String> selected, String oldLanguage, String newLanguage) {
         try {
-            if (!newLanguage.equals(Main.CURRENT_LOCALE.label)) {
-                Main.CURRENT_LOCALE = LocaleEnum.getEnumByString(newLanguage);
-                Main.loadView(LocaleUtils.getLocaleFromLocaleEnum(LocaleEnum.getEnumByString(newLanguage)));
+            if (!newLanguage.equals(Settings.CURRENT_LOCALE.label)) {
+                Settings.CURRENT_LOCALE = LocaleEnum.getEnumByString(newLanguage);
+                Application.reloadInterface();
             }
         }
         catch (Exception e) {
@@ -315,8 +312,7 @@ public class MainWindowController implements Loadable, Initializable {
 
     private void loadCurrentSummary(double spectrumBlocked, double regeneratorsBlocked, double linkFailureBlocked, double totalVolume) {
         TitledPane properties = new TitledPane();
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/LiveInfoSummary.fxml"), resourceBundle);
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/LiveInfoSummary.fxml"), Settings.getCurrentResources());
         try {
             properties = (TitledPane) fxmlLoader.load();
         }
@@ -333,8 +329,7 @@ public class MainWindowController implements Loadable, Initializable {
 
     private void loadNodeProperties(Figure temp, FigureControl list) {
         TitledPane properties = new TitledPane();
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/NodeProperties.fxml"), resourceBundle);
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/NodeProperties.fxml"), Settings.getCurrentResources());
         try {
             properties = (TitledPane) fxmlLoader.load();
         }
@@ -351,8 +346,7 @@ public class MainWindowController implements Loadable, Initializable {
 
     private void loadLinkProperties(Figure temp, FigureControl list) {
         TitledPane properties = new TitledPane();
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/LinkProperties.fxml"), resourceBundle);
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/LinkProperties.fxml"), Settings.getCurrentResources());
         try {
             properties = fxmlLoader.load();
         }
@@ -383,20 +377,18 @@ public class MainWindowController implements Loadable, Initializable {
         String rootPath = System.getProperty("user.dir");
         Path apiKeyPath = Paths.get(rootPath + "/api_key.txt");
         GridPane grid = new GridPane();
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
         if (Files.exists(apiKeyPath)) {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SaveMapWindow.fxml"), resourceBundle);
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SaveMapWindow.fxml"), Settings.getCurrentResources());
             fxmlLoader.load();
             SaveMapController controller = fxmlLoader.getController();
             if (controller != null)
                 controller.displaySaveMapWindow();
-
         }
         else {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/APIKeyWindow.fxml"), resourceBundle);
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/APIKeyWindow.fxml"), Settings.getCurrentResources());
             grid = fxmlLoader.load();
             APIKeyController controller = fxmlLoader.getController();
-            FXMLLoader fxmlLoader2 = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SaveMapWindow.fxml"), resourceBundle);
+            FXMLLoader fxmlLoader2 = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SaveMapWindow.fxml"), Settings.getCurrentResources());
             fxmlLoader2.load();
             SaveMapController saveMapController = fxmlLoader2.getController();
             if (controller != null) {
@@ -408,8 +400,7 @@ public class MainWindowController implements Loadable, Initializable {
 
     @FXML
     public void updateButtonClicked() throws IOException {
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SaveMapWindow.fxml"), resourceBundle);
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SaveMapWindow.fxml"), Settings.getCurrentResources());
         fxmlLoader.load();
         SaveMapController controller = fxmlLoader.getController();
         controller.displaySaveMapWindow();
@@ -513,7 +504,7 @@ public class MainWindowController implements Loadable, Initializable {
 
         }
         catch (Exception ex) {
-            new ErrorDialog(resources.getString("an_exception_occurred_while_updating_the_project"), ex, resources);
+            new ErrorDialog(LocaleUtils.translate("an_exception_occurred_while_updating_the_project"), ex);
         }
     }
 
@@ -525,11 +516,11 @@ public class MainWindowController implements Loadable, Initializable {
                 initalizeSimulationsAndNetworks();
             }
             catch (MapLoadingException ex){
-                new ErrorDialog(ex.getMessage(), ex, resources);
+                new ErrorDialog(ex.getMessage(), ex);
                 ex.printStackTrace();
             }
             catch (Exception ex){
-                new ErrorDialog(resources.getString("an_exception_occurred_while_loading_the_project"), ex, resources);
+                new ErrorDialog(LocaleUtils.translate("an_exception_occurred_while_loading_the_project"), ex);
                 ex.printStackTrace();
             }
         }
@@ -546,7 +537,7 @@ public class MainWindowController implements Loadable, Initializable {
     public void initalizeSimulationsAndNetworks() throws MapLoadingException, Exception {
         boolean loadSuccessful = false;
         try {
-            Logger.info(resources.getString("loading_project_from") + " " + file.getName() + "...");
+            Logger.info(LocaleUtils.translate("loading_project_from") + " " + file.getName() + "...");
 
             Project project = ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).load(file);
             ApplicationResources.setProject(project);
@@ -569,9 +560,9 @@ public class MainWindowController implements Loadable, Initializable {
         }
         finally {
             if (loadSuccessful)
-                Logger.info(resources.getString("finished_loading_project"));
+                Logger.info(LocaleUtils.translate("finished_loading_project"));
             else
-                Logger.info(resources.getString("loading_cancelled"));
+                Logger.info(LocaleUtils.translate("loading_cancelled"));
         }
 
 
@@ -588,14 +579,14 @@ public class MainWindowController implements Loadable, Initializable {
             catch (Throwable e) {
                 e.printStackTrace();
             }
-            Logger.info(resources.getString("max_best_paths_count_label") + " " + network.getMaxPathsCount());
+            Logger.info(LocaleUtils.translate("max_best_paths_count_label") + " " + network.getMaxPathsCount());
 
             return null;
             }
 
 
         };
-        SimulationMenuController.progressBar.runTask(task2, true, resources);
+        SimulationMenuController.progressBar.runTask(task2, true);
     }
 
     @FXML
@@ -606,9 +597,9 @@ public class MainWindowController implements Loadable, Initializable {
         String blockedRegenerators = regeneratorsBlockedVolume / totalVolume * 100 + "%";
         String blockedLinkFailure = linkFailureBlockedVolume / totalVolume * 100 + "%";
 
-        info.setText(resources.getString("blocked_spectrum_label") + " " + blockedSpectrum + "\n"
-                + resources.getString("blocked_regenerators_label") + " " + blockedRegenerators + "\n"
-                + resources.getString("blocked_link_failure_label") + " " + blockedLinkFailure);
+        info.setText(LocaleUtils.translate("blocked_spectrum_label") + " " + blockedSpectrum + "\n"
+                + LocaleUtils.translate("blocked_regenerators_label") + " " + blockedRegenerators + "\n"
+                + LocaleUtils.translate("blocked_link_failure_label") + " " + blockedLinkFailure);
     }
 
     /**
@@ -635,7 +626,7 @@ public class MainWindowController implements Loadable, Initializable {
                     new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
 
 
-            generators.add(new TrafficGenerator(resources.getString("no_backup"), new MappedRandomVariable<>(subGenerators)));
+            generators.add(new TrafficGenerator(LocaleUtils.translate("no_backup"), new MappedRandomVariable<>(subGenerators)));
 
             subGenerators = new ArrayList<>();
 
@@ -650,7 +641,7 @@ public class MainWindowController implements Loadable, Initializable {
             subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
                     new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
 
-            generators.add(new TrafficGenerator(resources.getString("dedicated_backup"), new MappedRandomVariable<>(subGenerators)));
+            generators.add(new TrafficGenerator(LocaleUtils.translate("dedicated_backup"), new MappedRandomVariable<>(subGenerators)));
 
             subGenerators = new ArrayList<>();
 
@@ -687,12 +678,12 @@ public class MainWindowController implements Loadable, Initializable {
             subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
                     new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
 
-            generators.add(new TrafficGenerator(resources.getString("shared_backup"), new MappedRandomVariable<>(subGenerators)));
+            generators.add(new TrafficGenerator(LocaleUtils.translate("shared_backup"), new MappedRandomVariable<>(subGenerators)));
 
             SimulationMenuController.generatorsStatic.setItems(new ObservableListWrapper<>(generators));
         }
         catch (NullPointerException ex) {
-            throw new MapLoadingException(resources.getString("topology_should_contain_both_international_and_data_center_node_types"));
+            throw new MapLoadingException(LocaleUtils.translate("topology_should_contain_both_international_and_data_center_node_types"));
         }
     }
 

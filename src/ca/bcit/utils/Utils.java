@@ -3,7 +3,6 @@ package ca.bcit.utils;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-
 public class Utils {
 
 	public static boolean checkArrayIndex(int length, int index) {

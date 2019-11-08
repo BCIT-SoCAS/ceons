@@ -1,10 +1,8 @@
 package ca.bcit.net.spectrum;
 
-
 import ca.bcit.utils.IntegerRange;
 
 public class FreeSpectrumSegment extends SpectrumSegment {
-	
 	public static final String TYPE = "FREE";
 	
 	public FreeSpectrumSegment(IntegerRange range) {

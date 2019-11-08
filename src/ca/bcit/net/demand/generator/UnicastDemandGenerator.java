@@ -12,8 +12,7 @@ public class UnicastDemandGenerator extends DemandGenerator<UnicastDemand> {
 	private final RandomVariable<NetworkNode> source;
 	private final RandomVariable<NetworkNode> destination;
 
-	public UnicastDemandGenerator(RandomVariable<NetworkNode> source, RandomVariable<NetworkNode> destination, RandomVariable<Boolean> reallocate, RandomVariable<Boolean> allocateBackup,
-								  RandomVariable<Integer> volume, RandomVariable<Float> squeezeRatio) {
+	public UnicastDemandGenerator(RandomVariable<NetworkNode> source, RandomVariable<NetworkNode> destination, RandomVariable<Boolean> reallocate, RandomVariable<Boolean> allocateBackup, RandomVariable<Integer> volume, RandomVariable<Float> squeezeRatio) {
 		super(reallocate, allocateBackup, volume, squeezeRatio);
 		this.source = source;
 		this.destination = destination;
@@ -35,9 +34,8 @@ public class UnicastDemandGenerator extends DemandGenerator<UnicastDemand> {
 		while (source.equals(destination)){
 			destination = this.destination.next();
 			i++;
-			if (i > 3) {
+			if (i > 3)
 				source = this.source.next();
-			}
 		}
 		generatedDemandsCount++;
 		return new UnicastDemand(source, destination, reallocate.next(), allocateBackup.next(), volume.next(), squeezeRatio.next(), ttl.next());

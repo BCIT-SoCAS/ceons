@@ -17,7 +17,6 @@ public class SplashScreenController {
 
 	@FXML
 	public void initialize() {
-
 		BackgroundSize bgSize = new BackgroundSize(100, 100, true, true, false, true);
 		BackgroundImage bg = new BackgroundImage(new Image(getClass().getResourceAsStream("/ca/bcit/jfx/res/images/bg.png")),
 			BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, bgSize);

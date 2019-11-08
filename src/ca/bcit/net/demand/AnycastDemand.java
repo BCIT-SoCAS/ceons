@@ -30,15 +30,17 @@ public abstract class AnycastDemand extends Demand {
 								paths.add(new PartedPath(network, path, path.get(0) == client));
 								acceptedPaths++;
 							}
-				} else
+				}
+				else
 					for (NetworkNode replica : network.getGroup("replicas")) {
 						int acceptedPaths = 0;
-						if (client == replica) {
+						if (client == replica)
 							continue;
-						}
+
 						for (NetworkPath path : network.getPaths(client, replica))
 							if (!network.isInactive(path))
-								if (acceptedPaths >= network.getBestPathsCount()) break;
+								if (acceptedPaths >= network.getBestPathsCount())
+									break;
 								else if (path.isDisjoint(workingPath)) {
 									paths.add(new PartedPath(network, path, path.get(0) == client));
 									acceptedPaths++;
@@ -46,13 +48,12 @@ public abstract class AnycastDemand extends Demand {
 					}
 			else
 				for (NetworkNode replica : network.getGroup("replicas")) {
-					if (client == replica) {
+					if (client == replica)
 						continue;
-					}
-					for (NetworkPath path : network.getPaths(client, replica).subList(0, network.getBestPathsCount())) {
+
+					for (NetworkPath path : network.getPaths(client, replica).subList(0, network.getBestPathsCount()))
 						if (!network.isInactive(path))
 							paths.add(new PartedPath(network, path, path.get(0) == client));
-					}
 				}
 			paths.sort(PartedPath.LENGTH_COMPARATOR);
 			if (paths.size() > network.getBestPathsCount())
@@ -82,33 +83,35 @@ public abstract class AnycastDemand extends Demand {
 					int acceptedPaths = 0;
 					for (NetworkPath path : network.getPaths(client, replica))
 						if (!network.isInactive(path))
-							if (acceptedPaths >= network.getBestPathsCount()) break;
+							if (acceptedPaths >= network.getBestPathsCount())
+								break;
 							else if (path.isDisjoint(workingPath)) {
 								paths.add(new PartedPath(network, path, path.get(0) == replica));
 								acceptedPaths++;
 							}
-				} else
+				}
+				else
 					for (NetworkNode replica : network.getGroup("replicas")) {
 						int acceptedPaths = 0;
-						if (client == replica) {
+						if (client == replica)
 							continue;
-						}
+
 						for (NetworkPath path : network.getPaths(client, replica))
 							if (!network.isInactive(path))
-								if (acceptedPaths >= network.getBestPathsCount()) break;
+								if (acceptedPaths >= network.getBestPathsCount())
+									break;
 								else if (path.isDisjoint(workingPath)) {
 									paths.add(new PartedPath(network, path, path.get(0) == replica));
 									acceptedPaths++;
 								}
 					}
 			for (NetworkNode replica : network.getGroup("replicas")) {
-				if (client == replica) {
+				if (client == replica)
 					continue;
-				}
-				for (NetworkPath path : network.getPaths(client, replica).subList(0, network.getBestPathsCount())) {
+
+				for (NetworkPath path : network.getPaths(client, replica).subList(0, network.getBestPathsCount()))
 					if (!network.isInactive(path))
 						paths.add(new PartedPath(network, path, path.get(0) == client));
-				}
 			}
 
 			paths.sort(PartedPath.LENGTH_COMPARATOR);

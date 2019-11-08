@@ -4,9 +4,6 @@ import ca.bcit.utils.draw.DashedDrawing;
 import ca.bcit.utils.geom.Vector2F;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.Stop;
 
 public class Link extends Figure {
 	private Vector2F endPoint;
@@ -113,7 +110,8 @@ public class Link extends Figure {
 		if (this.Percentage > 50) {
 			rgb[0] = (50 - (this.Percentage - 50)) * 5;
 			rgb[1] = 255;
-		} else {
+		}
+		else {
 			rgb[0] = 255;
 			rgb[1] = this.Percentage * 5;
 		}

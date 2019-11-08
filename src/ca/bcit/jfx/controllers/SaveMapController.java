@@ -1,7 +1,7 @@
 package ca.bcit.jfx.controllers;
 
 import ca.bcit.ApplicationResources;
-import ca.bcit.Main;
+import ca.bcit.Settings;
 import ca.bcit.io.Logger;
 import ca.bcit.io.MapLoadingException;
 import ca.bcit.io.create.NewTopology;
@@ -13,8 +13,6 @@ import ca.bcit.jfx.components.ErrorDialog;
 import ca.bcit.net.Network;
 import ca.bcit.net.NetworkNode;
 import ca.bcit.utils.LocaleUtils;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -45,7 +43,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class SaveMapController implements Loadable, Initializable {
+public class SaveMapController implements Initializable {
 
     private static final int BOTH_GROUP_MEMBERSHIPS = 2;
     private static final int ONE_GROUP_MEMBERSHIP = 1;
@@ -58,10 +56,7 @@ public class SaveMapController implements Loadable, Initializable {
     private FileChooser fileChooser;
     private File file;
 
-    private ResourceBundle resources;
-
     public void initialize(URL location, ResourceBundle resources) {
-        this.resources = resources;
     }
 
     private boolean getMap(String requestUrl) {
@@ -69,9 +64,6 @@ public class SaveMapController implements Loadable, Initializable {
         // logic to request a map
     }
 
-    /*
-     *Add a new row of node details when the add button is clicked
-     */
     public void addButtonClicked() {
         int nextNumNode = getNextNodeNum();
 
@@ -84,7 +76,7 @@ public class SaveMapController implements Loadable, Initializable {
             saveTable.getItems().add(savedNodeDetails);
         }
         catch (Exception e) {
-            new ErrorDialog(resources.getString("validation_message_please_fill_in_all_the_fields"), resources);
+            new ErrorDialog(LocaleUtils.translate("validation_message_please_fill_in_all_the_fields"));
         }
 
         updateNodesConnections(savedNodeDetails, connNodeInput.getText());
@@ -92,7 +84,7 @@ public class SaveMapController implements Loadable, Initializable {
         nameInput.clear();
         connNodeInput.clear();
         numRegeneratorInput.clear();
-        nodeTypeInput.setValue(resources.getString("standard"));
+        nodeTypeInput.setValue(LocaleUtils.translate("standard"));
     }
 
     private void updateNodesConnections(SavedNodeDetails savedNodeDetails, String connectedNodesString) {
@@ -121,7 +113,7 @@ public class SaveMapController implements Loadable, Initializable {
         allNodeDetails = saveTable.getItems();
         nodeDetailsSelected = saveTable.getSelectionModel().getSelectedItems();
         if (nodeDetailsSelected.size() == 0) {
-            new ErrorDialog(resources.getString("validation_message_no_row_selected_to_delete"), resources);
+            new ErrorDialog(LocaleUtils.translate("validation_message_no_row_selected_to_delete"));
             return;
         }
         int nodeNumOfSelected = saveTable.getSelectionModel().getSelectedItem().getNodeNum();
@@ -142,12 +134,12 @@ public class SaveMapController implements Loadable, Initializable {
                 controller.initalizeSimulationsAndNetworks();
             }
             catch (MapLoadingException ex) {
-                new ErrorDialog(ex.getMessage(), ex, resources);
+                new ErrorDialog(ex.getMessage(), ex);
                 ex.printStackTrace();
                 return;
             }
             catch (Exception ex) {
-                new ErrorDialog(resources.getString("an_exception_occurred_while_loading_the_project"), ex, resources);
+                new ErrorDialog(LocaleUtils.translate("an_exception_occurred_while_loading_the_project"), ex);
                 ex.printStackTrace();
                 return;
             }
@@ -169,12 +161,12 @@ public class SaveMapController implements Loadable, Initializable {
      */
     public void saveButtonClicked() throws IOException {
         if (!saveTableHasAtLeastThreeRows(saveTable)) {
-            new ErrorDialog(resources.getString("please_enter_at_least_three_rows_containing_different_node_types"), resources);
+            new ErrorDialog(LocaleUtils.translate("please_enter_at_least_three_rows_containing_different_node_types"));
             return;
         }
 
         if (!internationalReplicaTypesExist(saveTable)) {
-            new ErrorDialog(resources.getString("both_data_center_and_international_nodes_must_be_present_in_the_topology"), resources);
+            new ErrorDialog(LocaleUtils.translate("both_data_center_and_international_nodes_must_be_present_in_the_topology"));
             return;
         }
 
@@ -207,18 +199,18 @@ public class SaveMapController implements Loadable, Initializable {
                             newTopology.addNode(savedNodeDetails);
                         }
 
-                        Logger.info(resources.getString("saving_project_to") + " " + file.getName() + "...");
+                        Logger.info(LocaleUtils.translate("saving_project_to") + " " + file.getName() + "...");
                         ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).save(file, ApplicationResources.getProject(), saveTable.getItems(), newTopology.getMap());
                         saveWindow.close();
                         MainWindowController controller = ResizableCanvas.getParentController();
                         controller.setFileChooser(fileChooser);
                         controller.setFile(file);
-                        Logger.info(resources.getString("finished_saving_project"));
-                        new InformationDialog(resources.getString("project_successfully_saved_initializing_now"), resources);
+                        Logger.info(LocaleUtils.translate("finished_saving_project"));
+                        new InformationDialog(LocaleUtils.translate("project_successfully_saved_initializing_now"));
                         controller.initalizeSimulationsAndNetworks();
                     }
                     catch (Exception ex) {
-                        new ErrorDialog(resources.getString("an_exception_occurred_while_saving_the_project"), ex, resources);
+                        new ErrorDialog(LocaleUtils.translate("an_exception_occurred_while_saving_the_project"), ex);
                         ex.printStackTrace();
                     }
                     return null;
@@ -227,7 +219,7 @@ public class SaveMapController implements Loadable, Initializable {
             task.run();
         }
         else {
-            ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
+            ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Settings.CURRENT_LOCALE));
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/APIKeyWindow.fxml"), resourceBundle);
             grid = fxmlLoader.load();
             APIKeyController controller = fxmlLoader.getController();
@@ -246,17 +238,17 @@ public class SaveMapController implements Loadable, Initializable {
     public void displaySaveMapWindow() {
         saveWindow = new Stage();
         saveWindow.initModality(Modality.APPLICATION_MODAL);
-        saveWindow.setTitle(resources.getString("save_network_topology"));
+        saveWindow.setTitle(LocaleUtils.translate("save_network_topology"));
         saveWindow.getIcons().add(new Image(getClass().getResourceAsStream("/ca/bcit/jfx/res/images/LogoBCIT.png")));
 
         //Node Number
-        TableColumn<SavedNodeDetails, String> nodeNumColumn = new TableColumn<>(resources.getString("node_number"));
+        TableColumn<SavedNodeDetails, String> nodeNumColumn = new TableColumn<>(LocaleUtils.translate("node_number"));
 
         nodeNumColumn.setMinWidth(200);
         nodeNumColumn.setCellValueFactory(new PropertyValueFactory<>("nodeNum"));
 
         //Location Column
-        TableColumn<SavedNodeDetails, String> locationColumn = new TableColumn<>(resources.getString("location"));
+        TableColumn<SavedNodeDetails, String> locationColumn = new TableColumn<>(LocaleUtils.translate("location"));
         locationColumn.setMinWidth(200);
         //use the location property of our objects
         locationColumn.setCellValueFactory(new PropertyValueFactory<>("location"));
@@ -266,7 +258,7 @@ public class SaveMapController implements Loadable, Initializable {
         });
 
         //Connected to Node Column
-        TableColumn<SavedNodeDetails, String> connectedNodeNumColumn = new TableColumn<>(resources.getString("connected_node_number"));
+        TableColumn<SavedNodeDetails, String> connectedNodeNumColumn = new TableColumn<>(LocaleUtils.translate("connected_node_number"));
         connectedNodeNumColumn.setMinWidth(450);
         connectedNodeNumColumn.setCellValueFactory(new PropertyValueFactory<>("connectedNodeNum"));
         connectedNodeNumColumn.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -275,7 +267,7 @@ public class SaveMapController implements Loadable, Initializable {
         });
 
         //Number of Regenerators Column
-        TableColumn<SavedNodeDetails, Integer> numRegeneratorColumn = new TableColumn<>(resources.getString("number_of_regenerators"));
+        TableColumn<SavedNodeDetails, Integer> numRegeneratorColumn = new TableColumn<>(LocaleUtils.translate("number_of_regenerators"));
         numRegeneratorColumn.setMinWidth(200);
         numRegeneratorColumn.setCellValueFactory(new PropertyValueFactory<>("numRegenerators"));
         numRegeneratorColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
@@ -284,14 +276,14 @@ public class SaveMapController implements Loadable, Initializable {
         });
 
         String[] nodeTypes = {
-            resources.getString("standard"),
-            resources.getString("data_center"),
-            resources.getString("international"),
-            resources.getString("data_center") + ", " + resources.getString("international")
+            LocaleUtils.translate("standard"),
+            LocaleUtils.translate("data_center"),
+            LocaleUtils.translate("international"),
+            LocaleUtils.translate("data_center") + ", " + LocaleUtils.translate("international")
         };
 
         //Node Type Column
-        TableColumn<SavedNodeDetails, String> nodeTypeColumn = new TableColumn<>(resources.getString("node_type"));
+        TableColumn<SavedNodeDetails, String> nodeTypeColumn = new TableColumn<>(LocaleUtils.translate("node_type"));
         nodeTypeColumn.setMinWidth(400);
         nodeTypeColumn.setCellValueFactory(new PropertyValueFactory<>("nodeType"));
         nodeTypeColumn.setCellFactory(ComboBoxTableCell.forTableColumn(nodeTypes));
@@ -302,30 +294,30 @@ public class SaveMapController implements Loadable, Initializable {
         //Inputs
         nameInput = new TextField();
         nameInput.setStyle("-fx-prompt-text-fill: derive(-fx-control-inner-background, -30%);");
-        nameInput.setPromptText(resources.getString("enter_location"));
+        nameInput.setPromptText(LocaleUtils.translate("enter_location"));
 
         connNodeInput = new TextField();
         connNodeInput.setStyle("-fx-prompt-text-fill: derive(-fx-control-inner-background, -30%);");
-        connNodeInput.setPromptText(resources.getString("enter_connected_nodes"));
+        connNodeInput.setPromptText(LocaleUtils.translate("enter_connected_nodes"));
 
         numRegeneratorInput = new TextField();
         numRegeneratorInput.setStyle("-fx-prompt-text-fill: derive(-fx-control-inner-background, -30%);-fx-pref-width: 230");
-        numRegeneratorInput.setPromptText(resources.getString("number_of_regenerators_placeholder"));
+        numRegeneratorInput.setPromptText(LocaleUtils.translate("number_of_regenerators_placeholder"));
 
         nodeTypeInput = new ComboBox<>(FXCollections.observableArrayList(nodeTypes));
-        nodeTypeInput.setValue(resources.getString("standard"));
+        nodeTypeInput.setValue(LocaleUtils.translate("standard"));
 
         //Buttons
-        Button addButton = new Button(resources.getString("add"));
+        Button addButton = new Button(LocaleUtils.translate("add"));
         addButton.setOnAction(e -> addButtonClicked());
 
-        Button deleteButton = new Button(resources.getString("delete"));
+        Button deleteButton = new Button(LocaleUtils.translate("delete"));
         deleteButton.setOnAction(e -> deleteButtonClicked());
 
-        Button loadButton = new Button(resources.getString("load_map"));
+        Button loadButton = new Button(LocaleUtils.translate("load_map"));
         loadButton.setOnAction(e -> loadButtonClicked());
 
-        Button saveButton = new Button(resources.getString("save_map"));
+        Button saveButton = new Button(LocaleUtils.translate("save_map"));
         saveButton.setOnAction(e -> {
             try {
                 saveButtonClicked();
@@ -512,25 +504,25 @@ public class SaveMapController implements Loadable, Initializable {
                 }
 
                 if (n1.getNodeGroups().size() == BOTH_GROUP_MEMBERSHIPS)
-                    nodeTypesToString = resources.getString("data_center") + ", " + resources.getString("international");
+                    nodeTypesToString = LocaleUtils.translate("data_center") + ", " + LocaleUtils.translate("international");
                 else if (n1.getNodeGroups().size() == ONE_GROUP_MEMBERSHIP) {
                     if (n1.getNodeGroups().containsKey("replicas"))
-                        nodeTypesToString = resources.getString("data_center");
+                        nodeTypesToString = LocaleUtils.translate("data_center");
                     else if (n1.getNodeGroups().containsKey("international"))
-                        nodeTypesToString = resources.getString("international");
+                        nodeTypesToString = LocaleUtils.translate("international");
                 }
                 else
-                    nodeTypesToString = resources.getString("standard");
+                    nodeTypesToString = LocaleUtils.translate("standard");
 
                 SavedNodeDetails savedNodeDetails = new SavedNodeDetails(getNextNodeNum(), n1.getLocation(), linkedNodesToString, n1.getRegeneratorsCount(), nodeTypesToString);
                 saveTable.getItems().add(savedNodeDetails);
             }
         }
         catch (NullPointerException e) {
-            new ErrorDialog(resources.getString("network_not_pre_loaded_from_the_main_window_exception"), resources);
+            new ErrorDialog(LocaleUtils.translate("network_not_pre_loaded_from_the_main_window_exception"));
         }
         catch (Exception e) {
-            new ErrorDialog(resources.getString("some_exception_occurred_while_trying_to_load"), e, resources);
+            new ErrorDialog(LocaleUtils.translate("some_exception_occurred_while_trying_to_load"), e);
         }
     }
 
@@ -539,10 +531,10 @@ public class SaveMapController implements Loadable, Initializable {
         boolean dataCenterPresent = false;
 
         for (SavedNodeDetails node : saveTable.getItems()) {
-            if (node.getNodeType().contains(resources.getString("international")))
+            if (node.getNodeType().contains(LocaleUtils.translate("international")))
                 internationalPresent = true;
 
-            if(node.getNodeType().contains(resources.getString("data_center")))
+            if(node.getNodeType().contains(LocaleUtils.translate("data_center")))
                 dataCenterPresent = true;
 
             if (internationalPresent && dataCenterPresent)

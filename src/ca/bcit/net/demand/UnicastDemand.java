@@ -25,7 +25,8 @@ public class UnicastDemand extends Demand {
 		if (backup)
 			for (NetworkPath path : network.getPaths(source, destination)) {
 				if (!network.isInactive(path))
-					if (paths.size() >= network.getBestPathsCount()) break;
+					if (paths.size() >= network.getBestPathsCount())
+						break;
 					else if (path.isDisjoint(workingPath))
 						paths.add(new PartedPath(network, path, source == path.get(0)));
 			}
