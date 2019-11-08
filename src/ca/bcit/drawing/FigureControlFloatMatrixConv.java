@@ -11,27 +11,26 @@ public class FigureControlFloatMatrixConv {
 	private FloatMatrix nodeTable;
 	private FloatMatrix linkIdx;
 	private int nodeSize;
-	public FigureControlFloatMatrixConv(FigureControl _list,Vector2F _benchmark)
-	{
+
+	public FigureControlFloatMatrixConv(FigureControl _list,Vector2F _benchmark) {
 		this.list=_list;
 		this.benchmarkPoint=_benchmark;
 		this.nodeAmmount=list.getNodeAmount();
 		this.linkAmmount=list.getLinkAmount();
 	}
-	public FigureControlFloatMatrixConv(FigureControl _list)
-	{
+
+	public FigureControlFloatMatrixConv(FigureControl _list) {
 		this.list=_list;
 		this.benchmarkPoint=new Vector2F(((float)_list.getCanvas().getWidth()/2),((float)_list.getCanvas().getHeight()/2));
 		this.nodeAmmount=list.getNodeAmount();
 		this.linkAmmount=list.getLinkAmount();
 	}
-	public FloatMatrix convertFigureControlToFloatMatrix()
-	{
+
+	public FloatMatrix convertFigureControlToFloatMatrix() {
 		int actualFigure=0;
 		nodeSize=Math.round(Node.imageSize/2);
 		float nodeArray[][] = new float[nodeAmmount][2];
-		for(int i = list.elementsAmount()-1; i>list.elementsAmount()-nodeAmmount-1; i--)
-		{
+		for(int i = list.elementsAmount()-1; i>list.elementsAmount()-nodeAmmount-1; i--) {
 			Figure fig=list.get(i);
 			Vector2F fixedStartPoint=fixPoint(fig.getStartPoint(),true);
 			nodeArray[actualFigure][0] = fixedStartPoint.getX();
@@ -40,8 +39,7 @@ public class FigureControlFloatMatrixConv {
 		}
 		nodeTable=new FloatMatrix(nodeArray);
 		float linkArray[][] = new float[linkAmmount][2];
-		for(int i = 0; i<list.elementsAmount()-nodeAmmount; i++)
-		{
+		for(int i = 0; i<list.elementsAmount()-nodeAmmount; i++) {
 			Link link=((Link)list.get(i));
 			Vector2F startPoint=link.getStartPoint();
 			startPoint=fixPoint(startPoint,true);
@@ -54,29 +52,25 @@ public class FigureControlFloatMatrixConv {
 			linkArray[i][0]=startNodeid;
 			linkArray[i][1]=endNodeid;
 		}
-		linkIdx=new FloatMatrix(linkArray);
+		linkIdx = new FloatMatrix(linkArray);
 		return nodeTable;
-		
 	}
-	
-	
-	public FigureControl convertFloatMatrixToFigureControl(FloatMatrix floatMatrixAfterChanges)
-	{
-		
+
+	public FigureControl convertFloatMatrixToFigureControl(FloatMatrix floatMatrixAfterChanges) {
 		if(nodeTable.rows()!=floatMatrixAfterChanges.rows())
 			return list;
+
 		FigureControl returnList=new FigureControl(list);
 		int actualFigure=0;
-		for(int i = list.elementsAmount()-1; i>list.elementsAmount()-nodeAmmount-1; i--)
-		{
+		for(int i = list.elementsAmount()-1; i>list.elementsAmount()-nodeAmmount-1; i--) {
 			Figure fig=returnList.get(i);
 			Vector2F startPoint=floatMatrixAfterChanges.getRow(actualFigure);
 			Vector2F fixedStartPoint=fixPoint(startPoint,false);
 			fig.setStartPoint(fixedStartPoint);
 			actualFigure++;
 		}
-		for(int i = 0; i<list.elementsAmount()-nodeAmmount; i++)
-		{
+
+		for(int i = 0; i<list.elementsAmount()-nodeAmmount; i++) {
 			Link link=((Link)returnList.get(i));
 			Vector2F linkNodes=linkIdx.getRow(i);
 			Vector2F startPoint=floatMatrixAfterChanges.getRow(((int)linkNodes.getX()));
@@ -90,19 +84,18 @@ public class FigureControlFloatMatrixConv {
 		}
 		return returnList;
 	}
-	private Vector2F fixPoint(Vector2F vec,boolean beforeModifications)
-	{
+
+	private Vector2F fixPoint(Vector2F vec,boolean beforeModifications) {
 		float dy = benchmarkPoint.getY();
 		float dx = benchmarkPoint.getX();
-		if(beforeModifications)
-		{
+		if(beforeModifications) {
 			dx=-dx;
 			dy=-dy;
 		}
 		return new Vector2F(vec.getX() + dx,vec.getY() + dy);
 	}
-	private Vector2F fixLinkPoint(Vector2F vec,boolean beforeModifications)
-	{
+
+	private Vector2F fixLinkPoint(Vector2F vec,boolean beforeModifications) {
 		int nodeSize=-this.nodeSize;
 		if(!beforeModifications)
 			nodeSize=-nodeSize;
@@ -110,16 +103,14 @@ public class FigureControlFloatMatrixConv {
 				+ nodeSize, vec.getY()
 				+ nodeSize );
 	}
-	private int findNodeId(Vector2F vec)
-	{
+
+	private int findNodeId(Vector2F vec) {
 		int closestRow=0;
 		float closestDistance=nodeTable.getRow(0).distance(vec);
 		
-		for (int i=1;i<nodeTable.rows();i++)
-		{
+		for (int i=1;i<nodeTable.rows();i++) {
 			Vector2F row=nodeTable.getRow(i);
-			if(closestDistance>row.distance(vec))
-			{
+			if(closestDistance>row.distance(vec)) {
 				closestRow=i;
 				closestDistance=row.distance(vec);
 			}
@@ -127,4 +118,3 @@ public class FigureControlFloatMatrixConv {
 		return closestRow;
 	}
 }
-

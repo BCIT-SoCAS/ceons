@@ -5,7 +5,6 @@ import ca.bcit.graph.Graph;
 import java.util.Collection;
 
 abstract class NodeCluster<N extends PositionedNode> {
-	
 	final Graph<N, ? extends FixedLengthLink<?>, ?, ?> graph;
 	
 	NodeCluster(Graph<N, ? extends FixedLengthLink<?>, ?, ?> graph) {

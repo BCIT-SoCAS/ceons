@@ -2,12 +2,8 @@ package ca.bcit.drawing;
 
 import ca.bcit.utils.geom.Vector2F;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
-/**
- * Created by Admin on 2014-12-27.
- */
 public abstract class Figure {
 
 	Vector2F startPoint;

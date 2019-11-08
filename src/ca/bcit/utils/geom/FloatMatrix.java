@@ -55,8 +55,10 @@ public class FloatMatrix implements Cloneable {
 			throw new MatrixException("Cannot multiply matrices where number of columns in A is not equal to number of rows in B.");
 		float[][] matrix = new float[rows()][other.columns()];
 		
-		for (int i = 0; i < rows(); i++) for (int j = 0; j < other.columns(); j++)
-			for (int k = 0; k < columns(); k++) matrix[i][j] += this.matrix[i][k] * other.matrix[k][j];
+		for (int i = 0; i < rows(); i++)
+			for (int j = 0; j < other.columns(); j++)
+				for (int k = 0; k < columns(); k++)
+					matrix[i][j] += this.matrix[i][k] * other.matrix[k][j];
 
 		return new FloatMatrix(matrix);
 	}
@@ -86,14 +88,17 @@ public class FloatMatrix implements Cloneable {
 	public FloatMatrix clone() {
 		float[][] matrix = new float[rows()][columns()];
 		
-		for (int i = 0; i < rows(); i++) System.arraycopy(this.matrix[i], 0, matrix[i], 0, columns());
+		for (int i = 0; i < rows(); i++)
+			System.arraycopy(this.matrix[i], 0, matrix[i], 0, columns());
 		
 		return new FloatMatrix(matrix);
 	}
 
 	@Override
 	public boolean equals(Object other) {
-		if (other instanceof FloatMatrix) return Arrays.deepEquals(((FloatMatrix) other).matrix, matrix);
+		if (other instanceof FloatMatrix)
+			return Arrays.deepEquals(((FloatMatrix) other).matrix, matrix);
+
 		return false;
 	}
     public Vector2F getRow(int i)

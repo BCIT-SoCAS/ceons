@@ -5,7 +5,6 @@ import ca.bcit.io.YamlSerializable;
 import java.util.*;
 
 public abstract class UniformRandomVariable<E> extends RandomVariable<E> {
-
 	UniformRandomVariable() {
 		super();
 	}
@@ -47,7 +46,6 @@ public abstract class UniformRandomVariable<E> extends RandomVariable<E> {
 	}
 	
 	public static class Integer extends UniformRandomVariable<java.lang.Integer> {
-		
 		final int from;
 		final int to;
 		final int interval;

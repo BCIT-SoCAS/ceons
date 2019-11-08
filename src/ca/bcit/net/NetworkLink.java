@@ -7,7 +7,6 @@ import java.util.Map;
 
 /**
  * Network link
- *
  */
 public class NetworkLink extends FixedLengthLink<NetworkLink> {
 	
@@ -24,5 +23,4 @@ public class NetworkLink extends FixedLengthLink<NetworkLink> {
 	public NetworkLink(Map map) {
 		super(map);
 	}
-
 }

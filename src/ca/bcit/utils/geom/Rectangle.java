@@ -1,6 +1,5 @@
 package ca.bcit.utils.geom;
 
-
 import ca.bcit.drawing.Figure;
 import ca.bcit.drawing.Link;
 import ca.bcit.drawing.Node;
@@ -9,25 +8,19 @@ public class Rectangle {
 	private Vector2F leftUpCorner;
 	private Vector2F rightDownCorner;
 	
-	public Rectangle(Vector2F vec1,Vector2F vec2)
-	{
+	public Rectangle(Vector2F vec1,Vector2F vec2) {
 		findAndSetLeftUpCorner(vec1,vec2);
 		findAndSetRightDownCorner(vec1,vec2);
 	}
 	
-	private void findAndSetLeftUpCorner(Vector2F vec1,Vector2F vec2)
-	{
-		leftUpCorner=new Vector2F(Math.min(vec1.getX(),
-				vec2.getX()), Math.min(vec1.getY(), vec2.getY()));
+	private void findAndSetLeftUpCorner(Vector2F vec1,Vector2F vec2) {
+		leftUpCorner=new Vector2F(Math.min(vec1.getX(), vec2.getX()), Math.min(vec1.getY(), vec2.getY()));
 	}
-	private void findAndSetRightDownCorner(Vector2F vec1,Vector2F vec2)
-	{
-		rightDownCorner=new Vector2F(Math.max(vec1.getX(),
-				vec2.getX()), Math.max(vec1.getY(), vec2.getY()));	
+	private void findAndSetRightDownCorner(Vector2F vec1,Vector2F vec2) {
+		rightDownCorner=new Vector2F(Math.max(vec1.getX(), vec2.getX()), Math.max(vec1.getY(), vec2.getY()));
 	}
-	public boolean isFigureCrossOrIsInsideRectangle(Figure fig)
-	{
-		if(fig instanceof Node)
+	public boolean isFigureCrossOrIsInsideRectangle(Figure fig) {
+		if (fig instanceof Node)
 			return isNodeCrossOrInsideRectangle((Node)fig);
 		return isLinkCrossOrInsideRectangle((Link)fig);
 	}
@@ -53,14 +46,15 @@ public class Rectangle {
 		float leftNodeCornerX=leftNodeCorner.getX();
 		float leftNodeCornerY=leftNodeCorner.getY();
 		float nodeSize=Node.getNodeSize();
-		LineSegment rectLeftSideLine=new LineSegment(leftUpCorner,new Vector2F(leftUpCorner.getX(),rightDownCorner.getY()));
-		LineSegment rectDownSideLine=new LineSegment(new Vector2F(leftUpCorner.getX(),rightDownCorner.getY()),rightDownCorner);
-		LineSegment rectRightSideLine=new LineSegment(new Vector2F(rightDownCorner.getX(),leftUpCorner.getY()),rightDownCorner);
-		LineSegment rectUpSideLine=new LineSegment(leftUpCorner,new Vector2F(rightDownCorner.getX(),leftUpCorner.getY()));
-		LineSegment nodeLeftSideLine=new LineSegment(leftNodeCorner, new Vector2F(leftNodeCornerX,leftNodeCornerY+nodeSize));
-		LineSegment nodeDownSideLine=new LineSegment(new Vector2F(leftNodeCornerX,leftNodeCornerY+nodeSize),new Vector2F(leftNodeCornerX+nodeSize,leftNodeCornerY+nodeSize));
-		LineSegment nodeRightSideLine=new LineSegment(new Vector2F(leftNodeCornerX+nodeSize,leftNodeCornerY+nodeSize),new Vector2F(leftNodeCornerX+nodeSize,leftNodeCornerY));
-		LineSegment nodeUpSideLine=new LineSegment(leftNodeCorner,new Vector2F(leftNodeCornerX+nodeSize,leftNodeCornerY));
+		LineSegment rectLeftSideLine = new LineSegment(leftUpCorner,new Vector2F(leftUpCorner.getX(),rightDownCorner.getY()));
+		LineSegment rectDownSideLine = new LineSegment(new Vector2F(leftUpCorner.getX(),rightDownCorner.getY()),rightDownCorner);
+		LineSegment rectRightSideLine = new LineSegment(new Vector2F(rightDownCorner.getX(),leftUpCorner.getY()),rightDownCorner);
+		LineSegment rectUpSideLine = new LineSegment(leftUpCorner,new Vector2F(rightDownCorner.getX(),leftUpCorner.getY()));
+		LineSegment nodeLeftSideLine = new LineSegment(leftNodeCorner, new Vector2F(leftNodeCornerX,leftNodeCornerY+nodeSize));
+		LineSegment nodeDownSideLine = new LineSegment(new Vector2F(leftNodeCornerX,leftNodeCornerY+nodeSize),new Vector2F(leftNodeCornerX+nodeSize,leftNodeCornerY+nodeSize));
+		LineSegment nodeRightSideLine = new LineSegment(new Vector2F(leftNodeCornerX+nodeSize,leftNodeCornerY+nodeSize),new Vector2F(leftNodeCornerX+nodeSize,leftNodeCornerY));
+		LineSegment nodeUpSideLine = new LineSegment(leftNodeCorner,new Vector2F(leftNodeCornerX+nodeSize,leftNodeCornerY));
+
 		if(rectLeftSideLine.areCrossing(nodeLeftSideLine))
 			return true;
 		if(rectLeftSideLine.areCrossing(nodeRightSideLine))
@@ -91,12 +85,11 @@ public class Rectangle {
 			return true;
 		if(rectUpSideLine.areCrossing(nodeDownSideLine))
 			return true;
-		return rectUpSideLine.areCrossing(nodeUpSideLine);
 
+		return rectUpSideLine.areCrossing(nodeUpSideLine);
 	}
 
-	private boolean isAnyNodeCornerInsideRectangle(Node fig)
-	{
+	private boolean isAnyNodeCornerInsideRectangle(Node fig) {
 		Vector2F leftUpNodeCorner=fig.getStartPoint();
 		float nodeSize=Node.getNodeSize();
 		float xNodePoint=leftUpNodeCorner.getX();
@@ -109,16 +102,16 @@ public class Rectangle {
 				|| pointIsInsideRectangle(leftDownNodeCorner)
 				|| pointIsInsideRectangle(rightDownNodeCorner);
 	}
-	private boolean pointIsInsideRectangle(Vector2F checkedPoint)
-	{
+
+	private boolean pointIsInsideRectangle(Vector2F checkedPoint) {
 		boolean isBelowLeftLine	=checkedPoint.getX() > leftUpCorner.getX();
 		boolean isBelowRightLine=checkedPoint.getX() < rightDownCorner.getX();
 		boolean isBelowUpLine	=checkedPoint.getY() > leftUpCorner.getY();
 		boolean isUnderDownLine	=checkedPoint.getY() < rightDownCorner.getY();
 		return isBelowLeftLine && isBelowRightLine && isBelowUpLine&& isUnderDownLine;
 	}
-	private boolean isLinkCrossRectangle(Link link)
-	{
+
+	private boolean isLinkCrossRectangle(Link link) {
 		float LUCX=leftUpCorner.getX();
 		float LUCY=leftUpCorner.getY();
 		float RDCX=rightDownCorner.getX();

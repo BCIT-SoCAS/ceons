@@ -1,7 +1,7 @@
 package ca.bcit.net;
 
 import ca.bcit.ApplicationResources;
-import ca.bcit.Main;
+import ca.bcit.Settings;
 import ca.bcit.io.Logger;
 import ca.bcit.io.SimulationSummary;
 import ca.bcit.io.project.Project;
@@ -27,9 +27,6 @@ import java.util.*;
 
 /**
  * Main simulation class (start point)
- * 
- * @author Michal
- *
  */
 public class Simulation {
 
@@ -69,9 +66,7 @@ public class Simulation {
 		SimulationMenuController.finished = false;
 		SimulationMenuController.cancelled = false;
 		clearVolumeValues();
-
-		ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
-
+		
 		//For development set to debug, for release set to info
 		Logger.setLoggerLevel(Logger.LoggerLevel.DEBUG);
 		generator.setErlang(erlang);
@@ -110,7 +105,7 @@ public class Simulation {
 
 				// cancel button
 				if (SimulationMenuController.cancelled) {
-					Logger.info(resourceBundle.getString("simulation_cancelled"));
+					Logger.info(LocaleUtils.translate("simulation_cancelled"));
 					break;
 				}
 
@@ -120,7 +115,7 @@ public class Simulation {
 			// force call the update again here
 		}
 		catch (NetworkException e) {
-			Logger.info(resourceBundle.getString("network_exception_label") + " " + resourceBundle.getString(e.getMessage()));
+			Logger.info(LocaleUtils.translate("network_exception_label") + " " + LocaleUtils.translate(e.getMessage()));
 			for (; generator.getGeneratedDemandsCount() < demandsCount;) {
 				Demand demand = generator.next();
 				unhandledVolume += demand.getVolume();
@@ -140,14 +135,14 @@ public class Simulation {
 
 		// signal GUI menus that simulation is complete
 		SimulationMenuController.finished = true;
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SimulationMenu.fxml"), resourceBundle);
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ca/bcit/jfx/res/views/SimulationMenu.fxml"), Settings.getCurrentResources());
 		SimulationMenuController simulationMenuController = fxmlLoader.<SimulationMenuController>getController();
 		if (simulationMenuController != null)
 			simulationMenuController.disableClearSimulationButton();
 
-		Logger.info(resourceBundle.getString("blocked_spectrum_label") + " " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
-		Logger.info(resourceBundle.getString("blocked_regenerators_label") + " " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
-		Logger.info(resourceBundle.getString("blocked_link_failure_label") + " " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
+		Logger.info(LocaleUtils.translate("blocked_spectrum_label") + " " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
+		Logger.info(LocaleUtils.translate("blocked_regenerators_label") + " " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
+		Logger.info(LocaleUtils.translate("blocked_link_failure_label") + " " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
 
 		// write the resulting data of a successful simulation to file
 		File resultsDirectory = new File(RESULTS_DATA_DIR_NAME);
@@ -189,7 +184,7 @@ public class Simulation {
 		SimulationMenuController.cancelled = false;
 		clearVolumeValues();
 
-		ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Main.CURRENT_LOCALE));
+		ResourceBundle resourceBundle = ResourceBundle.getBundle("ca.bcit.bundles.lang", LocaleUtils.getLocaleFromLocaleEnum(Settings.CURRENT_LOCALE));
 
 		//For development set to debug, for release set to info
 		Logger.setLoggerLevel(Logger.LoggerLevel.DEBUG);
@@ -229,7 +224,7 @@ public class Simulation {
 
 				// cancel button
 				if (SimulationMenuController.cancelled) {
-					Logger.info(resourceBundle.getString("simulation_cancelled"));
+					Logger.info(LocaleUtils.translate("simulation_cancelled"));
 					break;
 				}
 
@@ -238,7 +233,7 @@ public class Simulation {
 			// force call the update again here
 		}
 		catch (NetworkException e) {
-			Logger.info(resourceBundle.getString("network_exception_label") + " " + resourceBundle.getString(e.getMessage()));
+			Logger.info(LocaleUtils.translate("network_exception_label") + " " + LocaleUtils.translate(e.getMessage()));
 			for (; generator.getGeneratedDemandsCount() < demandsCount;) {
 				Demand demand = generator.next();
 				unhandledVolume += demand.getVolume();
@@ -262,9 +257,9 @@ public class Simulation {
 		if (simulationMenuController != null)
 			simulationMenuController.disableClearSimulationButton();
 
-		Logger.info(resourceBundle.getString("blocked_spectrum_label") + " " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
-		Logger.info(resourceBundle.getString("blocked_regenerators_label") + " " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
-		Logger.info(resourceBundle.getString("blocked_link_failure_label") + " " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
+		Logger.info(LocaleUtils.translate("blocked_spectrum_label") + " " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
+		Logger.info(LocaleUtils.translate("blocked_regenerators_label") + " " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
+		Logger.info(LocaleUtils.translate("blocked_link_failure_label") + " " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");
 
 		// write the resulting data of a successful simulation to file
 		File resultsDirectory = new File(RESULTS_DATA_DIR_NAME);

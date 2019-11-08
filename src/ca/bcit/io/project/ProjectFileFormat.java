@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class ProjectFileFormat<L, S> extends FileFormat<Project, L, S> {
-
 	private static final Map<ExtensionFilter, ProjectFileFormat<?, ?>> projectFileFormats = new HashMap<>();
 	
 	public static void registerFileFormat(ProjectFileFormat<?, ?> projectFileFormat) {

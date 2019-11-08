@@ -3,6 +3,7 @@ package ca.bcit.jfx.tasks;
 import ca.bcit.io.Logger;
 import ca.bcit.jfx.controllers.SimulationMenuController;
 import ca.bcit.net.Simulation;
+import ca.bcit.utils.LocaleUtils;
 import javafx.concurrent.Task;
 import java.util.ResourceBundle;
 
@@ -15,16 +16,14 @@ public class SimulationTask extends Task<Void> {
 	private final double alpha;
 	private final boolean replicaPreservation;
 	private final SimulationMenuController simulationMenuController;
-	private final ResourceBundle resources;
 
-	public SimulationTask(Simulation simulation, long seed, double alpha, int erlang, int demandsCount, boolean replicaPreservation, SimulationMenuController controller, ResourceBundle resources) {
+	public SimulationTask(Simulation simulation, long seed, double alpha, int erlang, int demandsCount, boolean replicaPreservation, SimulationMenuController controller) {
 		this.simulation = simulation;
 		this.seed = seed;
 		this.erlang = erlang;
 		this.demandsCount = demandsCount;
 		this.alpha = alpha;
 		this.replicaPreservation = replicaPreservation;
-		this.resources = resources;
 		this.simulationMenuController = controller;
 	}
 
@@ -32,13 +31,14 @@ public class SimulationTask extends Task<Void> {
 	protected Void call() {
 		try {
 			Logger.info("\n");
-			Logger.info(resources.getString("starting_simulation") + "! " + "\n\t" + resources.getString("simulation_parameter_seed") + ": " + seed + "\n\t" + resources.getString("simulation_parameter_alpha") + ": " + alpha + "\n\t" + resources.getString("simulation_parameter_erlang") + ": " + erlang +
-					"\n\t" + resources.getString("simulation_parameter_number_of_requests") + ": " + demandsCount + "\n\t" + resources.getString("simulation_parameter_replica_preservation") + ": " + replicaPreservation);
+			Logger.info(LocaleUtils.translate("starting_simulation") + "! " + "\n\t" + LocaleUtils.translate("simulation_parameter_seed") + ": " + seed + "\n\t" + LocaleUtils.translate("simulation_parameter_alpha") + ": " + alpha + "\n\t" + LocaleUtils.translate("simulation_parameter_erlang") + ": " + erlang +
+					"\n\t" + LocaleUtils.translate("simulation_parameter_number_of_requests") + ": " + demandsCount + "\n\t" + LocaleUtils.translate("simulation_parameter_replica_preservation") + ": " + replicaPreservation);
 			simulationMenuController.setRunning(true);
 			simulation.simulate(seed, demandsCount, alpha, erlang, replicaPreservation, this);
-			Logger.info(resources.getString("simulation_finished") + "!");
+			Logger.info(LocaleUtils.translate("simulation_finished") + "!");
 			simulationMenuController.setRunning(false);
-		} catch (Throwable e) {
+		}
+		catch (Throwable e) {
 			e.printStackTrace();
 		}
 		return null;

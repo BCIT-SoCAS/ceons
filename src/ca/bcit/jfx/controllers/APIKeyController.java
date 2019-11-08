@@ -2,6 +2,7 @@ package ca.bcit.jfx.controllers;
 
 import ca.bcit.io.Logger;
 
+import ca.bcit.utils.LocaleUtils;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -38,10 +39,7 @@ public class APIKeyController implements Initializable {
 	@FXML
 	private Button closeAPIKeyWindowBtn;
 
-	private ResourceBundle resources;
-
 	public void initialize(URL location, ResourceBundle resources) {
-	    this.resources = resources;
 		BackgroundSize bgSize = new BackgroundSize(100, 100, true, true, false, true);
 		BackgroundImage bg = new BackgroundImage(new Image(getClass().getResourceAsStream("/ca/bcit/jfx/res/images/bg.png")),
 			BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, bgSize);
@@ -56,7 +54,7 @@ public class APIKeyController implements Initializable {
             return true;
         }
         catch (Exception ex) {
-            Logger.info(resources.getString("api_key_is_invalid"));
+            Logger.info(LocaleUtils.translate("api_key_is_invalid"));
             return false;
         }
     }
@@ -68,7 +66,7 @@ public class APIKeyController implements Initializable {
             writer.close();
         }
         catch (IOException ex) {
-            Logger.info(resources.getString("an_exception_occurred_while_saving_api_key"));
+            Logger.info(LocaleUtils.translate("an_exception_occurred_while_saving_api_key"));
             Logger.debug(ex);
         }
     }
@@ -77,15 +75,15 @@ public class APIKeyController implements Initializable {
         String apiKey = inputField.getText();
         if (!validateAPIkey(apiKey)) {
 			Alert alert = new Alert(Alert.AlertType.ERROR);
-			alert.setTitle(resources.getString("warning"));
-			alert.setHeaderText(resources.getString("api_key_is_invalid"));
+			alert.setTitle(LocaleUtils.translate("warning"));
+			alert.setHeaderText(LocaleUtils.translate("api_key_is_invalid"));
             alert.showAndWait();
             return;
         }
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialFileName("api_key");
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(resources.getString("api_key_file_type_descriptor"), "*.txt");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(LocaleUtils.translate("api_key_file_type_descriptor"), "*.txt");
         fileChooser.getExtensionFilters().add(extFilter);
         fileChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
         final File file = fileChooser.showSaveDialog(null);
@@ -96,9 +94,9 @@ public class APIKeyController implements Initializable {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() {
-                Logger.info(resources.getString("saving_api_key_to") + " " + file.getName() + " " + resources.getString("file"));
+                Logger.info(LocaleUtils.translate("saving_api_key_to") + " " + file.getName() + " " + LocaleUtils.translate("file"));
                 writeAPIkeyToFile(apiKey, file);
-                Logger.info(resources.getString("finished_saving_api_key"));
+                Logger.info(LocaleUtils.translate("finished_saving_api_key"));
                 dialogWindow.close();
                 return null;
             }
@@ -109,7 +107,7 @@ public class APIKeyController implements Initializable {
 	public void displaySaveAPIKeyWindow(GridPane grid) {
 		Stage dialogWindow = new Stage();
 		dialogWindow.initModality(Modality.APPLICATION_MODAL);
-		dialogWindow.setTitle(resources.getString("save_google_maps_api_key"));
+		dialogWindow.setTitle(LocaleUtils.translate("save_google_maps_api_key"));
 		dialogWindow.getIcons().add(new Image(getClass().getResourceAsStream("/ca/bcit/jfx/res/images/LogoBCIT.png")));
 		
 		saveAPIKeyBtn.setOnAction(e -> saveAPIkey(e, saveKeyInput, dialogWindow));

@@ -22,10 +22,13 @@ public class IdentifiableSet<E extends Identifiable> extends HashArray<E> {
 	public boolean remove(int id) {
 		E old = get(id);
 		boolean result = super.remove(id);
-		for (int i = id + 1; i < size(); i++) get(i).id--;
+		for (int i = id + 1; i < size(); i++)
+			get(i).id--;
 		rehash();
-		if (capacity() - size() > 8) resize(size() + 8);
-		if (old != null) old.id = -1;
+		if (capacity() - size() > 8)
+			resize(size() + 8);
+		if (old != null)
+			old.id = -1;
 		return result;
 	}
 }

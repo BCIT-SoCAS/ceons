@@ -2,6 +2,7 @@ package ca.bcit.io.create;
 
 import com.google.maps.ImageResult;
 import com.google.maps.model.LatLng;
+
 import java.util.ArrayList;
 
 public class NewTopology {
@@ -54,12 +55,7 @@ public class NewTopology {
         double lat = savedNodeDetails.getLatLng().lat;
         long latDistance = StaticMap.distance(centerPoint.lat, lat, centerPoint.lng, centerPoint.lng);
 
-        if ((centerPoint.lat - lat) > 0)
-            y = (int) Math.round(latDistance/meterPerPixel + centerHeight);
-        else
-            y = (int) Math.round(centerHeight - latDistance/meterPerPixel);
-
-        return y;
+        return (int) Math.round(((centerPoint.lat - lat) > 0) ? latDistance/meterPerPixel + centerHeight : centerHeight - latDistance/meterPerPixel);
     }
 
     /**
@@ -75,11 +71,6 @@ public class NewTopology {
         double lng = savedNodeDetails.getLatLng().lng;
         long lngDistance = StaticMap.distance(centerPoint.lat, centerPoint.lat, centerPoint.lng, lng);
 
-        if ((centerPoint.lng - lng) > 0)
-            x = (int) Math.round(centerWidth - lngDistance/meterPerPixel);
-        else
-            x = (int) Math.round(lngDistance/meterPerPixel + centerWidth);
-
-        return x;
+        return (int) Math.round(((centerPoint.lng - lng) > 0) ? centerWidth - lngDistance/meterPerPixel : lngDistance/meterPerPixel + centerWidth);
     }
 }

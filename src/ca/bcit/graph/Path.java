@@ -3,7 +3,6 @@ package ca.bcit.graph;
 import java.util.Arrays;
 
 public abstract class Path<N> implements Comparable<Path<N>> {
-
 	private final N[] path;
 	
 	protected Path(N[] path) {
@@ -28,9 +27,7 @@ public abstract class Path<N> implements Comparable<Path<N>> {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
-		result = prime * result + Arrays.hashCode(path);
-		return result;
+		return prime + Arrays.hashCode(path);
 	}
 
 	@Override
@@ -44,6 +41,4 @@ public abstract class Path<N> implements Comparable<Path<N>> {
 		Path<?> other = (Path<?>) obj;
         return Arrays.equals(path, other.path);
     }
-	
-	
 }

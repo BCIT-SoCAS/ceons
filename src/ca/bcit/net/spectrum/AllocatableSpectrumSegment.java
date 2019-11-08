@@ -4,7 +4,6 @@ import ca.bcit.net.demand.Demand;
 import ca.bcit.utils.IntegerRange;
 
 public abstract class AllocatableSpectrumSegment extends SpectrumSegment {
-
 	AllocatableSpectrumSegment(IntegerRange range) {
 		super(range);
 	}

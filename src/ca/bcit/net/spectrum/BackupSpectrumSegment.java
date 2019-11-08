@@ -41,14 +41,17 @@ public class BackupSpectrumSegment extends AllocatableSpectrumSegment {
 	@Override
 	public int getOccupationTimeLeft() {
 		int time = 0;
-		for (Demand demand : demands) if (demand.getTTL() > time)
-			time = demand.getTTL();
+		for (Demand demand : demands)
+			if (demand.getTTL() > time)
+				time = demand.getTTL();
 		return time;
 	}
 
 	@Override
 	public boolean canJoin(SpectrumSegment other) {
-		if (getType() != other.getType()) return false;
+		if (getType() != other.getType())
+			return false;
+
 		return ((BackupSpectrumSegment) other).demands.equals(demands);
 	}
 	
@@ -56,32 +59,45 @@ public class BackupSpectrumSegment extends AllocatableSpectrumSegment {
 		for (Demand other : demands)
 			if (!demand.isDisjoint(other))
 				return false;
+
 		return true;
 	}
 
 	@Override
 	public boolean canAllocate(SpectrumSegment other) {
-		if (other.getType() == FreeSpectrumSegment.TYPE) return true;
-		else if (other.getType() == BackupSpectrumSegment.TYPE) {
-			for (Demand demand1 : demands) for (Demand demand2 : ((BackupSpectrumSegment) other).demands) if (!demand1.isDisjoint(demand2)) return false;
+		if (other.getType() == FreeSpectrumSegment.TYPE)
 			return true;
-		} else return false;
+		else if (other.getType() == BackupSpectrumSegment.TYPE) {
+			for (Demand demand1 : demands)
+				for (Demand demand2 : ((BackupSpectrumSegment) other).demands)
+					if (!demand1.isDisjoint(demand2))
+						return false;
+
+			return true;
+		}
+		else
+			return false;
 	}
 
 	@Override
 	public BackupSpectrumSegment allocate(IntegerRange range, SpectrumSegment other) {
-		if (other.getType() == FreeSpectrumSegment.TYPE) return clone(range);
+		if (other.getType() == FreeSpectrumSegment.TYPE)
+			return clone(range);
 		else if (other.getType() == BackupSpectrumSegment.TYPE) {
 			Set<Demand> demands = new HashSet<>(((BackupSpectrumSegment) other).demands);
 			demands.addAll(this.demands);
 			return new BackupSpectrumSegment(range, demands);
-		} else throw new SpectrumException("BackupSpectrumSegment can only be allocated on FREE or disjoint BACKUP segments");
+		}
+		else
+			throw new SpectrumException("BackupSpectrumSegment can only be allocated on FREE or disjoint BACKUP segments");
 	}
 
 	@Override
 	public SpectrumSegment deallocate(Demand demand) {
-		if (!demands.contains(demand)) throw new SpectrumException("Tried do deallocate segment with demand that is not its owner.");
-		if (demands.size() == 1) return new FreeSpectrumSegment(range);
+		if (!demands.contains(demand))
+			throw new SpectrumException("Tried do deallocate segment with demand that is not its owner.");
+		if (demands.size() == 1)
+			return new FreeSpectrumSegment(range);
 		else {
 			Set<Demand> demands = new HashSet<>(this.demands);
 			demands.remove(demand);
@@ -92,20 +108,23 @@ public class BackupSpectrumSegment extends AllocatableSpectrumSegment {
 	@Override
 	public SpectrumSegment merge(IntegerRange range, SpectrumSegment other) {
 		switch(other.getType()) {
-		case FreeSpectrumSegment.TYPE: return clone(range);
-		case BackupSpectrumSegment.TYPE:
-			BackupSpectrumSegment castedOther = (BackupSpectrumSegment) other;
-			Set<Demand> demands;
-			if (castedOther.demands.size() > this.demands.size()) {
-				demands = new HashSet<>(castedOther.demands);
-				demands.addAll(this.demands);
-			} else {
-				demands = new HashSet<>(this.demands);
-				demands.addAll(castedOther.demands);
-			}
-			return new BackupSpectrumSegment(range, demands);
-		case WorkingSpectrumSegment.TYPE: return other.clone(range);
+			case FreeSpectrumSegment.TYPE: return clone(range);
+			case BackupSpectrumSegment.TYPE:
+				BackupSpectrumSegment castedOther = (BackupSpectrumSegment) other;
+				Set<Demand> demands;
+				if (castedOther.demands.size() > this.demands.size()) {
+					demands = new HashSet<>(castedOther.demands);
+					demands.addAll(this.demands);
+				}
+				else {
+					demands = new HashSet<>(this.demands);
+					demands.addAll(castedOther.demands);
+				}
+				return new BackupSpectrumSegment(range, demands);
+			case WorkingSpectrumSegment.TYPE:
+				return other.clone(range);
 		}
+
 		return other.merge(range, this);
 	}
 

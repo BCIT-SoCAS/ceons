@@ -1,5 +1,6 @@
 package ca.bcit.jfx.controllers;
 
+import ca.bcit.utils.LocaleUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -11,10 +12,8 @@ public class LiveInfoSummaryController implements Initializable {
     @FXML
     private Label info;
 
-    private ResourceBundle resources;
-
     public void initialize(URL location, ResourceBundle resources) {
-        this.resources = resources;
+
     }
 
     public void fillInformation(double spectrumBlocked, double regeneratorsBlocked, double linkFailureBlocked, double totalVolume) {
@@ -22,8 +21,8 @@ public class LiveInfoSummaryController implements Initializable {
         String blockedRegenerators = regeneratorsBlocked / totalVolume * 100 + "%";
         String blockedLinkFailure = linkFailureBlocked / totalVolume * 100 + "%";
 
-        info.setText(resources.getString("blocked_spectrum_label") + " " + blockedSpectrum + "\n"
-                   + resources.getString("blocked_regenerators_label") + " " + blockedRegenerators + "\n"
-                   + resources.getString("blocked_link_failure_label") + " " + blockedLinkFailure);
+        info.setText(LocaleUtils.translate("blocked_spectrum_label") + " " + blockedSpectrum + "\n"
+                   + LocaleUtils.translate("blocked_regenerators_label") + " " + blockedRegenerators + "\n"
+                   + LocaleUtils.translate("blocked_link_failure_label") + " " + blockedLinkFailure);
     }
 }

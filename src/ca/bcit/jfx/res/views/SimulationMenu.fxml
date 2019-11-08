@@ -29,7 +29,6 @@
                     <CeonsLabel fx:id="erlangLabel" text="%simulation_parameter_erlang" tooltipText="%simulation_parameter_erlang_description" />
                     <UIntField fx:id="erlangIntField" alignment="CENTER"/>
 
-
                     <HBox fx:id="multipleSimulatonSettingsLabel" alignment="CENTER" spacing="100" />
                     <HBox fx:id="multipleSimulatonSettingsRange" alignment="CENTER" />
 
@@ -64,17 +63,26 @@
 
                     <CeonsLabel text="%simulation_parameter_number_of_candidate_paths" />
                     <UIntField fx:id="bestPaths" alignment="CENTER"/>
-
-                    <Separator/>
                 </children>
             </VBox>
 
-            <VBox fx:id="simulatorControl" spacing="8.0" alignment="BOTTOM_CENTER" minHeight="0.0" minWidth="0.0">
+            <Separator/>
+
+            <VBox spacing="8.0" alignment="BOTTOM_CENTER" minHeight="0.0" minWidth="0.0">
                 <children>
-                    <Button fx:id="StartButton" text="%start_simulation" onAction="#startSimulation"/>
-                    <Button fx:id="pauseButton" text="%pause_simulation" visible="false" disable="true" onAction="#pauseSimulation"/>
-                    <Button fx:id="cancelButton" visible="false" text="%cancel_simulation" onAction="#cancelSimulation" disable="true"/>
-                    <Button fx:id="clear" text="%clear_canvas" onAction="#clear"/>
+                    <CeonsLabel text="%simulation_controls" />
+                    <HBox fx:id="simulatorControl" spacing="8.0" alignment="BOTTOM_CENTER" minHeight="0.0" minWidth="0.0">
+                        <Button fx:id="StartButton" text="%play_icon" onAction="#startSimulation">
+                            <tooltip><Tooltip text="%start_simulation" /></tooltip>
+                        </Button>
+                        <Button fx:id="pauseButton" text="%pause_icon" disable="true" onAction="#pauseSimulation">
+                            <tooltip><Tooltip text="%pause_simulation" /></tooltip>
+                        </Button>
+                        <Button fx:id="cancelButton" text="%stop_icon" onAction="#cancelSimulation" disable="true">
+                            <tooltip><Tooltip text="%cancel_simulation" /></tooltip>
+                        </Button>
+                        <Button fx:id="clear" text="%clear_canvas" onAction="#clear"/>
+                    </HBox>
                     <Label fx:id="pauseInfoLabel" visible="false" text="%pause_to_see_statistics_in_live_info_tab" wrapText="true"/>
                 </children>
             </VBox>

@@ -6,7 +6,6 @@ import com.google.maps.model.LatLng;
 import com.google.maps.model.Size;
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.util.*;
 

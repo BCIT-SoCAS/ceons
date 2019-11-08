@@ -8,7 +8,6 @@ import java.io.File;
 import java.util.List;
 
 public class EONProject extends Project {
-
 	private final Network network;
 	private final List<TrafficGenerator> trafficGenerators;
 	private final BufferedImage map;

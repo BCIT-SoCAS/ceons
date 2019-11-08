@@ -3,6 +3,7 @@ package ca.bcit.jfx.controllers;
 import ca.bcit.drawing.Figure;
 import ca.bcit.drawing.Node;
 import ca.bcit.drawing.FigureControl;
+import ca.bcit.utils.LocaleUtils;
 import ca.bcit.utils.geom.Vector2F;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -34,12 +35,9 @@ public class NodePropertiesController implements Initializable {
 
     private FigureControl list;
     private Figure actualNode;
-    private ResourceBundle resources;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        this.resources = resources;
-
         listView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null)
                 list.setSelectedFigure(list.findFigureByName(newValue));
@@ -74,13 +72,13 @@ public class NodePropertiesController implements Initializable {
         Boolean isReplica = (Boolean) node.getNodeGroups().get("replicas");
         Boolean isInternational = (Boolean) node.getNodeGroups().get("international");
         if (Boolean.TRUE.equals(isReplica) && Boolean.TRUE.equals(isInternational))
-            nodeGroup.setText(resources.getString("data_center") + ", " + resources.getString("international"));
+            nodeGroup.setText(LocaleUtils.translate("data_center") + ", " + LocaleUtils.translate("international"));
         else if (Boolean.TRUE.equals(isReplica))
-            nodeGroup.setText(resources.getString("data_center"));
+            nodeGroup.setText(LocaleUtils.translate("data_center"));
         else if (Boolean.TRUE.equals(isInternational))
-            nodeGroup.setText(resources.getString("international"));
+            nodeGroup.setText(LocaleUtils.translate("international"));
         else
-            nodeGroup.setText(resources.getString("standard"));
+            nodeGroup.setText(LocaleUtils.translate("standard"));
 
         ObservableList<String> obList=list.generateNodeConnections(node);
         listView.setItems(obList);

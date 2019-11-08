@@ -21,7 +21,7 @@ public abstract class Demand {
 		this.reallocate = reallocate;
 		this.allocateBackup = allocateBackup;
 		this.volume = volume;
-		this.squeezedVolume = squeezedVolume < 10 ? 10 : squeezedVolume;
+		this.squeezedVolume = Math.max(squeezedVolume, 10);
 		this.ttl = ttl;
 		initialTTL = ttl;
 	}
@@ -77,18 +77,22 @@ public abstract class Demand {
 			if (path.allocate(this)) {
 				this.workingPath = path;
 				return true;
-			} else return false;
+			}
+			else
+				return false;
 		else
 			if (path.allocate(this)) {
 				this.backupPath = path;
 				return true;
-			} else return false;
+			}
+			else
+				return false;
 	}
 	
 	public boolean onWorkingFailure() {
-		if (workingPath != null) {
+		if (workingPath != null)
 			workingPath.deallocate(this);
-		}
+
 		if (backupPath == null) {
 			workingPath = null;
 			this.ttl = initialTTL;
@@ -108,6 +112,7 @@ public abstract class Demand {
 	
 	public void deallocate() {
 		workingPath.deallocate(this);
-		if (backupPath != null) backupPath.deallocate(this);
+		if (backupPath != null)
+			backupPath.deallocate(this);
 	}
 }

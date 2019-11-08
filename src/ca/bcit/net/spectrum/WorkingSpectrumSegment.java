@@ -4,7 +4,6 @@ import ca.bcit.net.demand.Demand;
 import ca.bcit.utils.IntegerRange;
 
 public class WorkingSpectrumSegment extends AllocatableSpectrumSegment {
-
 	public static final String TYPE = "WORKING";
 	
 	private final Demand owner;
@@ -40,7 +39,8 @@ public class WorkingSpectrumSegment extends AllocatableSpectrumSegment {
 
 	@Override
 	public boolean canJoin(SpectrumSegment other) {
-		if (getType() != other.getType()) return false;
+		if (getType() != other.getType())
+			return false;
 		return ((WorkingSpectrumSegment) other).owner.equals(owner);
 	}
 
@@ -51,25 +51,30 @@ public class WorkingSpectrumSegment extends AllocatableSpectrumSegment {
 
 	@Override
 	public WorkingSpectrumSegment allocate(IntegerRange range, SpectrumSegment other) {
-		if (other.getType() != FreeSpectrumSegment.TYPE) throw new SpectrumException("Working spectrum can only by allocated on type-FREE segments.");
+		if (other.getType() != FreeSpectrumSegment.TYPE)
+			throw new SpectrumException("Working spectrum can only by allocated on type-FREE segments.");
 		return clone(range);
 	}
 
 	@Override
 	public SpectrumSegment deallocate(Demand demand) {
-		if (!owner.equals(demand)) throw new SpectrumException("Tried do deallocate segment with demand that is not its owner.");
+		if (!owner.equals(demand))
+			throw new SpectrumException("Tried do deallocate segment with demand that is not its owner.");
 		return new FreeSpectrumSegment(range);
 	}
 
 	@Override
 	public SpectrumSegment merge(IntegerRange range, SpectrumSegment other) {
 		switch(other.getType()) {
-		case FreeSpectrumSegment.TYPE: return clone(range);
-		case BackupSpectrumSegment.TYPE: return clone(range);
-		case WorkingSpectrumSegment.TYPE: 
-			WorkingSpectrumSegment castedOther = (WorkingSpectrumSegment) other;
-			return new WorkingSpectrumSegment(range, castedOther.owner.getTTL() > owner.getTTL() ? castedOther.owner : owner);
+			case FreeSpectrumSegment.TYPE:
+				return clone(range);
+			case BackupSpectrumSegment.TYPE:
+				return clone(range);
+			case WorkingSpectrumSegment.TYPE:
+				WorkingSpectrumSegment castedOther = (WorkingSpectrumSegment) other;
+				return new WorkingSpectrumSegment(range, castedOther.owner.getTTL() > owner.getTTL() ? castedOther.owner : owner);
 		}
+
 		return other.merge(range, this);
 	}
 

@@ -8,14 +8,11 @@ import ca.bcit.net.Modulation;
 import ca.bcit.net.ModulationInIfStatement;
 import ca.bcit.net.Network;
 import ca.bcit.net.demand.generator.TrafficGenerator;
+import ca.bcit.utils.LocaleUtils;
 import com.google.maps.ImageResult;
 import javafx.collections.ObservableList;
 import javafx.stage.FileChooser.ExtensionFilter;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -28,16 +25,13 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
-	private final ResourceBundle resources;
-
 	public EONProjectFileFormat(ResourceBundle resources) {
 		super();
-		this.resources = resources;
 	}
 
 	@Override
 	public ExtensionFilter getExtensionFilter() {
-		return new ExtensionFilter(resources.getString("eon_project_files"), "*.eon");
+		return new ExtensionFilter(LocaleUtils.translate("eon_project_files"), "*.eon");
 	}
 
 	@Override

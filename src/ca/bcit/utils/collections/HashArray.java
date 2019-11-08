@@ -8,12 +8,12 @@ import java.util.Collection;
 import java.util.Iterator;
 
 public class HashArray<E> implements Collection<E> {
-
 	private Object[] array;
 	private int size;
 	
 	public HashArray(int initialCapacity) {
-		if (initialCapacity < 1) throw new HashArrayException("Cannot initialize HashArray with capacity %d", initialCapacity);
+		if (initialCapacity < 1)
+			throw new HashArrayException("Cannot initialize HashArray with capacity %d", initialCapacity);
 		array = new Object[initialCapacity];
 	}
 	
@@ -24,26 +24,34 @@ public class HashArray<E> implements Collection<E> {
 	
 	@Override
 	public boolean contains(Object element) {
-		if (element == null) return false;
+		if (element == null)
+			return false;
 		return contains(element.hashCode());
 	}
 	
 	public boolean contains(int hashCode) {
-		if (!Utils.checkArrayIndex(array.length, hashCode)) return false;
-		else return array[hashCode] != null;
+		if (!Utils.checkArrayIndex(array.length, hashCode))
+			return false;
+		else
+			return array[hashCode] != null;
 	}
 	
 	@Override
 	public boolean containsAll(Collection<?> collection) {
-		for (Object element : collection) if (!contains(element)) return false;
+		for (Object element : collection)
+			if (!contains(element))
+				return false;
 		return true;
 	}
 	
 	@Override
 	public boolean add(E element) {
-		if (element == null) throw new HashArrayException("Cannot add null element to HashArray!");
-		if (!Utils.checkArrayIndex(capacity(), element.hashCode())) throw new HashArrayException("Hash code: '%d' is out of bounds!", element.hashCode());
-		if (array[element.hashCode()] == null) size++;
+		if (element == null)
+			throw new HashArrayException("Cannot add null element to HashArray!");
+		if (!Utils.checkArrayIndex(capacity(), element.hashCode()))
+			throw new HashArrayException("Hash code: '%d' is out of bounds!", element.hashCode());
+		if (array[element.hashCode()] == null)
+			size++;
 		array[element.hashCode()] = element;
 		return true;
 	}
@@ -51,40 +59,48 @@ public class HashArray<E> implements Collection<E> {
 	@Override
 	public boolean addAll(Collection<? extends E> collection) {
 		boolean result = false;
-		for (E element : collection) result |= add(element);
+		for (E element : collection)
+			result |= add(element);
 		return result;
 	}
 	
 	@SuppressWarnings("unchecked")
 	public E get(int hashCode) {
-		if (!Utils.checkArrayIndex(array.length, hashCode)) throw new HashArrayException("Hash code: '%d' is out of bounds!", hashCode);
+		if (!Utils.checkArrayIndex(array.length, hashCode))
+			throw new HashArrayException("Hash code: '%d' is out of bounds!", hashCode);
 		return (E) array[hashCode];
 	}
 	
 	public boolean remove(int hashCode) {
-		if (!Utils.checkArrayIndex(array.length, hashCode)) throw new HashArrayException("Hash code: '%d' is out of bounds!", hashCode);
-		if (array[hashCode] != null) size--;
+		if (!Utils.checkArrayIndex(array.length, hashCode))
+			throw new HashArrayException("Hash code: '%d' is out of bounds!", hashCode);
+		if (array[hashCode] != null)
+			size--;
 		array[hashCode] = null;
 		return true;
 	}
 	
 	@Override
 	public boolean remove(Object element) {
-		if (element == null) throw new HashArrayException("Cannot remove null element from HashArray!");
+		if (element == null)
+			throw new HashArrayException("Cannot remove null element from HashArray!");
 		return remove(element.hashCode());
 	}
 	
 	@Override
 	public boolean removeAll(Collection<?> collection) {
 		boolean result = false;
-		for (Object element : collection) result |= remove(element);
+		for (Object element : collection)
+			result |= remove(element);
 		return result;
 	}
 	
 	@Override
 	public boolean retainAll(Collection<?> collection) {
 		boolean result = false;
-		for (int i = 0; i < capacity(); i++) if (!collection.contains(array[i]) && array[i] != null) result |= remove(array[i]);
+		for (int i = 0; i < capacity(); i++)
+			if (!collection.contains(array[i]) && array[i] != null)
+				result |= remove(array[i]);
 		return result;
 	}
 	
@@ -120,7 +136,9 @@ public class HashArray<E> implements Collection<E> {
 	
 	@Override
 	public void clear() {
-		for (int i = 0; i < capacity(); i++) if (array[i] != null) remove(array[i]);
+		for (int i = 0; i < capacity(); i++)
+			if (array[i] != null)
+				remove(array[i]);
 	}
 	
 	@Override
@@ -137,9 +155,11 @@ public class HashArray<E> implements Collection<E> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T[] toArray(T[] array) {
-		if (array.length < size) return (T[]) Arrays.copyOf(toArray(), size, array.getClass());
+		if (array.length < size)
+			return (T[]) Arrays.copyOf(toArray(), size, array.getClass());
 		System.arraycopy(toArray(), 0, array, 0, size);
-		if (array.length > size) array[size] = null; 
+		if (array.length > size)
+			array[size] = null;
 		return array;
 	}
 	

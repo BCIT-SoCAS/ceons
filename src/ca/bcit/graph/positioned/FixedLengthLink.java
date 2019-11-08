@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class FixedLengthLink<T extends FixedLengthLink<T>> implements Comparable<T>, YamlSerializable {
-
 	public int length;
 	
 	protected FixedLengthLink(int length) {

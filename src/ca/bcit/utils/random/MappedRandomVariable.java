@@ -11,7 +11,6 @@ import java.util.Map;
 public class MappedRandomVariable<E> extends RandomVariable<E> implements YamlSerializable {
 	
 	public static class Entry<E> implements YamlSerializable {
-		
 		private final int probability;
 		private final E value;
 		

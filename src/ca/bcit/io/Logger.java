@@ -18,7 +18,8 @@ public class Logger {
 	private static LoggerLevel loggerLevel = LoggerLevel.DEBUG;
 
 	public static void debug(String message) {
-		if (loggerLevel == LoggerLevel.DEBUG) Console.cout.appendText(message + '\n');
+		if (loggerLevel == LoggerLevel.DEBUG)
+			Console.cout.appendText(message + '\n');
 	}
 
 	public static void debug(Exception e) {

@@ -15,20 +15,18 @@ public class Zooming {
 
 	public FigureControl zoom(boolean enlarge) {
 		changeNodeSize(calculateNodeSize());
-		if(factory>0.05f)
-		{
-			if(enlarge){
+		if (factory>0.05f) {
+			if (enlarge) {
 				factory+=0.01f;
 				nodeFactory+=0.01f;
 			}
-			else{
+			else {
 				factory-=0.01f;
 				nodeFactory-=0.01f;
 			}
 		}
-		else
-		{
-			if(enlarge){
+		else {
+			if (enlarge) {
 				factory+=0.01f;
 				nodeFactory+=0.01f;
 			}
@@ -43,11 +41,11 @@ public class Zooming {
 
 	public FigureControl zoom(double scale, boolean enlarge) {
 		changeNodeSize(calculateNodeSize());
-		if(enlarge){
+		if (enlarge) {
 			factory += 0.001;
 			nodeFactory += 0.001;
 		}
-		else{
+		else {
 			factory -= 0.001;
 			nodeFactory -= 0.001;
 		}
