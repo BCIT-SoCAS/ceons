@@ -25,7 +25,7 @@ If you need to setup your environment first, please visit the following links to
 <table>
   <tr>
     <td>JDK 8</td>
-    <td>https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html</td>
+    <td>https://www.dropbox.com/s/rqojqcr2snpobvt/jdk-8u231-windows-x64.exe?dl=0</td>
   </tr>
   <tr>
     <td>IntelliJ community edition</td>
