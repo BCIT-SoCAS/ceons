@@ -121,11 +121,7 @@ public class SimulationMenuController implements Initializable {
 			modulations[modulation.ordinal()] = ((CheckBox) settings.lookup("#modulation" + modulation.ordinal()));
 
 		generatorsStatic = generators;
-		pauseButton.managedProperty().bind(pauseButton.visibleProperty());
-		StartButton.managedProperty().bind(StartButton.visibleProperty());
-		cancelButton.managedProperty().bind(cancelButton.visibleProperty());
 		pauseInfoLabel.managedProperty().bind(pauseInfoLabel.visibleProperty());
-
 	}
 	
 	void setProgressBar(TaskReadyProgressBar progressBar) {
@@ -344,15 +340,13 @@ public class SimulationMenuController implements Initializable {
 		}) {
 			try {
 				node.setDisable(isRunning);
-			} catch (NullPointerException ignored){}
+			}
+			catch (NullPointerException ignored) {}
 		}
 		pauseButton.setDisable(!isRunning);
 		pauseInfoLabel.setVisible(isRunning);
 		cancelButton.setDisable(!isRunning);
 		StartButton.setDisable(isRunning);
-		pauseButton.setVisible(isRunning);
-		cancelButton.setVisible(isRunning);
-		StartButton.setVisible(!isRunning);
 	}
 
 	// Cancel simulation button
@@ -370,7 +364,8 @@ public class SimulationMenuController implements Initializable {
 			if (result.get() == ButtonType.OK){
 				cancelled = true;
 				paused = false;
-				pauseButton.setText(LocaleUtils.translate("pause_simulation"));
+				pauseButton.setText(LocaleUtils.translate("pause_icon"));
+				pauseButton.setTooltip(new Tooltip(LocaleUtils.translate("pause_simulation")));
 				finished = true;
 				started = false;
 				TaskReadyProgressBar.getResultsDataFileNameList().clear();
@@ -397,7 +392,8 @@ public class SimulationMenuController implements Initializable {
 			}
 			else {
 				paused = false;
-				pauseButton.setText(LocaleUtils.translate("pause_simulation"));
+				pauseButton.setText(LocaleUtils.translate("pause_icon"));
+				pauseButton.setTooltip(new Tooltip(LocaleUtils.translate("pause_simulation")));
 				return;
 			}
 		}
@@ -408,12 +404,14 @@ public class SimulationMenuController implements Initializable {
 	@FXML public void pauseSimulation(ActionEvent e) {
 		if (paused && !finished && started) {
 			ResizableCanvas.getParentController().graph.changeState(DrawingState.noActionState);
-			pauseButton.setText(LocaleUtils.translate("pause_simulation"));
+			pauseButton.setText(LocaleUtils.translate("pause_icon"));
+			pauseButton.setTooltip(new Tooltip(LocaleUtils.translate("pause_simulation")));
 		}
 		else if (!paused && !finished && started) {
 			ResizableCanvas.getParentController().setExpandedPane(2);
 			ResizableCanvas.getParentController().whilePaused();
-			pauseButton.setText(LocaleUtils.translate("resume_simulation"));
+			pauseButton.setText(LocaleUtils.translate("resume_icon"));
+			pauseButton.setTooltip(new Tooltip(LocaleUtils.translate("resume_simulation")));
 		}
 		else
 			return;
