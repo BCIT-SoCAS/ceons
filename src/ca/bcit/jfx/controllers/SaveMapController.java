@@ -73,21 +73,44 @@ public class SaveMapController implements Loadable, Initializable {
      *Add a new row of node details when the add button is clicked
      */
     public void addButtonClicked() {
-        if (numRegeneratorInput.getText().equals(""))
-            numRegeneratorInput.setText("100");
+        int nextNumNode = getNextNodeNum();
+
+        List<String> connectedNodes = new ArrayList<>(Arrays.asList(connNodeInput.getText().split(",")));
+        connectedNodes.remove("" + nextNumNode);
+
+        SavedNodeDetails savedNodeDetails = new SavedNodeDetails(nextNumNode, nameInput.getText(), String.join(",", connectedNodes), (numRegeneratorInput.getText().equals("") ? 100 : Integer.parseInt(numRegeneratorInput.getText())), getSelectedNodeType());
 
         try {
-            SavedNodeDetails savedNodeDetails = new SavedNodeDetails(getNextNodeNum(), nameInput.getText(), connNodeInput.getText(), Integer.parseInt(numRegeneratorInput.getText()), getSelectedNodeType());
             saveTable.getItems().add(savedNodeDetails);
         }
         catch (Exception e) {
             new ErrorDialog(resources.getString("validation_message_please_fill_in_all_the_fields"), resources);
         }
 
+        updateNodesConnections(savedNodeDetails, connNodeInput.getText());
+
         nameInput.clear();
         connNodeInput.clear();
         numRegeneratorInput.clear();
         nodeTypeInput.setValue(resources.getString("standard"));
+    }
+
+    private void updateNodesConnections(SavedNodeDetails savedNodeDetails, String connectedNodesString) {
+        int nodeNum = savedNodeDetails.getNodeNum();
+        ObservableList<SavedNodeDetails> allNodeDetails = saveTable.getItems();
+
+        List<String> connectedNodes = new ArrayList<>(Arrays.asList(connectedNodesString.split(",")));
+
+        for (SavedNodeDetails node : allNodeDetails) {
+            if (connectedNodes.contains("" + node.getNodeNum()) && node.getNodeNum() != nodeNum && !Arrays.asList(node.getConnectedNodeNum().split(",")).contains("" + nodeNum))
+                node.setConnectedNodeNum(node.getConnectedNodeNum().isEmpty() ? "" + nodeNum : node.getConnectedNodeNum() + "," + nodeNum);
+
+            if (Arrays.asList(node.getConnectedNodeNum().split(",")).contains("" + nodeNum) && !Arrays.asList(savedNodeDetails.getConnectedNodeNum().split(",")).contains("" + node.getNodeNum()))
+                if (savedNodeDetails.getConnectedNodeNum().isEmpty())
+                    savedNodeDetails.setConnectedNodeNum("" + node.getNodeNum());
+                else
+                    savedNodeDetails.setConnectedNodeNum(savedNodeDetails.getConnectedNodeNum() + "," + node.getNodeNum());
+        }
     }
 
     /*
@@ -430,8 +453,7 @@ public class SaveMapController implements Loadable, Initializable {
      * @param nodeNumDeleted reference node number used to find the row to start updating from
      */
     private void updateNodeNumsUponDelete(int nodeNumDeleted) {
-        ObservableList<SavedNodeDetails> allNodeDetails;
-        allNodeDetails = saveTable.getItems();
+        ObservableList<SavedNodeDetails> allNodeDetails = saveTable.getItems();
         for (int i = nodeNumDeleted; i < allNodeDetails.size(); i++)
             allNodeDetails.get(i).setNodeNum(i);
 
