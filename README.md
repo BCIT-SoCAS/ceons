@@ -8,7 +8,7 @@ All Rights Reserved
 
 Copyright© 2019
 
-CEONS runnable JAR file with two sample networks can [be downloaded from here](http://bit.ly/BCIT_CEONS "Download CEONS").
+CEONS runnable JAR file (ceons.jar) with three sample networks can [be downloaded from here](http://bit.ly/BCIT_CEONS "Download CEONS"). Please note that you need to have Java installed on your computer.
 
 # I.  Introduction
 
@@ -25,7 +25,7 @@ If you need to setup your environment first, please visit the following links to
 <table>
   <tr>
     <td>JDK 8</td>
-    <td>https://www.dropbox.com/s/rqojqcr2snpobvt/jdk-8u231-windows-x64.exe?dl=0</td>
+    <td>https://www.dropbox.com/s/jxv60eiyd8pj1nq/jdk-8u231-windows-x64.exe?dl=0</td>
   </tr>
   <tr>
     <td>IntelliJ community edition</td>
