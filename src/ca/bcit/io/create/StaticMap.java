@@ -1,5 +1,6 @@
 package ca.bcit.io.create;
 
+import ca.bcit.Settings;
 import com.google.maps.*;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
@@ -47,8 +48,9 @@ public class StaticMap {
                 markers.size(StaticMapsRequest.Markers.MarkersSize.tiny);
                 for(LatLng latLng : this.coordinates)
                     markers.addLocation(latLng);
-                // show center point
-                // markers.addLocation(this.centerPoint);
+
+                if (Settings.GENERATE_MAPS_WITH_CENTRAL_POINT_MARKER)
+                    markers.addLocation(this.centerPoint);
             }
             ImageResult map = StaticMapsApi.newRequest(context, mapSize).center(this.centerPoint).markers(markers).zoom(this.zoomLevel).scale(2).await();
             ImageIO.read(new ByteArrayInputStream(map.imageData));
@@ -194,5 +196,9 @@ public class StaticMap {
         double height = 0;
         distance = Math.pow(distance, 2) + Math.pow(height, 2);
         return Math.round(Math.sqrt(distance)) * 1000;
+    }
+
+    public int getZoomLevel() {
+        return zoomLevel;
     }
 }

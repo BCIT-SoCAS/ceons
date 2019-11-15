@@ -103,7 +103,6 @@ public class MainWindowController implements Initializable {
     public double regeneratorsBlockedVolume;
     public double linkFailureBlockedVolume;
     public Image mapImage;
-    public double currentScale = 1.0;
 
     private static Timeline updateTimeline;
     private static ScheduledExecutorService executorService;
@@ -259,15 +258,20 @@ public class MainWindowController implements Initializable {
         accordion.setBackground(new Background(bgFill, bg));
 
         simulationMenuController.setProgressBar(progressBar);
+
+        zoomSlider.setMin(Settings.ZOOM_MIN_LEVEL);
+        zoomSlider.setMax(Settings.ZOOM_MAX_LEVEL);
+
         zoomSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            currentScale = newValue.doubleValue();
-            map.setScaleX(newValue.doubleValue());
-            map.setScaleY(newValue.doubleValue());
-            graph.setScaleX(newValue.doubleValue());
-            graph.setScaleY(newValue.doubleValue());
-            // TODO: implement new zooming function
-            // graph.zoom(oldValue.doubleValue(), newValue.doubleValue());
+            Settings.zoomLevel = (float) newValue.doubleValue();
+            map.setScaleX(Settings.zoomLevel);
+            map.setScaleY(Settings.zoomLevel);
+            graph.setScaleX(Settings.zoomLevel);
+            graph.setScaleY(Settings.zoomLevel);
         });
+
+        graph.scaleXProperty().addListener(observable -> graph.list.redraw());
+        graph.scaleYProperty().addListener(observable -> graph.list.redraw());
     }
 
     private static void localeChanged(ObservableValue<? extends String> selected, String oldLanguage, String newLanguage) {
@@ -414,37 +418,7 @@ public class MainWindowController implements Initializable {
         task.run();
     }
 
-    // live GUI updates during simulation
     public void updateGraph() {
-
-//        Runnable updateCanvasFigures = () -> {
-//            try {
-//                canvas.resetCanvas();
-//                Project project = ApplicationResources.getProject();
-//                for (NetworkNode n : project.getNetwork().getNodes()) {
-//                    n.updateRegeneratorCount();
-//                    canvas.addNetworkNode(n);
-//                    for (NetworkNode n2 : project.getNetwork().getNodes()) {
-//                        if (project.getNetwork().containsLink(n, n2)) {
-//                            NetworkLink networkLink = project.getNetwork().getLink(n, n2);
-//                            Spectrum linkSpectrum = project.getNetwork().getLinkSlices(n, n2);
-//                            int totalSlices = linkSpectrum.getSlicesCount();
-//                            int occupiedSlices = linkSpectrum.getOccupiedSlices();
-//                            int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
-//                            canvas.addLink(n.getPosition(), n2.getPosition(), currentPercentage, networkLink.getLength());
-//                        }
-//                    }
-//                }
-//
-//            }
-//            catch (Exception ex) {
-//                ex.printStackTrace();
-//            }
-//        };
-//
-//        executorService = Executors.newScheduledThreadPool(1);
-//        executorService.scheduleAtFixedRate(updateCanvasFigures, 0, 500, TimeUnit.MILLISECONDS);
-
         updateTimeline = new Timeline(
             new KeyFrame(
                 Duration.millis(200),
@@ -475,18 +449,12 @@ public class MainWindowController implements Initializable {
         );
         updateTimeline.setCycleCount(Timeline.INDEFINITE);
         updateTimeline.play();
-
-////        Platform.runLater(updateTimeline::play);
-
     }
 
-    // stop GUI update
     public void stopUpdateGraph() {
-//        executorService.shutdownNow();
         updateTimeline.stop();
     }
 
-    // reset the GUI after stop/finish
     public void resetGraph() {
         try {
             graph.resetCanvas();
@@ -511,9 +479,9 @@ public class MainWindowController implements Initializable {
     @FXML
     public void loadButtonClicked() {
         boolean loadSuccessful = selectFileToLoad();
-        if (loadSuccessful) {
+        if (loadSuccessful)
             try {
-                initalizeSimulationsAndNetworks();
+                initializeSimulationsAndNetworks();
             }
             catch (MapLoadingException ex){
                 new ErrorDialog(ex.getMessage(), ex);
@@ -523,7 +491,6 @@ public class MainWindowController implements Initializable {
                 new ErrorDialog(LocaleUtils.translate("an_exception_occurred_while_loading_the_project"), ex);
                 ex.printStackTrace();
             }
-        }
     }
 
     public boolean selectFileToLoad() {
@@ -534,7 +501,8 @@ public class MainWindowController implements Initializable {
         return (file != null);
     }
 
-    public void initalizeSimulationsAndNetworks() throws MapLoadingException, Exception {
+    public void initializeSimulationsAndNetworks() throws MapLoadingException, Exception {
+        zoomSlider.setValue(Settings.ZOOM_MIN_LEVEL);
         boolean loadSuccessful = false;
         try {
             Logger.info(LocaleUtils.translate("loading_project_from") + " " + file.getName() + "...");
@@ -546,7 +514,7 @@ public class MainWindowController implements Initializable {
             mapImage = SwingFXUtils.toFXImage(project.getMap(), null);
             map.getGraphicsContext2D().drawImage(mapImage, 0, 0, map.getWidth(), map.getHeight());
             graph.resetCanvas();
-            //for every node in the network place onto map and for each node add links between
+
             for (NetworkNode n : project.getNetwork().getNodes()) {
                 n.setFigure(n);
                 graph.addNetworkNode(n);
@@ -564,7 +532,6 @@ public class MainWindowController implements Initializable {
             else
                 Logger.info(LocaleUtils.translate("loading_cancelled"));
         }
-
 
         Task<Void> task2 = new Task<Void>() {
 

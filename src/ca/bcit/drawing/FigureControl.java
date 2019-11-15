@@ -1,6 +1,5 @@
 package ca.bcit.drawing;
 
-import ca.bcit.utils.geom.LineSegment;
 import ca.bcit.utils.geom.Rectangle;
 import ca.bcit.utils.geom.Vector2F;
 import javafx.collections.FXCollections;
@@ -118,27 +117,6 @@ public class FigureControl {
 		redraw();
 	}
 
-	public void changeLastLinkEndPoint(Vector2F p) {
-		if (isEnoughNodesForAddLink()) {
-			((Link) list.get(0)).setEndPoint(p);
-			redraw();
-		}
-	}
-
-	public void changeLinkEndPointAfterDrag(Vector2F p) {
-		if (isEnoughNodesForAddLink()) {
-			Vector2F temp = list.get(findClosestNode(p)).getStartPoint();
-			temp = fixLinkPoint(temp);
-			Link link = ((Link) list.get(0));
-			link.setEndPoint(temp);
-			if (temp.equals(link.startPoint) || isLinkAlreadyExist()) {
-				list.remove(0);
-				linkAmount--;
-			}
-			redraw();
-		}
-	}
-
 	private void clearCanvas() {
 		canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 	}
@@ -222,13 +200,6 @@ public class FigureControl {
 		redraw();
 	}
 
-	public void changingNodePoint(Figure node, Vector2F vec2f) {
-		vec2f = fitPointToCanvas(vec2f);
-		vec2f=fixNodePoint(vec2f);
-		changeLinksPoint(node, vec2f);
-		redraw();
-	}
-
 	private void changeLinksPoint(Figure node, Vector2F vec2f) {
 		if (isEnoughNodesForAddLink()) {
 			Vector2F fixedOldPoint = fixLinkPoint(node.getStartPoint());
@@ -243,25 +214,6 @@ public class FigureControl {
 			}
 			redraw();
 		}
-	}
-
-	private boolean isLinkAlreadyExist() {
-		if (isEnoughNodesForAddLink()) {
-			Link link = (Link) list.get(0);
-			Vector2F startPoint=link.getStartPoint();
-			Vector2F endPoint=link.getEndPoint();
-			for (int i = 1; i < list.size(); i++) {
-				Figure fig = list.get(i);
-				if (fig instanceof Link) {
-					Link tempLink=(Link)fig;
-					Vector2F startTempPoint=tempLink.getStartPoint();
-					Vector2F endTempPoint=tempLink.getEndPoint();
-					if((startTempPoint.distance(startPoint)<=1&&endTempPoint.distance(endPoint)<=1) ||(startTempPoint.distance(endPoint)<=1 &&endTempPoint.distance(startPoint)<=1))
-						return true;
-				}
-			}
-		}
-		return false;
 	}
 
 	public Figure get(int idx) {
@@ -287,24 +239,6 @@ public class FigureControl {
 
 	public void setSelectedFigure(Figure _selectedFigure) {
 		selectedFigure = _selectedFigure;
-		redraw();
-	}
-
-	public Figure getSelectedFigure() {
-		return selectedFigure;
-	}
-
-	public void deleteLinks(Vector2F startPoint, Vector2F endPoint) {
-		LineSegment line=new LineSegment(startPoint,endPoint);
-		for (int i = 0; i < list.size(); i++) {
-			Figure fig = list.get(i);
-			if (fig instanceof Link)
-				if (line.areCrossing((Link)fig)) {
-					list.remove(i);
-					linkAmount--;
-					i--;
-				}
-		}
 		redraw();
 	}
 
@@ -388,19 +322,11 @@ public class FigureControl {
 		
 	}
 
-	public int elementsAmount() {
-		return list.size();
-	}
-
 	public boolean isEmpty() {
 		return list.size() == 0;
 	}
 
 	private boolean isEnoughNodesForAddLink() {
 		return nodeAmount > 1;
-	}
-
-	public Canvas getCanvas() {
-		return canvas;
 	}
 }
