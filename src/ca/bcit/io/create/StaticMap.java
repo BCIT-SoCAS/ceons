@@ -52,7 +52,7 @@ public class StaticMap {
                 if (Settings.GENERATE_MAPS_WITH_CENTRAL_POINT_MARKER)
                     markers.addLocation(this.centerPoint);
             }
-            ImageResult map = StaticMapsApi.newRequest(context, mapSize).center(this.centerPoint).markers(markers).zoom(this.zoomLevel).scale(2).await();
+            ImageResult map = StaticMapsApi.newRequest(context, mapSize).center(this.centerPoint).markers(markers).zoom(this.zoomLevel).scale(4).await();
             ImageIO.read(new ByteArrayInputStream(map.imageData));
             return map;
         }

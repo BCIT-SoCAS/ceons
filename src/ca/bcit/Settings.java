@@ -22,7 +22,7 @@ public class Settings {
     public static float topLeftCornerYCoordinate = 0;
     public static float zoomLevel = 1.0f;
     public static final double ZOOM_MIN_LEVEL = 1;
-    public static final double ZOOM_MAX_LEVEL = 3;
+    public static final double ZOOM_MAX_LEVEL = 5;
     public static final boolean GENERATE_MAPS_WITH_MARKERS = false;
     public static final boolean GENERATE_MAPS_WITH_CENTRAL_POINT_MARKER = true;
 
