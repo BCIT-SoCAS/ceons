@@ -1,5 +1,6 @@
 package ca.bcit.jfx.components;
 
+import ca.bcit.Settings;
 import ca.bcit.drawing.Figure;
 import ca.bcit.drawing.FigureControl;
 import ca.bcit.drawing.Link;
@@ -7,15 +8,9 @@ import ca.bcit.drawing.Node;
 import ca.bcit.jfx.DrawingState;
 import ca.bcit.jfx.controllers.MainWindowController;
 import ca.bcit.net.NetworkNode;
-import ca.bcit.utils.draw.DashedDrawing;
-import ca.bcit.utils.draw.Zooming;
 import ca.bcit.utils.geom.Vector2F;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
-import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -60,7 +55,7 @@ public class ResizableCanvas extends Canvas {
         else if (isDraggingState()) {
             clickedX = e.getX();
             clickedY = e.getY();
-            for (int i = 0; i < list.getNodeAmount()+list.getLinkAmount(); i++) {
+            for (int i = 0 ; i < list.getNodeAmount() + list.getLinkAmount() ; i++) {
                 Vector2F nodePosition = new Vector2F(list.get(i).getStartPoint().getX(), list.get(i).getStartPoint().getY());
                 nodePositions.add(nodePosition);
             }
@@ -86,23 +81,18 @@ public class ResizableCanvas extends Canvas {
     }
 
     private void canvasOnMouseDragged(MouseEvent e) {
-        Vector2F draggedPoint = new Vector2F((float) e.getX(), (float) e.getY());
         if (isDraggingState()) {
             double moveX = e.getX() - clickedX;
             double moveY = e.getY() - clickedY;
             newX = orgX + moveX;
             newY = orgY + moveY;
             parent.map.getGraphicsContext2D().clearRect(0,0, parent.map.getWidth(), parent.map.getHeight());
-            parent.map.getGraphicsContext2D().drawImage(parent.mapImage, newX, newY, parent.map.getWidth()*parent.currentScale, parent.map.getHeight()*parent.currentScale);
+            parent.map.getGraphicsContext2D().drawImage(parent.mapImage, newX, newY, parent.map.getWidth(), parent.map.getHeight());
 
-            for (int i = 0; i < list.getNodeAmount()+list.getLinkAmount(); i++)
-                if (list.get(i) instanceof Node) {
-                    double nodeX = nodePositions.get(i).getX();
-                    double nodeY = nodePositions.get(i).getY();
-                    double x = nodeX + moveX;
-                    double y = nodeY + moveY;
-                    list.changeNodePoint(list.get(i), new Vector2F((float)x,(float)y));
-                }
+            Settings.topLeftCornerXCoordinate = (float) -newX;
+            Settings.topLeftCornerYCoordinate = (float) -newY;
+
+            parent.graph.list.redraw();
         }
     }
 
@@ -111,17 +101,6 @@ public class ResizableCanvas extends Canvas {
             orgX = newX;
             orgY = newY;
             nodePositions.clear();
-        }
-    }
-
-    public void zoom(double oldScale, double newScale) {
-        if (!list.isEmpty()) {
-            updateListBeforeChanges();
-            listBeforeChanges.setSelectedFigure(null);
-            Zooming zooming=new Zooming(listBeforeChanges);
-            boolean enlarge = newScale > oldScale;
-            list=new FigureControl(zooming.zoom(newScale, enlarge));
-            list.redraw();
         }
     }
 
@@ -291,6 +270,5 @@ public class ResizableCanvas extends Canvas {
 
     private void updateListBeforeChanges() {
         listBeforeChanges = new FigureControl(list);
-        Zooming.clearFactory();
     }
 }

@@ -18,6 +18,14 @@ public class Settings {
     static Image bcitLogo = new Image(Settings.class.getResourceAsStream("/ca/bcit/jfx/res/images/LogoBCIT.png"));
     static URL mainWindowResourceUrl = Settings.class.getResource("/ca/bcit/jfx/res/views/MainWindow.fxml");
     static URL splashScreenResourceUrl = Settings.class.getResource("/ca/bcit/jfx/res/views/SplashScreen.fxml");
+    public static float topLeftCornerXCoordinate = 0;
+    public static float topLeftCornerYCoordinate = 0;
+    public static float zoomLevel = 1.0f;
+    public static final double ZOOM_MIN_LEVEL = 1;
+    public static final double ZOOM_MAX_LEVEL = 3;
+    public static final boolean GENERATE_MAPS_WITH_MARKERS = false;
+    public static final boolean GENERATE_MAPS_WITH_CENTRAL_POINT_MARKER = true;
+
 
     static void registerAlgorithm(String algorithmClassFullName) throws Exception {
         try {

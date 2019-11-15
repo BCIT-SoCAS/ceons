@@ -33,9 +33,8 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 		this.location = location;
 	}
 
-	public void setFigure(NetworkNode n) {
+	public void setFigure() {
 		this.figureNode = new Node(getPosition(), getName(), getFreeRegenerators(), getNodeGroups());
-
 	}
 
 	public Node getFigure() {
@@ -43,7 +42,7 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 	}
 
 	public void updateRegeneratorCount() {
-		this.figureNode.setRegens(getFreeRegenerators());
+		this.figureNode.setNumberOfRegenerators(getFreeRegenerators());
 	}
 
 	/**
@@ -179,8 +178,6 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 		regeneratorsCount = (Integer) map.get("regenerators");
         setPosition((Integer) map.get("xcoordinate"),(Integer) map.get("ycoordinate"));
 	}
-
-
 
 	/**
 	 * Method that serialize NetworkNode variables into map object for

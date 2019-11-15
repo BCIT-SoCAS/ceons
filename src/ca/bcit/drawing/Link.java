@@ -1,5 +1,6 @@
 package ca.bcit.drawing;
 
+import ca.bcit.Settings;
 import ca.bcit.utils.draw.DashedDrawing;
 import ca.bcit.utils.geom.Vector2F;
 import javafx.scene.canvas.GraphicsContext;
@@ -15,66 +16,61 @@ public class Link extends Figure {
 		name = link.name;
 		startPoint = link.startPoint.clone();
 		endPoint = link.endPoint.clone();
-		loadImage();
 	}
 
 	/**
 	 * Draw link with a gradient color acording to avaliable free slices
 	 * @param stPoint starting location of the link
-	 * @param _endPoint end location of the link
+	 * @param endPoint end location of the link
 	 * @param number the number tag identifying the link
 	 * @param Percentage percentage of free slices left in the link
 	 * @param length length between start node and end node
 	 */
-	public Link(Vector2F stPoint, Vector2F _endPoint, int number, int Percentage, int length) {
+	public Link(Vector2F stPoint, Vector2F endPoint, int number, int Percentage, int length) {
 		super(stPoint, "Link" + number);
 		this.Percentage = Percentage;
-		endPoint = _endPoint;
+		this.endPoint = endPoint;
 		this.length = length;
-		loadImage();
 	}
 
 	/**
 	 * @deprecatd Old method to draw link with the previous used color (default green)
 	 * @param stPoint starting location of the link
-	 * @param _endPoint end location of the link
+	 * @param endPoint end location of the link
 	 * @param number the number tag identifying the link
 	 */
 	@Deprecated
-	public Link(Vector2F stPoint, Vector2F _endPoint, int number) {
+	public Link(Vector2F stPoint, Vector2F endPoint, int number) {
 		super(stPoint, "Link" + number);
-		endPoint = _endPoint;
+		this.endPoint = endPoint;
 		length = 0;
-		loadImage();
 	}
 
 	/**
 	 * @deprecated Old method to draw link with the previous used color (default green)
-	 * @param _startPoint starting location of the link
-	 * @param _endPoint end location of the link
-	 * @param _name the name identifying the link
+	 * @param startPoint starting location of the link
+	 * @param endPoint end location of the link
+	 * @param name the name identifying the link
 	 */
 	@Deprecated
-	public Link(Vector2F _startPoint, Vector2F _endPoint, String _name) {
-		super(_startPoint, _name);
-		endPoint = _endPoint;
+	public Link(Vector2F startPoint, Vector2F endPoint, String name) {
+		super(startPoint, name);
+		this.endPoint = endPoint;
 		length = 0;
-		loadImage();
 	}
 
 	/**
 	 * @deprecated Old method to draw link with the previous used color of specified length(default green)
-	 * @param _startPoint starting location of the link
-	 * @param _endPoint end location of the link
-	 * @param _name the name identifying the link
-	 * @param _length the length of the link to b drawn
+	 * @param startPoint starting location of the link
+	 * @param endPoint end location of the link
+	 * @param name the name identifying the link
+	 * @param length the length of the link to b drawn
 	 */
 	@Deprecated
-	public Link(Vector2F _startPoint, Vector2F _endPoint, String _name, int _length) {
-		super(_startPoint, _name);
-		endPoint = _endPoint;
-		length = _length;
-		loadImage();
+	public Link(Vector2F startPoint, Vector2F endPoint, String name, int length) {
+		super(startPoint, name);
+		this.endPoint = endPoint;
+		this.length = length;
 	}
 
 	@Override
@@ -90,15 +86,21 @@ public class Link extends Figure {
 	public void draw(GraphicsContext gc) {
 		int[] rgb = getColor();
 
-		gc.setLineWidth(Node.imageSize / 2);
+		float lineWidth = Node.getNodeSize() / 2;
+		float fillWidth = lineWidth / 2;
+		gc.setLineWidth(lineWidth);
 		gc.setStroke(Color.web("rgb(" + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')'));
-		gc.strokeLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
-		gc.strokeLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
-		gc.setLineWidth(Node.imageSize / 2 - Node.imageSize / 4);
+		float startX = startPoint.getX() - Settings.topLeftCornerXCoordinate;
+		float startY = startPoint.getY() - Settings.topLeftCornerYCoordinate;
+		float endX = endPoint.getX() - Settings.topLeftCornerXCoordinate;
+		float endY = endPoint.getY() - Settings.topLeftCornerYCoordinate;
+		gc.strokeLine(startX, startY, endX, endY);
+		gc.strokeLine(startX, startY, endX, endY);
+		gc.setLineWidth(fillWidth);
 		gc.setStroke(Color.WHITE);
-		gc.strokeLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
+		gc.strokeLine(startX, startY, endX, endY);
 		float fill = 1f;
-		gc.setLineWidth((Node.imageSize / 2 - Node.imageSize / 4) * fill);
+		gc.setLineWidth((fillWidth) * fill);
 	}
 
 	/**
@@ -125,21 +127,14 @@ public class Link extends Figure {
 	}
 
 	@Override
-	protected void loadImage() {
-
-	}
-
-	@Override
 	protected void drawOutline(GraphicsContext gc, Color color) {
-		int dx = 0, dy = (int) (Node.imageSize/4);
+		int dx = 0, dy = (int) (Node.getNodeSize()/4);
 		if (Math.abs(endPoint.getX() - startPoint.getX()) < 50) {
-			dx = (int)Node.imageSize/4;
+			dx = (int)Node.getNodeSize()/4;
 			dy = 0;
 		}
-		Vector2F newStartPoint = new Vector2F(startPoint.getX() + dx,
-				startPoint.getY() + dy);
-		Vector2F newEndPoint = new Vector2F(endPoint.getX() + dx,
-				endPoint.getY() + dy);
+		Vector2F newStartPoint = new Vector2F(startPoint.getX() + dx, startPoint.getY() + dy);
+		Vector2F newEndPoint = new Vector2F(endPoint.getX() + dx, endPoint.getY() + dy);
 		DashedDrawing.drawDashedLine(gc, newStartPoint, newEndPoint, color);
 		newStartPoint = new Vector2F(startPoint.getX() - dx, startPoint.getY() - dy);
 		newEndPoint = new Vector2F(endPoint.getX() - dx, endPoint.getY() - dy);
@@ -155,22 +150,22 @@ public class Link extends Figure {
 	@Override
 	protected double calculateDistanceFromPoint(Vector2F p) {
 		if ((p.getX() + 5 > startPoint.getX() && p.getX() - 5 < endPoint.getX()) || (p.getX() + 5 > endPoint.getX() && p.getX() - 5 < startPoint.getX())) {
-			float x1 = startPoint.getX() - Node.imageSize / 2;
-			float y1 = startPoint.getY() - Node.imageSize / 2;
-			float x2 = endPoint.getX() - Node.imageSize / 2;
-			float y2 = endPoint.getY() - Node.imageSize / 2;
+			float x1 = startPoint.getX() - Node.getNodeSize() / 2;
+			float y1 = startPoint.getY() - Node.getNodeSize() / 2;
+			float x2 = endPoint.getX() - Node.getNodeSize() / 2;
+			float y2 = endPoint.getY() - Node.getNodeSize() / 2;
 			float a = (-y2 + y1) / (x2 - x1);
 			float b = -y1 - ((-y2 + y1) / (x2 - x1)) * x1;
 			double odleglosc = (Math.abs(a * p.getX() + p.getY() + b)) / Math.sqrt(1 + a * a);
-			return odleglosc + Node.imageSize / 2;
+			return odleglosc + Node.getNodeSize() / 2;
 		}
 		else {
 			float dist1 = startPoint.distance(p);
 			float dist2 = endPoint.distance(p);
 			if (dist1 > dist2)
-				return dist2 + Node.imageSize;
+				return dist2 + Node.getNodeSize();
 			else
-				return dist1 + Node.imageSize;
+				return dist1 + Node.getNodeSize();
 		}
 	}
 
@@ -191,7 +186,7 @@ public class Link extends Figure {
 		return length;
 	}
 
-	public void setLength(int _length) {
-		length = _length;
+	public void setLength(int length) {
+		this.length = length;
 	}
 }

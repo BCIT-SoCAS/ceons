@@ -5,13 +5,12 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public abstract class Figure {
-
 	Vector2F startPoint;
 	String name;
 
-	Figure(Vector2F _startPoint, String _name) {
-		startPoint = _startPoint;
-		name = _name;
+	Figure(Vector2F startPoint, String name) {
+		this.startPoint = startPoint;
+		this.name = name;
 	}
 
 	Figure() {
@@ -25,11 +24,9 @@ public abstract class Figure {
 		return startPoint;
 	}
 
-	public void setStartPoint(Vector2F _startPoint) {
-		startPoint = _startPoint;
+	public void setStartPoint(Vector2F startPoint) {
+		this.startPoint = startPoint;
 	}
-
-	protected abstract void loadImage();
 
 	protected abstract double calculateDistanceFromPoint(Vector2F p);
 
@@ -45,15 +42,15 @@ public abstract class Figure {
 		return name;
 	}
 
-	public void setName(String _name) {
-		name = _name;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public int getNodeNum(){
 		return Integer.parseInt(name.split("_")[1]);
 	}
 
-	public boolean equalsByName(String _name) {
-		return name.equals(_name);
+	public boolean equalsByName(String name) {
+		return this.name.equals(name);
 	}
 }

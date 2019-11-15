@@ -375,7 +375,7 @@ public class SimulationMenuController implements Initializable {
 				if (runMultipleSimulations.isSelected()) {
 					try {
 						progressBar.getRunMultipleSimulationService().shutdownNow();
-						ResizableCanvas.getParentController().initalizeSimulationsAndNetworks();
+						ResizableCanvas.getParentController().initializeSimulationsAndNetworks();
 					}
 					catch (MapLoadingException ex) {
 						new ErrorDialog(ex.getMessage(), ex);

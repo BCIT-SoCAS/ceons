@@ -277,8 +277,7 @@ public class Simulation {
 			resultsDataFileName = ApplicationResources.getProject().getName().toUpperCase() +
 					new SimpleDateFormat("_yyyy_MM_dd_HH_mm_ss").format(new Date()) +".json";
 			TaskReadyProgressBar.addResultsDataFileName(resultsDataFileName);
-			FileWriter resultsDataWriter  = new FileWriter(new File(
-					isMultipleSimulations() ? resultsProjectDirectory : resultsDirectory, resultsDataFileName));
+			FileWriter resultsDataWriter  = new FileWriter(new File(isMultipleSimulations() ? resultsProjectDirectory : resultsDirectory, resultsDataFileName));
 
 			resultsDataWriter.write(json);
 			resultsDataWriter.close();

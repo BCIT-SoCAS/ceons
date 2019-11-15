@@ -131,7 +131,7 @@ public class SaveMapController implements Initializable {
         boolean loadSuccessful = controller.selectFileToLoad();
         if (loadSuccessful) {
             try {
-                controller.initalizeSimulationsAndNetworks();
+                controller.initializeSimulationsAndNetworks();
             }
             catch (MapLoadingException ex) {
                 new ErrorDialog(ex.getMessage(), ex);
@@ -207,7 +207,7 @@ public class SaveMapController implements Initializable {
                         controller.setFile(file);
                         Logger.info(LocaleUtils.translate("finished_saving_project"));
                         new InformationDialog(LocaleUtils.translate("project_successfully_saved_initializing_now"));
-                        controller.initalizeSimulationsAndNetworks();
+                        controller.initializeSimulationsAndNetworks();
                     }
                     catch (Exception ex) {
                         new ErrorDialog(LocaleUtils.translate("an_exception_occurred_while_saving_the_project"), ex);
