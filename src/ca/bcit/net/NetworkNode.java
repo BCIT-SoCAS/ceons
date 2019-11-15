@@ -33,7 +33,7 @@ public class NetworkNode extends PositionedNode implements YamlSerializable {
 		this.location = location;
 	}
 
-	public void setFigure(NetworkNode n) {
+	public void setFigure() {
 		this.figureNode = new Node(getPosition(), getName(), getFreeRegenerators(), getNodeGroups());
 	}
 

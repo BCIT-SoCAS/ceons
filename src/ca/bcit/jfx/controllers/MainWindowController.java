@@ -148,20 +148,19 @@ public class MainWindowController implements Initializable {
     }
 
     @FXML
-    private void nodeSelect(ActionEvent e) {
+    private void nodeSelect() {
         graph.changeState(DrawingState.clickingState);
     }
 
     @FXML
-    private void drag(ActionEvent e) {
+    private void drag() {
         graph.changeState(DrawingState.draggingState);
     }
 
     @FXML
-    private void clearState(ActionEvent e) {
+    private void clearState() {
         graph.changeState(DrawingState.none);
     }
-
 
     /**
      * Changes state to delete Node from a map
@@ -284,17 +283,6 @@ public class MainWindowController implements Initializable {
         catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private void initializeDragEvent() {
-        GraphicsContext mapGC = map.getGraphicsContext2D();
-        GraphicsContext graphGC = graph.getGraphicsContext2D();
-        double orgSceneX, orgSceneY;
-
-        graph.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {}
-        });
     }
 
     /**
@@ -457,19 +445,19 @@ public class MainWindowController implements Initializable {
 
     public void resetGraph() {
         try {
-            graph.resetCanvas();
             Project project = ApplicationResources.getProject();
+            graph.resetCanvas();
+
             for (NetworkNode n : project.getNetwork().getNodes()) {
                 n.clearOccupied();
-                n.setFigure(n);
                 graph.addNetworkNode(n);
-                for (NetworkNode n2 : ApplicationResources.getProject().getNetwork().getNodes())
-                    if (ApplicationResources.getProject().getNetwork().containsLink(n, n2)) {
-                        NetworkLink networkLink = project.getNetwork().getLink(n, n2);
+                for (NetworkNode n2 : ApplicationResources.getProject().getNetwork().getNodes()){
+                    NetworkLink networkLink = project.getNetwork().getLink(n, n2);
+                    if (project.getNetwork().containsLink(n, n2))
                         graph.addLink(n.getPosition(), n2.getPosition(), 100, networkLink.getLength());
-                    }
+                }
             }
-
+            graph.list.redraw();
         }
         catch (Exception ex) {
             new ErrorDialog(LocaleUtils.translate("an_exception_occurred_while_updating_the_project"), ex);
@@ -503,6 +491,7 @@ public class MainWindowController implements Initializable {
 
     public void initializeSimulationsAndNetworks() throws MapLoadingException, Exception {
         zoomSlider.setValue(Settings.ZOOM_MIN_LEVEL);
+        clearState();
         boolean loadSuccessful = false;
         try {
             Logger.info(LocaleUtils.translate("loading_project_from") + " " + file.getName() + "...");
@@ -516,7 +505,7 @@ public class MainWindowController implements Initializable {
             graph.resetCanvas();
 
             for (NetworkNode n : project.getNetwork().getNodes()) {
-                n.setFigure(n);
+                n.setFigure();
                 graph.addNetworkNode(n);
                 for (NetworkNode n2 : project.getNetwork().getNodes()) {
                     NetworkLink networkLink = project.getNetwork().getLink(n, n2);

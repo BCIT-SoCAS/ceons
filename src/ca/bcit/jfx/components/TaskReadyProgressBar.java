@@ -52,7 +52,7 @@ public class TaskReadyProgressBar extends StackPane {
     private static final String NO_REGENERATORS_BLOCKED_VOLUME_PERCENTAGE = "RBP";
     private static final String LINK_FAILURE_BLOCKED_VOLUME_PERCENTAGE = "LFBP";
 
-    private final ProgressBar bar = new ProgressBar();
+    private final ProgressBar bar = new ProgressBar(0);
     private final Label label = new Label("");
     private ExecutorService runMultipleSimulationService;
     private int numSimulationsLeft = 0;
@@ -62,19 +62,16 @@ public class TaskReadyProgressBar extends StackPane {
         super();
         getChildren().add(bar);
         getChildren().add(label);
-        bar.setVisible(false);
         bar.minWidthProperty().bind(widthProperty());
         bar.minHeightProperty().bind(heightProperty());
     }
 
     private void bind(Task<?> task) {
-        bar.setVisible(true);
         bar.progressProperty().bind(task.progressProperty()); // possible docking location for pause
         label.textProperty().bind(task.messageProperty());
     }
 
     private void unbind() {
-        bar.setVisible(false);
         bar.progressProperty().unbind();
         label.textProperty().unbind();
     }

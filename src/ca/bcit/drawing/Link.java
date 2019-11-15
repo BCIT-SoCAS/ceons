@@ -1,5 +1,6 @@
 package ca.bcit.drawing;
 
+import ca.bcit.Settings;
 import ca.bcit.utils.draw.DashedDrawing;
 import ca.bcit.utils.geom.Vector2F;
 import javafx.scene.canvas.GraphicsContext;
@@ -89,11 +90,15 @@ public class Link extends Figure {
 		float fillWidth = lineWidth / 2;
 		gc.setLineWidth(lineWidth);
 		gc.setStroke(Color.web("rgb(" + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')'));
-		gc.strokeLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
-		gc.strokeLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
+		float startX = startPoint.getX() - Settings.topLeftCornerXCoordinate;
+		float startY = startPoint.getY() - Settings.topLeftCornerYCoordinate;
+		float endX = endPoint.getX() - Settings.topLeftCornerXCoordinate;
+		float endY = endPoint.getY() - Settings.topLeftCornerYCoordinate;
+		gc.strokeLine(startX, startY, endX, endY);
+		gc.strokeLine(startX, startY, endX, endY);
 		gc.setLineWidth(fillWidth);
 		gc.setStroke(Color.WHITE);
-		gc.strokeLine(startPoint.getX(), startPoint.getY(), endPoint.getX(), endPoint.getY());
+		gc.strokeLine(startX, startY, endX, endY);
 		float fill = 1f;
 		gc.setLineWidth((fillWidth) * fill);
 	}

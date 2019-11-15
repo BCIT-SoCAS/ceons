@@ -87,16 +87,12 @@ public class ResizableCanvas extends Canvas {
             newX = orgX + moveX;
             newY = orgY + moveY;
             parent.map.getGraphicsContext2D().clearRect(0,0, parent.map.getWidth(), parent.map.getHeight());
-            parent.map.getGraphicsContext2D().drawImage(parent.mapImage, newX, newY, parent.map.getWidth() * Settings.zoomLevel, parent.map.getHeight() * Settings.zoomLevel);
+            parent.map.getGraphicsContext2D().drawImage(parent.mapImage, newX, newY, parent.map.getWidth(), parent.map.getHeight());
 
-            for (int i = 0; i < list.getNodeAmount()+list.getLinkAmount(); i++)
-                if (list.get(i) instanceof Node) {
-                    double nodeX = nodePositions.get(i).getX();
-                    double nodeY = nodePositions.get(i).getY();
-                    double x = nodeX + moveX;
-                    double y = nodeY + moveY;
-                    list.changeNodePoint(list.get(i), new Vector2F((float)x,(float)y));
-                }
+            Settings.topLeftCornerXCoordinate = (float) -newX;
+            Settings.topLeftCornerYCoordinate = (float) -newY;
+
+            parent.graph.list.redraw();
         }
     }
 

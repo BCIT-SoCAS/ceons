@@ -103,8 +103,8 @@ public class Node extends Figure {
 		// node outline
 		Boolean isReplica = this.nodeGroups.get("replicas");
 		Boolean isInternational = this.nodeGroups.get("international");
-		float x = startPoint.getX() + getNodeSize()/2 * (Settings.zoomLevel - (float) Settings.ZOOM_MIN_LEVEL);
-		float y = startPoint.getY() + getNodeSize()/2 * (Settings.zoomLevel - (float) Settings.ZOOM_MIN_LEVEL);
+		float x = startPoint.getX() - Settings.topLeftCornerXCoordinate + getNodeSize()/2 * (Settings.zoomLevel - (float) Settings.ZOOM_MIN_LEVEL);
+		float y = startPoint.getY() - Settings.topLeftCornerYCoordinate + getNodeSize()/2 * (Settings.zoomLevel - (float) Settings.ZOOM_MIN_LEVEL);
 		if (Boolean.TRUE.equals(isReplica) && Boolean.TRUE.equals(isInternational)) {
 			gc.setFill(Color.web("#448ef6"));
 			gc.fillOval(x - getNodeSize() / 8f, y - getNodeSize() / 8f, getNodeSize() + getNodeSize() / 4f, getNodeSize() + getNodeSize() / 4f);
