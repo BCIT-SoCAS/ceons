@@ -36,7 +36,7 @@
 		</GridPane>
 		<Accordion fx:id="accordion" GridPane.columnIndex="1" >
 			<panes>
-				<TitledPane animated="true" text="%tab_name_general_settings">
+				<TitledPane fx:id="mainWindow" animated="true" text="%tab_name_general_settings">
 					<content>
 						<VBox alignment="TOP_CENTER" spacing="8.0">
 							<children>
@@ -77,24 +77,32 @@
                     <content>
                         <VBox alignment="TOP_CENTER" spacing="4.0" prefHeight="180" prefWidth="200">
                             <Label text="%pdf_summary_graph_label"/>
-                            <TextField text="%report_blocked_volume_percentage_from_insufficient_resources_vs_erlangs" fx:id="titleLabel"/>
+                            <TextField text="%report_blocked_volume_percentage_from_insufficient_resources" fx:id="titleLabel"/>
                             <Label text="%pdf_graph_domain_label"/>
                             <TextField text="%erlang" fx:id="XLabel"/>
                             <Label text="%pdf_graph_range_label"/>
                             <TextField text="%blocked_volume_percentage" fx:id="YLabel"/>
+                            <Label text="%display_on_graph" />
+                            <FlowPane alignment="CENTER" fx:id="algoCheckBoxContainer" />
+                            <FlowPane alignment="CENTER">
+                                <CheckBox style="-fx-padding: 3;" fx:id="SBP" text="%sbp" selected="true" />
+                                <CheckBox style="-fx-padding: 3;" fx:id="RBP" text="%rbp" selected="true" />
+                                <CheckBox style="-fx-padding: 3;" fx:id="LFBP" text="%lfbp" selected="true" />
+                                <CheckBox style="-fx-padding: 3;" fx:id="TBP" text="%tbp" selected="true" />
+                            </FlowPane>
                             <Label text="%download_file_path" />
                             <GridPane>
-                                <TextField fx:id="PDFFilePath" prefColumnCount="25" />
-                                <Button text="..." onMouseClicked="#chooseFilePath" GridPane.columnIndex="26" />
+                                <TextField fx:id="PDFFilePath" prefColumnCount="25"/>
+                                <Button text="..." onMouseClicked="#chooseFilePath" GridPane.columnIndex="26"/>
                             </GridPane>
                             <CheckBox text="%open_folder_after_download" style="-fx-padding: 5;" fx:id="openPDF"/>
 
                             <HBox style="-fx-padding: 5;" spacing="8">
-                            <Button text="%preview_pdf"  minWidth="160" onMouseClicked="#previewPDF" />
-                            <Button text="%download_pdf" minWidth="160" fx:id="generateButton" onMouseClicked="#generatePDF"/>
+                                <Button text="%preview_pdf" minWidth="160" fx:id="previewButton" onMouseClicked="#previewPDF"/>
+                                <Button text="download_pdf" minWidth="160" fx:id="generateButton" onMouseClicked="#generatePDF"/>
                             </HBox>
                             <Button text="%reset_to_defaults" minWidth="160" onMouseClicked="#resetParams"/>
-                            <Separator style="-fx-padding: 10;" />
+                            <Separator style="-fx-padding: 10;"/>
 
                             <Button text="%view_data_files" minWidth="160" onMouseClicked="#openDataFiles"/>
                         </VBox>

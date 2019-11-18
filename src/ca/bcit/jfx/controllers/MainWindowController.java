@@ -20,6 +20,7 @@ import ca.bcit.jfx.components.TaskReadyProgressBar;
 import ca.bcit.net.Network;
 import ca.bcit.net.NetworkLink;
 import ca.bcit.net.NetworkNode;
+import ca.bcit.net.algo.IRMSAAlgorithm;
 import ca.bcit.net.demand.generator.AnycastDemandGenerator;
 import ca.bcit.net.demand.generator.DemandGenerator;
 import ca.bcit.net.demand.generator.TrafficGenerator;
@@ -84,6 +85,13 @@ public class MainWindowController implements Initializable {
     public TextField PDFFilePath;
     public DirectoryChooser directoryChooser = new DirectoryChooser();
     public CheckBox openPDF;
+    public Button previewButton;
+    public TitledPane mainWindow;
+    public CheckBox SBP;
+    public CheckBox RBP;
+    public CheckBox LFBP;
+    public CheckBox TBP;
+    public FlowPane algoCheckBoxContainer;
     private int i;
     @FXML
     private Console console;
@@ -285,8 +293,14 @@ public class MainWindowController implements Initializable {
         graph.scaleXProperty().addListener(observable -> graph.list.redraw());
         graph.scaleYProperty().addListener(observable -> graph.list.redraw());
 
-        PDFFilePath.setText(System.getProperty("user.dir")+"\\results summary");
+        PDFFilePath.setText(System.getProperty("user.dir") + "\\results summary");
         directoryChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
+        for (IRMSAAlgorithm algo : Settings.registeredAlgorithms.values()) {
+            CheckBox checkBox = new CheckBox(algo.toString());
+            checkBox.setStyle("-fx-padding: 3;");
+            checkBox.setSelected(true);
+            algoCheckBoxContainer.getChildren().add(checkBox);
+        }
     }
 
     private static void localeChanged(ObservableValue<? extends String> selected, String oldLanguage, String newLanguage) {
@@ -664,15 +678,22 @@ public class MainWindowController implements Initializable {
 
     public void generatePDF() {
         if (simulationMenuController.isMultipleSimulationsRan()) {
+            ArrayList<String> excludedAlgos = new ArrayList<>();
+            for (javafx.scene.Node node: algoCheckBoxContainer.getChildren()){
+                CheckBox checkBox = (CheckBox) node;
+                if (!checkBox.isSelected())
+                    excludedAlgos.add(checkBox.getText());
+            }
             SimulationMenuController.progressBar.initializePDFGen(Settings.getCurrentResources());
             SimulationMenuController.progressBar.graphLabel = titleLabel.getText();
             SimulationMenuController.progressBar.XLabel = XLabel.getText();
             SimulationMenuController.progressBar.YLabel = YLabel.getText();
+            SimulationMenuController.progressBar.displayList = new boolean[]{SBP.isSelected(), RBP.isSelected(), LFBP.isSelected(), TBP.isSelected()};
+            SimulationMenuController.progressBar.excludedAlgos = excludedAlgos;
             String path = PDFFilePath.getText();
             path = path.replace("\\", File.separator);
             TaskReadyProgressBar.RESULTS_SUMMARY_DIR_NAME = path;
             SimulationMenuController.progressBar.generatePDF();
-            simulationMenuController.setMultipleSimulationsRan(false);
             if (openPDF.isSelected()) {
                 File file = new File(path);
                 try {
@@ -686,7 +707,6 @@ public class MainWindowController implements Initializable {
                     alert.setContentText(null);
                 }
             }
-            resetParams();
         }
         else
             pdfErrorAlert();
@@ -694,7 +714,13 @@ public class MainWindowController implements Initializable {
 
     public void previewPDF() {
         if (simulationMenuController.isMultipleSimulationsRan()) {
-            JFreeChart chart = SimulationMenuController.progressBar.generateChart(titleLabel.getText(), YLabel.getText(), XLabel.getText());
+            ArrayList<String> excludedAlgos = new ArrayList<>();
+            for (javafx.scene.Node node: algoCheckBoxContainer.getChildren()){
+                CheckBox checkBox = (CheckBox) node;
+                if (!checkBox.isSelected())
+                    excludedAlgos.add(checkBox.getText());
+            }
+            JFreeChart chart = SimulationMenuController.progressBar.generateChart(titleLabel.getText(), YLabel.getText(), XLabel.getText(), new boolean[]{SBP.isSelected(), RBP.isSelected(), LFBP.isSelected(), TBP.isSelected()}, excludedAlgos);
             ChartViewer viewer = new ChartViewer(chart);
             Stage stage = new Stage();
             stage.setScene(new Scene(viewer));
@@ -707,19 +733,25 @@ public class MainWindowController implements Initializable {
             pdfErrorAlert();
     }
 
-    public void resetParams(){
-        titleLabel.setText(LocaleUtils.translate("report_blocked_volume_percentage_from_insufficient_resources_vs_erlangs"));
-        YLabel.setText(LocaleUtils.translate("blocked_volume_percentage"));
-        XLabel.setText(LocaleUtils.translate("erlang"));
-        PDFFilePath.setText(System.getProperty("user.dir")+"\\results summary");
+    public void resetParams() {
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setHeaderText(LocaleUtils.translate("confirm"));
+        alert.setContentText(LocaleUtils.translate("reset_parameters_question"));
+        if (alert.showAndWait().get() == ButtonType.OK) {
+            titleLabel.setText(LocaleUtils.translate("report_blocked_volume_percentage_from_insufficient_resources_vs_erlangs"));
+            YLabel.setText(LocaleUtils.translate("blocked_volume_percentage"));
+            XLabel.setText(LocaleUtils.translate("erlang"));
+            PDFFilePath.setText(System.getProperty("user.dir")+"\\results summary");
+        }
     }
 
-    public void chooseFilePath(){
+    public void chooseFilePath() {
         File file = directoryChooser.showDialog(XLabel.getScene().getWindow());
         PDFFilePath.setText(file.getAbsolutePath());
     }
+
     public void openDataFiles() {
-        File file = new File(System.getProperty("user.dir")+"\\results data");
+        File file = new File(System.getProperty("user.dir") + "\\results data");
         try {
             Desktop.getDesktop().open(file);
         }
@@ -731,7 +763,8 @@ public class MainWindowController implements Initializable {
             alert.setContentText(null);
         }
     }
-    private void pdfErrorAlert(){
+
+    private void pdfErrorAlert() {
         Alert alert = new Alert(AlertType.ERROR);
         alert.setTitle(LocaleUtils.translate("error_generating_pdf"));
         alert.setHeaderText(LocaleUtils.translate("run_rerun_multiple_simulations_to_generate_a_new_pdf"));

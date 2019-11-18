@@ -3,7 +3,9 @@ package ca.bcit.jfx.components;
 import ca.bcit.ApplicationResources;
 import ca.bcit.io.Logger;
 import ca.bcit.jfx.controllers.SimulationMenuController;
+import ca.bcit.net.Network;
 import ca.bcit.net.Simulation;
+import ca.bcit.net.algo.IRMSAAlgorithm;
 import ca.bcit.utils.LocaleUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -38,6 +40,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -51,6 +54,7 @@ public class TaskReadyProgressBar extends StackPane {
     private static final String NO_SPECTRUM_BLOCKED_VOLUME_PERCENTAGE = "SBP";
     private static final String NO_REGENERATORS_BLOCKED_VOLUME_PERCENTAGE = "RBP";
     private static final String LINK_FAILURE_BLOCKED_VOLUME_PERCENTAGE = "LFBP";
+    private static final String TOTAL_BLOCK_VOLUME_PERCENTAGE = "TBP";
 
     private final ProgressBar bar = new ProgressBar(0);
     private final Label label = new Label("");
@@ -61,6 +65,8 @@ public class TaskReadyProgressBar extends StackPane {
     public String graphLabel;
     public String YLabel;
     public String XLabel;
+    public boolean[] displayList;
+    public ArrayList<String> excludedAlgos;
 
     public TaskReadyProgressBar() {
         super();
@@ -129,27 +135,32 @@ public class TaskReadyProgressBar extends StackPane {
         thread.start();
     }
 
-    public void runTasks(ArrayList<ArrayList> tasks, boolean daemon, ExecutorService runMultipleSimulationService, SimulationMenuController controller) {
+    public void runTasks(ArrayList<IRMSAAlgorithm> algorithms, ArrayList<ArrayList> tasks, boolean daemon, ExecutorService runMultipleSimulationService, ResourceBundle resources, SimulationMenuController controller, Network network) {
         setRunMultipleSimulationService(runMultipleSimulationService);
+        controller.setRunning(true);
         Task task = new Task() {
             @Override
             protected Object call() throws Exception {
                 try {
-                    this.updateProgress(0, tasks.size());
+                    this.updateProgress(0, tasks.size() * algorithms.size());
                     int count = 0;
-                    for (ArrayList task : tasks) {
-                        if (this.isCancelled()) break;
-                        Logger.info("\n");
-                        Logger.info(LocaleUtils.translate("starting_simulation") + "! " + "\n\t" + LocaleUtils.translate("simulation_parameter_seed") + ": " + task.get(1) + "\n\t" + LocaleUtils.translate("simulation_parameter_alpha") + ": " + task.get(2) + "\n\t" + LocaleUtils.translate("simulation_parameter_erlang") + ": " + task.get(3) +
-                                "\n\t" + LocaleUtils.translate("simulation_parameter_number_of_requests") + ": " + task.get(4) + "\n\t" + LocaleUtils.translate("simulation_parameter_replica_preservation") + ": " + task.get(5));
-                        controller.setRunning(true);
-                        ((Simulation) task.get(0)).simulate((int) task.get(1), (int) task.get(4), (double) task.get(2), (int) task.get(3), (boolean) task.get(5));
-                        Logger.info(LocaleUtils.translate("simulation_finished") + "!");
-                        controller.setRunning(false);
-                        this.updateProgress(++count, tasks.size());
-                        if (this.isCancelled()) break;
+                    for (IRMSAAlgorithm algorithm : algorithms) {
+                        network.setDemandAllocationAlgorithm(algorithm);
+                        for (ArrayList task : tasks) {
+                            if (this.isCancelled())
+                                break;
+                            Logger.info("\n");
+                            Logger.info(LocaleUtils.translate("starting_simulation") + "! " + "\n\t" + LocaleUtils.translate("simulation_parameter_seed") + ": " + task.get(1) + "\n\t" + LocaleUtils.translate("simulation_parameter_alpha") + ": " + task.get(2) + "\n\t" + LocaleUtils.translate("simulation_parameter_erlang") + ": " + task.get(3) +
+                                    "\n\t" + LocaleUtils.translate("simulation_parameter_number_of_requests") + ": " + task.get(4) + "\n\t" + LocaleUtils.translate("simulation_parameter_replica_preservation") + ": " + task.get(5));
+                            ((Simulation) task.get(0)).simulate((int) task.get(1), (int) task.get(4), (double) task.get(2), (int) task.get(3), (boolean) task.get(5));
+                            Logger.info(LocaleUtils.translate("simulation_finished") + "!");
+                            this.updateProgress(++count, tasks.size()*algorithms.size());
+                            if (this.isCancelled())
+                                break;
+                        }
                     }
-                } catch (Throwable e) {
+                }
+                catch (Throwable e) {
                     e.printStackTrace();
                 }
                 return null;
@@ -158,6 +169,7 @@ public class TaskReadyProgressBar extends StackPane {
         bind(task);
         task.setOnSucceeded(e -> {
             unbind();
+            controller.setRunning(false);
             controller.setMultipleSimulationsRan(true);
             runMultipleSimulationService.shutdown();
             try {
@@ -169,11 +181,13 @@ public class TaskReadyProgressBar extends StackPane {
             }
         });
         task.setOnFailed(e -> {
+            controller.setRunning(false);
             controller.setMultipleSimulationsRan(false);
             unbind();
             Logger.debug(e.getSource().toString() + " " + LocaleUtils.translate("failed") + "!");
         });
         task.setOnCancelled(e -> {
+            controller.setRunning(false);
             controller.setMultipleSimulationsRan(false);
             unbind();
             Logger.debug(e.getSource().toString() + " " + LocaleUtils.translate("was_cancelled") + "!");
@@ -184,9 +198,10 @@ public class TaskReadyProgressBar extends StackPane {
     }
 
     public void initializePDFGen(ResourceBundle resources) {
-        graphLabel = resources.getString("report_blocked_volume_percentage_from_insufficient_resources");
-        XLabel = resources.getString("erlang");
-        YLabel = resources.getString("blocked_volume_percentage");
+        graphLabel = LocaleUtils.translate("report_blocked_volume_percentage_from_insufficient_resources");
+        XLabel = LocaleUtils.translate("erlang");
+        YLabel = LocaleUtils.translate("blocked_volume_percentage");
+        displayList = new boolean[]{true,true,true,true};
     }
 
     public void generatePDF() {
@@ -205,7 +220,7 @@ public class TaskReadyProgressBar extends StackPane {
             Rectangle rectangle = new Rectangle(1150, 550);
 
             //Create dataset and chart
-            JFreeChart chart = generateChart(graphLabel, YLabel, XLabel);
+            JFreeChart chart = generateChart(graphLabel, YLabel, XLabel, displayList, excludedAlgos);
             chart.draw(pdfBoxGraphics2D, rectangle);
 
             pdfBoxGraphics2D.dispose();
@@ -229,10 +244,13 @@ public class TaskReadyProgressBar extends StackPane {
         }
         finally {
             RESULTS_SUMMARY_DIR_NAME = "results summary";
-            resultsDataFileNameList.clear();
-            resultsDataSeedList.clear();
-            resultsDataJsonList.clear();
         }
+    }
+
+    public void clearData(){
+        resultsDataFileNameList.clear();
+        resultsDataSeedList.clear();
+        resultsDataJsonList.clear();
     }
 
     public void readData() {
@@ -255,7 +273,7 @@ public class TaskReadyProgressBar extends StackPane {
             }
     }
 
-    public JFreeChart generateChart(String graphLabel, String YLabel, String XLabel) {
+    public JFreeChart generateChart(String graphLabel, String YLabel, String XLabel, boolean[] displayList, ArrayList<String> excludedAlgos) {
         readData();
         double highestBlockPercentageVolume = 0;
         double lowestBlockPercentageVolume = 999999999;
@@ -279,7 +297,7 @@ public class TaskReadyProgressBar extends StackPane {
                 stepFound = true;
             }
         }
-        XYDataset dataset = createDatasetXY();
+        XYDataset dataset = createDatasetXY(displayList, excludedAlgos);
         JFreeChart chart = createChartXY(dataset, graphLabel, YLabel, XLabel);
         chart.getXYPlot().getDomainAxis().setLowerBound(lowestErlang);
         chart.getXYPlot().getDomainAxis().setUpperBound(highestErlang);
@@ -287,8 +305,9 @@ public class TaskReadyProgressBar extends StackPane {
             chart.getXYPlot().getRangeAxis().setUpperBound(0.1);
             ((NumberAxis) chart.getXYPlot().getRangeAxis()).setTickUnit(new NumberTickUnit(0.01));
         } else {
-            chart.getXYPlot().getRangeAxis().setUpperBound(highestBlockPercentageVolume);
-            ((NumberAxis) chart.getXYPlot().getRangeAxis()).setTickUnit(new NumberTickUnit(highestBlockPercentageVolume/10));
+            double roundedHighest = Math.ceil(highestBlockPercentageVolume * 10) / 10.0;
+            chart.getXYPlot().getRangeAxis().setUpperBound(roundedHighest);
+            ((NumberAxis) chart.getXYPlot().getRangeAxis()).setTickUnit(new NumberTickUnit(roundedHighest/10));
         }
         chart.getXYPlot().getRangeAxis().setLowerBound(0);
         ((NumberAxis) chart.getXYPlot().getDomainAxis()).setTickUnit(new NumberTickUnit(erlangStep));
@@ -327,53 +346,76 @@ public class TaskReadyProgressBar extends StackPane {
         return resultsDataSeedList;
     }
 
-    private XYDataset createDatasetXY() {
-        XYSeries series1 = new XYSeries(NO_SPECTRUM_BLOCKED_VOLUME_PERCENTAGE);
-        XYSeries series2 = new XYSeries(NO_REGENERATORS_BLOCKED_VOLUME_PERCENTAGE);
-        XYSeries series3 = new XYSeries(LINK_FAILURE_BLOCKED_VOLUME_PERCENTAGE);
-
-        int simulationsInErlangRange = resultsDataJsonList.size() / resultsDataSeedList.size();
-
-        for (int i = 0; i < simulationsInErlangRange; i++) {
-            int erlangValue = 0;
-            double noSpectrumBlockedVolumePercentage = 0.0;
-            double noRegeneratorsBlockedVolumePercentage = 0.0;
-            double linkFailureBlockedVolumePercentage = 0.0;
-            double unhandledVolumePercentage = 0.0;
-            double totalBlockedVolumePercentage = 0.0;
-            double averageRegeneratiorsPerAllocation = 0.0;
-            erlangValue = resultsDataJsonList.get(i).get("erlangValue").getAsInt();
-
-            // Multiple simulations per Erlang
-            if (resultsDataSeedList.size() > 1)
-                for (int j = 0; j < resultsDataSeedList.size(); j++) {
-                    JsonObject resultsDataJson = resultsDataJsonList.get(i + (j * simulationsInErlangRange));
-                    noSpectrumBlockedVolumePercentage += resultsDataJson.get("noSpectrumBlockedVolumePercentage").getAsDouble();
-                    noRegeneratorsBlockedVolumePercentage += resultsDataJson.get("noRegeneratorsBlockedVolumePercentage").getAsDouble();
-                    linkFailureBlockedVolumePercentage += resultsDataJson.get("linkFailureBlockedVolumePercentage").getAsDouble();
-                    unhandledVolumePercentage += resultsDataJson.get("unhandledVolumePercentage").getAsDouble();
-                    totalBlockedVolumePercentage += resultsDataJson.get("totalBlockedVolumePercentage").getAsDouble();
-                    averageRegeneratiorsPerAllocation += resultsDataJson.get("averageRegeneratiorsPerAllocation").getAsDouble();
-                }
-            else {
-                JsonObject resultsDataJson = resultsDataJsonList.get(i);
-                noSpectrumBlockedVolumePercentage = resultsDataJson.get("noSpectrumBlockedVolumePercentage").getAsDouble();
-                noRegeneratorsBlockedVolumePercentage = resultsDataJson.get("noRegeneratorsBlockedVolumePercentage").getAsDouble();
-                linkFailureBlockedVolumePercentage = resultsDataJson.get("linkFailureBlockedVolumePercentage").getAsDouble();
-                unhandledVolumePercentage = resultsDataJson.get("unhandledVolumePercentage").getAsDouble();
-                totalBlockedVolumePercentage = resultsDataJson.get("totalBlockedVolumePercentage").getAsDouble();
-                averageRegeneratiorsPerAllocation = resultsDataJson.get("averageRegeneratiorsPerAllocation").getAsDouble();
-            }
-            series1.add(erlangValue, noSpectrumBlockedVolumePercentage);
-            series2.add(erlangValue, noRegeneratorsBlockedVolumePercentage);
-            series3.add(erlangValue, linkFailureBlockedVolumePercentage);
-        }
-
+    private XYDataset createDatasetXY(boolean[] displayList, ArrayList<String> excludedAlgos) {
         final XYSeriesCollection dataset = new XYSeriesCollection();
-        dataset.addSeries(series1);
-        dataset.addSeries(series2);
-        dataset.addSeries(series3);
+        HashMap<String, ArrayList<JsonObject>> algoList = new HashMap<>();
+        for(int j = 0; j < resultsDataJsonList.size(); j++){
+            String algorithm = resultsDataJsonList.get(j).get("algorithm").getAsString();
+            if (excludedAlgos.contains(algorithm))
+                continue;
+            if (algoList.containsKey(algorithm)){
+                algoList.get(algorithm).add(resultsDataJsonList.get(j));
+            } else {
+                ArrayList list = new ArrayList();
+                list.add(resultsDataJsonList.get(j));
+                algoList.put(algorithm, list);
+            }
+        }
+        for (String algorithm: algoList.keySet()) {
+            XYSeries series1 = new XYSeries(algorithm+" "+NO_SPECTRUM_BLOCKED_VOLUME_PERCENTAGE);
+            XYSeries series2 = new XYSeries(algorithm+" "+NO_REGENERATORS_BLOCKED_VOLUME_PERCENTAGE);
+            XYSeries series3 = new XYSeries(algorithm+" "+LINK_FAILURE_BLOCKED_VOLUME_PERCENTAGE);
+            XYSeries series4 = new XYSeries(algorithm+" "+TOTAL_BLOCK_VOLUME_PERCENTAGE);
+            int skipCount = 0;
+            for (int i = 0; i < algoList.get(algorithm).size(); i++) {
+                if (skipCount>0){ skipCount--;continue; }
+                int erlangValue = 0;
+                double noSpectrumBlockedVolumePercentage = 0.0;
+                double noRegeneratorsBlockedVolumePercentage = 0.0;
+                double linkFailureBlockedVolumePercentage = 0.0;
+                double unhandledVolumePercentage = 0.0;
+                double totalBlockedVolumePercentage = 0.0;
+                double averageRegeneratiorsPerAllocation = 0.0;
+                erlangValue = algoList.get(algorithm).get(i).get("erlangValue").getAsInt();
 
+                // Multiple simulations per Erlang
+                if (resultsDataSeedList.size() > 1) {
+                    for (int j = 0; j < resultsDataSeedList.size(); j++) {
+                        JsonObject resultsDataJson = algoList.get(algorithm).get(i + j);
+                        noSpectrumBlockedVolumePercentage += resultsDataJson.get("noSpectrumBlockedVolumePercentage").getAsDouble();
+                        noRegeneratorsBlockedVolumePercentage += resultsDataJson.get("noRegeneratorsBlockedVolumePercentage").getAsDouble();
+                        linkFailureBlockedVolumePercentage += resultsDataJson.get("linkFailureBlockedVolumePercentage").getAsDouble();
+                        unhandledVolumePercentage += resultsDataJson.get("unhandledVolumePercentage").getAsDouble();
+                        totalBlockedVolumePercentage += resultsDataJson.get("totalBlockedVolumePercentage").getAsDouble();
+                        averageRegeneratiorsPerAllocation += resultsDataJson.get("averageRegeneratiorsPerAllocation").getAsDouble();
+                    }
+                    skipCount = resultsDataSeedList.size();
+                    noSpectrumBlockedVolumePercentage /= resultsDataSeedList.size();
+                    noRegeneratorsBlockedVolumePercentage /= resultsDataSeedList.size();
+                    linkFailureBlockedVolumePercentage /= resultsDataSeedList.size();
+                    unhandledVolumePercentage /= resultsDataSeedList.size();
+                    totalBlockedVolumePercentage /= resultsDataSeedList.size();
+                    averageRegeneratiorsPerAllocation /= resultsDataSeedList.size();
+                }
+                else {
+                    JsonObject resultsDataJson = algoList.get(algorithm).get(i);
+                    noSpectrumBlockedVolumePercentage = resultsDataJson.get("noSpectrumBlockedVolumePercentage").getAsDouble();
+                    noRegeneratorsBlockedVolumePercentage = resultsDataJson.get("noRegeneratorsBlockedVolumePercentage").getAsDouble();
+                    linkFailureBlockedVolumePercentage = resultsDataJson.get("linkFailureBlockedVolumePercentage").getAsDouble();
+                    unhandledVolumePercentage = resultsDataJson.get("unhandledVolumePercentage").getAsDouble();
+                    totalBlockedVolumePercentage = resultsDataJson.get("totalBlockedVolumePercentage").getAsDouble();
+                    averageRegeneratiorsPerAllocation = resultsDataJson.get("averageRegeneratiorsPerAllocation").getAsDouble();
+                }
+                series1.add(erlangValue, noSpectrumBlockedVolumePercentage);
+                series2.add(erlangValue, noRegeneratorsBlockedVolumePercentage);
+                series3.add(erlangValue, linkFailureBlockedVolumePercentage);
+                series4.add(erlangValue, totalBlockedVolumePercentage);
+            }
+            if (displayList[0]) dataset.addSeries(series1);
+            if (displayList[1]) dataset.addSeries(series2);
+            if (displayList[2]) dataset.addSeries(series3);
+            if (displayList[3]) dataset.addSeries(series4);
+        }
         return dataset;
     }
 
