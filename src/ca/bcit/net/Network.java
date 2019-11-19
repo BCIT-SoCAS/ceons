@@ -66,7 +66,7 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 		this.demandAllocationAlgorithm = algorithm;
 	}
 
-	public RMSAAlgorithm getDemandAllocationAlgorithm(){
+	public IRMSAAlgorithm getDemandAllocationAlgorithm(){
 		return demandAllocationAlgorithm;
 	}
 	
