@@ -83,7 +83,7 @@ public class SimulationMenuController implements Initializable {
 	@FXML private VBox settings;
 	@FXML private HBox multipleSimulatonSettingsLabel;
 	@FXML private HBox multipleSimulatonSettingsRange;
-    @FXML private ComboBox<IRMSAAlgorithm> algorithms;
+    @FXML private ComboBox<String> algorithms;
 	@FXML private ToggleGroup regeneratorsMetric;
 	@FXML private ToggleGroup modulationMetric;
 	@FXML private CheckBox allowModulationChange;
@@ -111,8 +111,6 @@ public class SimulationMenuController implements Initializable {
 				throw new RuntimeException(e);
 			}
 
-		algorithms.setItems(new ObservableListWrapper<>(new ArrayList<>(Settings.registeredAlgorithms.values())));
-
 		algorithmsLink.setOnMouseClicked(e -> {
 			if (algorithms.getValue() == null) {
 				Alert selectAlgoAlert = new Alert(Alert.AlertType.ERROR);
@@ -120,7 +118,10 @@ public class SimulationMenuController implements Initializable {
 				selectAlgoAlert.show();
 			}
 			else {
-				String algoKey = algorithms.getValue().getKey();
+				String algoKey = "AMRA";
+				for (IRMSAAlgorithm algorithm: Settings.registeredAlgorithms.values())
+					if (algorithm.getName().equals(algorithms.getValue()))
+						algoKey = algorithm.getKey();
 				try {
 					Desktop.getDesktop().browse(new URI(Settings.registeredAlgorithms.get(algoKey).getDocumentationURL()));
 				}
@@ -140,13 +141,16 @@ public class SimulationMenuController implements Initializable {
         cancelButton.managedProperty().bind(cancelButton.visibleProperty());
         pauseInfoLabel.managedProperty().bind(pauseInfoLabel.visibleProperty());
         for (IRMSAAlgorithm algo : Settings.registeredAlgorithms.values()) {
-            CheckBox checkBox = new CheckBox(algo.toString());
+            CheckBox checkBox = new CheckBox(algo.getName());
             checkBox.setStyle("-fx-padding: 3;");
+            algorithms.getItems().add(algo.getName());
             algoCheckBoxContainer.getChildren().add(checkBox);
         }
         algoCheckBoxContainer.managedProperty().bind(algoCheckBoxContainer.visibleProperty());
         algorithms.managedProperty().bind(algorithms.visibleProperty());
         algorithms.visibleProperty().bind(runMultipleSimulations.selectedProperty().not());
+		algorithmsLink.managedProperty().bind(algorithmsLink.visibleProperty());
+		algorithmsLink.visibleProperty().bind(runMultipleSimulations.selectedProperty().not());
         algoCheckBoxContainer.visibleProperty().bind(runMultipleSimulations.selectedProperty());
 	}
 	
@@ -332,7 +336,7 @@ public class SimulationMenuController implements Initializable {
 						continue;
 					String algoName = ((CheckBox) algorithmBox).getText();
 					for (IRMSAAlgorithm algorithm : Settings.registeredAlgorithms.values())
-						if (algorithm.toString().equals(algoName)) {
+						if (algorithm.getName().equals(algoName)) {
 							algorithms.add(algorithm);
 							break;
 						}

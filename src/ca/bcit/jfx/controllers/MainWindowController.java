@@ -296,7 +296,7 @@ public class MainWindowController implements Initializable {
         PDFFilePath.setText(System.getProperty("user.dir") + "\\results summary");
         directoryChooser.setInitialDirectory(new File(System.getProperty("user.dir")));
         for (IRMSAAlgorithm algo : Settings.registeredAlgorithms.values()) {
-            CheckBox checkBox = new CheckBox(algo.toString());
+            CheckBox checkBox = new CheckBox(algo.getName());
             checkBox.setStyle("-fx-padding: 3;");
             checkBox.setSelected(true);
             algoCheckBoxContainer.getChildren().add(checkBox);

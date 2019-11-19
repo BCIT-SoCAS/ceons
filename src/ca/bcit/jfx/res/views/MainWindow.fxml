@@ -99,7 +99,7 @@
 
                             <HBox style="-fx-padding: 5;" spacing="8">
                                 <Button text="%preview_pdf" minWidth="160" fx:id="previewButton" onMouseClicked="#previewPDF"/>
-                                <Button text="download_pdf" minWidth="160" fx:id="generateButton" onMouseClicked="#generatePDF"/>
+                                <Button text="%download_pdf" minWidth="160" fx:id="generateButton" onMouseClicked="#generatePDF"/>
                             </HBox>
                             <Button text="%reset_to_defaults" minWidth="160" onMouseClicked="#resetParams"/>
                             <Separator style="-fx-padding: 10;"/>
