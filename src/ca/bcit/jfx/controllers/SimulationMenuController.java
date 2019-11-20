@@ -117,7 +117,7 @@ public class SimulationMenuController implements Initializable {
 				selectAlgoAlert.show();
 			}
 			else {
-				String algoKey = "AMRA";
+				String algoKey = "";
 				for (IRMSAAlgorithm algorithm: Settings.registeredAlgorithms.values())
 					if (algorithm.getName().equals(algorithms.getValue()))
 						algoKey = algorithm.getKey();
