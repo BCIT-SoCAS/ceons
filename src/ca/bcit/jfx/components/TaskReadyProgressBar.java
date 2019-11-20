@@ -135,7 +135,7 @@ public class TaskReadyProgressBar extends StackPane {
         thread.start();
     }
 
-    public void runTasks(ArrayList<IRMSAAlgorithm> algorithms, ArrayList<ArrayList> tasks, boolean daemon, ExecutorService runMultipleSimulationService, ResourceBundle resources, SimulationMenuController controller, Network network) {
+    public void runTasks(ArrayList<IRMSAAlgorithm> algorithms, ArrayList<ArrayList> tasks, boolean daemon, ExecutorService runMultipleSimulationService, SimulationMenuController controller, Network network) {
         setRunMultipleSimulationService(runMultipleSimulationService);
         controller.setRunning(true);
         Task task = new Task() {
@@ -197,7 +197,7 @@ public class TaskReadyProgressBar extends StackPane {
         runMultipleSimulationService.execute(thread);
     }
 
-    public void initializePDFGen(ResourceBundle resources) {
+    public void initializePDFGen() {
         graphLabel = LocaleUtils.translate("report_blocked_volume_percentage_from_insufficient_resources");
         XLabel = LocaleUtils.translate("erlang");
         YLabel = LocaleUtils.translate("blocked_volume_percentage");

@@ -47,7 +47,6 @@ import java.util.concurrent.ThreadFactory;
 
 public class SimulationMenuController implements Initializable {
     public FlowPane algoCheckBoxContainer;
-    private ResourceBundle resources;
 
     public static boolean started = false;
     public static boolean finished = false;
@@ -359,7 +358,7 @@ public class SimulationMenuController implements Initializable {
 						tasks.add(taskSettingsArray);
 					}
 				}
-				progressBar.runTasks(algorithms, tasks, true, runMultipleSimulationService, resources, this, network);
+				progressBar.runTasks(algorithms, tasks, true, runMultipleSimulationService, this, network);
             }
         } catch (NullPointerException ex) {
             ex.printStackTrace();

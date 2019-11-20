@@ -684,7 +684,7 @@ public class MainWindowController implements Initializable {
                 if (!checkBox.isSelected())
                     excludedAlgos.add(checkBox.getText());
             }
-            SimulationMenuController.progressBar.initializePDFGen(Settings.getCurrentResources());
+            SimulationMenuController.progressBar.initializePDFGen();
             SimulationMenuController.progressBar.graphLabel = titleLabel.getText();
             SimulationMenuController.progressBar.XLabel = XLabel.getText();
             SimulationMenuController.progressBar.YLabel = YLabel.getText();
