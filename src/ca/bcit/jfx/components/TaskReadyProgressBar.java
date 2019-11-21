@@ -257,14 +257,9 @@ public class TaskReadyProgressBar extends StackPane {
         for (String resultsDataFileName : resultsDataFileNameList)
             try {
                 BufferedReader bufferedReader = new BufferedReader(new FileReader(Simulation.RESULTS_DATA_DIR_NAME + "/" + ApplicationResources.getProject().getName().toUpperCase() + "/" + resultsDataFileName));
-
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
                 JsonObject js = gson.fromJson(bufferedReader, JsonObject.class);
-
                 resultsDataJsonList.add(js);
-
-                System.out.println(js.getAsJsonObject());
-
             }
             catch (IOException ex) {
                 ex.printStackTrace();
