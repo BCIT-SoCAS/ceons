@@ -7,7 +7,7 @@
 <GridPane gridLinesVisible="true" prefWidth="1300.0" prefHeight="900.0" stylesheets="/ca/bcit/jfx/res/stylesheets/application.cssext" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.MainWindowController">
 	<columnConstraints>
 		<ColumnConstraints hgrow="SOMETIMES" />
-		<ColumnConstraints maxWidth="-Infinity" minWidth="350"/>
+		<ColumnConstraints maxWidth="-Infinity" minWidth="250"/>
 	</columnConstraints>
 	<rowConstraints>
 		<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -15,15 +15,15 @@
 	<children>
 		<GridPane>
 			<columnConstraints>
-				<ColumnConstraints hgrow="SOMETIMES" percentWidth="100.0" />
+				<ColumnConstraints hgrow="SOMETIMES" minWidth="950" prefWidth="950" maxWidth="950" />
 			</columnConstraints>
 			<rowConstraints>
-				<RowConstraints vgrow="SOMETIMES" />
-				<RowConstraints minHeight="150.0" prefHeight="285.0" />
+				<RowConstraints minHeight="604" prefHeight="604" maxHeight="604" />
+				<RowConstraints minHeight="150.0" percentHeight="100.0" />
 				<RowConstraints minHeight="0.0" prefHeight="20.0" />
 			</rowConstraints>
 			<children>
-				<BorderPane maxWidth="950" maxHeight="605" fx:id="borderPane">
+				<BorderPane maxWidth="950" maxHeight="604" fx:id="borderPane">
 					<children>
 						<ResizableCanvas fx:id="map" />
 						<ResizableCanvas fx:id="graph"/>
@@ -36,7 +36,7 @@
 		</GridPane>
 		<Accordion fx:id="accordion" GridPane.columnIndex="1" >
 			<panes>
-				<TitledPane animated="true" text="%tab_name_general_settings">
+				<TitledPane fx:id="mainWindow" animated="true" text="%tab_name_general_settings">
 					<content>
 						<VBox alignment="TOP_CENTER" spacing="8.0">
 							<children>
@@ -44,41 +44,71 @@
 								<Button onAction="#loadButtonClicked" text="%load_topology" GridPane.columnIndex="1" />
 								<Button fx:id="updateTopologyButton" onAction="#updateButtonClicked" text="%update_current_topology" GridPane.columnIndex="2" disable="true"/>
 
-								<CeonsLabel text="%control_settings_mouse_mode" />
-								<RadioButton onAction="#clearState" fx:id="RBNoneChose" selected="true" text="%none" toggleGroup="$RBGroup">
-									<toggleGroup>
-										<ToggleGroup fx:id="RBGroup" />
-									</toggleGroup>
-								</RadioButton>
-								<RadioButton onAction="#nodeSelect" text="%mouse_mode_select_node_or_link" toggleGroup="$RBGroup" />
-								<RadioButton onAction="#drag" text="%mouse_mode_drag" toggleGroup="$RBGroup" />
+                                <CeonsLabel text="%control_settings_mouse_mode"/>
+                                <RadioButton onAction="#clearState" fx:id="RBNoneChose" selected="true" text="%none" toggleGroup="$RBGroup">
+                                    <toggleGroup>
+                                        <ToggleGroup fx:id="RBGroup"/>
+                                    </toggleGroup>
+                                </RadioButton>
+                                <RadioButton onAction="#nodeSelect" text="%mouse_mode_select_node_or_link" toggleGroup="$RBGroup"/>
+                                <RadioButton onAction="#drag" text="%mouse_mode_drag" toggleGroup="$RBGroup"/>
 
-								<Separator />
+                                <Separator/>
 
-								<CeonsLabel text="%control_settings_language" />
-								<ComboBox fx:id="localeCombo" layoutX="15.0" layoutY="33.0" promptText="%choose_language" />
-							</children>
-						</VBox>
-					</content>
-				</TitledPane>
-				<TitledPane animated="true" text="%tab_name_simulation_settings">
-					<content>
-						<fx:include fx:id="simulationMenu" source="/ca/bcit/jfx/res/views/SimulationMenu.fxml" />
-					</content>
-				</TitledPane>
-				<TitledPane fx:id="liveInfoPane" animated="true" text="%tab_name_live_info">
-					<content>
-						<VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" >
-							<Label fx:id="info"></Label>
-						</VBox>
-					</content>
-				</TitledPane>
-				<TitledPane fx:id="fullSummaryPane" animated="true" text="%tab_name_full_summary">
-					<content>
-						<AnchorPane prefHeight="180.0" prefWidth="200.0" />
-					</content>
-				</TitledPane>
-			</panes>
-		</Accordion>
-	</children>
+                                <CeonsLabel text="%control_settings_language"/>
+                                <ComboBox fx:id="localeCombo" layoutX="15.0" layoutY="33.0" promptText="%choose_language"/>
+                            </children>
+                        </VBox>
+                    </content>
+                </TitledPane>
+                <TitledPane animated="true" text="%tab_name_simulation_settings">
+                    <content>
+                        <fx:include fx:id="simulationMenu" source="/ca/bcit/jfx/res/views/SimulationMenu.fxml"/>
+                    </content>
+                </TitledPane>
+                <TitledPane fx:id="liveInfoPane" animated="true" text="%tab_name_live_info">
+                    <content>
+                        <VBox minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <Label fx:id="info"></Label>
+                        </VBox>
+                    </content>
+                </TitledPane>
+                <TitledPane fx:id="fullSummaryPane" animated="true" text="%result_generation">
+                    <content>
+                        <VBox alignment="TOP_CENTER" spacing="4.0" prefHeight="180" prefWidth="200">
+                            <Label text="%pdf_summary_graph_label"/>
+                            <TextField text="%report_blocked_volume_percentage_from_insufficient_resources" fx:id="titleLabel"/>
+                            <Label text="%pdf_graph_domain_label"/>
+                            <TextField text="%erlang" fx:id="XLabel"/>
+                            <Label text="%pdf_graph_range_label"/>
+                            <TextField text="%blocked_volume_percentage" fx:id="YLabel"/>
+                            <Label text="%display_on_graph" />
+                            <FlowPane alignment="CENTER" fx:id="algoCheckBoxContainer" />
+                            <FlowPane alignment="CENTER">
+                                <CheckBox style="-fx-padding: 3;" fx:id="SBP" text="%sbp" selected="true" />
+                                <CheckBox style="-fx-padding: 3;" fx:id="RBP" text="%rbp" selected="true" />
+                                <CheckBox style="-fx-padding: 3;" fx:id="LFBP" text="%lfbp" selected="true" />
+                                <CheckBox style="-fx-padding: 3;" fx:id="TBP" text="%tbp" selected="true" />
+                            </FlowPane>
+                            <Label text="%download_file_path" />
+                            <GridPane>
+                                <TextField fx:id="PDFFilePath" prefColumnCount="25"/>
+                                <Button text="..." onMouseClicked="#chooseFilePath" GridPane.columnIndex="26"/>
+                            </GridPane>
+                            <CheckBox text="%open_folder_after_download" style="-fx-padding: 5;" fx:id="openPDF"/>
+
+                            <HBox style="-fx-padding: 5;" spacing="8">
+                                <Button text="%preview_pdf" minWidth="160" fx:id="previewButton" onMouseClicked="#previewPDF"/>
+                                <Button text="%download_pdf" minWidth="160" fx:id="generateButton" onMouseClicked="#generatePDF"/>
+                            </HBox>
+                            <Button text="%reset_to_defaults" minWidth="160" onMouseClicked="#resetParams"/>
+                            <Separator style="-fx-padding: 10;"/>
+
+                            <Button text="%view_data_files" minWidth="160" onMouseClicked="#openDataFiles"/>
+                        </VBox>
+                    </content>
+                </TitledPane>
+            </panes>
+        </Accordion>
+    </children>
 </GridPane>

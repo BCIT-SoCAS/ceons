@@ -9,6 +9,8 @@
         <VBox>
             <VBox fx:id="settings" spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
                 <children>
+                    <CheckBox fx:id="runMultipleSimulations" text="%run_multiple_simulation_question" onAction="#multipleSimulationsSelected"/>
+
                     <CeonsLabel text="%simulation_parameter_algorithm" tooltipText="%simulation_parameter_algorithm_description" />
                     <GridPane alignment="center">
                         <children>
@@ -16,15 +18,13 @@
                             <Hyperlink fx:id="algorithmsLink" text="?" GridPane.columnIndex="2" style="-fx-font-size: 20;" />
                         </children>
                     </GridPane>
-
+                    <FlowPane fx:id="algoCheckBoxContainer" alignment="CENTER" />
                     <Separator />
 
                     <CeonsLabel text="%simulation_parameter_traffic_generators" tooltipText="%simulation_parameter_traffic_generators_description" />
                     <ComboBox fx:id="generators" promptText="%choose_generator"/>
 
                     <Separator/>
-
-                    <CheckBox fx:id="runMultipleSimulations" text="%run_multiple_simulation_question" onAction="#multipleSimulationsSelected"/>
 
                     <CeonsLabel fx:id="erlangLabel" text="%simulation_parameter_erlang" tooltipText="%simulation_parameter_erlang_description" />
                     <UIntField fx:id="erlangIntField" alignment="CENTER"/>

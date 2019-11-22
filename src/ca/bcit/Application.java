@@ -55,7 +55,7 @@ public class Application extends javafx.application.Application {
         ResourceBundle currentResources = Settings.getCurrentResources();
         FXMLLoader loader = new FXMLLoader(Settings.mainWindowResourceUrl, currentResources);
 
-        ProjectFileFormat.registerFileFormat(new EONProjectFileFormat(Settings.getCurrentResources()));
+        ProjectFileFormat.registerFileFormat(new EONProjectFileFormat());
 
         GridPane root = loader.load();
         Scene scene = new Scene(root);

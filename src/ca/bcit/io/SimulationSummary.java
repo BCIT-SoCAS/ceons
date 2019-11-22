@@ -19,10 +19,11 @@ public class SimulationSummary {
     private double unhandledVolumePercentage;
     private double totalBlockedVolumePercentage;
     private double averageRegeneratiorsPerAllocation;
+    private String algorithm;
 
     public SimulationSummary(String trafficGeneratorName, int erlangValue, long seedValue, double alphaValue, int demandsCountValue,
                              double totalVolume, double spectrumBlockedVolume, double regeneratorsBlockedVolume, double linkFailureBlockedVolume,
-                             double unhandledVolume, double regsPerAllocation, double allocations) {
+                             double unhandledVolume, double regsPerAllocation, double allocations, String algorithm) {
         this.trafficGeneratorName = trafficGeneratorName;
         this.erlangValue = erlangValue;
         this.seedValue = seedValue;
@@ -35,6 +36,7 @@ public class SimulationSummary {
         this.regsPerAllocation = regsPerAllocation;
         this.allocations = allocations;
         this.unhandledVolume = unhandledVolume;
+        this.algorithm = algorithm;
         noSpectrumBlockedVolumePercentage = spectrumBlockedVolume / totalVolume * 100;
         noRegeneratorsBlockedVolumePercentage = regeneratorsBlockedVolume / totalVolume * 100;
         linkFailureBlockedVolumePercentage = linkFailureBlockedVolume / totalVolume * 100;

@@ -25,7 +25,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
-	public EONProjectFileFormat(ResourceBundle resources) {
+	public EONProjectFileFormat() {
 		super();
 	}
 
