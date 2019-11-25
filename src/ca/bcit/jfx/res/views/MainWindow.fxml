@@ -18,9 +18,9 @@
 				<ColumnConstraints hgrow="SOMETIMES" percentWidth="100.0" />
 			</columnConstraints>
 			<rowConstraints>
-				<RowConstraints vgrow="SOMETIMES" />
-				<RowConstraints minHeight="150.0" prefHeight="285.0" />
-				<RowConstraints minHeight="0.0" prefHeight="20.0" />
+				<RowConstraints minHeight="604" prefHeight="604" maxHeight="604" />
+				<RowConstraints vgrow="SOMETIMES"/>
+				<RowConstraints minHeight="20.0" prefHeight="20.0" maxHeight="20.0"  />
 			</rowConstraints>
 			<children>
 				<BorderPane maxWidth="950" maxHeight="605" fx:id="borderPane">
