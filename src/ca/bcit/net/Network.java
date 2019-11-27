@@ -65,6 +65,10 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	public void setDemandAllocationAlgorithm(IRMSAAlgorithm algorithm) {
 		this.demandAllocationAlgorithm = algorithm;
 	}
+
+	public IRMSAAlgorithm getDemandAllocationAlgorithm(){
+		return demandAllocationAlgorithm;
+	}
 	
 	public void setBestPathsCount(int bestPathsCount) {
 		this.bestPathsCount = bestPathsCount;

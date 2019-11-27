@@ -155,7 +155,7 @@ public class Simulation {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		String json = gson.toJson(new SimulationSummary(generator.getName(), erlang, seed, alpha, demandsCount, totalVolume,
 				spectrumBlockedVolume, regeneratorsBlockedVolume, linkFailureBlockedVolume, unhandledVolume, regsPerAllocation,
-				allocations));
+				allocations, network.getDemandAllocationAlgorithm().getName()));
 		try {
 			resultsDataFileName = ApplicationResources.getProject().getName().toUpperCase() +
 					new SimpleDateFormat("_yyyy_MM_dd_HH_mm_ss").format(new Date()) +".json";
@@ -244,6 +244,7 @@ public class Simulation {
 			totalVolume += unhandledVolume;
 			ResizableCanvas.getParentController().totalVolume += unhandledVolume;
 		}
+		String algorithm = network.getDemandAllocationAlgorithm().getName();
 
 		//wait for internal cleanup after simulation is done
 		network.waitForDemandsDeath();
@@ -272,7 +273,7 @@ public class Simulation {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		String json = gson.toJson(new SimulationSummary(generator.getName(), erlang, seed, alpha, demandsCount, totalVolume,
 				spectrumBlockedVolume, regeneratorsBlockedVolume, linkFailureBlockedVolume, unhandledVolume, regsPerAllocation,
-				allocations));
+				allocations, algorithm));
 		try {
 			resultsDataFileName = ApplicationResources.getProject().getName().toUpperCase() +
 					new SimpleDateFormat("_yyyy_MM_dd_HH_mm_ss").format(new Date()) +".json";
