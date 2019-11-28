@@ -109,9 +109,17 @@ Upon setup completion, you will be able to run the simulator with the following 
 
 **B:** Load topology button that opens up a file chooser to load .eon files onto the map and network topology area.
 
-**C:** Changes the drawing state to allow user to select a node or link on a loaded network topology.  Once clicked, this displays information in the Live Info pane.
+**C:** Update topology button that opens up a dialog window where the user can edit an existing network topology.
 
-**D:** Changes the drawing state to none, which has no effect upon user interaction with a loaded network topology.
+**D:** Mouse Mode allows you to select from three different modes:
+
+1. Changes the drawing state to none, which has no effect upon user interaction with a loaded network topology.
+
+2. Changes the drawing state to allow user to select a node or link on a loaded network topology.  Once clicked, this displays information in the Live Info pane.
+
+3. Changes the drawing state to allow user to drag a loaded map around.
+
+**E:** Language dropdown allows you to choose the language that the simulator will be displayed in.
 
 ## 3) Simulation Settings Controller
 ![image alt text](./docs/image_21.png)
