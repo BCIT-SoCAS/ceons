@@ -66,7 +66,7 @@ Upon setup completion, you will be able to run the simulator with the following 
 
     7. Cancel or clear simulation
 
-4. Create network topology (Currently under development)
+4. Create network topology
 
     8. Saving Google Maps API key to file
 
@@ -120,6 +120,7 @@ Upon setup completion, you will be able to run the simulator with the following 
 3. Changes the drawing state to allow user to drag a loaded map around.
 
 **E:** Language dropdown allows you to choose the language that the simulator will be displayed in.
+
 
 ## 3a) Simulation Settings Controller (Single Simulation)
 ![image alt text](./docs/image_21.png)
@@ -214,7 +215,7 @@ This section is currently under development.  The idea for this area is to hold 
     <td>A</td>
     <td>Standard node (indicated by white outline)  
 
-Number refers to node number (e.g., node_<num>) in network topology  
+
 
 The thicker colored line in the node indicates regenerator usage <br />
 Green: Has more than 50 regenerators remaining<br />
@@ -241,6 +242,10 @@ Red: More than 80% link utilization</td>
   <tr>
     <td>E</td>
     <td>International and data center node (indicated by a blue and a grey outline)</td>
+  </tr>
+  <tr>
+  <td>F</td>
+  <td>Zoom slider that lets you zoom in and out of the map</td>
   </tr>
 </table>
 
