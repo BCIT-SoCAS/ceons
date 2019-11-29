@@ -202,9 +202,29 @@ A link would display the the length of the link, the node it originates from/the
 
 If neither node or link is clicked on it will display current summary statistics of blocking percentages for regenerators, link and blocked spectrum.
 
-## 5) Full Summary Pane
+## 5) Result Generation Pane
+![image alt text](./docs/image_24.png)
 
-This section is currently under development.  The idea for this area is to hold aggregated graphical information after multiple simulations are run.
+A: Title of the PDF.
+
+B: The X-Axis Variable
+
+C: The Y-Axis Variable
+
+D: The algorithms and variables to display on graph
+
+E: File path to the folder where the generated pdf will be saved. 
+
+F: Select if you want to open folder after download.
+
+G: Click to preview the PDF.
+
+H: Click the download button to download the PDF to the specified file path.
+
+I: Click to reset to the default parameters.
+
+J: Click to view the generated results data.
+
 
 ## 6) Network topology with nodes and links
 
@@ -296,7 +316,7 @@ Figure D: Console showing fully loaded project with calculated paths
 
 7. Type **Number of candidate paths.**
 
-2. Press **Start Simulation**.
+2. Press the **PLAY** button.
 
 ![image alt text](./docs/image_8.png)
 
@@ -332,9 +352,21 @@ Figure B: Waiting for the simulation when it’s finished, simulation results sh
 
 ![image alt text](./docs/image_12.png)
 
-Figure C: Unpausing the simulation
+Figure C: Restarting the simulation
 
-# VII.  To see live simulation statistics
+# VIII.  To generate a PDF
+
+1. In **Simulation Settings** run multiple simulations.
+
+2. Fill out the form with your desired **PDF Title**, **X-Axis Title** and **Y-Axis Title**
+
+3. Select the algorithms and variables to display on your graph.
+
+4. Choose the folder where you want to download your PDF.
+
+5. Click **Download PDF** to download it into the specified folder.
+
+# VIII.  To see live simulation statistics
 
 ## 1.0)  Pause Live Simulation
 
@@ -380,13 +412,14 @@ Figure D: Live Info panel populated with the current link information
 
 1. Click **Simulation Settings** while paused
 
-2. Click **Resume Simulation**
+2. Click **Resume** button
 
 ![image alt text](./docs/image_17.png)
 
-Figure E: Simulation Settings contains the Resume Simulation button
+Figure E: Simulation Settings contains the Resume button
 
-# VIII.  Frequently Asked Questions
+
+# IX.  Frequently Asked Questions
 
 ## 1)  Why do I get an exception on updating the network UI?
 
