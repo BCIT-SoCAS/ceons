@@ -41,7 +41,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -95,11 +94,25 @@ public class TaskReadyProgressBar extends StackPane {
 
         task.setOnSucceeded(e -> {
             controller.setMultipleSimulationsRan(false);
+            controller.sendMail( LocaleUtils.translate("hello") + "\n\n" +
+                    LocaleUtils.translate("good_news") + "\n\n" +
+                    TaskReadyProgressBar.getResultsDataFileNameList() + "\n\n" +
+                    LocaleUtils.translate("refer_to_docs") + " https://www.overleaf.com/read/fhttvdyjcngb.\n\n\n" +
+                    LocaleUtils.translate("thank_you") + "\n\n" +
+                    LocaleUtils.translate("ceons_team"));
             unbind();
         });
 
         task.setOnFailed(e -> {
             controller.setMultipleSimulationsRan(false);
+            controller.sendMail( LocaleUtils.translate("hello") + "\n\n" +
+                    LocaleUtils.translate("good_news") + "\n\n" +
+                    TaskReadyProgressBar.getResultsDataFileNameList() + "\n\n" +
+                    LocaleUtils.translate("bad_news") + "\n\n" +
+                    e.getSource().toString() + " " + LocaleUtils.translate("failed") + "!\n\n" +
+                    LocaleUtils.translate("refer_to_docs") + " https://www.overleaf.com/read/fhttvdyjcngb.\n\n\n" +
+                    LocaleUtils.translate("thank_you") + "\n\n" +
+                    LocaleUtils.translate("ceons_team"));
             unbind();
             Logger.debug(e.getSource().toString() + " " + LocaleUtils.translate("failed") + "!");
         });
@@ -170,6 +183,12 @@ public class TaskReadyProgressBar extends StackPane {
         task.setOnSucceeded(e -> {
             unbind();
             controller.setRunning(false);
+            controller.sendMail( LocaleUtils.translate("hello") + "\n\n" +
+                    LocaleUtils.translate("good_news") + "\n\n" +
+                    TaskReadyProgressBar.getResultsDataFileNameList() + "\n\n" +
+                    LocaleUtils.translate("refer_to_docs") + " https://www.overleaf.com/read/fhttvdyjcngb.\n\n\n" +
+                    LocaleUtils.translate("thank_you") + "\n\n" +
+                    LocaleUtils.translate("ceons_team"));
             controller.setMultipleSimulationsRan(true);
             runMultipleSimulationService.shutdown();
             try {
@@ -182,6 +201,14 @@ public class TaskReadyProgressBar extends StackPane {
         });
         task.setOnFailed(e -> {
             controller.setRunning(false);
+            controller.sendMail( LocaleUtils.translate("hello") + "\n\n" +
+                    LocaleUtils.translate("good_news") + "\n\n" +
+                    TaskReadyProgressBar.getResultsDataFileNameList() + "\n\n" +
+                    LocaleUtils.translate("bad_news") + "\n\n" +
+                    e.getSource().toString() + " " + LocaleUtils.translate("failed") + "!\n\n" +
+                    LocaleUtils.translate("refer_to_docs") + " https://www.overleaf.com/read/fhttvdyjcngb.\n\n\n" +
+                    LocaleUtils.translate("thank_you") + "\n\n" +
+                    LocaleUtils.translate("ceons_team"));
             controller.setMultipleSimulationsRan(false);
             unbind();
             Logger.debug(e.getSource().toString() + " " + LocaleUtils.translate("failed") + "!");

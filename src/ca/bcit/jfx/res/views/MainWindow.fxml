@@ -77,11 +77,11 @@
                     <content>
                         <VBox alignment="TOP_CENTER" spacing="4.0" prefHeight="180" prefWidth="200">
                             <Label text="%pdf_summary_graph_label"/>
-                            <TextField text="%report_blocked_volume_percentage_from_insufficient_resources" fx:id="titleLabel"/>
+                            <TextField text="%report_blocked_volume_percentage_from_insufficient_resources" fx:id="titleLabel" alignment="CENTER"/>
                             <Label text="%pdf_graph_domain_label"/>
-                            <TextField text="%erlang" fx:id="XLabel"/>
+                            <TextField text="%erlang" fx:id="XLabel" alignment="CENTER"/>
                             <Label text="%pdf_graph_range_label"/>
-                            <TextField text="%blocked_volume_percentage" fx:id="YLabel"/>
+                            <TextField text="%blocked_volume_percentage" fx:id="YLabel" alignment="CENTER"/>
                             <Label text="%display_on_graph" />
                             <FlowPane alignment="CENTER" fx:id="algoCheckBoxContainer" />
                             <FlowPane alignment="CENTER">
@@ -92,7 +92,7 @@
                             </FlowPane>
                             <Label text="%download_file_path" />
                             <GridPane>
-                                <TextField fx:id="PDFFilePath" prefColumnCount="25"/>
+                                <TextField fx:id="PDFFilePath" prefColumnCount="25" alignment="CENTER"/>
                                 <Button text="..." onMouseClicked="#chooseFilePath" GridPane.columnIndex="26"/>
                             </GridPane>
                             <CheckBox text="%open_folder_after_download" style="-fx-padding: 5;" fx:id="openPDF"/>
