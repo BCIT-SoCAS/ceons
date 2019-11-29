@@ -738,7 +738,7 @@ public class MainWindowController implements Initializable {
         alert.setHeaderText(LocaleUtils.translate("confirm"));
         alert.setContentText(LocaleUtils.translate("reset_parameters_question"));
         if (alert.showAndWait().get() == ButtonType.OK) {
-            titleLabel.setText(LocaleUtils.translate("report_blocked_volume_percentage_from_insufficient_resources_vs_erlangs"));
+            titleLabel.setText(LocaleUtils.translate("report_blocked_volume_percentage_from_insufficient_resources"));
             YLabel.setText(LocaleUtils.translate("blocked_volume_percentage"));
             XLabel.setText(LocaleUtils.translate("erlang"));
             PDFFilePath.setText(System.getProperty("user.dir")+"\\results summary");
