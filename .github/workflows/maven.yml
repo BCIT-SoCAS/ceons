@@ -28,5 +28,5 @@ jobs:
         password: ${{secrets.MAIL_PASSWORD}}
         subject: New build for CEONS
         body: Build job of ${{github.repository}} completed successfully!
-        to: ceonsacit3900@gmail.com
+        to: ceonsacit3900@gmail.com,maibin@bcit.ca
         from: ceonsacit3900@gmail.com

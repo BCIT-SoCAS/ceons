@@ -15,7 +15,7 @@
 			</font>
 		</Text>
 		<ProgressIndicator layoutX="250.0" layoutY="170.0" />
-		<Text id="splash-screen-version" layoutX="30.0" layoutY="350.0" strokeType="OUTSIDE" strokeWidth="0.0" text="v1.3.0">
+		<Text id="splash-screen-version" layoutX="30.0" layoutY="350.0" strokeType="OUTSIDE" strokeWidth="0.0" text="v2.0.0">
 			<font>
 				<Font name="Roboto Medium" />
 			</font>

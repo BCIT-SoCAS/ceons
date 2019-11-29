@@ -66,7 +66,7 @@ Upon setup completion, you will be able to run the simulator with the following 
 
     7. Cancel or clear simulation
 
-4. Create network topology (Currently under development)
+4. Create network topology
 
     8. Saving Google Maps API key to file
 
@@ -102,45 +102,94 @@ Upon setup completion, you will be able to run the simulator with the following 
 </table>
 
 
-## 2) Network Settings Controller
+## 2) General Settings Controller
 ![image alt text](./docs/image_20.png)
 
 **A:** Create topology button that opens up a dialog window where a user can enter a google maps API key.  Once entered the user can generate a network topology to be loaded.
 
 **B:** Load topology button that opens up a file chooser to load .eon files onto the map and network topology area.
 
-**C:** Changes the drawing state to allow user to select a node or link on a loaded network topology.  Once clicked, this displays information in the Live Info pane.
+**C:** Update topology button that opens up a dialog window where the user can edit an existing network topology.
 
-**D:** Changes the drawing state to none, which has no effect upon user interaction with a loaded network topology.
+**D:** Mouse Mode allows you to select from three different modes:
 
-## 3) Simulation Settings Controller
+1. Changes the drawing state to none, which has no effect upon user interaction with a loaded network topology.
+
+2. Changes the drawing state to allow user to select a node or link on a loaded network topology.  Once clicked, this displays information in the Live Info pane.
+
+3. Changes the drawing state to allow user to drag a loaded map around.
+
+**E:** Language dropdown allows you to choose the language that the simulator will be displayed in.
+
+
+## 3a) Simulation Settings Controller (Single Simulation)
 ![image alt text](./docs/image_21.png)
 
-**A:** Choose between algorithm types (e.g., AMRA, SPF), which dictate how routing occurs in the network and/or how optical resources are allocated.
+**A:** Turns on/off multiple simulations 
 
-**B:** Choose between traffic generator types (e.g., No backup, Shared backup, and Dedicated backup).  This is the ability for a network to recover from resource failures.
+**B:** Choose between algorithm types (e.g., AMRA, SPF), which dictate how routing occurs in the network and/or how optical resources are allocated.
 
-**C:** Erlang number input determines the network traffic intensity
+**C:** Choose between traffic generator types (e.g., No backup, Shared backup, and Dedicated backup).  This is the ability for a network to recover from resource failures.
 
-**D:** Seed number input is used by a random number generator to make the same simulation multiple times (produces same result) 
+**D:** Erlang number input determines the network traffic intensity.
 
-**E:** Alpha number input determines the probability of link failure 
+**E:** Seed number input is used by a random number generator to make the same simulation multiple times (produces same result).
 
-**F:** Demands count number input is the number of demands to be simulated in the network
+**F:** Alpha number input determines the probability of link failure.
 
-**G:** Allows replica (data center) to be preserved for backup traffic - it means that primary and backup traffic will have the same replica.
+**G:** Demands count number input is the number of demands to be simulated in the network.
 
-**H:** Allows modulation to be changed dynamically in simulation
+**H:** Allows modulation to be changed dynamically in simulation.
 
-**I:** Modulation types to be used during simulation
+**I:** Modulation types to be used during simulation.
 
-**J:** Number of candidate paths for each request to reach a destination
+**J:** Number of candidate paths for each request to reach a destination.
 
-**K:** Begins simulation
+**K:** Allows you to send a email notification when your simulation is done as well as any errors that occurred.
 
-**L:** Pause simulation or Resumes simulation (if paused)
+**L:** Begins simulation.
 
-**M:** Cancels running simulation or reloads simulation if not running
+**M:** Pauses and restarts the simulation.
+
+**N:** Cancels running simulation or reloads simulation if not running.
+
+**O:** Resets the topology to the initial state (in case the topology becomes bugged).
+
+## 3b)  Simulation Settings Controller (Multiple Simulations)
+![image alt text](./docs/image_23.png)
+
+**A:** Turns on/off multiple simulations 
+
+**B:** Choose between algorithm types (e.g., AMRA, SPF), which dictate how routing occurs in the network and/or how optical resources are allocated.
+
+**C:** Choose between traffic generator types (e.g., No backup, Shared backup, and Dedicated backup).  This is the ability for a network to recover from resource failures.
+
+**D:** Amount of simulations run at each erlang (e.g. The amount of simulations run at each step specified in the field below).
+
+**E:** The steps between the given erlang range (e.g. If you have a range of 100 - 150 and the steps you input is 25, simulations would run at 100, 125, and 150).
+
+**F:** The upper (left) and lower (right) limit of the erlang range.
+
+**G:** Alpha number input determines the probability of link failure.
+
+**H:** Demands count number input is the number of demands to be simulated in the network.
+
+**I:** Modulation types to be used during simulation.
+
+**J:** Allows modulation to be changed dynamically in simulation.
+
+**K:** Number of candidate paths for each request to reach a destination.
+
+**L:** Allows you to send a email notification when your simulation is done as well as any errors that occurred.
+
+**M:** Begins simulation.
+
+**N:** Pauses and restarts the simulation.
+
+**O:** Cancels running simulation or reloads simulation if not running.
+
+**P:** Resets the topology to the initial state (in case the topology becomes bugged).
+
 
 ## 4) Live Info Pane
 ![image alt text](./docs/image_22.png)
@@ -153,9 +202,29 @@ A link would display the the length of the link, the node it originates from/the
 
 If neither node or link is clicked on it will display current summary statistics of blocking percentages for regenerators, link and blocked spectrum.
 
-## 5) Full Summary Pane
+## 5) Result Generation Pane
+![image alt text](./docs/image_24.png)
 
-This section is currently under development.  The idea for this area is to hold aggregated graphical information after multiple simulations are run.
+A: Title of the PDF.
+
+B: The X-Axis Variable
+
+C: The Y-Axis Variable
+
+D: The algorithms and variables to display on graph
+
+E: File path to the folder where the generated pdf will be saved. 
+
+F: Select if you want to open folder after download.
+
+G: Click to preview the PDF.
+
+H: Click the download button to download the PDF to the specified file path.
+
+I: Click to reset to the default parameters.
+
+J: Click to view the generated results data.
+
 
 ## 6) Network topology with nodes and links
 
@@ -170,7 +239,7 @@ This section is currently under development.  The idea for this area is to hold 
     <td>A</td>
     <td>Standard node (indicated by white outline)  
 
-Number refers to node number (e.g., node_<num>) in network topology  
+
 
 The thicker colored line in the node indicates regenerator usage <br />
 Green: Has more than 50 regenerators remaining<br />
@@ -197,6 +266,10 @@ Red: More than 80% link utilization</td>
   <tr>
     <td>E</td>
     <td>International and data center node (indicated by a blue and a grey outline)</td>
+  </tr>
+  <tr>
+  <td>F</td>
+  <td>Zoom slider that lets you zoom in and out of the map</td>
   </tr>
 </table>
 
@@ -243,7 +316,7 @@ Figure D: Console showing fully loaded project with calculated paths
 
 7. Type **Number of candidate paths.**
 
-2. Press **Start Simulation**.
+2. Press the **PLAY** button.
 
 ![image alt text](./docs/image_8.png)
 
@@ -257,7 +330,7 @@ Figure B: Network simulation in progress showing link and regenerator usage
 
 ## 1) Simulation in progress
 
-1. In **Simulation Settings**, click **Cancel Simulation**
+1. In **Simulation Settings**, click the **STOP** button
 
 2. Click **OK** 
 
@@ -267,33 +340,37 @@ Figure A: Canceling the simulation while it’s running
 
 ## 2) Simulation Finished
 
-1. In **Simulation Settings**, click **Clear Simulation**
-
-2. Click **OK** (or **Cancel** to resume)
-
-3. Wait for network topology to finish loading and calculating available paths.
+1. Wait for network topology to finish loading and calculating available paths (this happens automatically after a simulation is done).
 
 ![image alt text](./docs/image_11.png)
 
-Figure B: Clearing the simulation when it’s finished, simulation results shown in the console
+Figure B: Waiting for the simulation when it’s finished, simulation results shown in the console
 
 ## 3)  Restarting a simulation after cancel/clear
 
-Traffic Generator will be reset after cancel/clear simulation. Please remember to Set Generators Traffic.
-
-1. In **Simulation Settings**, click **Traffic Generator** and select **No Backup** or **Dedicated Backup** or **Shared Backup**
-
-2. Click **OK**
+2. Click the **PLAY** button
 
 ![image alt text](./docs/image_12.png)
 
-Figure C: Setting Traffic Generator after cancel/clear and map load
+Figure C: Restarting the simulation
 
-# VII.  To see live simulation statistics
+# VIII.  To generate a PDF
+
+1. In **Simulation Settings** run multiple simulations.
+
+2. Fill out the form with your desired **PDF Title**, **X-Axis Title** and **Y-Axis Title**
+
+3. Select the algorithms and variables to display on your graph.
+
+4. Choose the folder where you want to download your PDF.
+
+5. Click **Download PDF** to download it into the specified folder.
+
+# VIII.  To see live simulation statistics
 
 ## 1.0)  Pause Live Simulation
 
-1. In **Simulation Settings**, press **Pause Simulation**
+1. In **Simulation Settings**, press the **Pause** button
 
 2. Live Info panel will automatically open
 
@@ -335,13 +412,14 @@ Figure D: Live Info panel populated with the current link information
 
 1. Click **Simulation Settings** while paused
 
-2. Click **Resume Simulation**
+2. Click **Resume** button
 
 ![image alt text](./docs/image_17.png)
 
-Figure E: Simulation Settings contains the Resume Simulation button
+Figure E: Simulation Settings contains the Resume button
 
-# VIII.  Frequently Asked Questions
+
+# IX.  Frequently Asked Questions
 
 ## 1)  Why do I get an exception on updating the network UI?
 
