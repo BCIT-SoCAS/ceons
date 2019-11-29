@@ -310,7 +310,7 @@ Figure B: Network simulation in progress showing link and regenerator usage
 
 ## 1) Simulation in progress
 
-1. In **Simulation Settings**, click **Cancel Simulation**
+1. In **Simulation Settings**, click the **STOP** button
 
 2. Click **OK** 
 
@@ -320,33 +320,25 @@ Figure A: Canceling the simulation while it’s running
 
 ## 2) Simulation Finished
 
-1. In **Simulation Settings**, click **Clear Simulation**
-
-2. Click **OK** (or **Cancel** to resume)
-
-3. Wait for network topology to finish loading and calculating available paths.
+1. Wait for network topology to finish loading and calculating available paths (this happens automatically after a simulation is done).
 
 ![image alt text](./docs/image_11.png)
 
-Figure B: Clearing the simulation when it’s finished, simulation results shown in the console
+Figure B: Waiting for the simulation when it’s finished, simulation results shown in the console
 
 ## 3)  Restarting a simulation after cancel/clear
 
-Traffic Generator will be reset after cancel/clear simulation. Please remember to Set Generators Traffic.
-
-1. In **Simulation Settings**, click **Traffic Generator** and select **No Backup** or **Dedicated Backup** or **Shared Backup**
-
-2. Click **OK**
+2. Click the **PLAY** button
 
 ![image alt text](./docs/image_12.png)
 
-Figure C: Setting Traffic Generator after cancel/clear and map load
+Figure C: Unpausing the simulation
 
 # VII.  To see live simulation statistics
 
 ## 1.0)  Pause Live Simulation
 
-1. In **Simulation Settings**, press **Pause Simulation**
+1. In **Simulation Settings**, press the **Pause** button
 
 2. Live Info panel will automatically open
 
