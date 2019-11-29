@@ -145,13 +145,15 @@ Upon setup completion, you will be able to run the simulator with the following 
 
 **J:** Number of candidate paths for each request to reach a destination.
 
-**K:** Begins simulation.
+**K:** Allows you to send a email notification when your simulation is done as well as any errors that occurred.
 
-**L:** Pauses simulation.
+**L:** Begins simulation.
 
-**M:** Cancels running simulation or reloads simulation if not running.
+**M:** Pauses simulation.
 
-**N:** Resets the topology to the initial state (in case the topology becomes bugged).
+**N:** Cancels running simulation or reloads simulation if not running.
+
+**O:** Resets the topology to the initial state (in case the topology becomes bugged).
 
 ## 3b)  Simulation Settings Controller (Multiple Simulations)
 ![image alt text](./docs/image_23.png)
@@ -178,13 +180,15 @@ Upon setup completion, you will be able to run the simulator with the following 
 
 **K:** Number of candidate paths for each request to reach a destination.
 
-**L:** Begins simulation.
+**L:** Allows you to send a email notification when your simulation is done as well as any errors that occurred.
 
-**M:** Pauses simulation.
+**M:** Begins simulation.
 
-**N:** Cancels running simulation or reloads simulation if not running.
+**N:** Pauses simulation.
 
-**O:** Resets the topology to the initial state (in case the topology becomes bugged).
+**O:** Cancels running simulation or reloads simulation if not running.
+
+**P:** Resets the topology to the initial state (in case the topology becomes bugged).
 
 
 ## 4) Live Info Pane
