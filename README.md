@@ -102,7 +102,7 @@ Upon setup completion, you will be able to run the simulator with the following 
 </table>
 
 
-## 2) Network Settings Controller
+## 2) General Settings Controller
 ![image alt text](./docs/image_20.png)
 
 **A:** Create topology button that opens up a dialog window where a user can enter a google maps API key.  Once entered the user can generate a network topology to be loaded.
@@ -121,34 +121,70 @@ Upon setup completion, you will be able to run the simulator with the following 
 
 **E:** Language dropdown allows you to choose the language that the simulator will be displayed in.
 
-## 3) Simulation Settings Controller
+## 3a) Simulation Settings Controller (Single Simulation)
 ![image alt text](./docs/image_21.png)
 
-**A:** Choose between algorithm types (e.g., AMRA, SPF), which dictate how routing occurs in the network and/or how optical resources are allocated.
+**A:** Turns on/off multiple simulations 
 
-**B:** Choose between traffic generator types (e.g., No backup, Shared backup, and Dedicated backup).  This is the ability for a network to recover from resource failures.
+**B:** Choose between algorithm types (e.g., AMRA, SPF), which dictate how routing occurs in the network and/or how optical resources are allocated.
 
-**C:** Erlang number input determines the network traffic intensity
+**C:** Choose between traffic generator types (e.g., No backup, Shared backup, and Dedicated backup).  This is the ability for a network to recover from resource failures.
 
-**D:** Seed number input is used by a random number generator to make the same simulation multiple times (produces same result) 
+**D:** Erlang number input determines the network traffic intensity
 
-**E:** Alpha number input determines the probability of link failure 
+**E:** Seed number input is used by a random number generator to make the same simulation multiple times (produces same result) 
 
-**F:** Demands count number input is the number of demands to be simulated in the network
+**F:** Alpha number input determines the probability of link failure 
 
-**G:** Allows replica (data center) to be preserved for backup traffic - it means that primary and backup traffic will have the same replica.
+**G:** Demands count number input is the number of demands to be simulated in the network
 
 **H:** Allows modulation to be changed dynamically in simulation
 
-**I:** Modulation types to be used during simulation
+**I:** Modulation types to be used during simulation 
 
 **J:** Number of candidate paths for each request to reach a destination
 
 **K:** Begins simulation
 
-**L:** Pause simulation or Resumes simulation (if paused)
+**L:** Pauses simulation
 
 **M:** Cancels running simulation or reloads simulation if not running
+
+**N:** Resets the topology to the initial state (in case the topology becomes bugged)
+
+## 3b)  Simulation Settings Controller (Multiple Simulations)
+![image alt text](./docs/image_23.png)
+
+**A:** Turns on/off multiple simulations 
+
+**B:** Choose between algorithm types (e.g., AMRA, SPF), which dictate how routing occurs in the network and/or how optical resources are allocated.
+
+**C:** Choose between traffic generator types (e.g., No backup, Shared backup, and Dedicated backup).  This is the ability for a network to recover from resource failures.
+
+**D:** Amount of simulations run at each erlang
+
+**E:** The steps between the given erlang range
+
+**F:** The upper (left) and lower (right) limit of the erlang range
+
+**G:** Alpha number input determines the probability of link failure 
+
+**H:** Demands count number input is the number of demands to be simulated in the network
+
+**I:** Modulation types to be used during simulation
+
+**J:** Allows modulation to be changed dynamically in simulation
+
+**K:** Number of candidate paths for each request to reach a destination
+
+**L:** Begins simulation
+
+**M:** Pauses simulation
+
+**N:** Cancels running simulation or reloads simulation if not running
+
+**O:** Resets the topology to the initial state (in case the topology becomes bugged)
+
 
 ## 4) Live Info Pane
 ![image alt text](./docs/image_22.png)
