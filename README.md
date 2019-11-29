@@ -130,27 +130,27 @@ Upon setup completion, you will be able to run the simulator with the following 
 
 **C:** Choose between traffic generator types (e.g., No backup, Shared backup, and Dedicated backup).  This is the ability for a network to recover from resource failures.
 
-**D:** Erlang number input determines the network traffic intensity
+**D:** Erlang number input determines the network traffic intensity.
 
-**E:** Seed number input is used by a random number generator to make the same simulation multiple times (produces same result) 
+**E:** Seed number input is used by a random number generator to make the same simulation multiple times (produces same result).
 
-**F:** Alpha number input determines the probability of link failure 
+**F:** Alpha number input determines the probability of link failure.
 
-**G:** Demands count number input is the number of demands to be simulated in the network
+**G:** Demands count number input is the number of demands to be simulated in the network.
 
-**H:** Allows modulation to be changed dynamically in simulation
+**H:** Allows modulation to be changed dynamically in simulation.
 
-**I:** Modulation types to be used during simulation 
+**I:** Modulation types to be used during simulation.
 
-**J:** Number of candidate paths for each request to reach a destination
+**J:** Number of candidate paths for each request to reach a destination.
 
-**K:** Begins simulation
+**K:** Begins simulation.
 
-**L:** Pauses simulation
+**L:** Pauses simulation.
 
-**M:** Cancels running simulation or reloads simulation if not running
+**M:** Cancels running simulation or reloads simulation if not running.
 
-**N:** Resets the topology to the initial state (in case the topology becomes bugged)
+**N:** Resets the topology to the initial state (in case the topology becomes bugged).
 
 ## 3b)  Simulation Settings Controller (Multiple Simulations)
 ![image alt text](./docs/image_23.png)
@@ -161,29 +161,29 @@ Upon setup completion, you will be able to run the simulator with the following 
 
 **C:** Choose between traffic generator types (e.g., No backup, Shared backup, and Dedicated backup).  This is the ability for a network to recover from resource failures.
 
-**D:** Amount of simulations run at each erlang
+**D:** Amount of simulations run at each erlang (e.g. The amount of simulations run at each step specified in the field below).
 
-**E:** The steps between the given erlang range
+**E:** The steps between the given erlang range (e.g. If you have a range of 100 - 150 and the steps you input is 25, simulations would run at 100, 125, and 150).
 
-**F:** The upper (left) and lower (right) limit of the erlang range
+**F:** The upper (left) and lower (right) limit of the erlang range.
 
-**G:** Alpha number input determines the probability of link failure 
+**G:** Alpha number input determines the probability of link failure.
 
-**H:** Demands count number input is the number of demands to be simulated in the network
+**H:** Demands count number input is the number of demands to be simulated in the network.
 
-**I:** Modulation types to be used during simulation
+**I:** Modulation types to be used during simulation.
 
-**J:** Allows modulation to be changed dynamically in simulation
+**J:** Allows modulation to be changed dynamically in simulation.
 
-**K:** Number of candidate paths for each request to reach a destination
+**K:** Number of candidate paths for each request to reach a destination.
 
-**L:** Begins simulation
+**L:** Begins simulation.
 
-**M:** Pauses simulation
+**M:** Pauses simulation.
 
-**N:** Cancels running simulation or reloads simulation if not running
+**N:** Cancels running simulation or reloads simulation if not running.
 
-**O:** Resets the topology to the initial state (in case the topology becomes bugged)
+**O:** Resets the topology to the initial state (in case the topology becomes bugged).
 
 
 ## 4) Live Info Pane
