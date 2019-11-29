@@ -421,15 +421,7 @@ Figure E: Simulation Settings contains the Resume button
 
 # IX.  Frequently Asked Questions
 
-## 1)  Why do I get an exception on updating the network UI?
-
-![image alt text](./docs/image_18.png)
-
-Figure A: Console displays a logged message about the network topology not being updated
-
-Answer: Sometimes, the canvas is not able to update (redraw) the entire topology graphically in time before the next update to the canvas occurs.  An exception is thrown to the console to let the user know if the network topology is not properly updated or completely drawn.  Normally this is not an issue because the updates happen fast enough so the user doesn’t notice.
-
-## 2) Different best paths count between each project load?
+## 1) Different best paths count between each project load?
 
 ![image alt text](./docs/image_19.png)
 
@@ -437,7 +429,6 @@ Figure B: Console display different max best paths count from loading the same t
 
 Answer: The code to calculate the max best paths is dependent on the utilization of CPU/RAM.  If it has low utilization of CPU/RAM the path count will be more accurate;  However, if the application detects a high utilization then it will try to estimate the best paths to reduce loading time.  This means we will generally try to find a good balance between loading speed and accurate path determination.  Overall, this does not have an effect on the simulation.
 
-## 3) Why does node and link color change during simulation?
+## 2) Why does node and link color change during simulation?
 
 Answer: In general, the color for node and link represents the resource utilization.  Green means there are plenty of resources left and red means there is a sparse amount of resources.  Any gradient of colors in between (i.e., yellow, orange) is indicative of moderate resource utilization.  Refer to content chapter III, section 6) if you would like a detailed break down of the numbers.  Otherwise, you can click on the node/link while the simulation is paused to analyze how much resource is left.
-
