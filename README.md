@@ -149,7 +149,7 @@ Upon setup completion, you will be able to run the simulator with the following 
 
 **L:** Begins simulation.
 
-**M:** Pauses simulation.
+**M:** Pauses and restarts the simulation.
 
 **N:** Cancels running simulation or reloads simulation if not running.
 
@@ -184,7 +184,7 @@ Upon setup completion, you will be able to run the simulator with the following 
 
 **M:** Begins simulation.
 
-**N:** Pauses simulation.
+**N:** Pauses and restarts the simulation.
 
 **O:** Cancels running simulation or reloads simulation if not running.
 
