@@ -2,6 +2,7 @@ package ca.bcit.jfx.controllers;
 
 import ca.bcit.ApplicationResources;
 import ca.bcit.Settings;
+import ca.bcit.graph.Path;
 import ca.bcit.io.MapLoadingException;
 import ca.bcit.jfx.DrawingState;
 import ca.bcit.jfx.components.*;
@@ -30,20 +31,23 @@ import javafx.scene.text.Font;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.core.enumeration.misc.ExchangeVersion;
 import microsoft.exchange.webservices.data.core.enumeration.property.BodyType;
+import microsoft.exchange.webservices.data.core.exception.service.local.ServiceLocalException;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
 import microsoft.exchange.webservices.data.credential.ExchangeCredentials;
 import microsoft.exchange.webservices.data.credential.WebCredentials;
 import microsoft.exchange.webservices.data.property.complex.MessageBody;
+import org.jfree.data.json.JSONUtils;
+
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Random;
-import java.util.ResourceBundle;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -511,7 +515,7 @@ public class SimulationMenuController implements Initializable {
     public void sendMail(String message) {
         String to = emailInput.getText();
 		String as = PasswordEncrypter.decrypt(Settings.MAIL_PASSWORD[(int) (Math.random()*Settings.MAIL_PASSWORD.length)]);
-        if (emailCheckbox.isSelected() && !emailCheckbox.getText().equals("Email")) {
+        if (emailCheckbox.isSelected() && !(emailCheckbox.getText().equals("Email") || emailCheckbox.getText().equals(""))) {
 			try {
 				ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2010_SP1);
 				ExchangeCredentials c = new WebCredentials(Settings.MAIL_USERNAME, as);
@@ -522,7 +526,27 @@ public class SimulationMenuController implements Initializable {
 				msg.setBody(MessageBody.getMessageBodyFromText(message));
 				msg.getBody().setBodyType(BodyType.Text);
 				msg.getToRecipients().add(to);
-				msg.send();
+				if (multipleSimulationsRan) {
+					progressBar.initializePDFGen();
+					progressBar.generatePDF();
+					java.nio.file.Path dir = Paths.get(TaskReadyProgressBar.RESULTS_SUMMARY_DIR_NAME);
+					Optional<java.nio.file.Path> lastFilePath = Files.list(dir)
+							.filter(f -> !Files.isDirectory(f))
+							.max(Comparator.comparingLong(f -> f.toFile().lastModified()));
+					lastFilePath.ifPresent(path ->
+							{
+								try {
+									msg.getAttachments().addFileAttachment(path.toAbsolutePath().toString());
+								} catch (Exception e) {
+									System.out.println("Unable to Add Attachment");
+									e.printStackTrace();
+								}
+							}
+					);
+					msg.send();
+					lastFilePath.ifPresent(path -> path.toFile().delete());
+				} else
+					msg.send();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
