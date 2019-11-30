@@ -183,13 +183,13 @@ public class TaskReadyProgressBar extends StackPane {
         task.setOnSucceeded(e -> {
             unbind();
             controller.setRunning(false);
+            controller.setMultipleSimulationsRan(true);
             controller.sendMail( LocaleUtils.translate("hello") + "\n\n" +
                     LocaleUtils.translate("good_news") + "\n\n" +
                     TaskReadyProgressBar.getResultsDataFileNameList() + "\n\n" +
                     LocaleUtils.translate("refer_to_docs") + " https://www.overleaf.com/read/fhttvdyjcngb.\n\n\n" +
                     LocaleUtils.translate("thank_you") + "\n\n" +
                     LocaleUtils.translate("ceons_team"));
-            controller.setMultipleSimulationsRan(true);
             runMultipleSimulationService.shutdown();
             try {
                 if (!runMultipleSimulationService.awaitTermination(2500, TimeUnit.MILLISECONDS)) {
@@ -201,6 +201,7 @@ public class TaskReadyProgressBar extends StackPane {
         });
         task.setOnFailed(e -> {
             controller.setRunning(false);
+            controller.setMultipleSimulationsRan(false);
             controller.sendMail( LocaleUtils.translate("hello") + "\n\n" +
                     LocaleUtils.translate("good_news") + "\n\n" +
                     TaskReadyProgressBar.getResultsDataFileNameList() + "\n\n" +
@@ -209,7 +210,6 @@ public class TaskReadyProgressBar extends StackPane {
                     LocaleUtils.translate("refer_to_docs") + " https://www.overleaf.com/read/fhttvdyjcngb.\n\n\n" +
                     LocaleUtils.translate("thank_you") + "\n\n" +
                     LocaleUtils.translate("ceons_team"));
-            controller.setMultipleSimulationsRan(false);
             unbind();
             Logger.debug(e.getSource().toString() + " " + LocaleUtils.translate("failed") + "!");
         });
@@ -229,6 +229,7 @@ public class TaskReadyProgressBar extends StackPane {
         XLabel = LocaleUtils.translate("erlang");
         YLabel = LocaleUtils.translate("blocked_volume_percentage");
         displayList = new boolean[]{true,true,true,true};
+        excludedAlgos = new ArrayList<>();
     }
 
     public void generatePDF() {
