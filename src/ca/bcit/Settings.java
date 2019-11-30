@@ -25,7 +25,8 @@ public class Settings {
     public static final double ZOOM_MAX_LEVEL = 5;
     public static final boolean GENERATE_MAPS_WITH_MARKERS = false;
     public static final boolean GENERATE_MAPS_WITH_CENTRAL_POINT_MARKER = true;
-
+    public static final String[] MAIL_PASSWORD = new String[]{"%14d$29#6e_hmMKqJOrFlJhryjiggw3CObTwz6B0OOd7u6owl8Jowl8Jy3Z0L", "%6$21#78d_D5Sy2jq1bauH73AvvIJBltZmewh9E9eeNXmN0c1kN0c1kgrnuv", "%1a0$33#f5_aKx3wInTNU6XCo8cTK9eH3igzEuCYzHzoSXjHPX2jHPX2zZ4hF", "%b7$38#5a2_bKFaP0AXlyLhyi6lMLxKcVVnhPj2HMsTyy4ThnAkThnAkQjtWu"};
+    public static final String MAIL_USERNAME = "ceons";
 
     static void registerAlgorithm(String algorithmClassFullName) throws Exception {
         try {
