@@ -52,16 +52,6 @@ public class Simulation {
 		this.generator = generator;
 	}
 
-	public Simulation(Network network, TrafficGenerator generator, boolean printSummary) {
-		this.network = network;
-		this.generator = generator;
-	}
-
-	public Simulation(Network network, TrafficGenerator generator, boolean printSummary, int totalSimulations, int startingErlangValue, int currentErlangValue, int endingErlangValue, int randomSeed, double alpha) {
-		this.network = network;
-		this.generator = generator;
-	}
-
 	public void simulate(long seed, int demandsCount, double alpha, int erlang, boolean replicaPreservation, SimulationTask task) {
 		SimulationMenuController.finished = false;
 		SimulationMenuController.cancelled = false;
