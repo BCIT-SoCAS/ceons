@@ -3,11 +3,11 @@ package ca.bcit.net.algo;
 import ca.bcit.net.*;
 import ca.bcit.net.demand.Demand;
 import ca.bcit.net.demand.DemandAllocationResult;
+import ca.bcit.net.spectrum.NoSpectrumAvailableException;
 
-import java.util.Collections;
 import java.util.List;
 
-public class AMRA implements IRMSAAlgorithm{
+public class AMRA extends BaseRMSAAlgorithm implements IRMSAAlgorithm{
 	public String getKey(){
 		return "AMRA";
 	};
@@ -22,59 +22,33 @@ public class AMRA implements IRMSAAlgorithm{
 
 	@Override
 	public DemandAllocationResult allocateDemand(Demand demand, Network network) {
-		int volume = (int) Math.ceil(demand.getVolume() / 10) - 1;
-
-		List<PartedPath> candidatePaths = demand.getCandidatePaths(false, network);
-		if (candidatePaths.isEmpty())
-			return DemandAllocationResult.NO_SPECTRUM;
-
-		candidatePaths = applyMetrics(network, volume, candidatePaths);
-
-		if (candidatePaths.isEmpty())
-			return DemandAllocationResult.NO_REGENERATORS;
-
-		boolean workingPathSuccess = false;
-
 		try {
-			for (PartedPath path : candidatePaths)
-				if (demand.allocate(network, path)) {
-					workingPathSuccess = true;
-					break;
-				}
+			int volume = (int) Math.ceil(demand.getVolume() / 10.0) - 1;
+			List<PartedPath> candidatePaths = demand.getCandidatePaths(false, network);
 
-		}
-		catch (NetworkException storage) {
-			workingPathSuccess = false;
-			return DemandAllocationResult.NO_REGENERATORS;
-		}
-		if (!workingPathSuccess)
-			return DemandAllocationResult.NO_SPECTRUM;
+			rankCandidatePaths(network, volume, candidatePaths);
 
-		try {
-			if (demand.allocateBackup()) {
-				volume = (int) Math.ceil(demand.getSqueezedVolume() / 10) - 1;
+			allocateWorkingPath(demand, candidatePaths);
 
-				candidatePaths = applyMetrics(network, volume, demand.getCandidatePaths(true, network));
+			if (shouldAllocateBackupPath(demand, candidatePaths)) {
+				int backupVolume = (int) Math.ceil(demand.getSqueezedVolume() / 10.0) - 1;
 
-				if (candidatePaths.isEmpty())
-					return new DemandAllocationResult(
-							demand.getWorkingPath());
-				for (PartedPath path : candidatePaths)
-					if (demand.allocate(network, path))
-						return new DemandAllocationResult(demand.getWorkingPath(), demand.getBackupPath());
+				rankCandidatePaths(network, backupVolume, demand.getCandidatePaths(true, network));
 
-				return new DemandAllocationResult(demand.getWorkingPath());
+				allocateBackupPath(demand, candidatePaths);
 			}
+
+			return new DemandAllocationResult(demand);
 		}
-		catch (NetworkException e) {
-			workingPathSuccess = false;
+		catch (NoSpectrumAvailableException e) {
+			return DemandAllocationResult.NO_SPECTRUM;
+		}
+		catch (NoRegeneratorsAvailableException | NetworkException e) {
 			return DemandAllocationResult.NO_REGENERATORS;
 		}
-
-		return new DemandAllocationResult(demand.getWorkingPath());
 	}
 
-	private static List<PartedPath> applyMetrics(Network network, int volume, List<PartedPath> candidatePaths) {
+	protected void applyMetricsToCandidatePaths(Network network, int volume, List<PartedPath> candidatePaths) {
 		pathLoop: for (PartedPath path : candidatePaths) {
 			path.mergeRegeneratorlessParts();
 
@@ -99,42 +73,37 @@ public class AMRA implements IRMSAAlgorithm{
 			}
 
 			// Update metrics
-			path.setMetric(
-					network.getRegeneratorMetricValue()
-							* (path.getNeededRegeneratorsCount())
-							+ path.getMetric());
+			int increment = network.getRegeneratorMetricValue() * path.getNeededRegeneratorsCount();
+			path.setMetric(path.getMetric() + increment);
 		}
-		Collections.sort(candidatePaths);
+	}
+
+	protected void filterCandidatePaths(List<PartedPath> candidatePaths) {
 		for (int i = 0; i < candidatePaths.size(); i++)
 			if (candidatePaths.get(i).getMetric() < 0) {
 				candidatePaths.remove(i);
 				i--;
 			}
-
-		return candidatePaths;
 	}
 
 	private static int calculateModulationMetric(Network network, PathPart part, Modulation modulation) {
 		double slicesOccupationPercentage = part.getOccupiedSlicesPercentage() * 100;
-		int slicesOccupationMetric;
 
-		if (slicesOccupationPercentage <= 90)
-			if (slicesOccupationPercentage <= 75)
-				if (slicesOccupationPercentage <= 60)
-					if (slicesOccupationPercentage <= 40)
-						if (slicesOccupationPercentage <= 20)
-							slicesOccupationMetric = 0;
-						else
-							slicesOccupationMetric = 1;
-					else
-						slicesOccupationMetric = 2;
-				else
-					slicesOccupationMetric = 3;
-			else
-				slicesOccupationMetric = 4;
-		else
-			slicesOccupationMetric = 5;
+		return network.getDynamicModulationMetric(modulation, getSlicesOccupationMetric(slicesOccupationPercentage));
+	}
 
-		return network.getDynamicModulationMetric(modulation, slicesOccupationMetric);
+	private static int getSlicesOccupationMetric(double slicesOccupationPercentage) {
+		if (slicesOccupationPercentage > 90)
+			return 5;
+		else if (slicesOccupationPercentage > 75)
+			return 4;
+		else if (slicesOccupationPercentage > 60)
+			return 3;
+		else if (slicesOccupationPercentage > 40)
+			return 2;
+		else if (slicesOccupationPercentage > 20)
+			return 1;
+
+		return 0;
 	}
 }

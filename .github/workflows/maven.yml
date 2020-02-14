@@ -19,14 +19,14 @@ jobs:
         java-package: jdk+fx
     - name: Build with Maven
       run: mvn -B package --file pom.xml
-    - name: Send email
-      uses: dawidd6/action-send-mail@v1.0.0
-      with:
-        server_address: smtp.gmail.com
-        server_port: 465
-        username: ${{secrets.MAIL_USERNAME}}
-        password: ${{secrets.MAIL_PASSWORD}}
-        subject: New build for CEONS
-        body: Build job of ${{github.repository}} completed successfully!
-        to: ceonsacit3900@gmail.com,maibin@bcit.ca
-        from: ceonsacit3900@gmail.com
+    #- name: Send email
+    #  uses: dawidd6/action-send-mail@v1.0.0
+    #  with:
+    #    server_address: smtp.gmail.com
+    #    server_port: 465
+    #    username: ${{secrets.MAIL_USERNAME}}
+    #    password: ${{secrets.MAIL_PASSWORD}}
+    #    subject: New build for CEONS
+    #    body: Build job of ${{github.repository}} completed successfully!
+    #    to: ceonsacit3900@gmail.com,maibin@bcit.ca
+    #    from: ceonsacit3900@gmail.com
