@@ -109,7 +109,8 @@ public abstract class Demand {
 	}
 	
 	public void deallocate() {
-		workingPath.deallocate(this);
+		if (workingPath != null)
+			workingPath.deallocate(this);
 
 		if (backupPath != null)
 			backupPath.deallocate(this);
