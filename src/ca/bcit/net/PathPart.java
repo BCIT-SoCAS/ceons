@@ -1,6 +1,7 @@
 package ca.bcit.net;
 
 import ca.bcit.net.spectrum.AllocatableSpectrumSegment;
+import ca.bcit.net.spectrum.Core;
 import ca.bcit.net.spectrum.Spectrum;
 
 import java.util.ArrayList;
@@ -61,7 +62,7 @@ public class PathPart {
 	}
 	
 	public Spectrum getSlices() {
-		Spectrum result = new Spectrum(NetworkLink.NUMBER_OF_SLICES);
+		Spectrum result = new Spectrum(Core.NUMBER_OF_SLICES);
 		for (Spectrum slices : this.spectra)
 			result = result.merge(slices);
 		return result;

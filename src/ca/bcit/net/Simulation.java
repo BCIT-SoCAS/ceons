@@ -14,6 +14,7 @@ import ca.bcit.net.demand.AnycastDemand;
 import ca.bcit.net.demand.Demand;
 import ca.bcit.net.demand.DemandAllocationResult;
 import ca.bcit.net.demand.generator.TrafficGenerator;
+import ca.bcit.net.spectrum.Core;
 import ca.bcit.net.spectrum.Spectrum;
 import ca.bcit.utils.LocaleUtils;
 import com.google.gson.Gson;
@@ -129,6 +130,15 @@ public class Simulation {
 		SimulationMenuController simulationMenuController = fxmlLoader.<SimulationMenuController>getController();
 		if (simulationMenuController != null)
 			simulationMenuController.disableClearSimulationButton();
+
+		Logger.info("spectrumBlockedVolume");
+		Logger.info(""+ spectrumBlockedVolume);
+		Logger.info("regeneratorsBlockedVolume");
+		Logger.info(""+ regeneratorsBlockedVolume);
+		Logger.info("linkFailureBlockedVolume");
+		Logger.info(""+ linkFailureBlockedVolume);
+		Logger.info("totalVolume");
+		Logger.info(""+ totalVolume);
 
 		Logger.info(LocaleUtils.translate("blocked_spectrum_label") + " " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
 		Logger.info(LocaleUtils.translate("blocked_regenerators_label") + " " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
@@ -317,16 +327,16 @@ public class Simulation {
 		mainWindowController.spectrumBlockedVolume = 0;
 		mainWindowController.regeneratorsBlockedVolume = 0;
 		mainWindowController.linkFailureBlockedVolume = 0;
-		for(NetworkNode n : network.getNodes()){
+		for (NetworkNode n : network.getNodes()) {
 			n.clearOccupied();
-			for(NetworkNode n2 : network.getNodes()){
-				if(network.containsLink(n, n2)){
+			for (NetworkNode n2 : network.getNodes())
+				if (network.containsLink(n, n2)) {
 					NetworkLink networkLink = network.getLink(n, n2);
-					Spectrum spectrum = network.getLinkSlices(n, n2);
-					networkLink.slicesUp = new Spectrum(NetworkLink.NUMBER_OF_SLICES);
-					networkLink.slicesDown = new Spectrum(NetworkLink.NUMBER_OF_SLICES);
+					for (Core core: networkLink.getCores()) {
+						core.slicesUp = new Spectrum(Core.NUMBER_OF_SLICES);
+						core.slicesDown = new Spectrum(Core.NUMBER_OF_SLICES);
+					}
 				}
-			}
 		}
 	}
 
@@ -340,30 +350,35 @@ public class Simulation {
 
 		if (result.workingPath == null)
 			switch (result.type) {
-			case NO_REGENERATORS:
-				regeneratorsBlockedVolume += demand.getVolume();
-				ResizableCanvas.getParentController().regeneratorsBlockedVolume += demand.getVolume();
-				break;
-			case NO_SPECTRUM:
-				spectrumBlockedVolume += demand.getVolume();
-				ResizableCanvas.getParentController().spectrumBlockedVolume += demand.getVolume();
-				break;
-			default:
-				break;
+				case NO_REGENERATORS:
+					regeneratorsBlockedVolume += demand.getVolume();
+					ResizableCanvas.getParentController().regeneratorsBlockedVolume += demand.getVolume();
+					break;
+				case NO_SPECTRUM:
+					spectrumBlockedVolume += demand.getVolume();
+					ResizableCanvas.getParentController().spectrumBlockedVolume += demand.getVolume();
+					break;
+				default:
+					break;
 			}
 		else {
 			allocations++;
 			regsPerAllocation += demand.getWorkingPath().getPartsCount() - 1;
+
 			if (demand.getBackupPath() != null)
 				regsPerAllocation += demand.getBackupPath().getPartsCount() - 1;
+
 			double modulationsUsage[] = new double[6];
+
 			for (PathPart part : result.workingPath)
 				modulationsUsage[part.getModulation().ordinal()]++;
+
 			for (int i = 0; i < 6; i++) {
 				modulationsUsage[i] /= result.workingPath.getPartsCount();
 				this.modulationsUsage[i] += modulationsUsage[i];
 			}
 		}
+
 		totalVolume += demand.getVolume();
 		ResizableCanvas.getParentController().totalVolume += demand.getVolume();
 	}

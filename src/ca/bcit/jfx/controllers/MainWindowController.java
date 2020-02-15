@@ -25,6 +25,7 @@ import ca.bcit.net.demand.generator.AnycastDemandGenerator;
 import ca.bcit.net.demand.generator.DemandGenerator;
 import ca.bcit.net.demand.generator.TrafficGenerator;
 import ca.bcit.net.demand.generator.UnicastDemandGenerator;
+import ca.bcit.net.spectrum.Core;
 import ca.bcit.net.spectrum.Spectrum;
 import ca.bcit.utils.LocaleUtils;
 import ca.bcit.utils.Utils;
@@ -450,11 +451,13 @@ public class MainWindowController implements Initializable {
                                     for (NetworkNode n2 : project.getNetwork().getNodes())
                                         if (project.getNetwork().containsLink(n, n2)) {
                                             NetworkLink networkLink = project.getNetwork().getLink(n, n2);
-                                            Spectrum linkSpectrum = project.getNetwork().getLinkSlices(n, n2);
-                                            int totalSlices = linkSpectrum.getSlicesCount();
-                                            int occupiedSlices = linkSpectrum.getOccupiedSlices();
-                                            int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
-                                            graph.addLink(n.getPosition(), n2.getPosition(), currentPercentage, networkLink.getLength());
+                                            for (Core core: networkLink.getCores()) {
+                                                Spectrum spectrum = n.getID() < n2.getID() ? core.slicesUp : core.slicesDown;
+                                                int totalSlices = spectrum.getSlicesCount();
+                                                int occupiedSlices = spectrum.getOccupiedSlices();
+                                                int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
+                                                graph.addLink(n.getPosition(), n2.getPosition(), currentPercentage, networkLink.getLength());
+                                            }
                                         }
                                 }
 

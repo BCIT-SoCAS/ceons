@@ -2,6 +2,7 @@ package ca.bcit.net;
 
 import ca.bcit.net.demand.Demand;
 import ca.bcit.net.spectrum.BackupSpectrumSegment;
+import ca.bcit.net.spectrum.Core;
 import ca.bcit.net.spectrum.Spectrum;
 import ca.bcit.net.spectrum.WorkingSpectrumSegment;
 
@@ -31,14 +32,20 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 				occupiedRegeneratorsPercentage += source.occupiedRegenerators;
 				allRegenerators += source.regeneratorsCount;
 			}
-			parts.add(new PathPart(source, destination, network.getLink(source, destination).getLength(), 
-					network.getLinkSlices(source, destination)));
+
+			NetworkLink networkLink = network.getLink(source, destination);
+
+			for (Core core: networkLink.getCores()) {
+				Spectrum spectrum = source.getID() < destination.getID() ? core.slicesUp : core.slicesDown;
+				parts.add(new PathPart(source, destination, networkLink.getLength(), spectrum));
+			}
 		}
-		if (allRegenerators != 0){
+
+		if (allRegenerators != 0)
 			occupiedRegeneratorsPercentage /= allRegenerators;
-		} else{
+		else
 			occupiedRegeneratorsPercentage = 1;
-		}
+
 		this.isUp = isUp;
 		this.path = path;
 	}

@@ -7,10 +7,7 @@ import ca.bcit.net.algo.IRMSAAlgorithm;
 import ca.bcit.net.demand.Demand;
 import ca.bcit.net.demand.DemandAllocationResult;
 import ca.bcit.net.demand.generator.TrafficGenerator;
-import ca.bcit.net.spectrum.BackupSpectrumSegment;
-import ca.bcit.net.spectrum.Spectrum;
-import ca.bcit.net.spectrum.SpectrumSegment;
-import ca.bcit.net.spectrum.WorkingSpectrumSegment;
+import ca.bcit.net.spectrum.*;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -181,8 +178,10 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 		for (Relation<NetworkNode, NetworkLink, NetworkPath> relation : relations)
 			if (relation.hasLink() && !inactiveLinks.contains(relation))
 				links.add(relation);
+
 		Relation<NetworkNode, NetworkLink, NetworkPath> link = links.get(linkDestroyer.nextInt(links.size()));
 		inactiveLinks.add(link);
+
 		for (Relation<NetworkNode, NetworkLink, NetworkPath> relation : relations)
 			for (NetworkPath path : relation.getPaths())
 				if (Math.abs(path.indexOf(relation.nodeA) - path.indexOf(relation.nodeB)) == 1)
@@ -191,18 +190,20 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 		Set<Demand> working = new HashSet<>();
 		Set<Demand> backup = new HashSet<>();
 		Set<Demand> result = new HashSet<>();
-		for (SpectrumSegment segment : link.getLink().slicesDown.getSegments())
-			if (segment instanceof WorkingSpectrumSegment)
-				working.add(((WorkingSpectrumSegment) segment).getOwner());
-			else if (segment instanceof BackupSpectrumSegment)
-				backup.addAll(((BackupSpectrumSegment) segment).getDemands());
+		NetworkLink networkLink = link.getLink();
+		for (Core core : networkLink.getCores()) {
+			for (SpectrumSegment segment : core.slicesDown.getSegments())
+				if (segment instanceof WorkingSpectrumSegment)
+					working.add(((WorkingSpectrumSegment) segment).getOwner());
+				else if (segment instanceof BackupSpectrumSegment)
+					backup.addAll(((BackupSpectrumSegment) segment).getDemands());
 
-		for (SpectrumSegment segment : link.getLink().slicesUp.getSegments())
-			if (segment instanceof WorkingSpectrumSegment)
-				working.add(((WorkingSpectrumSegment) segment).getOwner());
-			else if (segment instanceof BackupSpectrumSegment)
-				backup.addAll(((BackupSpectrumSegment) segment).getDemands());
-
+			for (SpectrumSegment segment : core.slicesUp.getSegments())
+				if (segment instanceof WorkingSpectrumSegment)
+					working.add(((WorkingSpectrumSegment) segment).getOwner());
+				else if (segment instanceof BackupSpectrumSegment)
+					backup.addAll(((BackupSpectrumSegment) segment).getDemands());
+		}
 		for (Demand demand : working)
 			if (!demand.onWorkingFailure()) {
 				result.add(demand);
@@ -221,14 +222,9 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	public boolean isInactive(NetworkPath path) {
 		return inactivePaths.contains(path);
 	}
-	
-	public Spectrum getLinkSlices(NetworkNode source, NetworkNode destination) {
-		NetworkLink link = getLink(source, destination);
-		return source.getID() < destination.getID() ? link.slicesUp : link.slicesDown;
-	}
-	
+
 	// MODULATION
-	
+
 	public MetricType getModualtionMetricType() {
 		return modulationMetricType;
 	}
@@ -240,7 +236,7 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 			throw new NetworkException("slices_occupation_metric_must_be_between_0_and_5");
 		return modulationMetrics[slicesOccupationMetric][modulation.ordinal()];
 	}
-	
+
 	public int getStaticModulationMetric(Modulation modulation) {
 		if (modulationMetricType != MetricType.STATIC)
 			throw new NetworkException("trying_to_obtain_dynamic_modulation_when_the_network_is_in_static_modulation_metric_mode");
@@ -274,11 +270,11 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	}
 	
 	// REGENERATORS
-	
+
 	public MetricType getRegeneratorMetricType() {
 		return regeneratorMetricType;
 	}
-	
+
 	public void setRegeneratorMetricType(MetricType regeneratorMetricType) {
 		this.regeneratorMetricType = regeneratorMetricType;
 	}
@@ -292,7 +288,7 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	}
 	
 	// DESERIALIZATION
-	
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Network(Map map) {
 		super(new NetworkPathBuilder());
