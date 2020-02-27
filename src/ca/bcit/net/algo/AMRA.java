@@ -3,6 +3,7 @@ package ca.bcit.net.algo;
 import ca.bcit.net.*;
 import ca.bcit.net.demand.Demand;
 import ca.bcit.net.demand.DemandAllocationResult;
+import ca.bcit.net.modulation.IModulation;
 import ca.bcit.net.spectrum.NoSpectrumAvailableException;
 
 import java.util.List;
@@ -54,8 +55,8 @@ public class AMRA extends BaseRMSAAlgorithm implements IRMSAAlgorithm{
 
 			// choosing modulations for parts
 			for (PathPart part : path) {
-				for (Modulation modulation : network.getAllowedModulations())
-					if (modulation.modulationDistances[volume] >= part.getLength())
+				for (IModulation modulation : network.getAllowedModulations())
+					if (modulation.getMaximumDistanceSupportedByBitrateWithJumpsOfTenGbps()[volume] >= part.getLength())
 						part.setModulationIfBetter(modulation, calculateModulationMetric(network, part, modulation));
 
 				if (part.getModulation() == null)
@@ -66,7 +67,7 @@ public class AMRA extends BaseRMSAAlgorithm implements IRMSAAlgorithm{
 
 			// Unify modulations if needed
 			if (!network.canSwitchModulation()) {
-				Modulation modulation = path.getModulationFromLongestPart();
+				IModulation modulation = path.getModulationFromLongestPart();
 				for (PathPart part : path)
 					part.setModulation(modulation, calculateModulationMetric(network, part, modulation));
 				path.calculateMetricFromParts();
@@ -86,7 +87,7 @@ public class AMRA extends BaseRMSAAlgorithm implements IRMSAAlgorithm{
 			}
 	}
 
-	private static int calculateModulationMetric(Network network, PathPart part, Modulation modulation) {
+	private static int calculateModulationMetric(Network network, PathPart part, IModulation modulation) {
 		double slicesOccupationPercentage = part.getOccupiedSlicesPercentage() * 100;
 
 		return network.getDynamicModulationMetric(modulation, getSlicesOccupationMetric(slicesOccupationPercentage));

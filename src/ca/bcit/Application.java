@@ -32,6 +32,8 @@ public class Application extends javafx.application.Application {
 
         registerAlgorithms();
 
+        registerModulations();
+
         registerYamlSerializableClasses();
 
         loadInterface();
@@ -79,6 +81,15 @@ public class Application extends javafx.application.Application {
     private static void registerAlgorithms() throws Exception {
         Settings.registerAlgorithm("ca.bcit.net.algo.SPF");
         Settings.registerAlgorithm("ca.bcit.net.algo.AMRA");
+    }
+
+    private static void registerModulations() throws Exception {
+        Settings.registerModulation("ca.bcit.net.modulation.BPSK");
+        Settings.registerModulation("ca.bcit.net.modulation.QPSK");
+        Settings.registerModulation("ca.bcit.net.modulation.QAM8");
+        Settings.registerModulation("ca.bcit.net.modulation.QAM16");
+        Settings.registerModulation("ca.bcit.net.modulation.QAM32");
+        Settings.registerModulation("ca.bcit.net.modulation.QAM64");
     }
 
     private static void registerYamlSerializableClasses() throws NoSuchMethodException {

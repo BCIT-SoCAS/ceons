@@ -1,4 +1,6 @@
-package ca.bcit.net.spectrum;
+package ca.bcit.net;
+
+import ca.bcit.net.spectrum.Spectrum;
 
 public class Core {
     public static final int NUMBER_OF_SLICES = 640;

@@ -25,7 +25,7 @@ import ca.bcit.net.demand.generator.AnycastDemandGenerator;
 import ca.bcit.net.demand.generator.DemandGenerator;
 import ca.bcit.net.demand.generator.TrafficGenerator;
 import ca.bcit.net.demand.generator.UnicastDemandGenerator;
-import ca.bcit.net.spectrum.Core;
+import ca.bcit.net.Core;
 import ca.bcit.net.spectrum.Spectrum;
 import ca.bcit.utils.LocaleUtils;
 import ca.bcit.utils.Utils;

@@ -1,8 +1,8 @@
 package ca.bcit.net;
 
 import ca.bcit.net.demand.Demand;
+import ca.bcit.net.modulation.IModulation;
 import ca.bcit.net.spectrum.BackupSpectrumSegment;
-import ca.bcit.net.spectrum.Core;
 import ca.bcit.net.spectrum.Spectrum;
 import ca.bcit.net.spectrum.WorkingSpectrumSegment;
 
@@ -80,14 +80,14 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 	public void mergeIdenticalModulation(int volume) {
 		for (int i = 1; i < parts.size(); i++)
 			if (parts.get(i - 1).getModulation() == parts.get(i).getModulation() && parts.get(i - 1).getLength() +
-					parts.get(i).getLength() <= parts.get(i).getModulation().modulationDistances[volume]) {
+					parts.get(i).getLength() <= parts.get(i).getModulation().getMaximumDistanceSupportedByBitrateWithJumpsOfTenGbps()[volume]) {
 				parts.get(i - 1).merge(parts.get(i));
 				parts.remove(i);
 				i--;
 			}
 	}
 	
-	public Modulation getModulationFromLongestPart() {
+	public IModulation getModulationFromLongestPart() {
 		PathPart longestPart = parts.get(0), part;
 		for (int i = 1; i < parts.size(); i++) {
 			part = parts.get(i);
@@ -117,14 +117,14 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 			Spectrum slices = part.getSlices();
 			int slicesCount, offset;
 			if (demand.getWorkingPath() == null) {
-				slicesCount = part.getModulation().slicesConsumption[(int) Math.ceil(demand.getVolume() / 10.0) - 1];
+				slicesCount = part.getModulation().getSlicesConsumptionByBitrateWithJumpsOfTenGbps()[(int) Math.ceil(demand.getVolume() / 10.0) - 1];
 				offset = slices.canAllocateWorking(slicesCount);
 				if (offset == -1)
 					return false;
 				part.segment = new WorkingSpectrumSegment(offset, slicesCount, demand);
 			}
 			else {
-				slicesCount = part.getModulation().slicesConsumption[(int) Math.ceil(demand.getSqueezedVolume() / 10.0) - 1];
+				slicesCount = part.getModulation().getSlicesConsumptionByBitrateWithJumpsOfTenGbps()[(int) Math.ceil(demand.getSqueezedVolume() / 10.0) - 1];
 				offset = slices.canAllocateBackup(demand, slicesCount);
 				if (offset == -1)
 					return false;

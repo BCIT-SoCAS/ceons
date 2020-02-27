@@ -1,5 +1,6 @@
 package ca.bcit.net;
 
+import ca.bcit.Settings;
 import ca.bcit.graph.Graph;
 import ca.bcit.graph.Relation;
 import ca.bcit.io.YamlSerializable;
@@ -7,6 +8,7 @@ import ca.bcit.net.algo.IRMSAAlgorithm;
 import ca.bcit.net.demand.Demand;
 import ca.bcit.net.demand.DemandAllocationResult;
 import ca.bcit.net.demand.generator.TrafficGenerator;
+import ca.bcit.net.modulation.IModulation;
 import ca.bcit.net.spectrum.*;
 
 import java.util.*;
@@ -22,9 +24,9 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	private final Set<Relation<NetworkNode, NetworkLink, NetworkPath>> inactiveLinks = new HashSet<>();
 	private final Set<NetworkPath> inactivePaths = new HashSet<>();
 	
-	private final List<Modulation> modulations = new ArrayList<>();
+	private final List<IModulation> modulations = new ArrayList<>();
 	private MetricType modulationMetricType;
-	private final int[][] modulationMetrics = new int[6][6];
+	private final int[][] modulationMetrics = new int[Settings.registeredModulations.size()][Settings.registeredModulations.size()];
 	
 	private MetricType regeneratorMetricType;
 	private int regeneratorMetricValue = 5;
@@ -229,43 +231,43 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 		return modulationMetricType;
 	}
 	
-	public int getDynamicModulationMetric(Modulation modulation, int slicesOccupationMetric) {
+	public int getDynamicModulationMetric(IModulation modulation, int slicesOccupationMetric) {
 		if (modulationMetricType != MetricType.DYNAMIC)
 			throw new NetworkException("trying_to_obtain_dynamic_modulation_when_the_network_is_in_static_modulation_metric_mode");
 		if (slicesOccupationMetric < 0 || slicesOccupationMetric > 5)
 			throw new NetworkException("slices_occupation_metric_must_be_between_0_and_5");
-		return modulationMetrics[slicesOccupationMetric][modulation.ordinal()];
+		return modulationMetrics[slicesOccupationMetric][modulation.getId()];
 	}
 
-	public int getStaticModulationMetric(Modulation modulation) {
+	public int getStaticModulationMetric(IModulation modulation) {
 		if (modulationMetricType != MetricType.STATIC)
 			throw new NetworkException("trying_to_obtain_dynamic_modulation_when_the_network_is_in_static_modulation_metric_mode");
-		return modulationMetrics[0][modulation.ordinal()];
+		return modulationMetrics[0][modulation.getId()];
 	}
 	
 	public void setModualtionMetricType(MetricType modulationMetricType) {
 		this.modulationMetricType = modulationMetricType;
 		if (modulationMetricType == MetricType.DYNAMIC)
-			for (int i = 0; i < 6; i++)
-				for (int j = 0; j < 6; j++)
+			for (int i = 0; i < Settings.registeredModulations.size(); i++)
+				for (int j = 0; j < Settings.registeredModulations.size(); j++)
 					modulationMetrics[i][j] = j <= i ? i - j : j;
 	}
 
-	public void setStaticModulationMetric(Modulation modulation, int metric) {
-		modulationMetrics[0][modulation.ordinal()] = metric;
+	public void setStaticModulationMetric(IModulation modulation, int metric) {
+		modulationMetrics[0][modulation.getId()] = metric;
 	}
 	
-	public void allowModulation(Modulation modulation) {
+	public void allowModulation(IModulation modulation) {
 		if (!modulations.contains(modulation))
 			modulations.add(modulation);
 	}
 	
-	public void disallowModulation(Modulation modulation) {
+	public void disallowModulation(IModulation modulation) {
 		if (modulations.contains(modulation))
 			modulations.remove(modulation);
 	}
 	
-	public List<Modulation> getAllowedModulations() {
+	public List<IModulation> getAllowedModulations() {
 		return new ArrayList<>(modulations);
 	}
 	

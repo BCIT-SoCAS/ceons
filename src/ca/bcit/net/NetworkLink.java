@@ -1,7 +1,6 @@
 package ca.bcit.net;
 
 import ca.bcit.graph.positioned.FixedLengthLink;
-import ca.bcit.net.spectrum.Core;
 
 import java.util.ArrayList;
 import java.util.Map;

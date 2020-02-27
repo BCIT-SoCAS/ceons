@@ -14,7 +14,6 @@ import ca.bcit.net.demand.AnycastDemand;
 import ca.bcit.net.demand.Demand;
 import ca.bcit.net.demand.DemandAllocationResult;
 import ca.bcit.net.demand.generator.TrafficGenerator;
-import ca.bcit.net.spectrum.Core;
 import ca.bcit.net.spectrum.Spectrum;
 import ca.bcit.utils.LocaleUtils;
 import com.google.gson.Gson;
@@ -371,7 +370,7 @@ public class Simulation {
 			double modulationsUsage[] = new double[6];
 
 			for (PathPart part : result.workingPath)
-				modulationsUsage[part.getModulation().ordinal()]++;
+				modulationsUsage[part.getModulation().getId()]++;
 
 			for (int i = 0; i < 6; i++) {
 				modulationsUsage[i] /= result.workingPath.getPartsCount();

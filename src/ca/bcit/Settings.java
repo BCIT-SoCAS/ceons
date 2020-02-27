@@ -2,6 +2,7 @@ package ca.bcit;
 
 import ca.bcit.i18n.LocaleEnum;
 import ca.bcit.net.algo.IRMSAAlgorithm;
+import ca.bcit.net.modulation.IModulation;
 import ca.bcit.utils.LocaleUtils;
 
 import java.lang.reflect.Method;
@@ -14,6 +15,7 @@ public class Settings {
     final static int SPLASH_SCREEN_TIMER = 3000;
     public static LocaleEnum CURRENT_LOCALE = LocaleEnum.EN_CA;
     public static HashMap<String, IRMSAAlgorithm> registeredAlgorithms = new HashMap<>();
+    public static HashMap<String, IModulation> registeredModulations = new HashMap<>();
     private static ResourceBundle resourceBundle;
     static Image bcitLogo = new Image(Settings.class.getResourceAsStream("/ca/bcit/jfx/res/images/LogoBCIT.png"));
     static URL mainWindowResourceUrl = Settings.class.getResource("/ca/bcit/jfx/res/views/MainWindow.fxml");
@@ -39,6 +41,20 @@ public class Settings {
         }
         catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
             throw new Exception(LocaleUtils.translate("the_algorithm_could_not_be_registered") + ": " + algorithmClassFullName);
+        }
+    }
+
+    static void registerModulation(String modulationClassFullName) throws Exception {
+        try {
+            Class modulationClass = Class.forName(modulationClassFullName);
+            Method getKeyMethod = modulationClass.getMethod("getKey");
+            Object modulation = modulationClass.newInstance();
+
+            if (!registeredModulations.containsKey(getKeyMethod.invoke(modulation)))
+                registeredModulations.put((String) getKeyMethod.invoke(modulation), (IModulation) modulation);
+        }
+        catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+            throw new Exception(LocaleUtils.translate("the_modulation_could_not_be_registered") + ": " + modulationClassFullName);
         }
     }
 
