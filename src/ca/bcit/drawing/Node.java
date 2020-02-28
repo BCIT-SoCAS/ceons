@@ -80,7 +80,7 @@ public class Node extends Figure {
 	}
 
     @Override
-    public int getInfo() {
+    public double getInfo() {
         return this.getNumberOfRegenerators();
     }
 

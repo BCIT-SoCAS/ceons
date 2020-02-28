@@ -17,19 +17,16 @@ import java.util.Map;
 
 public class ResizableCanvas extends Canvas {
     public FigureControl list;
-    private FigureControl listBeforeChanges;
     private boolean isDrawingLink;
     private DrawingState state;
     private static MainWindowController parent;
-    private Vector2F startTempPoint;
-    private Vector2F endTempPoint;
     double orgX = 0.0, orgY = 0.0, newX = 0.0, newY = 0.0;
-    double clickedX, clickedY, newClickedX, newClickedY;
+    double clickedX, clickedY;
     ArrayList<Vector2F> nodePositions;
 
     public ResizableCanvas() {
         list = new FigureControl(this);
-        nodePositions = new ArrayList<Vector2F>();
+        nodePositions = new ArrayList<>();
         setOnMouseClicked(this::canvasOnMouseClicked);
         setOnMouseDragged(this::canvasOnMouseDragged);
         setOnMousePressed(this::canvasOnMousePressed);
@@ -41,12 +38,9 @@ public class ResizableCanvas extends Canvas {
     }
 
     private void canvasOnMousePressed(MouseEvent e) {
-        updateListBeforeChanges();
         Vector2F pressedPoint = new Vector2F((float) e.getX(), (float) e.getY());
         if (isLinkAddingState())
             addLink(pressedPoint);
-        else if (isLinkDeleteState() || isFewElementsDeleteState())
-            startTempPoint = pressedPoint;
         else if (isClickingState() && !list.isEmpty()) {
             Figure closestElement = findClosestElement(pressedPoint);
             setSelectedFigure(closestElement);
@@ -76,8 +70,6 @@ public class ResizableCanvas extends Canvas {
 			markNode(clickedPoint, "replicas");
 		else if (isNodeMarkInternationalState())
 			markNode(clickedPoint, "international");
-
-        updateListBeforeChanges();
     }
 
     private void canvasOnMouseDragged(MouseEvent e) {
@@ -126,7 +118,6 @@ public class ResizableCanvas extends Canvas {
     public void changeState(DrawingState chosenState) {
         setState(chosenState);
         setSelectedFigure(null);
-        listBeforeChanges = new FigureControl(list);
     }
 
     private void setState(DrawingState chosenState) {
@@ -141,10 +132,6 @@ public class ResizableCanvas extends Canvas {
         return state == DrawingState.nodeMarkInternationalState;
 	}
 	
-	private boolean isNodeUnmarkState() {
-        return state == DrawingState.nodeUnmarkState;
-    }
-
     private boolean isClickingState() {
         return state == DrawingState.clickingState;
     }
@@ -166,29 +153,8 @@ public class ResizableCanvas extends Canvas {
         list.add(new Node(vec2F, list.getNodeAmount()));
     }
 
-    /**
-     * Draw a Node on the given coordinates from the parameter vec2F
-     *
-     * @param vec2F the coordinates of Node
-     * @param name  name of the node
-     */
-    public void addNode(Vector2F vec2F, String name) {
-        list.add(new Node(vec2F, name));
-    }
-
     public void addNetworkNode(NetworkNode n) {
         list.add(n.getFigure());
-    }
-
-    /**
-     * Draw a Node on the given coordinates from the parameter vec2F
-     *
-     * @param vec2F  the coordinates of Node
-     * @param name   name of the node
-     * @param Regens percentage regenerator remaining
-     */
-    public void addNode(Vector2F vec2F, String name, int Regens, Map nodeGroups) {
-        list.add(new Node(vec2F, name, Regens, nodeGroups));
     }
 
     /**
@@ -205,52 +171,22 @@ public class ResizableCanvas extends Canvas {
     /**
      * Draw a Link between two Nodes given the coordinates of the Nodes
      *
-     * @param start_vec2F coordinates of the first Node
-     * @param end_vec2F   coordinates of the second Node
+     * @param startPoint coordinates of the first Node
+     * @param endPoint coordinates of the second Node
+     * @param freeSpacePercentage percentage of the slice being free
      */
-    public void addLink(Vector2F start_vec2F, Vector2F end_vec2F) {
-        list.add(new Link(start_vec2F, end_vec2F, list.getLinkAmount()));
-    }
-
-    /**
-     * Draw a Link between two Nodes given the coordinates of the Nodes
-     *
-     * @param start_vec2F coordinates of the first Node
-     * @param end_vec2F   coordinates of the second Node
-     * @param Percentage  percentage of the slice being free
-     */
-    public void addLink(Vector2F start_vec2F, Vector2F end_vec2F, int Percentage, int length) {
-        list.add(new Link(start_vec2F, end_vec2F, list.getLinkAmount(), Percentage, length));
+    public void addLink(Vector2F startPoint, Vector2F endPoint, double freeSpacePercentage, int length) {
+        list.add(new Link(startPoint, endPoint, list.getLinkAmount(), freeSpacePercentage, length));
     }
 
     private Figure findClosestElement(Vector2F vec2F) {
         return list.findClosestElement(vec2F);
     }
 
-    private boolean isNodeDeleteState() {
-        return state == DrawingState.nodeDeleteState;
-	}
-	
 	private void markNode(Vector2F clickedPoint, String groupName) {
         list.markNode(clickedPoint, groupName);
 	}
 	
-	private void unmarkNode(Vector2F clickedPoint) {
-        list.unmarkNode(clickedPoint);
-    }
-
-    private boolean isLinkDeleteState() {
-        return state == DrawingState.linkDeleteState;
-    }
-
-    private void deleteNode(Vector2F clickedPoint) {
-        list.deleteNode(clickedPoint);
-    }
-
-    private boolean isFewElementsDeleteState() {
-        return state == DrawingState.fewElementsDeleteState;
-    }
-
     private boolean isDraggingState() {
         return state == DrawingState.draggingState;
     }
@@ -261,14 +197,11 @@ public class ResizableCanvas extends Canvas {
 
     /**
      * Load either a link or node
-     * @param temp        either a link or node
+     * @param temp either a link or node
      *
      */
     private void loadProperties(Figure temp) {
         parent.loadProperties(temp, list);
     }
-
-    private void updateListBeforeChanges() {
-        listBeforeChanges = new FigureControl(list);
-    }
 }
+

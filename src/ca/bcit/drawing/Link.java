@@ -9,7 +9,7 @@ import javafx.scene.paint.Color;
 public class Link extends Figure {
 	private Vector2F endPoint;
 	private int length;
-	private int Percentage = 100;
+	private double freeSpacePercentage = 100;
 
 	public Link(Link link) {
 		length = link.length;
@@ -20,28 +20,28 @@ public class Link extends Figure {
 
 	/**
 	 * Draw link with a gradient color acording to avaliable free slices
-	 * @param stPoint starting location of the link
+	 * @param startPoint starting location of the link
 	 * @param endPoint end location of the link
 	 * @param number the number tag identifying the link
-	 * @param Percentage percentage of free slices left in the link
+	 * @param freeSpacePercentage percentage of free slices left in the link
 	 * @param length length between start node and end node
 	 */
-	public Link(Vector2F stPoint, Vector2F endPoint, int number, int Percentage, int length) {
-		super(stPoint, "Link" + number);
-		this.Percentage = Percentage;
+	public Link(Vector2F startPoint, Vector2F endPoint, int number, double freeSpacePercentage, int length) {
+		super(startPoint, "Link" + number);
+		this.freeSpacePercentage = freeSpacePercentage;
 		this.endPoint = endPoint;
 		this.length = length;
 	}
 
 	/**
 	 * @deprecatd Old method to draw link with the previous used color (default green)
-	 * @param stPoint starting location of the link
+	 * @param startPoint starting location of the link
 	 * @param endPoint end location of the link
 	 * @param number the number tag identifying the link
 	 */
 	@Deprecated
-	public Link(Vector2F stPoint, Vector2F endPoint, int number) {
-		super(stPoint, "Link" + number);
+	public Link(Vector2F startPoint, Vector2F endPoint, int number) {
+		super(startPoint, "Link" + number);
 		this.endPoint = endPoint;
 		length = 0;
 	}
@@ -74,8 +74,8 @@ public class Link extends Figure {
 	}
 
 	@Override
-	public int getInfo() {
-		return this.Percentage;
+	public double getInfo() {
+		return this.freeSpacePercentage;
 	}
 
 	/**
@@ -109,13 +109,13 @@ public class Link extends Figure {
 	 */
 	private int[] getColor() {
 		int[] rgb = new int[3];
-		if (this.Percentage > 50) {
-			rgb[0] = (50 - (this.Percentage - 50)) * 5;
+		if (this.freeSpacePercentage > 50) {
+			rgb[0] = (int) ((50 - (this.freeSpacePercentage - 50)) * 5);
 			rgb[1] = 255;
 		}
 		else {
 			rgb[0] = 255;
-			rgb[1] = this.Percentage * 5;
+			rgb[1] = (int) (this.freeSpacePercentage * 5);
 		}
 		return rgb;
 	}
@@ -155,7 +155,7 @@ public class Link extends Figure {
 			float x2 = endPoint.getX() - Node.getNodeSize() / 2;
 			float y2 = endPoint.getY() - Node.getNodeSize() / 2;
 			float a = (-y2 + y1) / (x2 - x1);
-			float b = -y1 - ((-y2 + y1) / (x2 - x1)) * x1;
+			float b = -y1 - a * x1;
 			double odleglosc = (Math.abs(a * p.getX() + p.getY() + b)) / Math.sqrt(1 + a * a);
 			return odleglosc + Node.getNodeSize() / 2;
 		}

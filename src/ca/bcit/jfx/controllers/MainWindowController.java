@@ -451,13 +451,15 @@ public class MainWindowController implements Initializable {
                                     for (NetworkNode n2 : project.getNetwork().getNodes())
                                         if (project.getNetwork().containsLink(n, n2)) {
                                             NetworkLink networkLink = project.getNetwork().getLink(n, n2);
+                                            int countOfSlices = 0;
+                                            int occupiedSlices = 0;
                                             for (Core core: networkLink.getCores()) {
                                                 Spectrum spectrum = n.getID() < n2.getID() ? core.slicesUp : core.slicesDown;
-                                                int totalSlices = spectrum.getSlicesCount();
-                                                int occupiedSlices = spectrum.getOccupiedSlices();
-                                                int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
-                                                graph.addLink(n.getPosition(), n2.getPosition(), currentPercentage, networkLink.getLength());
+                                                countOfSlices += spectrum.getSlicesCount();
+                                                occupiedSlices += spectrum.getOccupiedSlices();
                                             }
+                                            double freeSpacePercentage = 100 - (((double) occupiedSlices / countOfSlices) * 100);
+                                            graph.addLink(n.getPosition(), n2.getPosition(), freeSpacePercentage, networkLink.getLength());
                                         }
                                 }
 

@@ -29,8 +29,4 @@ public class NetworkLink extends FixedLengthLink<NetworkLink> {
 	public ArrayList<Core> getCores() {
 		return cores;
 	}
-
-	public void setCores(ArrayList<Core> cores) {
-		this.cores = cores;
-	}
 }

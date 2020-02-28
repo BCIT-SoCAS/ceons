@@ -84,7 +84,7 @@ public class NodePropertiesController implements Initializable {
         listView.setItems(obList);
         xID.setText(((Float)node.getStartPoint().getX()).toString());
         yID.setText(((Float)node.getStartPoint().getY()).toString());
-        regenNum.setText(Integer.toString(node.getInfo()));
+        regenNum.setText(Double.toString(node.getInfo()));
     }
 
     @FXML
