@@ -165,7 +165,8 @@ public class TaskReadyProgressBar extends StackPane {
                             Logger.info("\n");
                             Logger.info(LocaleUtils.translate("starting_simulation") + "! " + "\n\t" + LocaleUtils.translate("simulation_parameter_seed") + ": " + task.get(1) + "\n\t" + LocaleUtils.translate("simulation_parameter_alpha") + ": " + task.get(2) + "\n\t" + LocaleUtils.translate("simulation_parameter_erlang") + ": " + task.get(3) +
                                     "\n\t" + LocaleUtils.translate("simulation_parameter_number_of_requests") + ": " + task.get(4) + "\n\t" + LocaleUtils.translate("simulation_parameter_replica_preservation") + ": " + task.get(5));
-                            ((Simulation) task.get(0)).simulate((int) task.get(1), (int) task.get(4), (double) task.get(2), (int) task.get(3), (boolean) task.get(5));
+                            //TODO task.get(0)).simulate(whatever) needs to get cores from index somewhere //it's the third thing
+                            ((Simulation) task.get(0)).simulate((int) task.get(1), (int) task.get(4), 1, (double) task.get(2), (int) task.get(3), (boolean) task.get(5));
                             Logger.info(LocaleUtils.translate("simulation_finished") + "!");
                             this.updateProgress(++count, tasks.size()*algorithms.size());
                             if (this.isCancelled())
