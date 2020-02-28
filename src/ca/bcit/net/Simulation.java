@@ -52,7 +52,7 @@ public class Simulation {
 		this.generator = generator;
 	}
 
-	public void simulate(long seed, int demandsCount, double alpha, int erlang, boolean replicaPreservation, SimulationTask task) {
+	public void simulate(long seed, int demandsCount, int cores, double alpha, int erlang, boolean replicaPreservation, SimulationTask task) {
 		SimulationMenuController.finished = false;
 		SimulationMenuController.cancelled = false;
 		clearVolumeValues();
@@ -178,7 +178,7 @@ public class Simulation {
 		}
 	}
 
-	public void simulate(long seed, int demandsCount, double alpha, int erlang, boolean replicaPreservation) {
+	public void simulate(long seed, int demandsCount, int cores, double alpha, int erlang, boolean replicaPreservation) {
 		SimulationMenuController.finished = false;
 		SimulationMenuController.cancelled = false;
 		clearVolumeValues();
