@@ -40,6 +40,9 @@
                     <CeonsLabel text="%simulation_parameter_number_of_requests" tooltipText="%simulation_parameter_number_of_requests_description" />
                     <UIntField fx:id="demands" alignment="CENTER"/>
 
+                    <CeonsLabel text="%simulation_parameter_number_of_cores" tooltipText="%simulation_parameter_number_of_cores_description" />
+                    <ComboBox fx:id="cores" promptText="%choose_cores"/>
+
                     <Separator/>
 
                     <CeonsLabel text="%simulation_parameter_modulations" tooltipText="%simulation_parameter_modulations_description" />
