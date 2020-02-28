@@ -70,6 +70,8 @@ public class SimulationMenuController implements Initializable {
 	@FXML
 	private ComboBox<TrafficGenerator> generators;
 	@FXML
+	private ComboBox<Integer> cores;
+	@FXML
 	private CheckBox runMultipleSimulations;
 	@FXML
 	private Label simulationRepetitions;
@@ -163,7 +165,8 @@ public class SimulationMenuController implements Initializable {
 				}
 			}
 		});
-
+		cores.getItems().addAll(
+				1, 3, 7, 11, 22 );
 		modulations = new CheckBox[Settings.registeredModulations.size()];
 		for (IModulation modulation : Settings.registeredModulations.values())
 			modulations[modulation.getId()] = ((CheckBox) settings.lookup("#modulation" + modulation.getId()));
@@ -342,7 +345,7 @@ public class SimulationMenuController implements Initializable {
 				simulation = new Simulation(network, generators.getValue());
 
 				//TODO: REFACTOR SIMULATION TASK INTO SIMULATION
-				SimulationTask task = new SimulationTask(simulation, seedField.getValue(), Double.parseDouble(alpha.getText()), erlangIntField.getValue(), demands.getValue(), true, this);
+				SimulationTask task = new SimulationTask(simulation, seedField.getValue(), cores.getValue(), Double.parseDouble(alpha.getText()), erlangIntField.getValue(), demands.getValue(), true, this);
 				progressBar.runTask(task, true, this);
 			} else {
 				if (erlangRangeLowField.getValue() > erlangRangeHighField.getValue() || erlangRangeLowField.getValue() == erlangRangeHighField.getValue()) {
