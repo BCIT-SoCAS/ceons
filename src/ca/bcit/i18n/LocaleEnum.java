@@ -11,7 +11,7 @@ public enum LocaleEnum {
 
     public final String label;
 
-    private LocaleEnum(String localeString) {
+    LocaleEnum(String localeString) {
         this.label = localeString;
     }
 

@@ -24,7 +24,6 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-
 /**
  * Main simulation class (start point)
  */
@@ -129,15 +128,6 @@ public class Simulation {
 		SimulationMenuController simulationMenuController = fxmlLoader.<SimulationMenuController>getController();
 		if (simulationMenuController != null)
 			simulationMenuController.disableClearSimulationButton();
-
-		Logger.info("spectrumBlockedVolume");
-		Logger.info(""+ spectrumBlockedVolume);
-		Logger.info("regeneratorsBlockedVolume");
-		Logger.info(""+ regeneratorsBlockedVolume);
-		Logger.info("linkFailureBlockedVolume");
-		Logger.info(""+ linkFailureBlockedVolume);
-		Logger.info("totalVolume");
-		Logger.info(""+ totalVolume);
 
 		Logger.info(LocaleUtils.translate("blocked_spectrum_label") + " " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
 		Logger.info(LocaleUtils.translate("blocked_regenerators_label") + " " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
@@ -302,7 +292,8 @@ public class Simulation {
 		while (SimulationMenuController.paused) {
 			try {
 				Thread.sleep(10);
-			} catch(InterruptedException ex) {
+			}
+			catch(InterruptedException ex) {
 				Thread.currentThread().interrupt();
 			}
 		}
@@ -327,7 +318,7 @@ public class Simulation {
 		mainWindowController.regeneratorsBlockedVolume = 0;
 		mainWindowController.linkFailureBlockedVolume = 0;
 		for (NetworkNode n : network.getNodes()) {
-			n.clearOccupied();
+			n.clearRegenerators();
 			for (NetworkNode n2 : network.getNodes())
 				if (network.containsLink(n, n2)) {
 					NetworkLink networkLink = network.getLink(n, n2);

@@ -483,7 +483,7 @@ public class MainWindowController implements Initializable {
             graph.resetCanvas();
 
             for (NetworkNode n : project.getNetwork().getNodes()) {
-                n.clearOccupied();
+                n.clearRegenerators();
                 graph.addNetworkNode(n);
                 for (NetworkNode n2 : ApplicationResources.getProject().getNetwork().getNodes()){
                     NetworkLink networkLink = project.getNetwork().getLink(n, n2);

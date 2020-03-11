@@ -12,9 +12,7 @@ public class LiveInfoSummaryController implements Initializable {
     @FXML
     private Label info;
 
-    public void initialize(URL location, ResourceBundle resources) {
-
-    }
+    public void initialize(URL location, ResourceBundle resources) {}
 
     public void fillInformation(double spectrumBlocked, double regeneratorsBlocked, double linkFailureBlocked, double totalVolume) {
         String blockedSpectrum = spectrumBlocked / totalVolume * 100 + "%";

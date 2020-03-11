@@ -7,4 +7,14 @@ public class Core {
 
     public Spectrum slicesUp = new Spectrum(NUMBER_OF_SLICES);
     public Spectrum slicesDown = new Spectrum(NUMBER_OF_SLICES);
+
+    private int id;
+
+    public Core(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
 }

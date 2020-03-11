@@ -499,7 +499,6 @@ public class SimulationMenuController implements Initializable {
 		paused ^= true;
 	}
 
-
 	@FXML
 	public void clear(ActionEvent e) {
 		ResizableCanvas.getParentController().graph.resetCanvas();
@@ -543,7 +542,8 @@ public class SimulationMenuController implements Initializable {
 					);
 					msg.send();
 					lastFilePath.ifPresent(path -> path.toFile().delete());
-				} else
+				}
+				else
 					msg.send();
 			} catch (Exception e) {
 				e.printStackTrace();

@@ -11,6 +11,7 @@ public class PathPart {
 	NetworkNode source;
 	private NetworkNode destination;
 	private int length;
+	private int coreId;
 	
 	public final ArrayList<Spectrum> spectra = new ArrayList<>();
 	AllocatableSpectrumSegment segment;
@@ -18,10 +19,11 @@ public class PathPart {
 	private IModulation modulation;
 	int metric = Integer.MAX_VALUE;
 	
-	public PathPart(NetworkNode source, NetworkNode destination, int length, Spectrum... spectra) {
+	public PathPart(NetworkNode source, NetworkNode destination, int length, int coreId, Spectrum... spectra) {
 		this.source = source;
 		this.destination = destination;
 		this.length = length;
+		this.coreId = coreId;
 		Collections.addAll(this.spectra, spectra);
 	}
 	
@@ -43,14 +45,14 @@ public class PathPart {
 		return source;
 	}
 	
-	public NetworkNode getDestination() {
-		return destination;
-	}
-
 	public int getLength() {
 		return length;
 	}
-	
+
+	public int getCoreId() {
+		return coreId;
+	}
+
 	public double getOccupiedSlicesPercentage() {
 		double occupied = 0.0;
 		double all = 0.0;

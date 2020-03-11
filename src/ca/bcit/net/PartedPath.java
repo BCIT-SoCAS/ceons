@@ -9,7 +9,6 @@ import ca.bcit.net.spectrum.WorkingSpectrumSegment;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.function.Consumer;
 
 /**
  * Used for calculation of metrics in each segment of network path
@@ -17,36 +16,22 @@ import java.util.function.Consumer;
 public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 
 	final NetworkPath path;
-	private final boolean isUp;
 
 	private final ArrayList<PathPart> parts = new ArrayList<>();
-	private double occupiedRegeneratorsPercentage;
 	private double metric = -1.0;
 	
 	public PartedPath(Network network, NetworkPath path, boolean isUp) {
-		int allRegenerators = 0;
 		for (int i = 1; i < path.size(); i++) {
 			NetworkNode source = path.get(isUp ? i - 1 : path.size() - i);
 			NetworkNode destination = path.get(isUp ? i : path.size() - i - 1);
-			if (i > 1) {
-				occupiedRegeneratorsPercentage += source.occupiedRegenerators;
-				allRegenerators += source.regeneratorsCount;
-			}
-
 			NetworkLink networkLink = network.getLink(source, destination);
 
 			for (Core core: networkLink.getCores()) {
 				Spectrum spectrum = source.getID() < destination.getID() ? core.slicesUp : core.slicesDown;
-				parts.add(new PathPart(source, destination, networkLink.getLength(), spectrum));
+				parts.add(new PathPart(source, destination, networkLink.getLength(), core.getId(), spectrum));
 			}
 		}
 
-		if (allRegenerators != 0)
-			occupiedRegeneratorsPercentage /= allRegenerators;
-		else
-			occupiedRegeneratorsPercentage = 1;
-
-		this.isUp = isUp;
 		this.path = path;
 	}
 
@@ -96,10 +81,6 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 		return longestPart.getModulation();
 	}
 	
-	public double getOccupiedRegeneratorsPercentage() {
-		return occupiedRegeneratorsPercentage;
-	}
-	
 	public int getNeededRegeneratorsCount() {
 		return parts.size() - 1;
 	}
@@ -111,7 +92,7 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 	public boolean allocate(Demand demand) {
 		for (PathPart part : parts)
 			if (part != parts.get(0))
-				part.source.occupyRegenerators(1, false);
+				part.source.allocateRegenerator(part.getCoreId());
 
 		for (PathPart part : parts) {
 			Spectrum slices = part.getSlices();
@@ -141,30 +122,23 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 	public void toWorking(Demand demand) {
 		for (PathPart part : parts) {
 			part.segment = new WorkingSpectrumSegment(part.segment.getRange(), demand);
-			for	(Spectrum slices : part.spectra) slices.claimBackup(demand);
+			for	(Spectrum slices : part.spectra)
+				slices.claimBackup(demand);
 		}
 	}
 	
 	public void deallocate(Demand demand) {
 		for (PathPart part : parts) {
-			if (part != parts.get(0)){
-				part.source.occupyRegenerators(-1, true);
-			}
-			for	(Spectrum slices : part.spectra) slices.deallocate(demand);
+			if (part != parts.get(0))
+				part.source.deallocateRegenerator(part.getCoreId());
+
+			for	(Spectrum slices : part.spectra)
+				slices.deallocate(demand);
 		}
 	}
 
 	public int getPartsCount() {
 		return parts.size();
-	}
-	
-	public void forEachNode(Consumer<NetworkNode> action) {
-		if (isUp)
-			for (int i = 0; i < path.size(); i++)
-				action.accept(path.get(i));
-		else
-			for (int i = 0; i < path.size(); i++)
-				action.accept(path.get(path.size() - 1 - i));
 	}
 	
 	public NetworkPath getPath() {

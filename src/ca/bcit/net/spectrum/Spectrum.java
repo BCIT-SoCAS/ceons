@@ -177,7 +177,7 @@ public class Spectrum {
 	
 	public int canAllocateWorking(int volume) {
 		for (SpectrumSegment segment : segments)
-			if (segment.getType() == FreeSpectrumSegment.TYPE && segment.getRange().getLength() >= volume)
+			if (segment.getType().equals(FreeSpectrumSegment.TYPE) && segment.getRange().getLength() >= volume)
 				return segment.getRange().getOffset();
 
 		return -1;
@@ -186,7 +186,7 @@ public class Spectrum {
 	public int canAllocateBackup(Demand demand, int volume) {
 		int offset = -1, gatheredVolume = 0;
 		for (int i = segments.size() - 1; i >= 0; i--)
-			if (segments.get(i).getType() == FreeSpectrumSegment.TYPE || segments.get(i).getType() == BackupSpectrumSegment.TYPE && ((BackupSpectrumSegment) segments.get(i)).isDisjoint(demand)) {
+			if (segments.get(i).getType().equals(FreeSpectrumSegment.TYPE) || segments.get(i).getType().equals(BackupSpectrumSegment.TYPE) && ((BackupSpectrumSegment) segments.get(i)).isDisjoint(demand)) {
 				if (segments.get(i).getRange().getLength() + gatheredVolume >= volume)
 					if (offset == -1)
 						return segments.get(i).getRange().getEndOffset() - volume;

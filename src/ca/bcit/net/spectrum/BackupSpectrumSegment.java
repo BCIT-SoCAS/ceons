@@ -65,9 +65,9 @@ public class BackupSpectrumSegment extends AllocatableSpectrumSegment {
 
 	@Override
 	public boolean canAllocate(SpectrumSegment other) {
-		if (other.getType() == FreeSpectrumSegment.TYPE)
+		if (other.getType().equals(FreeSpectrumSegment.TYPE))
 			return true;
-		else if (other.getType() == BackupSpectrumSegment.TYPE) {
+		else if (other.getType().equals(BackupSpectrumSegment.TYPE)) {
 			for (Demand demand1 : demands)
 				for (Demand demand2 : ((BackupSpectrumSegment) other).demands)
 					if (!demand1.isDisjoint(demand2))
@@ -81,9 +81,9 @@ public class BackupSpectrumSegment extends AllocatableSpectrumSegment {
 
 	@Override
 	public BackupSpectrumSegment allocate(IntegerRange range, SpectrumSegment other) {
-		if (other.getType() == FreeSpectrumSegment.TYPE)
+		if (other.getType().equals(FreeSpectrumSegment.TYPE))
 			return clone(range);
-		else if (other.getType() == BackupSpectrumSegment.TYPE) {
+		else if (other.getType().equals(BackupSpectrumSegment.TYPE)) {
 			Set<Demand> demands = new HashSet<>(((BackupSpectrumSegment) other).demands);
 			demands.addAll(this.demands);
 			return new BackupSpectrumSegment(range, demands);

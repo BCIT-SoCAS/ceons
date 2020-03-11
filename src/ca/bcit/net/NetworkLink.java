@@ -23,7 +23,7 @@ public class NetworkLink extends FixedLengthLink<NetworkLink> {
 
 	private void initializeCores() {
 		for (int i = 0; i < 1; i++)
-			cores.add(new Core());
+			cores.add(new Core(i));
 	}
 
 	public ArrayList<Core> getCores() {

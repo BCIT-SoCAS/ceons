@@ -39,7 +39,7 @@ public class WorkingSpectrumSegment extends AllocatableSpectrumSegment {
 
 	@Override
 	public boolean canJoin(SpectrumSegment other) {
-		if (getType() != other.getType())
+		if (!getType().equals(other.getType()))
 			return false;
 		return ((WorkingSpectrumSegment) other).owner.equals(owner);
 	}
@@ -51,7 +51,7 @@ public class WorkingSpectrumSegment extends AllocatableSpectrumSegment {
 
 	@Override
 	public WorkingSpectrumSegment allocate(IntegerRange range, SpectrumSegment other) {
-		if (other.getType() != FreeSpectrumSegment.TYPE)
+		if (!other.getType().equals(FreeSpectrumSegment.TYPE))
 			throw new SpectrumException("Working spectrum can only by allocated on type-FREE segments.");
 		return clone(range);
 	}
@@ -67,7 +67,6 @@ public class WorkingSpectrumSegment extends AllocatableSpectrumSegment {
 	public SpectrumSegment merge(IntegerRange range, SpectrumSegment other) {
 		switch(other.getType()) {
 			case FreeSpectrumSegment.TYPE:
-				return clone(range);
 			case BackupSpectrumSegment.TYPE:
 				return clone(range);
 			case WorkingSpectrumSegment.TYPE:

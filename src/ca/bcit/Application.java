@@ -56,9 +56,7 @@ public class Application extends javafx.application.Application {
     public static void loadInterface() throws IOException {
         ResourceBundle currentResources = Settings.getCurrentResources();
         FXMLLoader loader = new FXMLLoader(Settings.mainWindowResourceUrl, currentResources);
-
         ProjectFileFormat.registerFileFormat(new EONProjectFileFormat());
-
         GridPane root = loader.load();
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
@@ -67,10 +65,8 @@ public class Application extends javafx.application.Application {
         primaryStage.setMinWidth(primaryStage.getWidth());
         primaryStage.setMinHeight(primaryStage.getHeight());
         primaryStage.setResizable(false);
-
         final Canvas graph = (Canvas) scene.lookup("#graph");
         final Canvas map = ((Canvas) scene.lookup("#map"));
-
         BorderPane pane = (BorderPane) scene.lookup("#borderPane");
         graph.widthProperty().bind(pane.widthProperty());
         graph.heightProperty().bind(pane.heightProperty());

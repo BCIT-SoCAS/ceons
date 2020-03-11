@@ -104,10 +104,13 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	}
 	
 	public void waitForDemandsDeath() {
-		while (!allocatedDemands.isEmpty()) update();
+		while (!allocatedDemands.isEmpty())
+			update();
+
 		allocatedDemands = new ArrayList<>();
+
 		for (Map.Entry<String, NetworkNode> entry: nodes.entrySet())
-			entry.getValue().clearOccupied();
+			entry.getValue().clearRegenerators();
 
 		inactiveLinks.clear();
 		inactivePaths.clear();
@@ -118,9 +121,11 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	private boolean addNodeToGroup(String groupName, NetworkNode node) {
 		if (!contains(node))
 			return false;
+
 		List<NetworkNode> group = nodesGroups.computeIfAbsent(groupName, k -> new ArrayList<>());
 		if (group.contains(node))
 			return false;
+
 		node.setNodeGroup(groupName, true);
 		group.add(node);
 		return true;
@@ -129,15 +134,19 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	public boolean removeNodeFromGroup(String groupName, NetworkNode node) {
 		if (!contains(node))
 			return false;
+
 		List<NetworkNode> group = nodesGroups.get(groupName);
 		if (group == null)
 			return false;
+
 		if (!group.contains(node))
 			return false;
+
 		node.setNodeGroup(groupName, false);
 		group.remove(node);
 		if (group.isEmpty())
 			nodesGroups.remove(groupName);
+
 		return true;
 	}
 
@@ -154,16 +163,20 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	@Override
 	protected boolean addNode(NetworkNode node) {
 		boolean result = super.addNode(node);
+
 		if (result)
 			nodes.put(node.getName(), node);
+
 		return result;
 	}
 	
 	@Override
 	public boolean removeNode(NetworkNode node) {
 		boolean result = super.removeNode(node);
+
 		if (result)
 			nodes.remove(node.getName());
+
 		return result;
 	}
 	
@@ -206,6 +219,7 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 				else if (segment instanceof BackupSpectrumSegment)
 					backup.addAll(((BackupSpectrumSegment) segment).getDemands());
 		}
+
 		for (Demand demand : working)
 			if (!demand.onWorkingFailure()) {
 				result.add(demand);
@@ -234,14 +248,17 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	public int getDynamicModulationMetric(IModulation modulation, int slicesOccupationMetric) {
 		if (modulationMetricType != MetricType.DYNAMIC)
 			throw new NetworkException("trying_to_obtain_dynamic_modulation_when_the_network_is_in_static_modulation_metric_mode");
+
 		if (slicesOccupationMetric < 0 || slicesOccupationMetric > 5)
 			throw new NetworkException("slices_occupation_metric_must_be_between_0_and_5");
+
 		return modulationMetrics[slicesOccupationMetric][modulation.getId()];
 	}
 
 	public int getStaticModulationMetric(IModulation modulation) {
 		if (modulationMetricType != MetricType.STATIC)
 			throw new NetworkException("trying_to_obtain_dynamic_modulation_when_the_network_is_in_static_modulation_metric_mode");
+
 		return modulationMetrics[0][modulation.getId()];
 	}
 	
@@ -319,19 +336,24 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 		List<NetworkNode> nodes = getNodes();
 		map.put("nodes", nodes);
 		Map<List<String>, NetworkLink> links = new HashMap<>();
+
 		for (int i = 0; i < nodes.size(); i++)
 			for (int j = i + 1; j < nodes.size(); j++)
 				if (containsLink(nodes.get(i), nodes.get(j)))
-					links.put(Arrays.asList(nodes.get(i).getName(), nodes.get(j).getName()),
-							getLink(nodes.get(i), nodes.get(j)));
+					links.put(Arrays.asList(nodes.get(i).getName(), nodes.get(j).getName()), getLink(nodes.get(i), nodes.get(j)));
+
 		map.put("links", links);
+
 		Map<String, List<String>> groups = new HashMap<>();
+
 		for (Entry<String, List<NetworkNode>> group : nodesGroups.entrySet()) {
 			groups.put(group.getKey(), new ArrayList<>());
 			for (NetworkNode node : group.getValue())
 				groups.get(group.getKey()).add(node.getName());
 		}
+
 		map.put("groups", groups);
+
 		return map;
 	}
 }

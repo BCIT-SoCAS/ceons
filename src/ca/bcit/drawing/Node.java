@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class Node extends Figure {
 	public static float imageSize = 20;
-	private int numberOfRegenerators = 100;
+	private int numberOfRegenerators = Settings.DEFAULT_NUMBER_OF_REGENERATORS;
 	private Map<String, Boolean> nodeGroups = new HashMap<>();
 
 	public Node(Node node) {
