@@ -1,5 +1,6 @@
 package ca.bcit.net;
 
+import ca.bcit.Settings;
 import ca.bcit.graph.positioned.FixedLengthLink;
 
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class NetworkLink extends FixedLengthLink<NetworkLink> {
 	}
 
 	private void initializeCores() {
-		for (int i = 0; i < 1; i++)
+		for (int i = 0; i < Settings.numberOfCores; i++)
 			cores.add(new Core(i));
 	}
 
