@@ -30,6 +30,7 @@ public class Settings {
     public static final String[] MAIL_PASSWORD = new String[]{"%14d$29#6e_hmMKqJOrFlJhryjiggw3CObTwz6B0OOd7u6owl8Jowl8Jy3Z0L", "%6$21#78d_D5Sy2jq1bauH73AvvIJBltZmewh9E9eeNXmN0c1kN0c1kgrnuv", "%1a0$33#f5_aKx3wInTNU6XCo8cTK9eH3igzEuCYzHzoSXjHPX2jHPX2zZ4hF", "%b7$38#5a2_bKFaP0AXlyLhyi6lMLxKcVVnhPj2HMsTyy4ThnAkThnAkQjtWu"};
     public static final String MAIL_USERNAME = "ceons";
     public static final int DEFAULT_NUMBER_OF_REGENERATORS = 100;
+    public static final Integer[] NUMBER_OF_CORES_OPTIONS = {1, 3, 7, 11, 22};
     public static int numberOfCores = 3;
 
     static void registerAlgorithm(String algorithmClassFullName) throws Exception {

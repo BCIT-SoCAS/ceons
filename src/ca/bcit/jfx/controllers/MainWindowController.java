@@ -70,10 +70,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.concurrent.ScheduledExecutorService;
 
 public class MainWindowController implements Initializable {
@@ -116,6 +114,8 @@ public class MainWindowController implements Initializable {
     private Button updateTopologyButton;
     @FXML
     private ComboBox<String> localeCombo;
+    @FXML
+    private ComboBox<Integer> numberOfCoresCombo;
 
     FileChooser fileChooser;
 
@@ -129,6 +129,8 @@ public class MainWindowController implements Initializable {
 
     private static Timeline updateTimeline;
     private static ScheduledExecutorService executorService;
+
+    private boolean loadedTopologyAtLeastOnce = false;
 
     public ResizableCanvas getCanvas() {
         return graph;
@@ -260,6 +262,23 @@ public class MainWindowController implements Initializable {
         localeCombo.setItems(new ObservableListWrapper<>(LocaleEnum.labels()));
         localeCombo.setValue(Settings.CURRENT_LOCALE.label);
         localeCombo.getSelectionModel().selectedItemProperty().addListener(MainWindowController::localeChanged);
+
+        numberOfCoresCombo.setItems(new ObservableListWrapper<>(Arrays.asList(Settings.NUMBER_OF_CORES_OPTIONS)));
+        numberOfCoresCombo.setValue(Settings.numberOfCores);
+        numberOfCoresCombo.setOnAction((e) -> {
+            try {
+                Integer newNumberOfCores = numberOfCoresCombo.getSelectionModel().getSelectedItem();
+                Integer oldNumberOfCores = Settings.numberOfCores;
+                if (!newNumberOfCores.equals(oldNumberOfCores)) {
+                    Settings.numberOfCores = newNumberOfCores;
+                    if (loadedTopologyAtLeastOnce)
+                        initializeSimulationsAndNetworks();
+                }
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
 
         try {
             Utils.setStaticFinal(Console.class, "cout", console);
@@ -550,8 +569,10 @@ public class MainWindowController implements Initializable {
             updateTopologyButton.setDisable(false);
         }
         finally {
-            if (loadSuccessful)
+            if (loadSuccessful) {
+                loadedTopologyAtLeastOnce = true;
                 Logger.info(LocaleUtils.translate("finished_loading_project"));
+            }
             else
                 Logger.info(LocaleUtils.translate("loading_cancelled"));
         }

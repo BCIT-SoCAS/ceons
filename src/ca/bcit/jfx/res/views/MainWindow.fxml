@@ -57,6 +57,9 @@
 
                                 <CeonsLabel text="%control_settings_language"/>
                                 <ComboBox fx:id="localeCombo" layoutX="15.0" layoutY="33.0" promptText="%choose_language"/>
+
+                                <CeonsLabel text="%number_of_cores"/>
+                                <ComboBox fx:id="numberOfCoresCombo" promptText="%number_of_cores"/>
                             </children>
                         </VBox>
                     </content>
