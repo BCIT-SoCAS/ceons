@@ -5,6 +5,7 @@ import ca.bcit.net.modulation.IModulation;
 import ca.bcit.net.spectrum.BackupSpectrumSegment;
 import ca.bcit.net.spectrum.Spectrum;
 import ca.bcit.net.spectrum.WorkingSpectrumSegment;
+import ca.bcit.Settings;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -26,9 +27,9 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 			NetworkNode destination = path.get(isUp ? i : path.size() - i - 1);
 			NetworkLink networkLink = network.getLink(source, destination);
 
-			for (Core core: networkLink.getCores()) {
-				Spectrum spectrum = source.getID() < destination.getID() ? core.slicesUp : core.slicesDown;
-				parts.add(new PathPart(source, destination, networkLink.getLength(), core.getId(), spectrum));
+			for (int c = 0 ; c < networkLink.getCores().size(); c++) {
+				Spectrum spectrum = source.getID() < destination.getID() ? networkLink.getCores().get(c).slicesUp : networkLink.getCores().get(c).slicesDown;
+				parts.add(new PathPart(source, destination, networkLink.getLength(), c, spectrum));
 			}
 		}
 
@@ -54,22 +55,41 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 	}
 	
 	public void mergeRegeneratorlessParts() {
-		for (int i = 1; i < parts.size(); i++)
-			if (!parts.get(i).getSource().hasFreeRegenerators()) {
-				parts.get(i - 1).merge(parts.get(i));
-				parts.remove(i);
-				i--;
+		for (int i = Settings.numberOfCores; i < parts.size(); i++)
+			for (int j = i - 1; j >= 0; j--){
+				PathPart current = parts.get(i);
+				PathPart previous = parts.get(j);
+				boolean partSourceHasFreeRegenerators = current.getSource().hasFreeRegenerators();
+				boolean partsHaveSameCoreId = current.getCoreId() == previous.getCoreId();
+				if(partsHaveSameCoreId){
+					if (!partSourceHasFreeRegenerators) {
+						previous.merge(current);
+						parts.remove(i);
+						i--;
+					}
+					break;
+				}
 			}
 	}
 	
 	public void mergeIdenticalModulation(int volume) {
-		for (int i = 1; i < parts.size(); i++)
-			if (parts.get(i - 1).getModulation() == parts.get(i).getModulation() && parts.get(i - 1).getLength() +
-					parts.get(i).getLength() <= parts.get(i).getModulation().getMaximumDistanceSupportedByBitrateWithJumpsOfTenGbps()[volume]) {
-				parts.get(i - 1).merge(parts.get(i));
-				parts.remove(i);
-				i--;
+		for (int i = Settings.numberOfCores; i < parts.size(); i++) {
+			for (int j = i-1; j >= 0; j--) {
+				PathPart current = parts.get(i);
+				PathPart previous = parts.get(j);
+				boolean partsHaveSameCoreId = current.getCoreId() == previous.getCoreId();
+				boolean partsHaveSameModulation = previous.getModulation() == current.getModulation();
+				boolean combinedPartsLengthIsLessThanOrEqualToModulationMaximumDistance = previous.getLength() + current.getLength() <= current.getModulation().getMaximumDistanceSupportedByBitrateWithJumpsOfTenGbps()[volume];
+				if(partsHaveSameCoreId){
+					if (partsHaveSameModulation && combinedPartsLengthIsLessThanOrEqualToModulationMaximumDistance) {
+						previous.merge(current);
+						parts.remove(i);
+						i--;
+					}
+					break;
+				}
 			}
+		}
 	}
 	
 	public IModulation getModulationFromLongestPart() {
