@@ -12,11 +12,11 @@ import java.util.List;
 public class DeepLearning2 extends BaseRMSAAlgorithm implements IRMSAAlgorithm{
 
 	public String getKey(){
-		return "DeepLearning2";
+		return "DLTotalScorePerPath";
 	};
 
 	public String getName(){
-		return "DeepLearning2";
+		return "DLTotalScorePerPath";
 	};
 
 	public String getDocumentationURL(){
@@ -31,7 +31,7 @@ public class DeepLearning2 extends BaseRMSAAlgorithm implements IRMSAAlgorithm{
 			List<PartedPath> paths = demand.getCandidatePaths(false, network);
 			applyMetricsToCandidatePaths(network, volume, paths);
 
-			int n = network.getBestPathsCount();
+			int numCandidatePaths = network.getBestPathsCount();
 
 			TrafficGenerator generator = network.getTrafficGenerator();
 
@@ -51,8 +51,8 @@ public class DeepLearning2 extends BaseRMSAAlgorithm implements IRMSAAlgorithm{
 					}
 				}
 				double totalScore = 0.0;
-				for (int i = (int) (pathNumber * Math.pow(n, 2)); i < pathNumber * Math.pow(n, 2) + Math.pow(n, 2); i++)
-					totalScore += scores.get((int) (pathNumber * Math.pow(n, 2)));
+				for (int i = (int) (pathNumber * Math.pow(numCandidatePaths, 2)); i < pathNumber * Math.pow(numCandidatePaths, 2) + Math.pow(numCandidatePaths, 2); i++)
+					totalScore += scores.get((int) (pathNumber * Math.pow(numCandidatePaths, 2)));
 
 				path.setMetric(totalScore);
 				pathNumber += 1;
