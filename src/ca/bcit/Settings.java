@@ -31,7 +31,7 @@ public class Settings {
     public static final String MAIL_USERNAME = "ceons";
     public static final int DEFAULT_NUMBER_OF_REGENERATORS = 100;
     public static final Integer[] NUMBER_OF_CORES_OPTIONS = {1, 3, 7, 11, 22};
-    public static int numberOfCores = 3;
+    public static int numberOfCores = 1;
 
     static void registerAlgorithm(String algorithmClassFullName) throws Exception {
         try {

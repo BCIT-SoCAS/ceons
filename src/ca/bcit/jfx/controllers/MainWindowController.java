@@ -271,6 +271,7 @@ public class MainWindowController implements Initializable {
                 Integer oldNumberOfCores = Settings.numberOfCores;
                 if (!newNumberOfCores.equals(oldNumberOfCores)) {
                     Settings.numberOfCores = newNumberOfCores;
+                    Logger.info(LocaleUtils.translate("number_of_cores_changed_to") + " " + newNumberOfCores);
                     if (loadedTopologyAtLeastOnce)
                         initializeSimulationsAndNetworks();
                 }
