@@ -70,8 +70,6 @@ public class SimulationMenuController implements Initializable {
 	@FXML
 	private ComboBox<TrafficGenerator> generators;
 	@FXML
-	private ComboBox<Integer> cores;
-	@FXML
 	private CheckBox runMultipleSimulations;
 	@FXML
 	private Label simulationRepetitions;
@@ -105,10 +103,26 @@ public class SimulationMenuController implements Initializable {
 	private UIntField demands;
 	@FXML
 	private VBox settings;
+
+	@FXML
+	private VBox singleSimulationSettingsErlang;
+	@FXML
+	private VBox singleSimulationSettingsSeed;
+
 	@FXML
 	private HBox multipleSimulatonSettingsLabel;
 	@FXML
 	private HBox multipleSimulatonSettingsRange;
+
+	@FXML
+	private VBox multipleSimulationSettingsErlangLowerLimit;
+	@FXML
+	private VBox multipleSimulationSettingsErlangUpperLimit;
+	@FXML
+	private VBox simulationsAtEachErlang;
+	@FXML
+	private VBox stepsBetweenErlangs;
+
 	@FXML
 	private ComboBox<String> algorithms;
 	@FXML
@@ -165,8 +179,7 @@ public class SimulationMenuController implements Initializable {
 				}
 			}
 		});
-		cores.getItems().addAll(
-				1, 3, 7, 11, 22 );
+
 		modulations = new CheckBox[Settings.registeredModulations.size()];
 		for (IModulation modulation : Settings.registeredModulations.values())
 			modulations[modulation.getId()] = ((CheckBox) settings.lookup("#modulation" + modulation.getId()));
@@ -225,35 +238,37 @@ public class SimulationMenuController implements Initializable {
 			erlangRangeHighField = new UIntField(700);
 			erlangRangeHighField.setAlignment(Pos.CENTER);
 
-			settings.getChildren().remove(erlangLabel);
-			settings.getChildren().remove(erlangIntField);
-			settings.getChildren().remove(seedLabel);
-			settings.getChildren().remove(seedField);
+			singleSimulationSettingsErlang.getChildren().remove(erlangLabel);
+			singleSimulationSettingsErlang.getChildren().remove(erlangIntField);
+			singleSimulationSettingsSeed.getChildren().remove(seedLabel);
+			singleSimulationSettingsSeed.getChildren().remove(seedField);
 
-			settings.getChildren().add(SIMULATION_REPETITION_LABEL_INDEX, simulationRepetitions);
-			settings.getChildren().add(SIMULATION_REPETITION_LABEL_INDEX + 1, numRepetitionsPerErlang);
+			simulationsAtEachErlang.getChildren().add(simulationRepetitions);
+			simulationsAtEachErlang.getChildren().add(numRepetitionsPerErlang);
 
-			settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX, erlangRangeLabel);
-			multipleSimulatonSettingsLabel.getChildren().add(erlangRangeLowLabel);
-			multipleSimulatonSettingsLabel.getChildren().add(erlangRangeHighLabel);
-			multipleSimulatonSettingsRange.getChildren().add(erlangRangeLowField);
-			multipleSimulatonSettingsRange.getChildren().add(erlangRangeHighField);
+			/*settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX, erlangRangeLabel);*/
+			multipleSimulationSettingsErlangLowerLimit.getChildren().add(erlangRangeLowLabel);
+			multipleSimulationSettingsErlangUpperLimit.getChildren().add(erlangRangeHighLabel);
+			multipleSimulationSettingsErlangLowerLimit.getChildren().add(erlangRangeLowField);
+			multipleSimulationSettingsErlangUpperLimit.getChildren().add(erlangRangeHighField);
 
-			settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX + 3, stepBetweenErlangsLabel);
-			settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX + 4, stepBetweenErlangsField);
+			stepsBetweenErlangs.getChildren().add(stepBetweenErlangsLabel);
+			stepsBetweenErlangs.getChildren().add(stepBetweenErlangsField);
 		} else {
-			settings.getChildren().remove(simulationRepetitions);
-			settings.getChildren().remove(numRepetitionsPerErlang);
-			settings.getChildren().remove(erlangRangeLabel);
-			settings.getChildren().remove(stepBetweenErlangsLabel);
-			settings.getChildren().remove(stepBetweenErlangsField);
-			multipleSimulatonSettingsLabel.getChildren().clear();
-			multipleSimulatonSettingsRange.getChildren().clear();
+			simulationsAtEachErlang.getChildren().remove(simulationRepetitions);
+			simulationsAtEachErlang.getChildren().remove(numRepetitionsPerErlang);
+			/*settings.getChildren().remove(erlangRangeLabel);*/
+			multipleSimulationSettingsErlangLowerLimit.getChildren().remove(erlangRangeLowLabel);
+			multipleSimulationSettingsErlangUpperLimit.getChildren().remove(erlangRangeHighLabel);
+			multipleSimulationSettingsErlangLowerLimit.getChildren().remove(erlangRangeLowField);
+			multipleSimulationSettingsErlangUpperLimit.getChildren().remove(erlangRangeHighField);
+			stepsBetweenErlangs.getChildren().remove(stepBetweenErlangsLabel);
+			stepsBetweenErlangs.getChildren().remove(stepBetweenErlangsField);
 
-			settings.getChildren().add(ERLANG_LABEL_INDEX, erlangLabel);
-			settings.getChildren().add(ERLANG_INT_FIELD_INDEX, erlangIntField);
-			settings.getChildren().add(ERLANG_INT_FIELD_INDEX + 1, seedLabel);
-			settings.getChildren().add(ERLANG_INT_FIELD_INDEX + 2, seedField);
+            singleSimulationSettingsErlang.getChildren().add(erlangLabel);
+            singleSimulationSettingsErlang.getChildren().add(erlangIntField);
+            singleSimulationSettingsSeed.getChildren().add(seedLabel);
+            singleSimulationSettingsSeed.getChildren().add(seedField);
 		}
 
 		erlangLabel.setVisible(!erlangLabel.isVisible());
@@ -345,7 +360,7 @@ public class SimulationMenuController implements Initializable {
 				simulation = new Simulation(network, generators.getValue());
 
 				//TODO: REFACTOR SIMULATION TASK INTO SIMULATION
-				SimulationTask task = new SimulationTask(simulation, seedField.getValue(), cores.getValue(), Double.parseDouble(alpha.getText()), erlangIntField.getValue(), demands.getValue(), true, this);
+				SimulationTask task = new SimulationTask(simulation, seedField.getValue(), Double.parseDouble(alpha.getText()), erlangIntField.getValue(), demands.getValue(), true, this);
 				progressBar.runTask(task, true, this);
 			} else {
 				if (erlangRangeLowField.getValue() > erlangRangeHighField.getValue() || erlangRangeLowField.getValue() == erlangRangeHighField.getValue()) {
