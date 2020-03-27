@@ -12,11 +12,11 @@ import java.util.List;
 public class DeepLearning2 extends BaseRMSAAlgorithm implements IRMSAAlgorithm{
 
 	public String getKey(){
-		return "DeepLearning";
+		return "DeepLearning2";
 	};
 
 	public String getName(){
-		return "DeepLearning";
+		return "DeepLearning2";
 	};
 
 	public String getDocumentationURL(){

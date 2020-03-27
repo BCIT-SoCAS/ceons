@@ -82,6 +82,7 @@ public class Application extends javafx.application.Application {
         Settings.registerAlgorithm("ca.bcit.net.algo.SPF");
         Settings.registerAlgorithm("ca.bcit.net.algo.AMRA");
         Settings.registerAlgorithm("ca.bcit.net.algo.DeepLearning");
+        Settings.registerAlgorithm("ca.bcit.net.algo.DeepLearning2");
     }
 
     private static void registerModulations() throws Exception {
