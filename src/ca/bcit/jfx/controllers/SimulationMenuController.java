@@ -2,17 +2,16 @@ package ca.bcit.jfx.controllers;
 
 import ca.bcit.ApplicationResources;
 import ca.bcit.Settings;
-import ca.bcit.graph.Path;
 import ca.bcit.io.MapLoadingException;
 import ca.bcit.jfx.DrawingState;
 import ca.bcit.jfx.components.*;
 import ca.bcit.jfx.tasks.SimulationTask;
 import ca.bcit.net.MetricType;
-import ca.bcit.net.Modulation;
 import ca.bcit.net.Network;
 import ca.bcit.net.Simulation;
 import ca.bcit.net.algo.IRMSAAlgorithm;
 import ca.bcit.net.demand.generator.TrafficGenerator;
+import ca.bcit.net.modulation.IModulation;
 import ca.bcit.utils.LocaleUtils;
 import ca.bcit.utils.random.PasswordEncrypter;
 import javafx.event.ActionEvent;
@@ -31,15 +30,12 @@ import javafx.scene.text.Font;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.core.enumeration.misc.ExchangeVersion;
 import microsoft.exchange.webservices.data.core.enumeration.property.BodyType;
-import microsoft.exchange.webservices.data.core.exception.service.local.ServiceLocalException;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
 import microsoft.exchange.webservices.data.credential.ExchangeCredentials;
 import microsoft.exchange.webservices.data.credential.WebCredentials;
 import microsoft.exchange.webservices.data.property.complex.MessageBody;
-import org.jfree.data.json.JSONUtils;
 
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -107,10 +103,26 @@ public class SimulationMenuController implements Initializable {
 	private UIntField demands;
 	@FXML
 	private VBox settings;
+
+	@FXML
+	private VBox singleSimulationSettingsErlang;
+	@FXML
+	private VBox singleSimulationSettingsSeed;
+
 	@FXML
 	private HBox multipleSimulatonSettingsLabel;
 	@FXML
 	private HBox multipleSimulatonSettingsRange;
+
+	@FXML
+	private VBox multipleSimulationSettingsErlangLowerLimit;
+	@FXML
+	private VBox multipleSimulationSettingsErlangUpperLimit;
+	@FXML
+	private VBox simulationsAtEachErlang;
+	@FXML
+	private VBox stepsBetweenErlangs;
+
 	@FXML
 	private ComboBox<String> algorithms;
 	@FXML
@@ -168,9 +180,9 @@ public class SimulationMenuController implements Initializable {
 			}
 		});
 
-		modulations = new CheckBox[Modulation.values().length];
-		for (Modulation modulation : Modulation.values())
-			modulations[modulation.ordinal()] = ((CheckBox) settings.lookup("#modulation" + modulation.ordinal()));
+		modulations = new CheckBox[Settings.registeredModulations.size()];
+		for (IModulation modulation : Settings.registeredModulations.values())
+			modulations[modulation.getId()] = ((CheckBox) settings.lookup("#modulation" + modulation.getId()));
 
 		generatorsStatic = generators;
 		pauseButton.managedProperty().bind(pauseButton.visibleProperty());
@@ -226,35 +238,37 @@ public class SimulationMenuController implements Initializable {
 			erlangRangeHighField = new UIntField(700);
 			erlangRangeHighField.setAlignment(Pos.CENTER);
 
-			settings.getChildren().remove(erlangLabel);
-			settings.getChildren().remove(erlangIntField);
-			settings.getChildren().remove(seedLabel);
-			settings.getChildren().remove(seedField);
+			singleSimulationSettingsErlang.getChildren().remove(erlangLabel);
+			singleSimulationSettingsErlang.getChildren().remove(erlangIntField);
+			singleSimulationSettingsSeed.getChildren().remove(seedLabel);
+			singleSimulationSettingsSeed.getChildren().remove(seedField);
 
-			settings.getChildren().add(SIMULATION_REPETITION_LABEL_INDEX, simulationRepetitions);
-			settings.getChildren().add(SIMULATION_REPETITION_LABEL_INDEX + 1, numRepetitionsPerErlang);
+			simulationsAtEachErlang.getChildren().add(simulationRepetitions);
+			simulationsAtEachErlang.getChildren().add(numRepetitionsPerErlang);
 
-			settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX, erlangRangeLabel);
-			multipleSimulatonSettingsLabel.getChildren().add(erlangRangeLowLabel);
-			multipleSimulatonSettingsLabel.getChildren().add(erlangRangeHighLabel);
-			multipleSimulatonSettingsRange.getChildren().add(erlangRangeLowField);
-			multipleSimulatonSettingsRange.getChildren().add(erlangRangeHighField);
+			/*settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX, erlangRangeLabel);*/
+			multipleSimulationSettingsErlangLowerLimit.getChildren().add(erlangRangeLowLabel);
+			multipleSimulationSettingsErlangUpperLimit.getChildren().add(erlangRangeHighLabel);
+			multipleSimulationSettingsErlangLowerLimit.getChildren().add(erlangRangeLowField);
+			multipleSimulationSettingsErlangUpperLimit.getChildren().add(erlangRangeHighField);
 
-			settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX + 3, stepBetweenErlangsLabel);
-			settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX + 4, stepBetweenErlangsField);
+			stepsBetweenErlangs.getChildren().add(stepBetweenErlangsLabel);
+			stepsBetweenErlangs.getChildren().add(stepBetweenErlangsField);
 		} else {
-			settings.getChildren().remove(simulationRepetitions);
-			settings.getChildren().remove(numRepetitionsPerErlang);
-			settings.getChildren().remove(erlangRangeLabel);
-			settings.getChildren().remove(stepBetweenErlangsLabel);
-			settings.getChildren().remove(stepBetweenErlangsField);
-			multipleSimulatonSettingsLabel.getChildren().clear();
-			multipleSimulatonSettingsRange.getChildren().clear();
+			simulationsAtEachErlang.getChildren().remove(simulationRepetitions);
+			simulationsAtEachErlang.getChildren().remove(numRepetitionsPerErlang);
+			/*settings.getChildren().remove(erlangRangeLabel);*/
+			multipleSimulationSettingsErlangLowerLimit.getChildren().remove(erlangRangeLowLabel);
+			multipleSimulationSettingsErlangUpperLimit.getChildren().remove(erlangRangeHighLabel);
+			multipleSimulationSettingsErlangLowerLimit.getChildren().remove(erlangRangeLowField);
+			multipleSimulationSettingsErlangUpperLimit.getChildren().remove(erlangRangeHighField);
+			stepsBetweenErlangs.getChildren().remove(stepBetweenErlangsLabel);
+			stepsBetweenErlangs.getChildren().remove(stepBetweenErlangsField);
 
-			settings.getChildren().add(ERLANG_LABEL_INDEX, erlangLabel);
-			settings.getChildren().add(ERLANG_INT_FIELD_INDEX, erlangIntField);
-			settings.getChildren().add(ERLANG_INT_FIELD_INDEX + 1, seedLabel);
-			settings.getChildren().add(ERLANG_INT_FIELD_INDEX + 2, seedField);
+            singleSimulationSettingsErlang.getChildren().add(erlangLabel);
+            singleSimulationSettingsErlang.getChildren().add(erlangIntField);
+            singleSimulationSettingsSeed.getChildren().add(seedLabel);
+            singleSimulationSettingsSeed.getChildren().add(seedField);
 		}
 
 		erlangLabel.setVisible(!erlangLabel.isVisible());
@@ -321,9 +335,11 @@ public class SimulationMenuController implements Initializable {
 			network.setDemandAllocationAlgorithm(Settings.registeredAlgorithms.get(algorithms.getValue()));
 
 			//Initially remove all modulations first and add back modulations that user selects
-			for (Modulation modulation : network.getAllowedModulations()) network.disallowModulation(modulation);
-			for (Modulation modulation : Modulation.values())
-				if (modulations[modulation.ordinal()].isSelected())
+			for (IModulation modulation : network.getAllowedModulations())
+				network.disallowModulation(modulation);
+
+			for (IModulation modulation : Settings.registeredModulations.values())
+				if (modulations[modulation.getId()].isSelected())
 					network.allowModulation(modulation);
 
 			network.setBestPathsCount(bestPaths.getValue());
