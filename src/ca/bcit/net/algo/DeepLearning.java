@@ -28,12 +28,10 @@ public class DeepLearning extends BaseRMSAAlgorithm implements IRMSAAlgorithm{
 
 		try {
 			int volume = (int) Math.ceil(demand.getVolume() / 10.0) - 1;
-			List<PartedPath> candidatePaths = demand.getCandidatePaths(false, network);
-			applyMetricsToCandidatePaths(network, volume, candidatePaths);
+			List<PartedPath> paths = demand.getCandidatePaths(false, network);
+			applyMetricsToCandidatePaths(network, volume, paths);
 
-			int n = 3;
-
-			List<PartedPath> paths = candidatePaths.subList(0, n);
+			int n = network.getBestPathsCount();
 
 			TrafficGenerator generator = network.getTrafficGenerator();
 
@@ -44,11 +42,11 @@ public class DeepLearning extends BaseRMSAAlgorithm implements IRMSAAlgorithm{
 			int pathNumber = 0;
 
 			for (PartedPath path : paths) {
-				TemporaryDemandResult result = allocateTemporaryDemand(path, demand, network, 0.0, n);
+				TemporaryDemandResult result = allocateTemporaryDemand(path, demand, network, 0.0);
 				for (PartedPath path1 : result.paths) {
-					TemporaryDemandResult result1 = allocateTemporaryDemand(path1, demand1, result.network, result.score, n);
+					TemporaryDemandResult result1 = allocateTemporaryDemand(path1, demand1, result.network, result.score);
 					for (PartedPath path2 : result1.paths) {
-						TemporaryDemandResult result2 = allocateTemporaryDemand(path2, demand2, result1.network, result1.score, n);
+						TemporaryDemandResult result2 = allocateTemporaryDemand(path2, demand2, result1.network, result1.score);
 						scores.add(result2.score);
 					}
 				}
@@ -80,17 +78,16 @@ public class DeepLearning extends BaseRMSAAlgorithm implements IRMSAAlgorithm{
 		}
 	}
 
-	protected TemporaryDemandResult allocateTemporaryDemand(PartedPath path, Demand demand, Network network, Double score, int numPaths) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+	protected TemporaryDemandResult allocateTemporaryDemand(PartedPath path, Demand demand, Network network, Double score) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
 		Network tempNetwork = network;
 		Demand tempDemand = demand;
 		tempNetwork.setDemandAllocationAlgorithm((IRMSAAlgorithm) Class.forName("ca.bcit.net.algo.AMRA").newInstance());
 		tempDemand.allocate(path);
 		DemandAllocationResult result = tempNetwork.allocateDemand(tempDemand);
 
-		List<PartedPath> tempDemandCandidatePaths = tempDemand.getCandidatePaths(false, tempNetwork);
+		List<PartedPath> paths = tempDemand.getCandidatePaths(false, tempNetwork);
 		int tempVolume = (int) Math.ceil(tempDemand.getVolume() / 10.0) - 1;
-		applyMetricsToCandidatePaths(tempNetwork, tempVolume, tempDemandCandidatePaths);
-		List<PartedPath> paths = tempDemandCandidatePaths.subList(0, numPaths);
+		applyMetricsToCandidatePaths(tempNetwork, tempVolume, paths);
 
 		if (result.type != DemandAllocationResult.Type.SUCCESS) {
 			score += 100;
