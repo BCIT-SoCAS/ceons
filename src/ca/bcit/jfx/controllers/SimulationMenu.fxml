@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import ca.bcit.jfx.components.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<ScrollPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ca.bcit.jfx.controllers.SimulationMenuController" fitToWidth="true">
+    <content>
+        <VBox>
+            <VBox fx:id="settings" spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
+                <children>
+                    <CheckBox fx:id="runMultipleSimulations" text="%run_multiple_simulation_question" onAction="#multipleSimulationsSelected"/>
+
+                    <CeonsLabel text="%simulation_parameter_algorithm" tooltipText="%simulation_parameter_algorithm_description" />
+                    <GridPane alignment="center">
+                        <children>
+                            <ComboBox fx:id="algorithms" promptText="%choose_algorithm" GridPane.columnIndex="1"/>
+                            <Hyperlink fx:id="algorithmsLink" text="?" GridPane.columnIndex="2" style="-fx-font-size: 20;" />
+                        </children>
+                    </GridPane>
+                    <FlowPane fx:id="algoCheckBoxContainer" alignment="CENTER" />
+
+                    <Separator />
+
+                    <HBox spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
+                        <VBox alignment="CENTER">
+                            <CeonsLabel text="%simulation_parameter_traffic_generators" tooltipText="%simulation_parameter_traffic_generators_description" />
+                            <ComboBox fx:id="generators" promptText="%choose_generator"/>
+                        </VBox>
+                        <VBox alignment="CENTER">
+                            <!-- TODO TRAFFIC DATA label and drop down FOR TRAFFIC GEN GOES HERE-->
+                        </VBox>
+                    </HBox>
+
+                    <Separator/>
+
+                    <HBox fx:id="multipleSimulatonSettingsLabel" alignment="CENTER" spacing="100" />
+                    <HBox fx:id="multipleSimulatonSettingsRange" alignment="CENTER" />
+
+                    <HBox spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
+                        <VBox alignment="CENTER" fx:id="multipleSimulationSettingsErlangLowerLimit"/>
+                        <VBox alignment="CENTER" fx:id="multipleSimulationSettingsErlangUpperLimit"/>
+                    </HBox>
+
+                    <HBox spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
+                        <VBox alignment="CENTER" fx:id="simulationsAtEachErlang"/>
+                        <VBox alignment="CENTER" fx:id="stepsBetweenErlangs"/>
+                    </HBox>
+
+                    <HBox spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
+                        <VBox alignment="CENTER" fx:id="singleSimulationSettingsErlang">
+                            <CeonsLabel fx:id="erlangLabel" text="%simulation_parameter_erlang" tooltipText="%simulation_parameter_erlang_description" />
+                            <UIntField fx:id="erlangIntField" alignment="CENTER"/>
+                        </VBox>
+
+                        <VBox alignment="CENTER" fx:id="singleSimulationSettingsSeed">
+                            <CeonsLabel fx:id="seedLabel" text="%simulation_parameter_seed" tooltipText="%simulation_parameter_seed_description" />
+                            <UIntField fx:id="seedField" alignment="CENTER"/>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
+                        <VBox alignment="CENTER">
+                            <CeonsLabel text="%simulation_parameter_alpha" tooltipText="%simulation_parameter_alpha_description" />
+                            <TextField fx:id="alpha" text="0.0" alignment="CENTER"/>
+                        </VBox>
+
+                        <VBox alignment="CENTER">
+                            <CeonsLabel text="%simulation_parameter_number_of_requests" tooltipText="%simulation_parameter_number_of_requests_description" />
+                            <UIntField fx:id="demands" alignment="CENTER"/>
+                        </VBox>
+                    </HBox>
+
+                    <Separator/>
+
+                    <CeonsLabel text="%simulation_parameter_modulations" tooltipText="%simulation_parameter_modulations_description" />
+                    <GridPane fx:id="modulationSelection" alignment="CENTER">
+                        <columnConstraints>
+                            <ColumnConstraints percentWidth="50"/>
+                        </columnConstraints>
+                        <children>
+                            <CheckBox id="modulation0" text="%modulation_BPSK" selected="true"/>
+                            <CheckBox id="modulation1" text="%modulation_QPSK" GridPane.rowIndex="1" selected="true"/>
+                            <CheckBox id="modulation2" text="%modulation_8QAM" GridPane.rowIndex="2" selected="true"/>
+                            <CheckBox id="modulation3" text="%modulation_16QAM" GridPane.columnIndex="1" selected="true"/>
+                            <CheckBox id="modulation4" text="%modulation_32QAM" GridPane.columnIndex="1" GridPane.rowIndex="1" selected="true"/>
+                            <CheckBox id="modulation5" text="%modulation_64QAM" GridPane.columnIndex="1" GridPane.rowIndex="2" selected="true"/>
+                        </children>
+                    </GridPane>
+					<CheckBox fx:id="allowModulationChange" text="%change_modulation_on_path_question" selected="true"/>
+
+                    <Separator/>
+
+                    <CeonsLabel text="%simulation_parameter_number_of_candidate_paths" />
+                    <UIntField fx:id="bestPaths" alignment="CENTER"/>
+
+                    <!-- <CheckBox style="-fx-padding: 5;" fx:id="emailCheckbox" text="%send_email_checkbox" />
+                    <TextField style="-fx-padding: 2" fx:id="emailInput" promptText="Email" alignment="CENTER"/> -->
+                </children>
+
+            </VBox>
+
+            <Separator/>
+
+            <VBox spacing="8.0" alignment="BOTTOM_CENTER" minHeight="0.0" minWidth="0.0">
+                <children>
+                    <CeonsLabel text="%simulation_controls" />
+                    <HBox fx:id="simulatorControl" spacing="8.0" alignment="BOTTOM_CENTER" minHeight="0.0" minWidth="0.0">
+                        <Button fx:id="StartButton" text="%play_icon" onAction="#startSimulation">
+                            <tooltip><Tooltip text="%start_simulation" /></tooltip>
+                        </Button>
+                        <Button fx:id="pauseButton" text="%pause_icon" disable="true" onAction="#pauseSimulation">
+                            <tooltip><Tooltip text="%pause_simulation" /></tooltip>
+                        </Button>
+                        <Button fx:id="cancelButton" text="%stop_icon" onAction="#cancelSimulation" disable="true">
+                            <tooltip><Tooltip text="%cancel_simulation" /></tooltip>
+                        </Button>
+                        <Button fx:id="clear" text="%clear_canvas" onAction="#clear"/>
+                    </HBox>
+                    <Label fx:id="pauseInfoLabel" visible="false" text="%pause_to_see_statistics_in_live_info_tab" wrapText="true"/>
+                </children>
+                <CheckBox style="-fx-padding: 5;" fx:id="emailCheckbox" text="%send_email_checkbox" />
+                <TextField style="-fx-padding: 2" fx:id="emailInput" promptText="Email" alignment="CENTER"/>
+            </VBox>
+        </VBox>
+    </content>
+</ScrollPane>
