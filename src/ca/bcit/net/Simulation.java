@@ -104,7 +104,7 @@ public class Simulation {
 			// force call the update again here
 		}
 		catch (NetworkException e) {
-			Logger.info(LocaleUtils.translate("network_exception_label") + " " + LocaleUtils.translate(e.getMessage()));
+			Logger.info(LocaleUtils.translate("network_exception_label") + " " + e.getMessage());
 			for (; generator.getGeneratedDemandsCount() < demandsCount;) {
 				Demand demand = generator.next();
 				unhandledVolume += demand.getVolume();
