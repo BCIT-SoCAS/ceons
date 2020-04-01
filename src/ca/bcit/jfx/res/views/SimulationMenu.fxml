@@ -24,10 +24,12 @@
                     <HBox spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
                         <VBox alignment="CENTER">
                             <CeonsLabel text="%simulation_parameter_traffic_generators" tooltipText="%simulation_parameter_traffic_generators_description" />
-                            <ComboBox fx:id="generators" promptText="%choose_generator"/>
+                            <ComboBox fx:id="generators" promptText="%choose_generator" />
                         </VBox>
                         <VBox alignment="CENTER">
                             <!-- TODO TRAFFIC DATA label and drop down FOR TRAFFIC GEN GOES HERE-->
+                            <CeonsLabel fx:id="trafficDataLabel" text="Traffic Data" tooltipText="place holder" />
+                            <ComboBox fx:id="trafficDataYearSelection" promptText="Custom" onAction="#trafficDataIndexChanged" />
                         </VBox>
                     </HBox>
 
@@ -37,8 +39,17 @@
                     <HBox fx:id="multipleSimulatonSettingsRange" alignment="CENTER" />
 
                     <HBox spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
-                        <VBox alignment="CENTER" fx:id="multipleSimulationSettingsErlangLowerLimit"/>
-                        <VBox alignment="CENTER" fx:id="multipleSimulationSettingsErlangUpperLimit"/>
+                        <VBox alignment="CENTER" fx:id="multipleSimulationSettingsErlangLowerLimit" />
+                        <VBox alignment="CENTER" fx:id="multipleSimulationSettingsErlangUpperLimit" />
+                    </HBox>
+
+                    <HBox spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
+                        <VBox alignment="CENTER" fx:id="multipleSimulationSettingsYearLowerLimit">
+                            <ComboBox fx:id="yearRangeLowField" promptText="2018" />
+                        </VBox>
+                        <VBox alignment="CENTER" fx:id="multipleSimulationSettingsYearUpperLimit">
+                            <ComboBox fx:id="yearRangeHighField" promptText="2019" />
+                        </VBox>
                     </HBox>
 
                     <HBox spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
@@ -90,8 +101,12 @@
 
                     <Separator/>
 
-                    <CeonsLabel text="%simulation_parameter_number_of_candidate_paths" />
-                    <UIntField fx:id="bestPaths" alignment="CENTER"/>
+                    <HBox spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
+                        <VBox alignment="CENTER">
+                            <CeonsLabel text="%simulation_parameter_number_of_candidate_paths" />
+                            <UIntField fx:id="bestPaths" alignment="CENTER"/>
+                        </VBox>
+                    </HBox>
 
                     <!-- <CheckBox style="-fx-padding: 5;" fx:id="emailCheckbox" text="%send_email_checkbox" />
                     <TextField style="-fx-padding: 2" fx:id="emailInput" promptText="Email" alignment="CENTER"/> -->
