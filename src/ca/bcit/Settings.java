@@ -16,7 +16,6 @@ import javafx.scene.image.Image;
 public class Settings {
     final static int DEFAULT_YEAR = 2018;
     final static int DEFAULT_ERLANG = 500;
-    final static List<Integer> VOLUME_1 = new ArrayList<Integer>();
     final static double CAGR = 0.26;
     final static int SPLASH_SCREEN_TIMER = 3000;
     public static LocaleEnum CURRENT_LOCALE = LocaleEnum.EN_CA;
