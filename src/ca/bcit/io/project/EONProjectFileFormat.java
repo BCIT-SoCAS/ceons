@@ -1,13 +1,13 @@
 package ca.bcit.io.project;
 
+import ca.bcit.Settings;
 import ca.bcit.io.YamlConfiguration;
 import ca.bcit.io.create.SavedNodeDetails;
 import ca.bcit.io.create.SavedNodeLinks;
 import ca.bcit.io.create.SavedNodeTypes;
-import ca.bcit.net.Modulation;
-import ca.bcit.net.ModulationInIfStatement;
 import ca.bcit.net.Network;
 import ca.bcit.net.demand.generator.TrafficGenerator;
+import ca.bcit.net.modulation.IModulation;
 import ca.bcit.utils.LocaleUtils;
 import com.google.maps.ImageResult;
 import javafx.collections.ObservableList;
@@ -19,7 +19,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -42,15 +41,15 @@ public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
 		YamlConfiguration topology = new YamlConfiguration(zip.getInputStream(zip.getEntry(projectConfig.get("topology"))));
 		Network network = topology.get("");
 
-		BufferedImage map = null;
+		BufferedImage map;
 		InputStream in = zip.getInputStream(zip.getEntry("map.png"));
 		map = ImageIO.read(in);
 
 		YamlConfiguration modulations = new YamlConfiguration(zip.getInputStream(zip.getEntry(projectConfig.get("modulations"))));
-		for (Modulation modulation : Modulation.values())
+		for (IModulation modulation : Settings.registeredModulations.values())
 			for (int i = 0; i < 40; i++) {
-				modulation.modulationDistances[i] = modulations.get(modulation + ".distances." + i);
-				modulation.slicesConsumption[i] = modulations.get(modulation + ".consumptions." + i);
+				modulation.getMaximumDistanceSupportedByBitrateWithJumpsOfTenGbps()[i] = modulations.get(modulation.getKey() + ".distances." + i);
+				modulation.getSlicesConsumptionByBitrateWithJumpsOfTenGbps()[i] = modulations.get(modulation.getKey() + ".consumptions." + i);
 			}
 
 		List<TrafficGenerator> trafficGenerators = new ArrayList<>();
@@ -108,14 +107,14 @@ public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
 
 		//make the modulations.yml
 		YamlConfiguration modulations = new YamlConfiguration();
-		for (Modulation modulation : Modulation.values()) {
-			modulations.put(modulation.toString(), new HashMap<String, Object>());
-			modulations.put(modulation.toString() + ".distances", new ArrayList<Integer>());
-			modulations.put(modulation.toString() + ".consumptions", new ArrayList<Integer>());
-			ModulationInIfStatement modulationInIfStatement = new ModulationInIfStatement();
+		for (IModulation modulation : Settings.registeredModulations.values()) {
+			modulations.put(modulation.getKey(), new HashMap<String, Object>());
+			modulations.put(modulation.getKey() + ".distances", new ArrayList<Integer>());
+			modulations.put(modulation.getKey() + ".consumptions", new ArrayList<Integer>());
+
 			for (int i = 0; i < 40; i++) {
-				modulations.put(modulation + ".distances." + i, modulationInIfStatement.modulationDistance(modulation.toString())[i]);
-				modulations.put(modulation + ".consumptions." + i, modulationInIfStatement.slicesConsumption(modulation.toString())[i]);
+				modulations.put(modulation.getKey() + ".distances." + i, modulation.getMaximumDistanceSupportedByBitrateWithJumpsOfTenGbps()[i]);
+				modulations.put(modulation.getKey() + ".consumptions." + i, modulation.getSlicesConsumptionByBitrateWithJumpsOfTenGbps()[i]);
 			}
 		}
 		zip.putNextEntry(new ZipEntry("modulations.yml"));

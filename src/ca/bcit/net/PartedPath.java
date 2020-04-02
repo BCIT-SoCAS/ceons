@@ -1,6 +1,7 @@
 package ca.bcit.net;
 
 import ca.bcit.net.demand.Demand;
+import ca.bcit.net.modulation.IModulation;
 import ca.bcit.net.spectrum.BackupSpectrumSegment;
 import ca.bcit.net.spectrum.Spectrum;
 import ca.bcit.net.spectrum.WorkingSpectrumSegment;
@@ -31,14 +32,20 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 				occupiedRegeneratorsPercentage += source.occupiedRegenerators;
 				allRegenerators += source.regeneratorsCount;
 			}
-			parts.add(new PathPart(source, destination, network.getLink(source, destination).getLength(), 
-					network.getLinkSlices(source, destination)));
+
+			NetworkLink networkLink = network.getLink(source, destination);
+
+			for (Core core: networkLink.getCores()) {
+				Spectrum spectrum = source.getID() < destination.getID() ? core.slicesUp : core.slicesDown;
+				parts.add(new PathPart(source, destination, networkLink.getLength(), spectrum));
+			}
 		}
-		if (allRegenerators != 0){
+
+		if (allRegenerators != 0)
 			occupiedRegeneratorsPercentage /= allRegenerators;
-		} else{
+		else
 			occupiedRegeneratorsPercentage = 1;
-		}
+
 		this.isUp = isUp;
 		this.path = path;
 	}
@@ -73,14 +80,14 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 	public void mergeIdenticalModulation(int volume) {
 		for (int i = 1; i < parts.size(); i++)
 			if (parts.get(i - 1).getModulation() == parts.get(i).getModulation() && parts.get(i - 1).getLength() +
-					parts.get(i).getLength() <= parts.get(i).getModulation().modulationDistances[volume]) {
+					parts.get(i).getLength() <= parts.get(i).getModulation().getMaximumDistanceSupportedByBitrateWithJumpsOfTenGbps()[volume]) {
 				parts.get(i - 1).merge(parts.get(i));
 				parts.remove(i);
 				i--;
 			}
 	}
 	
-	public Modulation getModulationFromLongestPart() {
+	public IModulation getModulationFromLongestPart() {
 		PathPart longestPart = parts.get(0), part;
 		for (int i = 1; i < parts.size(); i++) {
 			part = parts.get(i);
@@ -110,14 +117,14 @@ public class PartedPath implements Comparable<PartedPath>, Iterable<PathPart> {
 			Spectrum slices = part.getSlices();
 			int slicesCount, offset;
 			if (demand.getWorkingPath() == null) {
-				slicesCount = part.getModulation().slicesConsumption[(int) Math.ceil(demand.getVolume() / 10.0) - 1];
+				slicesCount = part.getModulation().getSlicesConsumptionByBitrateWithJumpsOfTenGbps()[(int) Math.ceil(demand.getVolume() / 10.0) - 1];
 				offset = slices.canAllocateWorking(slicesCount);
 				if (offset == -1)
 					return false;
 				part.segment = new WorkingSpectrumSegment(offset, slicesCount, demand);
 			}
 			else {
-				slicesCount = part.getModulation().slicesConsumption[(int) Math.ceil(demand.getSqueezedVolume() / 10.0) - 1];
+				slicesCount = part.getModulation().getSlicesConsumptionByBitrateWithJumpsOfTenGbps()[(int) Math.ceil(demand.getSqueezedVolume() / 10.0) - 1];
 				offset = slices.canAllocateBackup(demand, slicesCount);
 				if (offset == -1)
 					return false;

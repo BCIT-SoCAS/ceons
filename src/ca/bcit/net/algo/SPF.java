@@ -1,9 +1,7 @@
 package ca.bcit.net.algo;
 
 import ca.bcit.net.*;
-import ca.bcit.net.demand.Demand;
-import ca.bcit.net.demand.DemandAllocationResult;
-import ca.bcit.net.spectrum.NoSpectrumAvailableException;
+import ca.bcit.net.modulation.IModulation;
 
 import java.util.List;
 
@@ -26,8 +24,8 @@ public class SPF extends BaseRMSAAlgorithm implements IRMSAAlgorithm {
 
             // choosing modulations for parts
             for (PathPart part : path) {
-                for (Modulation modulation : network.getAllowedModulations())
-                    if (modulation.modulationDistances[volume] >= part.getLength()) {
+                for (IModulation modulation : network.getAllowedModulations())
+                    if (modulation.getMaximumDistanceSupportedByBitrateWithJumpsOfTenGbps()[volume] >= part.getLength()) {
                         part.setModulation(modulation, 1);
                         break;
                     }

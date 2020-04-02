@@ -52,7 +52,7 @@ public class Simulation {
 		this.generator = generator;
 	}
 
-	public void simulate(long seed, int demandsCount, double alpha, int erlang, boolean replicaPreservation, SimulationTask task) {
+	public void simulate(long seed, int demandsCount, int cores, double alpha, int erlang, boolean replicaPreservation, SimulationTask task) {
 		SimulationMenuController.finished = false;
 		SimulationMenuController.cancelled = false;
 		clearVolumeValues();
@@ -169,7 +169,7 @@ public class Simulation {
 		}
 	}
 
-	public void simulate(long seed, int demandsCount, double alpha, int erlang, boolean replicaPreservation) {
+	public void simulate(long seed, int demandsCount, int cores, double alpha, int erlang, boolean replicaPreservation) {
 		SimulationMenuController.finished = false;
 		SimulationMenuController.cancelled = false;
 		clearVolumeValues();
@@ -317,16 +317,16 @@ public class Simulation {
 		mainWindowController.spectrumBlockedVolume = 0;
 		mainWindowController.regeneratorsBlockedVolume = 0;
 		mainWindowController.linkFailureBlockedVolume = 0;
-		for(NetworkNode n : network.getNodes()){
+		for (NetworkNode n : network.getNodes()) {
 			n.clearOccupied();
-			for(NetworkNode n2 : network.getNodes()){
-				if(network.containsLink(n, n2)){
+			for (NetworkNode n2 : network.getNodes())
+				if (network.containsLink(n, n2)) {
 					NetworkLink networkLink = network.getLink(n, n2);
-					Spectrum spectrum = network.getLinkSlices(n, n2);
-					networkLink.slicesUp = new Spectrum(NetworkLink.NUMBER_OF_SLICES);
-					networkLink.slicesDown = new Spectrum(NetworkLink.NUMBER_OF_SLICES);
+					for (Core core: networkLink.getCores()) {
+						core.slicesUp = new Spectrum(Core.NUMBER_OF_SLICES);
+						core.slicesDown = new Spectrum(Core.NUMBER_OF_SLICES);
+					}
 				}
-			}
 		}
 	}
 
@@ -340,30 +340,35 @@ public class Simulation {
 
 		if (result.workingPath == null)
 			switch (result.type) {
-			case NO_REGENERATORS:
-				regeneratorsBlockedVolume += demand.getVolume();
-				ResizableCanvas.getParentController().regeneratorsBlockedVolume += demand.getVolume();
-				break;
-			case NO_SPECTRUM:
-				spectrumBlockedVolume += demand.getVolume();
-				ResizableCanvas.getParentController().spectrumBlockedVolume += demand.getVolume();
-				break;
-			default:
-				break;
+				case NO_REGENERATORS:
+					regeneratorsBlockedVolume += demand.getVolume();
+					ResizableCanvas.getParentController().regeneratorsBlockedVolume += demand.getVolume();
+					break;
+				case NO_SPECTRUM:
+					spectrumBlockedVolume += demand.getVolume();
+					ResizableCanvas.getParentController().spectrumBlockedVolume += demand.getVolume();
+					break;
+				default:
+					break;
 			}
 		else {
 			allocations++;
 			regsPerAllocation += demand.getWorkingPath().getPartsCount() - 1;
+
 			if (demand.getBackupPath() != null)
 				regsPerAllocation += demand.getBackupPath().getPartsCount() - 1;
+
 			double modulationsUsage[] = new double[6];
+
 			for (PathPart part : result.workingPath)
-				modulationsUsage[part.getModulation().ordinal()]++;
+				modulationsUsage[part.getModulation().getId()]++;
+
 			for (int i = 0; i < 6; i++) {
 				modulationsUsage[i] /= result.workingPath.getPartsCount();
 				this.modulationsUsage[i] += modulationsUsage[i];
 			}
 		}
+
 		totalVolume += demand.getVolume();
 		ResizableCanvas.getParentController().totalVolume += demand.getVolume();
 	}

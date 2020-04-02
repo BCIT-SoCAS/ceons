@@ -15,7 +15,7 @@
 	<children>
 		<GridPane>
 			<columnConstraints>
-				<ColumnConstraints hgrow="SOMETIMES" minWidth="950" prefWidth="950" maxWidth="950" />
+				<ColumnConstraints hgrow="SOMETIMES" minWidth="475" maxWidth="950" />
 			</columnConstraints>
 			<rowConstraints>
 				<RowConstraints minHeight="604" prefHeight="604" maxHeight="604" />
@@ -30,8 +30,9 @@
 					</children>
 				</BorderPane>
 				<Slider translateX="30" maxHeight="300" orientation="VERTICAL" fx:id="zoomSlider"/>
-				<Console fx:id="console" wrapText="true" GridPane.rowIndex="1" />
-				<TaskReadyProgressBar fx:id="progressBar" GridPane.rowIndex="2"/>
+                <Console fx:id="console" wrapText="true" GridPane.rowIndex="1"/>
+<!--                <TextArea fx:id="nodeInfo" GridPane.rowIndex="1" GridPane.columnIndex="2"/>-->
+                <TaskReadyProgressBar fx:id="progressBar" GridPane.rowIndex="2"/>
 			</children>
 		</GridPane>
 		<Accordion fx:id="accordion" GridPane.columnIndex="1" >

@@ -18,27 +18,67 @@
                         </children>
                     </GridPane>
                     <FlowPane fx:id="algoCheckBoxContainer" alignment="CENTER" />
+
                     <Separator />
 
-                    <CeonsLabel text="%simulation_parameter_traffic_generators" tooltipText="%simulation_parameter_traffic_generators_description" />
-                    <ComboBox fx:id="generators" promptText="%choose_generator"/>
+                    <HBox spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
+                        <VBox alignment="CENTER">
+                            <CeonsLabel text="%simulation_parameter_traffic_generators" tooltipText="%simulation_parameter_traffic_generators_description" />
+                            <ComboBox fx:id="generators" promptText="%choose_generator" />
+                        </VBox>
+                        <VBox alignment="CENTER">
+                            <CeonsLabel fx:id="trafficDataLabel" text="%traffic_data"/>
+                            <ComboBox fx:id="trafficDataYearSelection" promptText="%custom" onAction="#trafficDataIndexChanged" />
+                        </VBox>
+                    </HBox>
 
                     <Separator/>
-
-                    <CeonsLabel fx:id="erlangLabel" text="%simulation_parameter_erlang" tooltipText="%simulation_parameter_erlang_description" />
-                    <UIntField fx:id="erlangIntField" alignment="CENTER"/>
 
                     <HBox fx:id="multipleSimulatonSettingsLabel" alignment="CENTER" spacing="100" />
                     <HBox fx:id="multipleSimulatonSettingsRange" alignment="CENTER" />
 
-                    <CeonsLabel fx:id="seedLabel" text="%simulation_parameter_seed" tooltipText="%simulation_parameter_seed_description" />
-                    <UIntField fx:id="seedField" alignment="CENTER"/>
+                    <HBox spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
+                        <VBox alignment="CENTER" fx:id="multipleSimulationSettingsErlangLowerLimit" />
+                        <VBox alignment="CENTER" fx:id="multipleSimulationSettingsErlangUpperLimit" />
+                    </HBox>
 
-                    <CeonsLabel text="%simulation_parameter_alpha" tooltipText="%simulation_parameter_alpha_description" />
-                    <TextField fx:id="alpha" text="0.0" alignment="CENTER"/>
+                    <HBox spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
+                        <VBox alignment="CENTER" fx:id="multipleSimulationSettingsYearLowerLimit">
+                            <ComboBox fx:id="yearRangeLowField" promptText="2018" />
+                        </VBox>
+                        <VBox alignment="CENTER" fx:id="multipleSimulationSettingsYearUpperLimit">
+                            <ComboBox fx:id="yearRangeHighField" promptText="2019" />
+                        </VBox>
+                    </HBox>
 
-                    <CeonsLabel text="%simulation_parameter_number_of_requests" tooltipText="%simulation_parameter_number_of_requests_description" />
-                    <UIntField fx:id="demands" alignment="CENTER"/>
+                    <HBox spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
+                        <VBox alignment="CENTER" fx:id="simulationsAtEachErlang"/>
+                        <VBox alignment="CENTER" fx:id="stepsBetweenErlangs"/>
+                    </HBox>
+
+                    <HBox spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
+                        <VBox alignment="CENTER" fx:id="singleSimulationSettingsErlang">
+                            <CeonsLabel fx:id="erlangLabel" text="%simulation_parameter_erlang" tooltipText="%simulation_parameter_erlang_description" />
+                            <UIntField fx:id="erlangIntField" alignment="CENTER"/>
+                        </VBox>
+
+                        <VBox alignment="CENTER" fx:id="singleSimulationSettingsSeed">
+                            <CeonsLabel fx:id="seedLabel" text="%simulation_parameter_seed" tooltipText="%simulation_parameter_seed_description" />
+                            <UIntField fx:id="seedField" alignment="CENTER"/>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
+                        <VBox alignment="CENTER">
+                            <CeonsLabel text="%simulation_parameter_alpha" tooltipText="%simulation_parameter_alpha_description" />
+                            <TextField fx:id="alpha" text="0.0" alignment="CENTER"/>
+                        </VBox>
+
+                        <VBox alignment="CENTER">
+                            <CeonsLabel text="%simulation_parameter_number_of_requests" tooltipText="%simulation_parameter_number_of_requests_description" />
+                            <UIntField fx:id="demands" alignment="CENTER"/>
+                        </VBox>
+                    </HBox>
 
                     <Separator/>
 
@@ -60,11 +100,15 @@
 
                     <Separator/>
 
-                    <CeonsLabel text="%simulation_parameter_number_of_candidate_paths" />
-                    <UIntField fx:id="bestPaths" alignment="CENTER"/>
+                    <HBox spacing="4.0" alignment="CENTER" minHeight="0.0" minWidth="0.0">
+                        <VBox alignment="CENTER">
+                            <CeonsLabel text="%simulation_parameter_number_of_candidate_paths" />
+                            <UIntField fx:id="bestPaths" alignment="CENTER"/>
+                        </VBox>
+                    </HBox>
 
-                    <CheckBox style="-fx-padding: 5;" fx:id="emailCheckbox" text="%send_email_checkbox" />
-                    <TextField style="-fx-padding: 2" fx:id="emailInput" promptText="Email" alignment="CENTER"/>
+                    <!-- <CheckBox style="-fx-padding: 5;" fx:id="emailCheckbox" text="%send_email_checkbox" />
+                    <TextField style="-fx-padding: 2" fx:id="emailInput" promptText="Email" alignment="CENTER"/> -->
                 </children>
 
             </VBox>
@@ -88,6 +132,8 @@
                     </HBox>
                     <Label fx:id="pauseInfoLabel" visible="false" text="%pause_to_see_statistics_in_live_info_tab" wrapText="true"/>
                 </children>
+                <CheckBox style="-fx-padding: 5;" fx:id="emailCheckbox" text="%send_email_checkbox" />
+                <TextField style="-fx-padding: 2" fx:id="emailInput" promptText="Email" alignment="CENTER"/>
             </VBox>
         </VBox>
     </content>

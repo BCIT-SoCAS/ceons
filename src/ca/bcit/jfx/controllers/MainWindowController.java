@@ -25,6 +25,7 @@ import ca.bcit.net.demand.generator.AnycastDemandGenerator;
 import ca.bcit.net.demand.generator.DemandGenerator;
 import ca.bcit.net.demand.generator.TrafficGenerator;
 import ca.bcit.net.demand.generator.UnicastDemandGenerator;
+import ca.bcit.net.Core;
 import ca.bcit.net.spectrum.Spectrum;
 import ca.bcit.utils.LocaleUtils;
 import ca.bcit.utils.Utils;
@@ -46,6 +47,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
@@ -93,6 +95,7 @@ public class MainWindowController implements Initializable {
     public CheckBox TBP;
     public FlowPane algoCheckBoxContainer;
     private int i;
+
     @FXML
     private Console console;
     @FXML
@@ -245,6 +248,9 @@ public class MainWindowController implements Initializable {
         graph.changeState(DrawingState.nodeUnmarkState);
     }
 
+//    @FXML
+//    private TextArea nodeInfo;
+
     @FXML
     public void initialize(URL location, ResourceBundle resourceBundle) {
         for (Field field : MainWindowController.class.getDeclaredFields())
@@ -282,8 +288,8 @@ public class MainWindowController implements Initializable {
         zoomSlider.setMin(Settings.ZOOM_MIN_LEVEL);
         zoomSlider.setMax(Settings.ZOOM_MAX_LEVEL);
 
-        zoomSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            Settings.zoomLevel = (float) newValue.doubleValue();
+        zoomSlider.valueProperty().addListener((observable, oldValue, calculatedValue) -> {
+            Settings.zoomLevel = (float) calculatedValue.doubleValue();
             map.setScaleX(Settings.zoomLevel);
             map.setScaleY(Settings.zoomLevel);
             graph.setScaleX(Settings.zoomLevel);
@@ -450,11 +456,13 @@ public class MainWindowController implements Initializable {
                                     for (NetworkNode n2 : project.getNetwork().getNodes())
                                         if (project.getNetwork().containsLink(n, n2)) {
                                             NetworkLink networkLink = project.getNetwork().getLink(n, n2);
-                                            Spectrum linkSpectrum = project.getNetwork().getLinkSlices(n, n2);
-                                            int totalSlices = linkSpectrum.getSlicesCount();
-                                            int occupiedSlices = linkSpectrum.getOccupiedSlices();
-                                            int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
-                                            graph.addLink(n.getPosition(), n2.getPosition(), currentPercentage, networkLink.getLength());
+                                            for (Core core: networkLink.getCores()) {
+                                                Spectrum spectrum = n.getID() < n2.getID() ? core.slicesUp : core.slicesDown;
+                                                int totalSlices = spectrum.getSlicesCount();
+                                                int occupiedSlices = spectrum.getOccupiedSlices();
+                                                int currentPercentage = (totalSlices - occupiedSlices) * 100 / totalSlices;
+                                                graph.addLink(n.getPosition(), n2.getPosition(), currentPercentage, networkLink.getLength());
+                                            }
                                         }
                                 }
 
@@ -527,7 +535,8 @@ public class MainWindowController implements Initializable {
 
             Project project = ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).load(file);
             ApplicationResources.setProject(project);
-            setupGenerators(project);
+            int trafficYear = Settings.DEFAULT_YEAR;
+            setupGenerators(project, trafficYear);
             loadSuccessful = true;
             mapImage = SwingFXUtils.toFXImage(project.getMap(), null);
             map.getGraphicsContext2D().drawImage(mapImage, 0, 0, map.getWidth(), map.getHeight());
@@ -592,23 +601,45 @@ public class MainWindowController implements Initializable {
      *
      * @param project loaded
      */
-    public void setupGenerators(Project project) throws MapLoadingException {
+    public void setupGenerators(Project project, int trafficYear) throws MapLoadingException{
         Network network = project.getNetwork();
         List<TrafficGenerator> generators = project.getTrafficGenerators();
+        generators.clear();
 
         List<MappedRandomVariable.Entry<DemandGenerator<?>>> subGenerators = new ArrayList<>();
 
+        double volumeMin1 = 10;
+        int volumeMax1 = 210;
+        int volumeInterval1 = 10;
+
+        double volumeMin2 = 10;
+        int volumeMax2 = 110;
+        int volumeInterval2 = 10;
+
+        double volumeMin3 = 40;
+        int volumeMax3 = 410;
+        int volumeInterval3 = 10;
+
+        double totalCagr = Math.pow((1+ Settings.CAGR), (trafficYear - Settings.DEFAULT_YEAR));
+
+        int calculatedVolumeMin1 = (int)(volumeMin1 * totalCagr);
+        int calculatedVolumeMax1 = (int)(volumeMax1 * totalCagr);
+        int calculatedVolumeMin2 = (int)(volumeMin2 * totalCagr);
+        int calculatedVolumeMax2 = (int)(volumeMax2 * totalCagr);
+        int calculatedVolumeMin3 = (int)(volumeMin3 * totalCagr);
+        int calculatedVolumeMax3 = (int)(volumeMax3 * totalCagr);
+
         try {
             subGenerators.add(new MappedRandomVariable.Entry<>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new ConstantRandomVariable<>(false),
-                    new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 210, 10), new ConstantRandomVariable<>(1f))));
+                    new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(calculatedVolumeMin1, calculatedVolumeMax1, volumeInterval1), new ConstantRandomVariable<>(1f))));
             subGenerators.add(new MappedRandomVariable.Entry<>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getNodes()),
-                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(calculatedVolumeMin2, calculatedVolumeMax2, volumeInterval2), new ConstantRandomVariable<>(1f))));
             subGenerators.add(new MappedRandomVariable.Entry<>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("replicas")), new UniformRandomVariable.Generic<>(network.getGroup("replicas")),
-                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(40, 410, 10), new ConstantRandomVariable<>(1f))));
+                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(calculatedVolumeMin3, calculatedVolumeMax3, volumeInterval3), new ConstantRandomVariable<>(1f))));
             subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getGroup("international")),
-                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(calculatedVolumeMin2, calculatedVolumeMax2, volumeInterval2), new ConstantRandomVariable<>(1f))));
             subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
-                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(calculatedVolumeMin2, calculatedVolumeMax2, volumeInterval2), new ConstantRandomVariable<>(1f))));
 
 
             generators.add(new TrafficGenerator(LocaleUtils.translate("no_backup"), new MappedRandomVariable<>(subGenerators)));
@@ -616,52 +647,52 @@ public class MainWindowController implements Initializable {
             subGenerators = new ArrayList<>();
 
             subGenerators.add(new MappedRandomVariable.Entry<>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new ConstantRandomVariable<>(false),
-                    new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 210, 10), new ConstantRandomVariable<>(1f))));
+                    new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(calculatedVolumeMin1, calculatedVolumeMax1, volumeInterval1), new ConstantRandomVariable<>(1f))));
             subGenerators.add(new MappedRandomVariable.Entry<>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getNodes()),
-                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(calculatedVolumeMin2, calculatedVolumeMax2, volumeInterval2), new ConstantRandomVariable<>(1f))));
             subGenerators.add(new MappedRandomVariable.Entry<>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("replicas")), new UniformRandomVariable.Generic<>(network.getGroup("replicas")),
-                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(40, 410, 10), new ConstantRandomVariable<>(1f))));
+                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(calculatedVolumeMin3, calculatedVolumeMax3, volumeInterval3), new ConstantRandomVariable<>(1f))));
             subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getGroup("international")),
-                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(calculatedVolumeMin2, calculatedVolumeMax2, volumeInterval2), new ConstantRandomVariable<>(1f))));
             subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
-                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(calculatedVolumeMin2, calculatedVolumeMax2, volumeInterval2), new ConstantRandomVariable<>(1f))));
 
             generators.add(new TrafficGenerator(LocaleUtils.translate("dedicated_backup"), new MappedRandomVariable<>(subGenerators)));
 
             subGenerators = new ArrayList<>();
 
             subGenerators.add(new MappedRandomVariable.Entry<>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new ConstantRandomVariable<>(false),
-                    new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 210, 10), new ConstantRandomVariable<>(1f))));
+                    new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(calculatedVolumeMin1, calculatedVolumeMax1, volumeInterval1), new ConstantRandomVariable<>(1f))));
             subGenerators.add(new MappedRandomVariable.Entry<>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getNodes()),
-                    new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+                    new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(calculatedVolumeMin2, calculatedVolumeMax2, volumeInterval2), new ConstantRandomVariable<>(1f))));
             subGenerators.add(new MappedRandomVariable.Entry<>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("replicas")), new UniformRandomVariable.Generic<>(network.getGroup("replicas")),
-                    new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(40, 410, 10), new ConstantRandomVariable<>(1f))));
+                    new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(calculatedVolumeMin3, calculatedVolumeMax3, volumeInterval3), new ConstantRandomVariable<>(1f))));
             subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getGroup("international")),
-                    new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+                    new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(calculatedVolumeMin2, calculatedVolumeMax2, volumeInterval2), new ConstantRandomVariable<>(1f))));
             subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
-                    new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+                    new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(calculatedVolumeMin2, calculatedVolumeMax2, volumeInterval2), new ConstantRandomVariable<>(1f))));
 
             subGenerators.add(new MappedRandomVariable.Entry<>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new ConstantRandomVariable<>(false),
-                    new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 210, 10), new ConstantRandomVariable<>(0.5f))));
+                    new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(calculatedVolumeMin1, calculatedVolumeMax1, volumeInterval1), new ConstantRandomVariable<>(0.5f))));
             subGenerators.add(new MappedRandomVariable.Entry<>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getNodes()),
-                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(0.5f))));
+                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(calculatedVolumeMin2, calculatedVolumeMax2, volumeInterval2), new ConstantRandomVariable<>(0.5f))));
             subGenerators.add(new MappedRandomVariable.Entry<>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("replicas")), new UniformRandomVariable.Generic<>(network.getGroup("replicas")),
-                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(40, 410, 10), new ConstantRandomVariable<>(0.5f))));
+                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(calculatedVolumeMin3, calculatedVolumeMax3, volumeInterval3), new ConstantRandomVariable<>(0.5f))));
             subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getGroup("international")),
-                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(0.5f))));
+                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(calculatedVolumeMin2, calculatedVolumeMax2, volumeInterval2), new ConstantRandomVariable<>(0.5f))));
             subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
-                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(0.5f))));
+                    new ConstantRandomVariable<>(false), new ConstantRandomVariable<>(true), new UniformRandomVariable.Integer(calculatedVolumeMin2, calculatedVolumeMax2, volumeInterval2), new ConstantRandomVariable<>(0.5f))));
 
             subGenerators.add(new MappedRandomVariable.Entry<>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new ConstantRandomVariable<>(true),
-                    new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 210, 10), new ConstantRandomVariable<>(1f))));
+                    new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(calculatedVolumeMin1, calculatedVolumeMax1, volumeInterval1), new ConstantRandomVariable<>(1f))));
             subGenerators.add(new MappedRandomVariable.Entry<>(18, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getNodes()),
-                    new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+                    new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(calculatedVolumeMin2, calculatedVolumeMax2, volumeInterval2), new ConstantRandomVariable<>(1f))));
             subGenerators.add(new MappedRandomVariable.Entry<>(11, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("replicas")), new UniformRandomVariable.Generic<>(network.getGroup("replicas")),
-                    new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(40, 410, 10), new ConstantRandomVariable<>(1f))));
+                    new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(calculatedVolumeMin3, calculatedVolumeMax3, volumeInterval3), new ConstantRandomVariable<>(1f))));
             subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new UniformRandomVariable.Generic<>(network.getGroup("international")),
-                    new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+                    new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(calculatedVolumeMin2, calculatedVolumeMax2, volumeInterval2), new ConstantRandomVariable<>(1f))));
             subGenerators.add(new MappedRandomVariable.Entry<>(21, new UnicastDemandGenerator(new UniformRandomVariable.Generic<>(network.getGroup("international")), new UniformRandomVariable.Generic<>(network.getNodes()),
-                    new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(10, 110, 10), new ConstantRandomVariable<>(1f))));
+                    new ConstantRandomVariable<>(true), new ConstantRandomVariable<>(false), new UniformRandomVariable.Integer(calculatedVolumeMin2, calculatedVolumeMax2, volumeInterval2), new ConstantRandomVariable<>(1f))));
 
             generators.add(new TrafficGenerator(LocaleUtils.translate("shared_backup"), new MappedRandomVariable<>(subGenerators)));
 

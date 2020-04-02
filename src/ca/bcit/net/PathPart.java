@@ -1,5 +1,6 @@
 package ca.bcit.net;
 
+import ca.bcit.net.modulation.IModulation;
 import ca.bcit.net.spectrum.AllocatableSpectrumSegment;
 import ca.bcit.net.spectrum.Spectrum;
 
@@ -14,7 +15,7 @@ public class PathPart {
 	public final ArrayList<Spectrum> spectra = new ArrayList<>();
 	AllocatableSpectrumSegment segment;
 	
-	private Modulation modulation;
+	private IModulation modulation;
 	int metric = Integer.MAX_VALUE;
 	
 	public PathPart(NetworkNode source, NetworkNode destination, int length, Spectrum... spectra) {
@@ -61,25 +62,25 @@ public class PathPart {
 	}
 	
 	public Spectrum getSlices() {
-		Spectrum result = new Spectrum(NetworkLink.NUMBER_OF_SLICES);
+		Spectrum result = new Spectrum(Core.NUMBER_OF_SLICES);
 		for (Spectrum slices : this.spectra)
 			result = result.merge(slices);
 		return result;
 	}
 	
-	public void setModulationIfBetter(Modulation modulation, int metric) {
+	public void setModulationIfBetter(IModulation modulation, int metric) {
 		if (metric < this.metric) {
 			this.metric = metric;
 			this.modulation = modulation;
 		}
 	}
 	
-	public void setModulation(Modulation modulation, int metric) {
+	public void setModulation(IModulation modulation, int metric) {
 		this.metric = metric;
 		this.modulation = modulation;
 	}
 	
-	public Modulation getModulation() {
+	public IModulation getModulation() {
 		return modulation;
 	}
 }

@@ -2,17 +2,17 @@ package ca.bcit.jfx.controllers;
 
 import ca.bcit.ApplicationResources;
 import ca.bcit.Settings;
-import ca.bcit.graph.Path;
 import ca.bcit.io.MapLoadingException;
+import ca.bcit.io.project.Project;
 import ca.bcit.jfx.DrawingState;
 import ca.bcit.jfx.components.*;
 import ca.bcit.jfx.tasks.SimulationTask;
 import ca.bcit.net.MetricType;
-import ca.bcit.net.Modulation;
 import ca.bcit.net.Network;
 import ca.bcit.net.Simulation;
 import ca.bcit.net.algo.IRMSAAlgorithm;
 import ca.bcit.net.demand.generator.TrafficGenerator;
+import ca.bcit.net.modulation.IModulation;
 import ca.bcit.utils.LocaleUtils;
 import ca.bcit.utils.random.PasswordEncrypter;
 import javafx.event.ActionEvent;
@@ -31,15 +31,12 @@ import javafx.scene.text.Font;
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.core.enumeration.misc.ExchangeVersion;
 import microsoft.exchange.webservices.data.core.enumeration.property.BodyType;
-import microsoft.exchange.webservices.data.core.exception.service.local.ServiceLocalException;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
 import microsoft.exchange.webservices.data.credential.ExchangeCredentials;
 import microsoft.exchange.webservices.data.credential.WebCredentials;
 import microsoft.exchange.webservices.data.property.complex.MessageBody;
-import org.jfree.data.json.JSONUtils;
 
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -107,10 +104,42 @@ public class SimulationMenuController implements Initializable {
 	private UIntField demands;
 	@FXML
 	private VBox settings;
+
+	@FXML
+	private VBox singleSimulationSettingsErlang;
+	@FXML
+	private VBox singleSimulationSettingsSeed;
+
 	@FXML
 	private HBox multipleSimulatonSettingsLabel;
 	@FXML
 	private HBox multipleSimulatonSettingsRange;
+
+	@FXML
+	private VBox multipleSimulationSettingsErlangLowerLimit;
+	@FXML
+	private VBox multipleSimulationSettingsErlangUpperLimit;
+	@FXML
+	private VBox multipleSimulationSettingsYearLowerLimit;
+	@FXML
+	private VBox multipleSimulationSettingsYearUpperLimit;
+	@FXML
+	private VBox simulationsAtEachErlang;
+	@FXML
+	private VBox stepsBetweenErlangs;
+
+	@FXML
+	private ComboBox<String> trafficDataYearSelection;
+
+	@FXML
+	private Label yearRangeLowLabel;
+	@FXML
+	private Label yearRangeHighLabel;
+	@FXML
+	private ComboBox<String> yearRangeLowField;
+	@FXML
+	private ComboBox<String> yearRangeHighField;
+
 	@FXML
 	private ComboBox<String> algorithms;
 	@FXML
@@ -155,22 +184,36 @@ public class SimulationMenuController implements Initializable {
 				Alert selectAlgoAlert = new Alert(Alert.AlertType.ERROR);
 				selectAlgoAlert.setHeaderText(LocaleUtils.translate("select_an_algorithm_to_view_the_documentation"));
 				selectAlgoAlert.show();
-			} else {
+			}
+			else {
 				String algoKey = "";
 				for (IRMSAAlgorithm algorithm : Settings.registeredAlgorithms.values())
 					if (algorithm.getName().equals(algorithms.getValue()))
 						algoKey = algorithm.getKey();
 				try {
 					Desktop.getDesktop().browse(new URI(Settings.registeredAlgorithms.get(algoKey).getDocumentationURL()));
-				} catch (IOException | URISyntaxException ex) {
+				}
+				catch (IOException | URISyntaxException ex) {
 					ex.printStackTrace();
 				}
 			}
 		});
 
-		modulations = new CheckBox[Modulation.values().length];
-		for (Modulation modulation : Modulation.values())
-			modulations[modulation.ordinal()] = ((CheckBox) settings.lookup("#modulation" + modulation.ordinal()));
+		yearRangeLowLabel = new CeonsLabel(LocaleUtils.translate("year_lower_range"));
+		yearRangeLowLabel.setFont(new Font(10));
+
+		yearRangeLowField.getItems().addAll("2018", "2019", "2020", "2021", "2022", "2023");
+		yearRangeLowField.setValue(Integer.toString(Settings.DEFAULT_YEAR));
+
+		yearRangeHighLabel = new CeonsLabel(LocaleUtils.translate("year_upper_range"));
+		yearRangeHighLabel.setFont(new Font(10));
+
+		yearRangeHighField.getItems().addAll("2019", "2020", "2021", "2022", "2023");
+		yearRangeHighField.setValue(Integer.toString(Settings.DEFAULT_YEAR + 1));
+
+		modulations = new CheckBox[Settings.registeredModulations.size()];
+		for (IModulation modulation : Settings.registeredModulations.values())
+			modulations[modulation.getId()] = ((CheckBox) settings.lookup("#modulation" + modulation.getId()));
 
 		generatorsStatic = generators;
 		pauseButton.managedProperty().bind(pauseButton.visibleProperty());
@@ -191,6 +234,10 @@ public class SimulationMenuController implements Initializable {
 		algoCheckBoxContainer.visibleProperty().bind(runMultipleSimulations.selectedProperty());
 		emailInput.visibleProperty().bind(emailCheckbox.selectedProperty());
 		emailInput.managedProperty().bind(emailCheckbox.selectedProperty());
+		trafficDataYearSelection.getItems().addAll(LocaleUtils.translate("custom"), "2018", "2019", "2020", "2021", "2022", "2023");
+		trafficDataYearSelection.setValue(LocaleUtils.translate("custom"));
+		multipleSimulationSettingsYearLowerLimit.getChildren().clear();
+		multipleSimulationSettingsYearUpperLimit.getChildren().clear();
 	}
 
 	void setProgressBar(TaskReadyProgressBar progressBar) {
@@ -198,9 +245,46 @@ public class SimulationMenuController implements Initializable {
 	}
 
 	@FXML
+	public void trafficDataIndexChanged(ActionEvent event) {
+		String trafficDataVal = trafficDataYearSelection.getValue();
+
+		boolean isMultipleSimulationsSelected = runMultipleSimulations.isSelected();
+		if (isMultipleSimulationsSelected) {
+			if (!trafficDataVal.equals(LocaleUtils.translate("custom"))) {
+				multipleSimulationSettingsErlangLowerLimit.getChildren().remove(erlangRangeLowLabel);
+				multipleSimulationSettingsErlangLowerLimit.getChildren().remove(erlangRangeLowField);
+				multipleSimulationSettingsErlangUpperLimit.getChildren().remove(erlangRangeHighLabel);
+				multipleSimulationSettingsErlangUpperLimit.getChildren().remove(erlangRangeHighField);
+
+				multipleSimulationSettingsYearLowerLimit.getChildren().add(yearRangeLowLabel);
+				multipleSimulationSettingsYearLowerLimit.getChildren().add(yearRangeLowField);
+				multipleSimulationSettingsYearUpperLimit.getChildren().add(yearRangeHighLabel);
+				multipleSimulationSettingsYearUpperLimit.getChildren().add(yearRangeHighField);
+			}
+			else {
+				multipleSimulationSettingsYearLowerLimit.getChildren().clear();
+				multipleSimulationSettingsYearUpperLimit.getChildren().clear();
+
+				multipleSimulationSettingsErlangLowerLimit.getChildren().add(erlangRangeLowLabel);
+				multipleSimulationSettingsErlangLowerLimit.getChildren().add(erlangRangeLowField);
+				multipleSimulationSettingsErlangUpperLimit.getChildren().add(erlangRangeHighLabel);
+				multipleSimulationSettingsErlangUpperLimit.getChildren().add(erlangRangeHighField);
+			}
+		}
+		else {
+			if (!trafficDataVal.equals(LocaleUtils.translate("custom")))
+				erlangIntField.setDisable(true);
+			else
+				erlangIntField.setDisable(false);
+		}
+	}
+
+	@FXML
 	public void multipleSimulationsSelected(ActionEvent e) {
 		boolean isCheckBoxSelected = runMultipleSimulations.isSelected();
 		if (isCheckBoxSelected) {
+			trafficDataYearSelection.getItems().removeAll("2018", "2019", "2020", "2021", "2022", "2023");
+			trafficDataYearSelection.getItems().addAll("Year Selection");
 
 			simulationRepetitions = new CeonsLabel(LocaleUtils.translate("simulation_parameter_simulations_at_each_erlang"), LocaleUtils.translate("simulation_parameter_simulations_at_each_erlang_description"));
 
@@ -226,39 +310,44 @@ public class SimulationMenuController implements Initializable {
 			erlangRangeHighField = new UIntField(700);
 			erlangRangeHighField.setAlignment(Pos.CENTER);
 
-			settings.getChildren().remove(erlangLabel);
-			settings.getChildren().remove(erlangIntField);
-			settings.getChildren().remove(seedLabel);
-			settings.getChildren().remove(seedField);
+			singleSimulationSettingsErlang.getChildren().remove(erlangLabel);
+			singleSimulationSettingsErlang.getChildren().remove(erlangIntField);
+			singleSimulationSettingsSeed.getChildren().remove(seedLabel);
+			singleSimulationSettingsSeed.getChildren().remove(seedField);
 
-			settings.getChildren().add(SIMULATION_REPETITION_LABEL_INDEX, simulationRepetitions);
-			settings.getChildren().add(SIMULATION_REPETITION_LABEL_INDEX + 1, numRepetitionsPerErlang);
+			simulationsAtEachErlang.getChildren().add(simulationRepetitions);
+			simulationsAtEachErlang.getChildren().add(numRepetitionsPerErlang);
 
-			settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX, erlangRangeLabel);
-			multipleSimulatonSettingsLabel.getChildren().add(erlangRangeLowLabel);
-			multipleSimulatonSettingsLabel.getChildren().add(erlangRangeHighLabel);
-			multipleSimulatonSettingsRange.getChildren().add(erlangRangeLowField);
-			multipleSimulatonSettingsRange.getChildren().add(erlangRangeHighField);
+			/*settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX, erlangRangeLabel);*/
+			multipleSimulationSettingsErlangLowerLimit.getChildren().add(erlangRangeLowLabel);
+			multipleSimulationSettingsErlangUpperLimit.getChildren().add(erlangRangeHighLabel);
+			multipleSimulationSettingsErlangLowerLimit.getChildren().add(erlangRangeLowField);
+			multipleSimulationSettingsErlangUpperLimit.getChildren().add(erlangRangeHighField);
 
-			settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX + 3, stepBetweenErlangsLabel);
-			settings.getChildren().add(ERLANG_RANGE_LABEL_INDEX + 4, stepBetweenErlangsField);
-		} else {
-			settings.getChildren().remove(simulationRepetitions);
-			settings.getChildren().remove(numRepetitionsPerErlang);
-			settings.getChildren().remove(erlangRangeLabel);
-			settings.getChildren().remove(stepBetweenErlangsLabel);
-			settings.getChildren().remove(stepBetweenErlangsField);
-			multipleSimulatonSettingsLabel.getChildren().clear();
-			multipleSimulatonSettingsRange.getChildren().clear();
+			stepsBetweenErlangs.getChildren().add(stepBetweenErlangsLabel);
+			stepsBetweenErlangs.getChildren().add(stepBetweenErlangsField);
+		}
+		else {
+			trafficDataYearSelection.getItems().removeAll(LocaleUtils.translate("year_selection"));
+			trafficDataYearSelection.getItems().addAll("2018", "2019", "2020", "2021", "2022", "2023");
+			multipleSimulationSettingsYearLowerLimit.getChildren().clear();
+			multipleSimulationSettingsYearUpperLimit.getChildren().clear();
+			simulationsAtEachErlang.getChildren().remove(simulationRepetitions);
+			simulationsAtEachErlang.getChildren().remove(numRepetitionsPerErlang);
+			multipleSimulationSettingsErlangUpperLimit.getChildren().clear();
+			multipleSimulationSettingsErlangLowerLimit.getChildren().clear();
+			stepsBetweenErlangs.getChildren().remove(stepBetweenErlangsLabel);
+			stepsBetweenErlangs.getChildren().remove(stepBetweenErlangsField);
 
-			settings.getChildren().add(ERLANG_LABEL_INDEX, erlangLabel);
-			settings.getChildren().add(ERLANG_INT_FIELD_INDEX, erlangIntField);
-			settings.getChildren().add(ERLANG_INT_FIELD_INDEX + 1, seedLabel);
-			settings.getChildren().add(ERLANG_INT_FIELD_INDEX + 2, seedField);
+            singleSimulationSettingsErlang.getChildren().add(erlangLabel);
+            singleSimulationSettingsErlang.getChildren().add(erlangIntField);
+            singleSimulationSettingsSeed.getChildren().add(seedLabel);
+            singleSimulationSettingsSeed.getChildren().add(seedField);
 		}
 
 		erlangLabel.setVisible(!erlangLabel.isVisible());
 		erlangIntField.setVisible(!erlangIntField.isVisible());
+		trafficDataIndexChanged(e);
 	}
 
 	@FXML
@@ -281,7 +370,8 @@ public class SimulationMenuController implements Initializable {
 				alert.getDialogPane().setPrefSize(480.0, 100);
 				alert.showAndWait();
 				return;
-			} else if (generators.getValue() == null) {
+			}
+			else if (generators.getValue() == null) {
 				Alert alert = new Alert(Alert.AlertType.ERROR);
 				alert.setTitle(LocaleUtils.translate("set_generators_traffic"));
 				alert.setHeaderText(null);
@@ -290,7 +380,8 @@ public class SimulationMenuController implements Initializable {
 				alert.getDialogPane().setPrefSize(480.0, 100);
 				alert.showAndWait();
 				return;
-			} else if (bestPaths.getValue() > network.getMaxPathsCount() || bestPaths.getValue() <= 0) {
+			}
+			else if (bestPaths.getValue() > network.getMaxPathsCount() || bestPaths.getValue() <= 0) {
 				Alert alert = new Alert(Alert.AlertType.ERROR);
 				alert.setTitle(LocaleUtils.translate("set_number_of_candidate_paths"));
 				alert.setHeaderText(null);
@@ -321,9 +412,11 @@ public class SimulationMenuController implements Initializable {
 			network.setDemandAllocationAlgorithm(Settings.registeredAlgorithms.get(algorithms.getValue()));
 
 			//Initially remove all modulations first and add back modulations that user selects
-			for (Modulation modulation : network.getAllowedModulations()) network.disallowModulation(modulation);
-			for (Modulation modulation : Modulation.values())
-				if (modulations[modulation.ordinal()].isSelected())
+			for (IModulation modulation : network.getAllowedModulations())
+				network.disallowModulation(modulation);
+
+			for (IModulation modulation : Settings.registeredModulations.values())
+				if (modulations[modulation.getId()].isSelected())
 					network.allowModulation(modulation);
 
 			network.setBestPathsCount(bestPaths.getValue());
@@ -341,21 +434,40 @@ public class SimulationMenuController implements Initializable {
 
 			//If multiple simulations is selected then we will create a single thread executor otherwise to run multiple consecutive simulations back-to-back, otherwise, run one task
 			if (!runMultipleSimulations.isSelected()) {
-				simulation = new Simulation(network, generators.getValue());
+				int erlang;
+				TrafficGenerator generator = generators.getValue();
+				if (!trafficDataYearSelection.getValue().equals(LocaleUtils.translate("custom"))) {
+					int trafficYear = Integer.parseInt(trafficDataYearSelection.getValue());
+					Project project = ApplicationResources.getProject();
+					ResizableCanvas.getParentController().setupGenerators(project, trafficYear);
+
+					erlang = (int) (Settings.DEFAULT_ERLANG * Math.pow((1+ Settings.CAGR), (trafficYear - Settings.DEFAULT_YEAR)));
+				}
+				else
+					erlang = erlangIntField.getValue();
+
+				simulation = new Simulation(network, generator);
 
 				//TODO: REFACTOR SIMULATION TASK INTO SIMULATION
-				SimulationTask task = new SimulationTask(simulation, seedField.getValue(), Double.parseDouble(alpha.getText()), erlangIntField.getValue(), demands.getValue(), true, this);
+				SimulationTask task = new SimulationTask(simulation, seedField.getValue(), 1, Double.parseDouble(alpha.getText()), erlang, demands.getValue(), true, this);
 				progressBar.runTask(task, true, this);
 			} else {
-				if (erlangRangeLowField.getValue() > erlangRangeHighField.getValue() || erlangRangeLowField.getValue() == erlangRangeHighField.getValue()) {
-					Alert alert = new Alert(Alert.AlertType.ERROR);
-					alert.setTitle(LocaleUtils.translate("erlang_range"));
-					alert.setHeaderText(null);
-					alert.setContentText(LocaleUtils.translate("lower_erlang_range_must_be_less_than_upper_erlang_range"));
-					alert.setResizable(true);
-					alert.getDialogPane().setPrefSize(480.0, 100);
-					alert.showAndWait();
-					return;
+				int erlangRangeLow;
+				int erlangRangeHigh;
+				if (trafficDataYearSelection.getValue() == "Custom") {
+					erlangRangeLow = erlangRangeLowField.getValue();
+					erlangRangeHigh = erlangRangeHighField.getValue();
+
+					if (erlangRangeLow > erlangRangeHigh || erlangRangeLow == erlangRangeHigh) {
+						Alert alert = new Alert(Alert.AlertType.ERROR);
+						alert.setTitle(LocaleUtils.translate("erlang_range"));
+						alert.setHeaderText(null);
+						alert.setContentText(LocaleUtils.translate("lower_erlang_range_must_be_less_than_upper_erlang_range"));
+						alert.setResizable(true);
+						alert.getDialogPane().setPrefSize(480.0, 100);
+						alert.showAndWait();
+						return;
+					}
 				}
 				final ExecutorService runMultipleSimulationService = Executors.newSingleThreadExecutor(new ThreadFactory() {
 					@Override
@@ -377,26 +489,54 @@ public class SimulationMenuController implements Initializable {
 						}
 				}
 				ArrayList<ArrayList> tasks = new ArrayList<>();
-				for (int numRepetitions = 1; numRepetitions <= numRepetitionsPerErlang.getValue(); numRepetitions++) {
-					Random random = new Random();
-					int randomSeed = random.nextInt(101);
-					TaskReadyProgressBar.addResultsDataSeed(randomSeed);
-					for (int erlangValue = erlangRangeLowField.getValue(); erlangValue <= erlangRangeHighField.getValue(); erlangValue += stepBetweenErlangsField.getValue()) {
-						simulation = new Simulation(network, generators.getValue());
-						simulation.setMultipleSimulations(true);
-						ArrayList taskSettingsArray = new ArrayList();
-						taskSettingsArray.add(simulation);
-						taskSettingsArray.add(randomSeed);
-						taskSettingsArray.add(Double.parseDouble(alpha.getText()));
-						taskSettingsArray.add(erlangValue);
-						taskSettingsArray.add(demands.getValue());
-						taskSettingsArray.add(true);
-						tasks.add(taskSettingsArray);
+				if (!trafficDataYearSelection.getValue().equals(LocaleUtils.translate("custom"))){
+					TrafficGenerator generator = generators.getValue();
+					for (int numRepetitions = 1; numRepetitions <= numRepetitionsPerErlang.getValue(); numRepetitions++) {
+						Random random = new Random();
+						int randomSeed = random.nextInt(101);
+						int trafficYearStart = Integer.parseInt(yearRangeLowField.getValue());
+						int trafficYearEnd = Integer.parseInt(yearRangeHighField.getValue());
+						TaskReadyProgressBar.addResultsDataSeed(randomSeed);
+						for (int trafficYear = trafficYearStart; trafficYear <= trafficYearEnd; trafficYear++) {
+							Project project = ApplicationResources.getProject();
+							ResizableCanvas.getParentController().setupGenerators(project, trafficYear);
+							simulation = new Simulation(network, generator);
+							simulation.setMultipleSimulations(true);
+							ArrayList taskSettingsArray = new ArrayList();
+							taskSettingsArray.add(simulation);
+							taskSettingsArray.add(randomSeed);
+							taskSettingsArray.add(Double.parseDouble(alpha.getText()));
+							taskSettingsArray.add((int) (Settings.DEFAULT_ERLANG * Math.pow((1+ Settings.CAGR), (trafficYear - Settings.DEFAULT_YEAR))));
+							taskSettingsArray.add(demands.getValue());
+							taskSettingsArray.add(true);
+							tasks.add(taskSettingsArray);
+						}
+					}
+				}
+				else {
+					for (int numRepetitions = 1; numRepetitions <= numRepetitionsPerErlang.getValue(); numRepetitions++) {
+						Random random = new Random();
+						erlangRangeLow = erlangRangeLowField.getValue();
+						erlangRangeHigh = erlangRangeHighField.getValue();
+						int randomSeed = random.nextInt(101);
+						TaskReadyProgressBar.addResultsDataSeed(randomSeed);
+						for (int erlangValue = erlangRangeLow; erlangValue <= erlangRangeHigh; erlangValue += stepBetweenErlangsField.getValue()) {
+							simulation = new Simulation(network, generators.getValue());
+							simulation.setMultipleSimulations(true);
+							ArrayList taskSettingsArray = new ArrayList();
+							taskSettingsArray.add(simulation);
+							taskSettingsArray.add(randomSeed);
+							taskSettingsArray.add(Double.parseDouble(alpha.getText()));
+							taskSettingsArray.add(erlangValue);
+							taskSettingsArray.add(demands.getValue());
+							taskSettingsArray.add(true);
+							tasks.add(taskSettingsArray);
+						}
 					}
 				}
 				progressBar.runTasks(algorithms, tasks, true, runMultipleSimulationService, this, network);
 			}
-		} catch (NullPointerException ex) {
+		} catch (NullPointerException | MapLoadingException ex) {
 			ex.printStackTrace();
 			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle(LocaleUtils.translate("starting_simulation"));
@@ -537,17 +677,19 @@ public class SimulationMenuController implements Initializable {
 							{
 								try {
 									msg.getAttachments().addFileAttachment(path.toAbsolutePath().toString());
-								} catch (Exception e) {
-									System.out.println("Unable to Add Attachment");
+								}
+								catch (Exception e) {
 									e.printStackTrace();
 								}
 							}
 					);
 					msg.send();
 					lastFilePath.ifPresent(path -> path.toFile().delete());
-				} else
+				}
+				else
 					msg.send();
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
