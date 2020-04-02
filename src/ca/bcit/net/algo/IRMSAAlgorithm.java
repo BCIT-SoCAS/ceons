@@ -9,5 +9,5 @@ public interface IRMSAAlgorithm {
     String getName();
     String getDocumentationURL();
 
-    DemandAllocationResult allocateDemand(Demand demand, Network network);
+    DemandAllocationResult allocateDemand(Demand demand, Network network) throws InstantiationException, ClassNotFoundException, IllegalAccessException;
 }

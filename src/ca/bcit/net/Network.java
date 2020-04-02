@@ -58,7 +58,8 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 	public void setTrafficGenerator(TrafficGenerator trafficGenerator) {
 		this.trafficGenerator = trafficGenerator;
 	}
-	
+	public TrafficGenerator getTrafficGenerator() { return this.trafficGenerator; };
+
 	// DEMANDS
 	
 	public void setDemandAllocationAlgorithm(IRMSAAlgorithm algorithm) {
@@ -85,7 +86,7 @@ public class Network extends Graph<NetworkNode, NetworkLink, NetworkPath, Networ
 		return canSwitchModulation;
 	}
 	
-	public DemandAllocationResult allocateDemand(Demand demand) {
+	public DemandAllocationResult allocateDemand(Demand demand) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
 		DemandAllocationResult result = demandAllocationAlgorithm.allocateDemand(demand, this);
 		if (result.type == DemandAllocationResult.Type.SUCCESS)
 			allocatedDemands.add(demand);

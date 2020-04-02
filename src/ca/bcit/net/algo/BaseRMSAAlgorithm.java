@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class BaseRMSAAlgorithm{
-	public DemandAllocationResult allocateDemand(Demand demand, Network network) {
+	public DemandAllocationResult allocateDemand(Demand demand, Network network) throws InstantiationException, ClassNotFoundException, IllegalAccessException {
 		try {
 			int volume = (int) Math.ceil(demand.getVolume() / 10.0) - 1;
 			List<PartedPath> candidatePaths = demand.getCandidatePaths(false, network);

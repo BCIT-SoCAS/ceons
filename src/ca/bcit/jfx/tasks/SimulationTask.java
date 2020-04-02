@@ -35,7 +35,7 @@ public class SimulationTask extends Task<Void> {
 			Logger.info(LocaleUtils.translate("starting_simulation") + "! " + "\n\t" + LocaleUtils.translate("simulation_parameter_seed") + ": " + seed + "\n\t" + LocaleUtils.translate("simulation_parameter_alpha") + ": " + alpha + "\n\t" + LocaleUtils.translate("simulation_parameter_erlang") + ": " + erlang +
 					"\n\t" + LocaleUtils.translate("simulation_parameter_number_of_requests") + ": " + demandsCount + "\n\t" + LocaleUtils.translate("simulation_parameter_replica_preservation") + ": " + replicaPreservation);
 			simulationMenuController.setRunning(true);
-			simulation.simulate(seed, demandsCount, cores, alpha, erlang, replicaPreservation, this);
+			simulation.simulate(seed, demandsCount, alpha, erlang, replicaPreservation, this);
 			Logger.info(LocaleUtils.translate("simulation_finished") + "!");
 			simulationMenuController.setRunning(false);
 		}

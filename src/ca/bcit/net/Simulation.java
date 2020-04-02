@@ -50,9 +50,10 @@ public class Simulation {
 	public Simulation(Network network, TrafficGenerator generator) {
 		this.network = network;
 		this.generator = generator;
+		network.setTrafficGenerator(generator);
 	}
 
-	public void simulate(long seed, int demandsCount, int cores, double alpha, int erlang, boolean replicaPreservation, SimulationTask task) {
+	public void simulate(long seed, int demandsCount, double alpha, int erlang, boolean replicaPreservation, SimulationTask task) throws IllegalAccessException, ClassNotFoundException, InstantiationException {
 		SimulationMenuController.finished = false;
 		SimulationMenuController.cancelled = false;
 		clearVolumeValues();
@@ -169,7 +170,7 @@ public class Simulation {
 		}
 	}
 
-	public void simulate(long seed, int demandsCount, int cores, double alpha, int erlang, boolean replicaPreservation) {
+	public void simulate(long seed, int demandsCount, double alpha, int erlang, boolean replicaPreservation) throws IllegalAccessException, ClassNotFoundException, InstantiationException {
 		SimulationMenuController.finished = false;
 		SimulationMenuController.cancelled = false;
 		clearVolumeValues();
@@ -335,7 +336,7 @@ public class Simulation {
 	 * If the demand can be fulfilled, resources will be consumed.
 	 * @param demand the demand in question
 	 */
-	private void handleDemand(Demand demand) {
+	private void handleDemand(Demand demand) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
 		DemandAllocationResult result = network.allocateDemand(demand);
 
 		if (result.workingPath == null)
