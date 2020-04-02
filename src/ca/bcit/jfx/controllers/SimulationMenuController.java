@@ -250,21 +250,17 @@ public class SimulationMenuController implements Initializable {
 
 		boolean isMultipleSimulationsSelected = runMultipleSimulations.isSelected();
 		if (isMultipleSimulationsSelected) {
+			multipleSimulationSettingsYearLowerLimit.getChildren().clear();
+			multipleSimulationSettingsYearUpperLimit.getChildren().clear();
+			multipleSimulationSettingsErlangLowerLimit.getChildren().clear();
+			multipleSimulationSettingsErlangUpperLimit.getChildren().clear();
 			if (!trafficDataVal.equals(LocaleUtils.translate("custom"))) {
-				multipleSimulationSettingsErlangLowerLimit.getChildren().remove(erlangRangeLowLabel);
-				multipleSimulationSettingsErlangLowerLimit.getChildren().remove(erlangRangeLowField);
-				multipleSimulationSettingsErlangUpperLimit.getChildren().remove(erlangRangeHighLabel);
-				multipleSimulationSettingsErlangUpperLimit.getChildren().remove(erlangRangeHighField);
-
 				multipleSimulationSettingsYearLowerLimit.getChildren().add(yearRangeLowLabel);
 				multipleSimulationSettingsYearLowerLimit.getChildren().add(yearRangeLowField);
 				multipleSimulationSettingsYearUpperLimit.getChildren().add(yearRangeHighLabel);
 				multipleSimulationSettingsYearUpperLimit.getChildren().add(yearRangeHighField);
 			}
 			else {
-				multipleSimulationSettingsYearLowerLimit.getChildren().clear();
-				multipleSimulationSettingsYearUpperLimit.getChildren().clear();
-
 				multipleSimulationSettingsErlangLowerLimit.getChildren().add(erlangRangeLowLabel);
 				multipleSimulationSettingsErlangLowerLimit.getChildren().add(erlangRangeLowField);
 				multipleSimulationSettingsErlangUpperLimit.getChildren().add(erlangRangeHighLabel);
