@@ -234,8 +234,8 @@ public class SimulationMenuController implements Initializable {
 		algoCheckBoxContainer.visibleProperty().bind(runMultipleSimulations.selectedProperty());
 		emailInput.visibleProperty().bind(emailCheckbox.selectedProperty());
 		emailInput.managedProperty().bind(emailCheckbox.selectedProperty());
-		trafficDataYearSelection.getItems().addAll("Custom", "2018", "2019", "2020", "2021", "2022", "2023");
-		trafficDataYearSelection.setValue("Custom");
+		trafficDataYearSelection.getItems().addAll(LocaleUtils.translate("custom"), "2018", "2019", "2020", "2021", "2022", "2023");
+		trafficDataYearSelection.setValue(LocaleUtils.translate("custom"));
 		multipleSimulationSettingsYearLowerLimit.getChildren().clear();
 		multipleSimulationSettingsYearUpperLimit.getChildren().clear();
 	}
@@ -250,7 +250,7 @@ public class SimulationMenuController implements Initializable {
 
 		boolean isMultipleSimulationsSelected = runMultipleSimulations.isSelected();
 		if (isMultipleSimulationsSelected) {
-			if (!trafficDataVal.equals("Custom")) {
+			if (!trafficDataVal.equals(LocaleUtils.translate("custom"))) {
 				multipleSimulationSettingsErlangLowerLimit.getChildren().remove(erlangRangeLowLabel);
 				multipleSimulationSettingsErlangLowerLimit.getChildren().remove(erlangRangeLowField);
 				multipleSimulationSettingsErlangUpperLimit.getChildren().remove(erlangRangeHighLabel);
@@ -262,7 +262,6 @@ public class SimulationMenuController implements Initializable {
 				multipleSimulationSettingsYearUpperLimit.getChildren().add(yearRangeHighField);
 			}
 			else {
-
 				multipleSimulationSettingsYearLowerLimit.getChildren().clear();
 				multipleSimulationSettingsYearUpperLimit.getChildren().clear();
 
@@ -273,12 +272,10 @@ public class SimulationMenuController implements Initializable {
 			}
 		}
 		else {
-			if (!trafficDataVal.equals("Custom")) {
+			if (!trafficDataVal.equals(LocaleUtils.translate("custom")))
 				erlangIntField.setDisable(true);
-			}
-			else {
+			else
 				erlangIntField.setDisable(false);
-			}
 		}
 	}
 
@@ -439,15 +436,16 @@ public class SimulationMenuController implements Initializable {
 			if (!runMultipleSimulations.isSelected()) {
 				int erlang;
 				TrafficGenerator generator = generators.getValue();
-				if (trafficDataYearSelection.getValue() != "Custom") {
+				if (!trafficDataYearSelection.getValue().equals(LocaleUtils.translate("custom"))) {
 					int trafficYear = Integer.parseInt(trafficDataYearSelection.getValue());
 					Project project = ApplicationResources.getProject();
 					ResizableCanvas.getParentController().setupGenerators(project, trafficYear);
-					erlang = Settings.DEFAULT_ERLANG;
+
+					erlang = (int) (Settings.DEFAULT_ERLANG * Math.pow((1+ Settings.CAGR), (trafficYear - Settings.DEFAULT_YEAR)));
 				}
-				else {
+				else
 					erlang = erlangIntField.getValue();
-				}
+
 				simulation = new Simulation(network, generator);
 
 				//TODO: REFACTOR SIMULATION TASK INTO SIMULATION
@@ -491,11 +489,10 @@ public class SimulationMenuController implements Initializable {
 						}
 				}
 				ArrayList<ArrayList> tasks = new ArrayList<>();
-				if (trafficDataYearSelection.getValue() != "Custom"){
+				if (!trafficDataYearSelection.getValue().equals(LocaleUtils.translate("custom"))){
 					TrafficGenerator generator = generators.getValue();
 					for (int numRepetitions = 1; numRepetitions <= numRepetitionsPerErlang.getValue(); numRepetitions++) {
 						Random random = new Random();
-						int erlangValue = Settings.DEFAULT_ERLANG;
 						int randomSeed = random.nextInt(101);
 						int trafficYearStart = Integer.parseInt(yearRangeLowField.getValue());
 						int trafficYearEnd = Integer.parseInt(yearRangeHighField.getValue());
@@ -509,7 +506,7 @@ public class SimulationMenuController implements Initializable {
 							taskSettingsArray.add(simulation);
 							taskSettingsArray.add(randomSeed);
 							taskSettingsArray.add(Double.parseDouble(alpha.getText()));
-							taskSettingsArray.add(erlangValue);
+							taskSettingsArray.add((int) (Settings.DEFAULT_ERLANG * Math.pow((1+ Settings.CAGR), (trafficYear - Settings.DEFAULT_YEAR))));
 							taskSettingsArray.add(demands.getValue());
 							taskSettingsArray.add(true);
 							tasks.add(taskSettingsArray);

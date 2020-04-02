@@ -70,7 +70,7 @@ public class SaveMapController implements Initializable {
         List<String> connectedNodes = new ArrayList<>(Arrays.asList(connNodeInput.getText().split(",")));
         connectedNodes.remove("" + nextNumNode);
 
-        SavedNodeDetails savedNodeDetails = new SavedNodeDetails(nextNumNode, nameInput.getText(), String.join(",", connectedNodes), (numRegeneratorInput.getText().equals("") ? 100 : Integer.parseInt(numRegeneratorInput.getText())), getSelectedNodeType());
+        SavedNodeDetails savedNodeDetails = new SavedNodeDetails(nextNumNode, nameInput.getText(), String.join(",", connectedNodes), (numRegeneratorInput.getText().equals("") ? Settings.DEFAULT_NUMBER_OF_REGENERATORS : Integer.parseInt(numRegeneratorInput.getText())), getSelectedNodeType());
 
         try {
             saveTable.getItems().add(savedNodeDetails);

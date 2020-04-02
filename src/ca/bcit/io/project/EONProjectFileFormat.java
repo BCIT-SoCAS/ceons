@@ -113,8 +113,8 @@ public class EONProjectFileFormat extends ProjectFileFormat<Void, Void> {
 			modulations.put(modulation.getKey() + ".consumptions", new ArrayList<Integer>());
 
 			for (int i = 0; i < 40; i++) {
-				modulations.put(modulation + ".distances." + i, modulation.getMaximumDistanceSupportedByBitrateWithJumpsOfTenGbps()[i]);
-				modulations.put(modulation + ".consumptions." + i, modulation.getSlicesConsumptionByBitrateWithJumpsOfTenGbps()[i]);
+				modulations.put(modulation.getKey() + ".distances." + i, modulation.getMaximumDistanceSupportedByBitrateWithJumpsOfTenGbps()[i]);
+				modulations.put(modulation.getKey() + ".consumptions." + i, modulation.getSlicesConsumptionByBitrateWithJumpsOfTenGbps()[i]);
 			}
 		}
 		zip.putNextEntry(new ZipEntry("modulations.yml"));
