@@ -184,18 +184,32 @@ public class SimulationMenuController implements Initializable {
 				Alert selectAlgoAlert = new Alert(Alert.AlertType.ERROR);
 				selectAlgoAlert.setHeaderText(LocaleUtils.translate("select_an_algorithm_to_view_the_documentation"));
 				selectAlgoAlert.show();
-			} else {
+			}
+			else {
 				String algoKey = "";
 				for (IRMSAAlgorithm algorithm : Settings.registeredAlgorithms.values())
 					if (algorithm.getName().equals(algorithms.getValue()))
 						algoKey = algorithm.getKey();
 				try {
 					Desktop.getDesktop().browse(new URI(Settings.registeredAlgorithms.get(algoKey).getDocumentationURL()));
-				} catch (IOException | URISyntaxException ex) {
+				}
+				catch (IOException | URISyntaxException ex) {
 					ex.printStackTrace();
 				}
 			}
 		});
+
+		yearRangeLowLabel = new CeonsLabel(LocaleUtils.translate("year_lower_range"));
+		yearRangeLowLabel.setFont(new Font(10));
+
+		yearRangeLowField.getItems().addAll("2018", "2019", "2020", "2021", "2022", "2023");
+		yearRangeLowField.setValue(Integer.toString(Settings.DEFAULT_YEAR));
+
+		yearRangeHighLabel = new CeonsLabel(LocaleUtils.translate("year_upper_range"));
+		yearRangeHighLabel.setFont(new Font(10));
+
+		yearRangeHighField.getItems().addAll("2019", "2020", "2021", "2022", "2023");
+		yearRangeHighField.setValue(Integer.toString(Settings.DEFAULT_YEAR + 1));
 
 		modulations = new CheckBox[Settings.registeredModulations.size()];
 		for (IModulation modulation : Settings.registeredModulations.values())
@@ -233,20 +247,6 @@ public class SimulationMenuController implements Initializable {
 	@FXML
 	public void trafficDataIndexChanged(ActionEvent event) {
 		String trafficDataVal = trafficDataYearSelection.getValue();
-		System.out.println(trafficDataVal);
-
-		//TODO i18n transtlation for year range lables
-		yearRangeLowLabel = new CeonsLabel("Year lower range", "placeholder");
-		yearRangeLowLabel.setFont(new Font(10));
-
-		yearRangeLowField.getItems().addAll("2018", "2019", "2020", "2021", "2022", "2023");
-		yearRangeLowField.setValue("2018");
-
-		yearRangeHighLabel = new CeonsLabel("Year upper range", "placeholder");
-		yearRangeHighLabel.setFont(new Font(10));
-
-		yearRangeHighField.getItems().addAll("2019", "2020", "2021", "2022", "2023");
-		yearRangeHighField.setValue("2019");
 
 		boolean isMultipleSimulationsSelected = runMultipleSimulations.isSelected();
 		if (isMultipleSimulationsSelected) {
@@ -329,18 +329,14 @@ public class SimulationMenuController implements Initializable {
 
 			stepsBetweenErlangs.getChildren().add(stepBetweenErlangsLabel);
 			stepsBetweenErlangs.getChildren().add(stepBetweenErlangsField);
-		} else {
-			trafficDataYearSelection.getItems().removeAll("Year Selection");
+		}
+		else {
+			trafficDataYearSelection.getItems().removeAll(LocaleUtils.translate("year_selection"));
 			trafficDataYearSelection.getItems().addAll("2018", "2019", "2020", "2021", "2022", "2023");
 			multipleSimulationSettingsYearLowerLimit.getChildren().clear();
 			multipleSimulationSettingsYearUpperLimit.getChildren().clear();
 			simulationsAtEachErlang.getChildren().remove(simulationRepetitions);
 			simulationsAtEachErlang.getChildren().remove(numRepetitionsPerErlang);
-			/*settings.getChildren().remove(erlangRangeLabel);*/
-//			multipleSimulationSettingsErlangLowerLimit.getChildren().remove(erlangRangeLowLabel);
-//			multipleSimulationSettingsErlangUpperLimit.getChildren().remove(erlangRangeHighLabel);
-//			multipleSimulationSettingsErlangLowerLimit.getChildren().remove(erlangRangeLowField);
-//			multipleSimulationSettingsErlangUpperLimit.getChildren().remove(erlangRangeHighField);
 			multipleSimulationSettingsErlangUpperLimit.getChildren().clear();
 			multipleSimulationSettingsErlangLowerLimit.getChildren().clear();
 			stepsBetweenErlangs.getChildren().remove(stepBetweenErlangsLabel);
@@ -377,7 +373,8 @@ public class SimulationMenuController implements Initializable {
 				alert.getDialogPane().setPrefSize(480.0, 100);
 				alert.showAndWait();
 				return;
-			} else if (generators.getValue() == null) {
+			}
+			else if (generators.getValue() == null) {
 				Alert alert = new Alert(Alert.AlertType.ERROR);
 				alert.setTitle(LocaleUtils.translate("set_generators_traffic"));
 				alert.setHeaderText(null);
@@ -386,7 +383,8 @@ public class SimulationMenuController implements Initializable {
 				alert.getDialogPane().setPrefSize(480.0, 100);
 				alert.showAndWait();
 				return;
-			} else if (bestPaths.getValue() > network.getMaxPathsCount() || bestPaths.getValue() <= 0) {
+			}
+			else if (bestPaths.getValue() > network.getMaxPathsCount() || bestPaths.getValue() <= 0) {
 				Alert alert = new Alert(Alert.AlertType.ERROR);
 				alert.setTitle(LocaleUtils.translate("set_number_of_candidate_paths"));
 				alert.setHeaderText(null);
@@ -445,7 +443,7 @@ public class SimulationMenuController implements Initializable {
 					int trafficYear = Integer.parseInt(trafficDataYearSelection.getValue());
 					Project project = ApplicationResources.getProject();
 					ResizableCanvas.getParentController().setupGenerators(project, trafficYear);
-					erlang = Settings.getDefaultErlang();
+					erlang = Settings.DEFAULT_ERLANG;
 				}
 				else {
 					erlang = erlangIntField.getValue();
@@ -497,7 +495,7 @@ public class SimulationMenuController implements Initializable {
 					TrafficGenerator generator = generators.getValue();
 					for (int numRepetitions = 1; numRepetitions <= numRepetitionsPerErlang.getValue(); numRepetitions++) {
 						Random random = new Random();
-						int erlangValue = Settings.getDefaultErlang();
+						int erlangValue = Settings.DEFAULT_ERLANG;
 						int randomSeed = random.nextInt(101);
 						int trafficYearStart = Integer.parseInt(yearRangeLowField.getValue());
 						int trafficYearEnd = Integer.parseInt(yearRangeHighField.getValue());
@@ -682,17 +680,19 @@ public class SimulationMenuController implements Initializable {
 							{
 								try {
 									msg.getAttachments().addFileAttachment(path.toAbsolutePath().toString());
-								} catch (Exception e) {
-									System.out.println("Unable to Add Attachment");
+								}
+								catch (Exception e) {
 									e.printStackTrace();
 								}
 							}
 					);
 					msg.send();
 					lastFilePath.ifPresent(path -> path.toFile().delete());
-				} else
+				}
+				else
 					msg.send();
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

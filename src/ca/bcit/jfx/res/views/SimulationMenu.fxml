@@ -27,9 +27,8 @@
                             <ComboBox fx:id="generators" promptText="%choose_generator" />
                         </VBox>
                         <VBox alignment="CENTER">
-                            <!-- TODO TRAFFIC DATA label and drop down FOR TRAFFIC GEN GOES HERE-->
-                            <CeonsLabel fx:id="trafficDataLabel" text="Traffic Data" tooltipText="place holder" />
-                            <ComboBox fx:id="trafficDataYearSelection" promptText="Custom" onAction="#trafficDataIndexChanged" />
+                            <CeonsLabel fx:id="trafficDataLabel" text="%traffic_data"/>
+                            <ComboBox fx:id="trafficDataYearSelection" promptText="%custom" onAction="#trafficDataIndexChanged" />
                         </VBox>
                     </HBox>
 

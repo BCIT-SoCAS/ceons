@@ -14,10 +14,10 @@ import java.util.ResourceBundle;
 import javafx.scene.image.Image;
 
 public class Settings {
-    final static int DEFAULT_YEAR = 2018;
-    final static int DEFAULT_ERLANG = 500;
-    final static double CAGR = 0.26;
-    final static int SPLASH_SCREEN_TIMER = 3000;
+    public final static int DEFAULT_YEAR = 2018;
+    public final static int DEFAULT_ERLANG = 500;
+    public final static double CAGR = 0.26;
+    public final static int SPLASH_SCREEN_TIMER = 3000;
     public static LocaleEnum CURRENT_LOCALE = LocaleEnum.EN_CA;
     public static HashMap<String, IRMSAAlgorithm> registeredAlgorithms = new HashMap<>();
     public static HashMap<String, IModulation> registeredModulations = new HashMap<>();
@@ -69,14 +69,4 @@ public class Settings {
 
         return resourceBundle;
     }
-
-    public static int getDefaultYear() {
-        return DEFAULT_YEAR;
-    }
-
-    public static int getDefaultErlang() {
-        return DEFAULT_ERLANG;
-    }
-
-    public static double getCagr() { return CAGR; }
 }

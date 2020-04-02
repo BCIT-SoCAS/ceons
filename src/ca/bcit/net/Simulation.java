@@ -130,15 +130,6 @@ public class Simulation {
 		if (simulationMenuController != null)
 			simulationMenuController.disableClearSimulationButton();
 
-		Logger.info("spectrumBlockedVolume");
-		Logger.info(""+ spectrumBlockedVolume);
-		Logger.info("regeneratorsBlockedVolume");
-		Logger.info(""+ regeneratorsBlockedVolume);
-		Logger.info("linkFailureBlockedVolume");
-		Logger.info(""+ linkFailureBlockedVolume);
-		Logger.info("totalVolume");
-		Logger.info(""+ totalVolume);
-
 		Logger.info(LocaleUtils.translate("blocked_spectrum_label") + " " + (spectrumBlockedVolume / totalVolume) * 100 + "%");
 		Logger.info(LocaleUtils.translate("blocked_regenerators_label") + " " + (regeneratorsBlockedVolume / totalVolume) * 100 + "%");
 		Logger.info(LocaleUtils.translate("blocked_link_failure_label") + " " + (linkFailureBlockedVolume / totalVolume) * 100 + "%");

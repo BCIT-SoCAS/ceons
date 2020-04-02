@@ -309,16 +309,6 @@ public class MainWindowController implements Initializable {
         }
     }
 
-//    public void fillInformation(double spectrumBlocked, double regeneratorsBlocked, double linkFailureBlocked, double totalVolume) {
-//        String blockedSpectrum = spectrumBlocked / totalVolume * 100 + "%";
-//        String blockedRegenerators = regeneratorsBlocked / totalVolume * 100 + "%";
-//        String blockedLinkFailure = linkFailureBlocked / totalVolume * 100 + "%";
-//
-//        nodeInfo.setText(LocaleUtils.translate("blocked_spectrum_label") + " " + blockedSpectrum + "\n"
-//                + LocaleUtils.translate("blocked_regenerators_label") + " " + blockedRegenerators + "\n"
-//                + LocaleUtils.translate("blocked_link_failure_label") + " " + blockedLinkFailure);
-//    }
-
     private static void localeChanged(ObservableValue<? extends String> selected, String oldLanguage, String newLanguage) {
         try {
             if (!newLanguage.equals(Settings.CURRENT_LOCALE.label)) {
@@ -545,7 +535,7 @@ public class MainWindowController implements Initializable {
 
             Project project = ProjectFileFormat.getFileFormat(fileChooser.getSelectedExtensionFilter()).load(file);
             ApplicationResources.setProject(project);
-            int trafficYear = Settings.getDefaultYear();
+            int trafficYear = Settings.DEFAULT_YEAR;
             setupGenerators(project, trafficYear);
             loadSuccessful = true;
             mapImage = SwingFXUtils.toFXImage(project.getMap(), null);
@@ -630,9 +620,7 @@ public class MainWindowController implements Initializable {
         int volumeMax3 = 410;
         double volumeInterval3 = 10;
 
-        double cagr = Settings.getCagr();
-        double totalCagr = (trafficYear - 2018) * cagr + 1;
-        System.out.println("Total CAGR: " + totalCagr);
+        double totalCagr = Math.pow((1+ Settings.CAGR), (trafficYear - 2018));
 
         int calculatedVolumeMin1 = (int)(volumeMin1 * totalCagr);
         int calculatedVolumeInterval1 = (int)(volumeInterval1 * totalCagr);
@@ -640,25 +628,6 @@ public class MainWindowController implements Initializable {
         int calculatedVolumeInterval2 = (int)(volumeInterval2 * totalCagr);
         int calculatedVolumeMin3 = (int)(volumeMin3 * totalCagr);
         int calculatedVolumeInterval3 = (int)(volumeInterval3 * totalCagr);
-
-        if (calculatedVolumeMin1 > volumeMax1) {
-            calculatedVolumeMin1 = volumeMax1;
-        }
-        if (calculatedVolumeMin2 > volumeMax2) {
-            calculatedVolumeMin2 = volumeMax2;
-        }
-        if (calculatedVolumeMin3 > volumeMax3) {
-            calculatedVolumeMin3 = volumeMax3;
-        }
-        if (calculatedVolumeInterval1 > volumeMax1) {
-            calculatedVolumeInterval1 = volumeMax1;
-        }
-        if (calculatedVolumeInterval2 > volumeMax2) {
-            calculatedVolumeInterval2 = volumeMax2;
-        }
-        if (calculatedVolumeInterval3 > volumeMax3) {
-            calculatedVolumeInterval3 = volumeMax3;
-        }
 
         try {
             subGenerators.add(new MappedRandomVariable.Entry<>(29, new AnycastDemandGenerator(new UniformRandomVariable.Generic<>(network.getNodes()), new ConstantRandomVariable<>(false),
