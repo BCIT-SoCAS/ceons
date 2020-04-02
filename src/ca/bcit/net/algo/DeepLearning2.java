@@ -38,6 +38,7 @@ public class DeepLearning2 extends BaseRMSAAlgorithm implements IRMSAAlgorithm{
 
 			Demand demand1 = generator.next();
 			Demand demand2 = generator.next();
+			Demand demand3 = generator.next();
 
 			List<Double> scores = new ArrayList<>();
 			int pathNumber = 0;
@@ -48,12 +49,15 @@ public class DeepLearning2 extends BaseRMSAAlgorithm implements IRMSAAlgorithm{
 					TemporaryDemandResult result1 = allocateTemporaryDemand(path1, demand1, result.network, result.score);
 					for (PartedPath path2 : result1.paths) {
 						TemporaryDemandResult result2 = allocateTemporaryDemand(path2, demand2, result1.network, result1.score);
-						scores.add(result2.score);
+						for (PartedPath path3 : result2.paths) {
+							TemporaryDemandResult result3 = allocateTemporaryDemand(path3, demand3, result2.network, result2.score);
+							scores.add(result3.score);
+						}
 					}
 				}
 				double totalScore = 0.0;
-				for (int i = (int) (pathNumber * Math.pow(numCandidatePaths, 2)); i < pathNumber * Math.pow(numCandidatePaths, 2) + Math.pow(numCandidatePaths, 2); i++)
-					totalScore += scores.get((int) (pathNumber * Math.pow(numCandidatePaths, 2)));
+				for (int i = (int) (pathNumber * Math.pow(numCandidatePaths, 3)); i < pathNumber * Math.pow(numCandidatePaths, 3) + Math.pow(numCandidatePaths, 3); i++)
+					totalScore += scores.get((int) (pathNumber * Math.pow(numCandidatePaths, 3)));
 
 				path.setMetric(totalScore);
 				pathNumber += 1;
@@ -69,11 +73,9 @@ public class DeepLearning2 extends BaseRMSAAlgorithm implements IRMSAAlgorithm{
 			return new DemandAllocationResult(demand);
 		}
 		catch (NoSpectrumAvailableException e) {
-			System.out.println("nope");
 			return DemandAllocationResult.NO_SPECTRUM;
 		}
 		catch (NoRegeneratorsAvailableException | NetworkException e) {
-			System.out.println("nope");
 			return DemandAllocationResult.NO_REGENERATORS;
 		}
 	}
