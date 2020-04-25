@@ -131,29 +131,28 @@ Upon setup completion, you will be able to run the simulator with the following 
 
 **C:** Choose between traffic generator types (e.g., No backup, Shared backup, and Dedicated backup).  This is the ability for a network to recover from resource failures.
 
-**D:** Erlang number input determines the network traffic intensity.
+**D:** Choose a year to generate traffic based on the year selected
 
-**E:** Seed number input is used by a random number generator to make the same simulation multiple times (produces same result).
+**E:** Erlang number input determines the network traffic intensity.
 
-**F:** Alpha number input determines the probability of link failure.
+**F:** Seed number input is used by a random number generator to make the same simulation multiple times (produces same result).
 
-**G:** Demands count number input is the number of demands to be simulated in the network.
+**G:** Alpha number input determines the probability of link failure.
 
-**H:** Allows modulation to be changed dynamically in simulation.
+**H:** Number of requests to be simulated in the network.
 
 **I:** Modulation types to be used during simulation.
 
-**J:** Number of candidate paths for each request to reach a destination.
+**J:** Allows modulation to be changed dynamically in simulation.
 
-**K:** Allows you to send a email notification when your simulation is done as well as any errors that occurred.
+**K:** Number of candidate paths for each request to reach a destination.
 
-**L:** Begins simulation.
+**L:** Simulation execution controls lets you start, pause and stop a simulation
 
-**M:** Pauses and restarts the simulation.
+**M:** Resets the topology to the initial state (in case the topology becomes bugged).
 
-**N:** Cancels running simulation or reloads simulation if not running.
+**N:** Allows you to send a email notification when your simulation is done as well as any errors that occurred.
 
-**O:** Resets the topology to the initial state (in case the topology becomes bugged).
 
 ## 3b)  Simulation Settings Controller (Multiple Simulations)
 ![image alt text](./docs/image_23.png)
@@ -164,31 +163,29 @@ Upon setup completion, you will be able to run the simulator with the following 
 
 **C:** Choose between traffic generator types (e.g., No backup, Shared backup, and Dedicated backup).  This is the ability for a network to recover from resource failures.
 
-**D:** Amount of simulations run at each erlang (e.g. The amount of simulations run at each step specified in the field below).
+**D:** Choose a year to generate traffic based on the year selected
 
-**E:** The steps between the given erlang range (e.g. If you have a range of 100 - 150 and the steps you input is 25, simulations would run at 100, 125, and 150).
+**E:** The upper (left) and lower (right) limit of the erlang range.
 
-**F:** The upper (left) and lower (right) limit of the erlang range.
+**F:** Amount of simulations run at each erlang (e.g. The amount of simulations run at each step specified in the field below).
 
-**G:** Alpha number input determines the probability of link failure.
+**G:** The steps between the given erlang range (e.g. If you have a range of 100 - 150 and the steps you input is 25, simulations would run at 100, 125, and 150).
 
-**H:** Demands count number input is the number of demands to be simulated in the network.
+**H:** Alpha number input determines the probability of link failure.
 
-**I:** Modulation types to be used during simulation.
+**I:** Number of requests to be simulated in the network.
 
-**J:** Allows modulation to be changed dynamically in simulation.
+**J:** Modulation types to be used during simulation.
 
-**K:** Number of candidate paths for each request to reach a destination.
+**K:** Allows modulation to be changed dynamically in simulation.
 
-**L:** Allows you to send a email notification when your simulation is done as well as any errors that occurred.
+**L:** Number of candidate paths for each request to reach a destination. 
 
-**M:** Begins simulation.
+**M:** Simulation execution controls lets you start, pause and stop a simulation
 
-**N:** Pauses and restarts the simulation.
+**N:** Resets the topology to the initial state (in case the topology becomes bugged).
 
-**O:** Cancels running simulation or reloads simulation if not running.
-
-**P:** Resets the topology to the initial state (in case the topology becomes bugged).
+**O:** Allows you to send a email notification when your simulation is done as well as any errors that occurred.
 
 
 ## 4) Live Info Pane
